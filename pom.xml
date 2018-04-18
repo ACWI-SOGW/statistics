@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<groupId>gov.usgs.ngwmn</groupId>
+	<artifactId>statistics</artifactId>
+	<name>statistics</name>
+	<description>Proof of concept to pull statistics out of monolithic NGWMN and use it for scientific review.</description>
+	<version>0.2.0</version>
+	<packaging>jar</packaging>
+	<properties>
+		<java.version>1.8</java.version>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+		<timestamp>${maven.build.timestamp}</timestamp>
+		<maven.build.timestamp.format>yyyy-MM-dd HH:mm:ss' 'z</maven.build.timestamp.format>
+		<scm.urlBase>https://code.chs.usgs.gov/nwisweb/services/</scm.urlBase>
+		<scm.devConnectionBase>scm:git:ssh://git@code.chs.usgs.gov:nwisweb/services/</scm.devConnectionBase>
+	</properties>
+
+	<scm>
+		<!-- store the artifact under its own artifact ID -->
+		<url>${scm.urlBase}${project.artifactId}/browse</url>
+		<!-- lookup the code by the short git repo name -->
+		<developerConnection>${scm.devConnectionBase}${project.artifactId}.git</developerConnection>
+		<tag>HEAD</tag>
+	</scm>
+
+	<distributionManagement>
+		<repository>
+			<id>cida-releases</id>
+			<name>CIDA Releases</name>
+			<url>https://internal.cida.usgs.gov/maven/content/repositories/cida-releases</url>
+		</repository>
+		<snapshotRepository>
+			<id>cida-snapshots</id>
+			<name>CIDA Snapshots</name>
+			<url>https://internal.cida.usgs.gov/maven/content/repositories/cida-snapshots</url>
+		</snapshotRepository>
+	</distributionManagement>
+	<parent>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-starter-parent</artifactId>
+		<version>2.0.1.RELEASE</version>
+	</parent>
+
+	<dependencies>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-web</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-jdbc</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.projectlombok</groupId>
+			<artifactId>lombok</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>ch.qos.logback</groupId>
+			<artifactId>logback-core</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-test</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>commons-lang</groupId>
+			<artifactId>commons-lang</artifactId>
+			<version>2.6</version>
+		</dependency>
+	</dependencies>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-resources-plugin</artifactId>
+				<configuration>
+					<encoding>${project.reporting.outputEncoding}</encoding>
+					<resources>
+						<resource>
+							<directory>src/main/resources</directory>
+							<filtering>true</filtering>
+						</resource>
+						<resource>
+							<directory>src/test/resources</directory>
+						</resource>
+					</resources>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+				<executions>
+					<execution></execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
+
+	<repositories>
+		<repository>
+			<id>spring-Releases</id>
+			<name>Spring Releases</name>
+			<url>https://repo.spring.io/release</url>
+		</repository>
+		<repository>
+			<id>maven_central</id>
+			<name>Maven Central Repository</name>
+			<url>https://repo1.maven.org/maven2</url>
+		</repository>
+		<repository>
+			<id>cida-releases</id>
+			<name>CIDA Releases</name>
+			<url>https://internal.cida.usgs.gov/maven/content/repositories/cida-releases</url>
+		</repository>
+		<repository>
+			<id>cida-snapshots</id>
+			<name>CIDA Snapshots</name>
+			<url>https://internal.cida.usgs.gov/maven/content/repositories/cida-snapshots</url>
+		</repository>
+		<repository>
+			<id>cida-thirdparty</id>
+			<name>CIDA 3rd party Nexus</name>
+			<url>http://internal.cida.usgs.gov/maven/content/repositories/cida-thirdparty/</url>
+		</repository>
+	</repositories>
+	<organization>
+		<name>USGS</name>
+		<url>usgs.gov</url>
+	</organization>
+</project>

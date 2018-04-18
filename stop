@@ -1,0 +1,17 @@
+#!/bin/bash
+
+echo ""
+
+if [[ $1 = "--help" ]]; then
+	echo "Usage: $0"
+	echo ""
+	echo "      They shutdown first."
+	echo "      This send a kill signal to all processes that contain 'spring-boot' text"
+	echo ""
+	echo "      --help prints this message"
+	echo ""
+	exit
+fi
+
+echo "Killing old service if exists"
+ps -w -w -u `whoami` -o "pid etime ppid args" | grep aq-qualifiers | grep -v grep | cut -c1-5 | xargs kill

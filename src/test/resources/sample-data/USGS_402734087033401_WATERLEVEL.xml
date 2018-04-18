@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<om:ObservationCollection xmlns:wml2="http://www.wron.net.au/waterml2"
+	xmlns:md="http://www.isotc211.org/2005/gmd" xmlns:gco="http://www.isotc211.org/2005/gco"
+	xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:ns2="http://www.cuahsi.org/waterML/1.1/"
+	xmlns:gwml="http://www.nrcan.gc.ca/xml/gwml/1" xmlns:om="http://www.opengis.net/om/2.0"
+	xmlns:sa="http://www.opengis.net/sampling/2.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:h="http://apache.org/cocoon/request/2.0" xmlns:wfs="http://www.opengis.net/wfs"
+	xmlns:ns1="http://www.cuahsi.org/waterML/1.1/" xmlns:gml="http://www.opengis.net/gml"
+	xmlns:swe="http://www.opengis.net/swe/2.0">
+	<om:member>
+		<wml2:WaterMonitoringObservation
+			gml:id="usgs.gw.obs.ts.NWIS-">
+			<gml:name codeSpace="urn:x-usgs:us.usgs.nwis" />
+			<om:metadata>
+				<wml2:ObservationMetadata>
+					<md:contact xlink:href="http://waterdata.usgs.gov/nwis">
+						<md:CI_ResponsibleParty>
+							<md:organisationName>
+								<gco:CharacterString>National Water Information System
+								</gco:CharacterString>
+							</md:organisationName>
+							<md:role>
+								<md:CI_RoleCode codeList="list" codeListValue="url">TBD
+								</md:CI_RoleCode>
+							</md:role>
+						</md:CI_ResponsibleParty>
+					</md:contact>
+					<md:dateStamp>
+						<gco:Date>2012-04-16T15:27:19.814Z</gco:Date>
+					</md:dateStamp>
+					<md:identificationInfo xlink:href="urn:OGC:unknown" />
+					<wml2:intendedSamplingInterval>
+						<gml:TimePeriod gml:id="invalid.isi.NWIS-">
+							<gml:beginPosition>2012-04-16T15:27:19.814Z</gml:beginPosition>
+							<gml:endPosition />
+						</gml:TimePeriod>
+					</wml2:intendedSamplingInterval>
+				</wml2:ObservationMetadata>
+			</om:metadata>
+			<om:phenomenonTime>
+				<gml:TimePeriod gml:id="invalid.pt.NWIS-">
+					<gml:beginPosition>2012-04-16T15:27:19.814Z</gml:beginPosition>
+					<gml:endPosition />
+				</gml:TimePeriod>
+			</om:phenomenonTime>
+			<om:resultTime>
+				<gml:TimePeriod gml:id="invalid.rt.NWIS-">
+					<gml:beginPosition>2012-04-16T15:27:19.814Z</gml:beginPosition>
+					<gml:endPosition />
+				</gml:TimePeriod>
+			</om:resultTime>
+			<om:procedure xlink:href="urn:ogc:object:Sensor:usgs-gw:NWIS-" />
+			<om:parameter>
+				<om:NamedValue>
+					<om:name
+						xlink:href="http://www.opengis.net/req/omxml/2.0/data/samplingGeometry" />
+					<om:value>
+						<gml:Point srsName="" gml:id="invalid.loc.NWIS-">
+							<gml:pos>,</gml:pos>
+						</gml:Point>
+					</om:value>
+				</om:NamedValue>
+			</om:parameter>
+			<om:observedProperty xlink:href="urn:ogc:def:property:OGC:GroundWaterLevel" />
+			<om:featureOfInterest xlink:title="Sensor Site NWIS-"
+				xlink:href="http://cida.usgs.gov/cocoon/gin/gwdp/agency/NWIS/wfs?request=GetFeature&amp;featureId=" />
+			<om:result>
+				<wml2:TimeSeries>
+					<wml2:domainExtent>
+						<gml:TimePeriod gml:id="invalid.de.NWIS-">
+							<gml:beginPosition>2012-04-16T15:27:19.814Z</gml:beginPosition>
+							<gml:endPosition />
+						</gml:TimePeriod>
+					</wml2:domainExtent>
+					<wml2:defaultDataType codeSpace="http://usgs.gov/water/">InstVal
+					</wml2:defaultDataType>
+					<wml2:element xmlns:gml="http://www.opengis.net/gml/3.2">
+						<wml2:TimeValuePair>
+							<wml2:time>1991-04-17T16:08-06:00</wml2:time>
+							<wml2:value>
+								<swe:Quantity>
+									<swe:uom code="feet" />
+									<swe:value>6.66</swe:value>
+								</swe:Quantity>
+							</wml2:value>
+							<wml2:comment>Electric-tape measurement.</wml2:comment>
+						</wml2:TimeValuePair>
+					</wml2:element>
+					<wml2:element xmlns:gml="http://www.opengis.net/gml/3.2">
+						<wml2:TimeValuePair>
+							<wml2:time>1998-11-25T14:00-06:00</wml2:time>
+							<wml2:value>
+								<swe:Quantity>
+									<swe:uom code="feet" />
+									<swe:value>13.21</swe:value>
+								</swe:Quantity>
+							</wml2:value>
+							<wml2:comment>Steel-tape measurement.</wml2:comment>
+						</wml2:TimeValuePair>
+					</wml2:element>
+					<wml2:element xmlns:gml="http://www.opengis.net/gml/3.2">
+						<wml2:TimeValuePair>
+							<wml2:time>2003-12-10T15:40-06:00</wml2:time>
+							<wml2:value>
+								<swe:Quantity>
+									<swe:uom code="feet" />
+									<swe:value>12.15</swe:value>
+								</swe:Quantity>
+							</wml2:value>
+							<wml2:comment>Steel-tape measurement.</wml2:comment>
+						</wml2:TimeValuePair>
+					</wml2:element>
+					<wml2:element xmlns:gml="http://www.opengis.net/gml/3.2">
+						<wml2:TimeValuePair>
+							<wml2:time>2008-12-15T18:04-06:00</wml2:time>
+							<wml2:value>
+								<swe:Quantity>
+									<swe:uom code="feet" />
+									<swe:value>11.32</swe:value>
+								</swe:Quantity>
+							</wml2:value>
+							<wml2:comment>Steel-tape measurement.</wml2:comment>
+						</wml2:TimeValuePair>
+					</wml2:element>
+				</wml2:TimeSeries>
+			</om:result>
+		</wml2:WaterMonitoringObservation>
+	</om:member>
+</om:ObservationCollection>

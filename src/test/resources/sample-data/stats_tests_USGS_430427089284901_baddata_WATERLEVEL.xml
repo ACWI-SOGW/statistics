@@ -1,0 +1,1653 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<om:ObservationCollection xmlns:om="http://www.opengis.net/om/2.0" xmlns:gco="http://www.isotc211.org/2005/gco" xmlns:ns2="http://www.cuahsi.org/waterML/1.2/" xmlns:ns1="http://www.cuahsi.org/waterML/1.1/" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:sa="http://www.opengis.net/sampling/2.0" xmlns:gwdp="https://github.com/USGS-CIDA/ngwmn/sos" xmlns:gwml="http://www.nrcan.gc.ca/xml/gwml/1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:swe="http://www.opengis.net/swe/2.0" xmlns:wfs="http://www.opengis.net/wfs" xmlns:h="http://apache.org/cocoon/request/2.0" xmlns:wml2="http://www.wron.net.au/waterml2" xmlns:gml="http://www.opengis.net/gml" xmlns:md="http://www.isotc211.org/2005/gmd">
+  <om:member>
+    <wml2:WaterMonitoringObservation gml:id="usgs.gw.obs.ts.USGS-430427089284901">
+      <gml:name codeSpace="urn:x-usgs:us.usgs.nwis">430427089284901</gml:name>
+      <gml:name codeSpace="urn:x-usgs:us.usgs.nwis">DN-07/09E/19-0064</gml:name>
+      <om:metadata>
+        <wml2:ObservationMetadata>
+          <md:contact xlink:href="http://waterdata.usgs.gov">
+            <md:CI_ResponsibleParty>
+              <md:organisationName>
+                <gco:CharacterString>U.S. Geological Survey</gco:CharacterString>
+              </md:organisationName>
+              <md:role>
+                <md:CI_RoleCode codeList="list" codeListValue="url">TBD</md:CI_RoleCode>
+              </md:role>
+            </md:CI_ResponsibleParty>
+          </md:contact>
+          <md:dateStamp>
+            <gco:Date>2016-03-26T03:07:42.742Z</gco:Date>
+          </md:dateStamp>
+          <md:identificationInfo xlink:href="urn:OGC:unknown"/>
+          <wml2:intendedSamplingInterval>
+            <gml:TimePeriod gml:id="invalid.isi.USGS-430427089284901">
+              <gml:beginPosition>2016-03-26T03:07:42.742Z</gml:beginPosition>
+              <gml:endPosition/>
+            </gml:TimePeriod>
+          </wml2:intendedSamplingInterval>
+        </wml2:ObservationMetadata>
+      </om:metadata>
+      <om:phenomenonTime>
+        <gml:TimePeriod gml:id="invalid.pt.USGS-430427089284901">
+          <gml:beginPosition>2016-03-26T03:07:42.742Z</gml:beginPosition>
+          <gml:endPosition/>
+        </gml:TimePeriod>
+      </om:phenomenonTime>
+      <om:resultTime>
+        <gml:TimePeriod gml:id="invalid.rt.USGS-430427089284901">
+          <gml:beginPosition>2016-03-26T03:07:42.742Z</gml:beginPosition>
+          <gml:endPosition/>
+        </gml:TimePeriod>
+      </om:resultTime>
+      <om:procedure xlink:href="urn:ogc:object:Sensor:usgs-gw:USGS-430427089284901"/>
+      <om:parameter>
+        <om:NamedValue>
+          <om:name xlink:href="http://www.opengis.net/req/omxml/2.0/data/samplingGeometry"/>
+          <om:value>
+            <gml:Point srsName="EPSG:4326" gml:id="invalid.loc.USGS-430427089284901">
+              <gml:pos>43.0742833,-89.4801722</gml:pos>
+            </gml:Point>
+          </om:value>
+        </om:NamedValue>
+      </om:parameter>
+      <om:parameter>
+        <om:NamedValue>
+          <om:name xlink:href="http://nwis.waterdata.usgs.gov/usa/nwis/pmcodes" xlink:title="NWIS Parameter Code"/>
+          <om:value>72019</om:value>
+        </om:NamedValue>
+      </om:parameter>
+      <om:observedProperty xlink:href="urn:ogc:def:property:OGC:GroundWaterLevel"/>
+      <om:featureOfInterest xlink:title="Sensor Site USGS-430427089284901" xlink:href="http://cida.usgs.gov/cocoon/gin/gwdp/agency/USGS/wfs?request=GetFeature&amp;featureId=430427089284901"/>
+      <om:result>
+        <wml2:TimeSeries>
+          <wml2:domainExtent>
+            <gml:TimePeriod gml:id="invalid.de.USGS-430427089284901">
+              <gml:beginPosition>2016-03-26T03:07:42.742Z</gml:beginPosition>
+              <gml:endPosition/>
+            </gml:TimePeriod>
+          </wml2:domainExtent>
+          <wml2:defaultDataType codeSpace="http://usgs.gov/water/">InstVal</wml2:defaultDataType>
+          <wml2:element>
+            <wml2:TimeValuePair>
+            
+            <!-- example of a date only : should be fine -->
+            
+              <wml2:time>1938-01-01</wml2:time>
+              <wml2:value sourceCode="USGS">
+                <swe:Quantity>
+                  <gwdp:nwis pcode="72019" direction="down"/>
+                  <swe:uom code="ft"/>
+                  <swe:value>48.50</swe:value>
+                </swe:Quantity>
+              </wml2:value>
+              <wml2:comment/>
+            </wml2:TimeValuePair>
+          </wml2:element>
+          <wml2:element>
+            <wml2:TimeValuePair>
+            
+            <!-- example of a year only : should use June 30th -->
+            
+              <wml2:time>1977</wml2:time>
+              <wml2:value sourceCode="USGS">
+                <swe:Quantity>
+                  <gwdp:nwis pcode="72019" direction="down"/>
+                  <swe:uom code="ft"/>
+                  <swe:value>57.01</swe:value>
+                </swe:Quantity>
+              </wml2:value>
+              <wml2:comment/>
+            </wml2:TimeValuePair>
+          </wml2:element>
+          <wml2:element>
+            <wml2:TimeValuePair>
+            
+            <!-- example of a missing date : should be logged and removed -->
+            
+              <wml2:time></wml2:time>
+              <wml2:value sourceCode="USGS">
+                <swe:Quantity>
+                  <gwdp:nwis pcode="72019" direction="down"/>
+                  <swe:uom code="ft"/>
+                  <swe:value>57.22</swe:value>
+                </swe:Quantity>
+              </wml2:value>
+              <wml2:comment/>
+            </wml2:TimeValuePair>
+          </wml2:element>
+          <wml2:element>
+            <wml2:TimeValuePair>
+            
+            <!-- example of a corrupt date : should be logged and removed -->
+            
+              <wml2:time>fsdfsfdsdf</wml2:time>
+              <wml2:value sourceCode="USGS">
+                <swe:Quantity>
+                  <gwdp:nwis pcode="72019" direction="down"/>
+                  <swe:uom code="ft"/>
+                  <swe:value>57.39</swe:value>
+                </swe:Quantity>
+              </wml2:value>
+              <wml2:comment/>
+            </wml2:TimeValuePair>
+          </wml2:element>
+          <wml2:element>
+            <wml2:TimeValuePair>
+            
+            <!--  example of an invalid date : should be logged and removed -->
+            
+              <wml2:time>1978-13-13T12:00:00</wml2:time>
+              <wml2:value sourceCode="USGS">
+                <swe:Quantity>
+                  <gwdp:nwis pcode="72019" direction="down"/>
+                  <swe:uom code="ft"/>
+                  <swe:value>57.71</swe:value>
+                </swe:Quantity>
+              </wml2:value>
+              <wml2:comment/>
+            </wml2:TimeValuePair>
+          </wml2:element>
+          <wml2:element>
+            <wml2:TimeValuePair>
+            
+            <!-- example of a missing day of month : should use 15th -->
+            
+              <wml2:time>1978-02</wml2:time>
+              <wml2:value sourceCode="USGS">
+                <swe:Quantity>
+                  <gwdp:nwis pcode="72019" direction="down"/>
+                  <swe:uom code="ft"/>
+                  <swe:value>58.42</swe:value>
+                </swe:Quantity>
+              </wml2:value>
+              <wml2:comment/>
+            </wml2:TimeValuePair>
+          </wml2:element>
+          <wml2:element>
+            <wml2:TimeValuePair>
+              <wml2:time>1978-03-20T12:00:00</wml2:time>
+              <wml2:value sourceCode="USGS">
+                <swe:Quantity>
+                  <gwdp:nwis pcode="72019" direction="down"/>
+                  <swe:uom code="ft"/>
+                  <swe:value>58.82</swe:value>
+                </swe:Quantity>
+              </wml2:value>
+              <wml2:comment/>
+            </wml2:TimeValuePair>
+          </wml2:element>
+          <wml2:element>
+            <wml2:TimeValuePair>
+              <wml2:time>1978-05-16T12:00:00</wml2:time>
+              <wml2:value sourceCode="USGS">
+                <swe:Quantity>
+                  <gwdp:nwis pcode="72019" direction="down"/>
+                  <swe:uom code="ft"/>
+                  <swe:value>58.52</swe:value>
+                </swe:Quantity>
+              </wml2:value>
+              <wml2:comment/>
+            </wml2:TimeValuePair>
+          </wml2:element>
+          <wml2:element>
+            <wml2:TimeValuePair>
+              <wml2:time>1978-06-15T12:00:00</wml2:time>
+              <wml2:value sourceCode="USGS">
+                <swe:Quantity>
+                  <gwdp:nwis pcode="72019" direction="down"/>
+                  <swe:uom code="ft"/>
+                  <swe:value>58.66</swe:value>
+                </swe:Quantity>
+              </wml2:value>
+              <wml2:comment/>
+            </wml2:TimeValuePair>
+          </wml2:element>
+          <wml2:element>
+            <wml2:TimeValuePair>
+              <wml2:time>1978-07-31T12:00:00</wml2:time>
+              <wml2:value sourceCode="USGS">
+                <swe:Quantity>
+                  <gwdp:nwis pcode="72019" direction="down"/>
+                  <swe:uom code="ft"/>
+                  <swe:value>56.39</swe:value>
+                </swe:Quantity>
+              </wml2:value>
+              <wml2:comment/>
+            </wml2:TimeValuePair>
+          </wml2:element>
+          <wml2:element>
+            <wml2:TimeValuePair>
+              <wml2:time>1978-08-16T12:00:00</wml2:time>
+              <wml2:value sourceCode="USGS">
+                <swe:Quantity>
+                  <gwdp:nwis pcode="72019" direction="down"/>
+                  <swe:uom code="ft"/>
+                  <swe:value>57.37</swe:value>
+                </swe:Quantity>
+              </wml2:value>
+              <wml2:comment/>
+            </wml2:TimeValuePair>
+          </wml2:element>
+          <wml2:element>
+            <wml2:TimeValuePair>
+              <wml2:time>1978-09-06T12:00:00</wml2:time>
+              <wml2:value sourceCode="USGS">
+                <swe:Quantity>
+                  <gwdp:nwis pcode="72019" direction="down"/>
+                  <swe:uom code="ft"/>
+                  <swe:value>57.32</swe:value>
+                </swe:Quantity>
+              </wml2:value>
+              <wml2:comment/>
+            </wml2:TimeValuePair>
+          </wml2:element>
+          <wml2:element>
+            <wml2:TimeValuePair>
+              <wml2:time>1978-10-18T12:00:00</wml2:time>
+              <wml2:value sourceCode="USGS">
+                <swe:Quantity>
+                  <gwdp:nwis pcode="72019" direction="down"/>
+                  <swe:uom code="ft"/>
+                  <swe:value>57.03</swe:value>
+                </swe:Quantity>
+              </wml2:value>
+              <wml2:comment/>
+            </wml2:TimeValuePair>
+          </wml2:element>
+          <wml2:element>
+            <wml2:TimeValuePair>
+              <wml2:time>1978-11-14T12:00:00</wml2:time>
+              <wml2:value sourceCode="USGS">
+                <swe:Quantity>
+                  <gwdp:nwis pcode="72019" direction="down"/>
+                  <swe:uom code="ft"/>
+                  <swe:value>56.93</swe:value>
+                </swe:Quantity>
+              </wml2:value>
+              <wml2:comment/>
+            </wml2:TimeValuePair>
+          </wml2:element>
+          <wml2:element>
+            <wml2:TimeValuePair>
+              <wml2:time>1978-12-13T12:00:00</wml2:time>
+              <wml2:value sourceCode="USGS">
+                <swe:Quantity>
+                  <gwdp:nwis pcode="72019" direction="down"/>
+                  <swe:uom code="ft"/>
+                  <swe:value>56.81</swe:value>
+                </swe:Quantity>
+              </wml2:value>
+              <wml2:comment/>
+            </wml2:TimeValuePair>
+          </wml2:element>
+          <wml2:element>
+            <wml2:TimeValuePair>
+              <wml2:time>1979-01-09T12:00:00</wml2:time>
+              <wml2:value sourceCode="USGS">
+                <swe:Quantity>
+                  <gwdp:nwis pcode="72019" direction="down"/>
+                  <swe:uom code="ft"/>
+                  <swe:value>56.72</swe:value>
+                </swe:Quantity>
+              </wml2:value>
+              <wml2:comment/>
+            </wml2:TimeValuePair>
+          </wml2:element>
+          <wml2:element>
+            <wml2:TimeValuePair>
+              <wml2:time>1979-02-16T12:00:00</wml2:time>
+              <wml2:value sourceCode="USGS">
+                <swe:Quantity>
+                  <gwdp:nwis pcode="72019" direction="down"/>
+                  <swe:uom code="ft"/>
+                  <swe:value>56.97</swe:value>
+                </swe:Quantity>
+              </wml2:value>
+              <wml2:comment/>
+            </wml2:TimeValuePair>
+          </wml2:element>
+          <wml2:element>
+            <wml2:TimeValuePair>
+              <wml2:time>1979-03-21T12:00:00</wml2:time>
+              <wml2:value sourceCode="USGS">
+                <swe:Quantity>
+                  <gwdp:nwis pcode="72019" direction="down"/>
+                  <swe:uom code="ft"/>
+                  <swe:value>57.29</swe:value>
+                </swe:Quantity>
+              </wml2:value>
+              <wml2:comment/>
+            </wml2:TimeValuePair>
+          </wml2:element>
+          <wml2:element>
+            <wml2:TimeValuePair>
+              <wml2:time>1979-04-18T12:00:00</wml2:time>
+              <wml2:value sourceCode="USGS">
+                <swe:Quantity>
+                  <gwdp:nwis pcode="72019" direction="down"/>
+                  <swe:uom code="ft"/>
+                  <swe:value>56.63</swe:value>
+                </swe:Quantity>
+              </wml2:value>
+              <wml2:comment/>
+            </wml2:TimeValuePair>
+          </wml2:element>
+          <wml2:element>
+            <wml2:TimeValuePair>
+              <wml2:time>1979-05-23T12:00:00</wml2:time>
+              <wml2:value sourceCode="USGS">
+                <swe:Quantity>
+                  <gwdp:nwis pcode="72019" direction="down"/>
+                  <swe:uom code="ft"/>
+                  <swe:value>57.03</swe:value>
+                </swe:Quantity>
+              </wml2:value>
+              <wml2:comment/>
+            </wml2:TimeValuePair>
+          </wml2:element>
+          <wml2:element>
+            <wml2:TimeValuePair>
+              <wml2:time>1979-06-12T12:00:00</wml2:time>
+              <wml2:value sourceCode="USGS">
+                <swe:Quantity>
+                  <gwdp:nwis pcode="72019" direction="down"/>
+                  <swe:uom code="ft"/>
+                  <swe:value>55.36</swe:value>
+                </swe:Quantity>
+              </wml2:value>
+              <wml2:comment/>
+            </wml2:TimeValuePair>
+          </wml2:element>
+          <wml2:element>
+            <wml2:TimeValuePair>
+              <wml2:time>1979-07-18T12:00:00</wml2:time>
+              <wml2:value sourceCode="USGS">
+                <swe:Quantity>
+                  <gwdp:nwis pcode="72019" direction="down"/>
+                  <swe:uom code="ft"/>
+                  <swe:value>56.03</swe:value>
+                </swe:Quantity>
+              </wml2:value>
+              <wml2:comment/>
+            </wml2:TimeValuePair>
+          </wml2:element>
+          <wml2:element>
+            <wml2:TimeValuePair>
+              <wml2:time>1979-08-16T12:00:00</wml2:time>
+              <wml2:value sourceCode="USGS">
+                <swe:Quantity>
+                  <gwdp:nwis pcode="72019" direction="down"/>
+                  <swe:uom code="ft"/>
+                  <swe:value>54.79</swe:value>
+                </swe:Quantity>
+              </wml2:value>
+              <wml2:comment/>
+            </wml2:TimeValuePair>
+          </wml2:element>
+          <wml2:element>
+            <wml2:TimeValuePair>
+              <wml2:time>1979-09-19T12:00:00</wml2:time>
+              <wml2:value sourceCode="USGS">
+                <swe:Quantity>
+                  <gwdp:nwis pcode="72019" direction="down"/>
+                  <swe:uom code="ft"/>
+                  <swe:value>54.55</swe:value>
+                </swe:Quantity>
+              </wml2:value>
+              <wml2:comment/>
+            </wml2:TimeValuePair>
+          </wml2:element>
+          <wml2:element>
+            <wml2:TimeValuePair>
+              <wml2:time>1979-10-29T12:00:00</wml2:time>
+              <wml2:value sourceCode="USGS">
+                <swe:Quantity>
+                  <gwdp:nwis pcode="72019" direction="down"/>
+                  <swe:uom code="ft"/>
+                  <swe:value>54.33</swe:value>
+                </swe:Quantity>
+              </wml2:value>
+              <wml2:comment/>
+            </wml2:TimeValuePair>
+          </wml2:element>
+          <wml2:element>
+            <wml2:TimeValuePair>
+              <wml2:time>1979-11-30T12:00:00</wml2:time>
+              <wml2:value sourceCode="USGS">
+                <swe:Quantity>
+                  <gwdp:nwis pcode="72019" direction="down"/>
+                  <swe:uom code="ft"/>
+                  <swe:value>54.38</swe:value>
+                </swe:Quantity>
+              </wml2:value>
+              <wml2:comment/>
+            </wml2:TimeValuePair>
+          </wml2:element>
+          <wml2:element>
+            <wml2:TimeValuePair>
+              <wml2:time>1979-12-26T12:00:00</wml2:time>
+              <wml2:value sourceCode="USGS">
+                <swe:Quantity>
+                  <gwdp:nwis pcode="72019" direction="down"/>
+                  <swe:uom code="ft"/>
+                  <swe:value>54.39</swe:value>
+                </swe:Quantity>
+              </wml2:value>
+              <wml2:comment/>
+            </wml2:TimeValuePair>
+          </wml2:element>
+          <wml2:element>
+            <wml2:TimeValuePair>
+              <wml2:time>1980-01-31T12:00:00</wml2:time>
+              <wml2:value sourceCode="USGS">
+                <swe:Quantity>
+                  <gwdp:nwis pcode="72019" direction="down"/>
+                  <swe:uom code="ft"/>
+                  <swe:value>54.61</swe:value>
+                </swe:Quantity>
+              </wml2:value>
+              <wml2:comment/>
+            </wml2:TimeValuePair>
+          </wml2:element>
+          <wml2:element>
+            <wml2:TimeValuePair>
+              <wml2:time>1980-02-29T12:00:00</wml2:time>
+              <wml2:value sourceCode="USGS">
+                <swe:Quantity>
+                  <gwdp:nwis pcode="72019" direction="down"/>
+                  <swe:uom code="ft"/>
+                  <swe:value>54.93</swe:value>
+                </swe:Quantity>
+              </wml2:value>
+              <wml2:comment/>
+            </wml2:TimeValuePair>
+          </wml2:element>
+          <wml2:element>
+            <wml2:TimeValuePair>
+              <wml2:time>1980-03-24T12:00:00</wml2:time>
+              <wml2:value sourceCode="USGS">
+                <swe:Quantity>
+                  <gwdp:nwis pcode="72019" direction="down"/>
+                  <swe:uom code="ft"/>
+                  <swe:value>54.67</swe:value>
+                </swe:Quantity>
+              </wml2:value>
+              <wml2:comment/>
+            </wml2:TimeValuePair>
+          </wml2:element>
+          <wml2:element>
+            <wml2:TimeValuePair>
+              <wml2:time>1980-04-29T12:00:00</wml2:time>
+              <wml2:value sourceCode="USGS">
+                <swe:Quantity>
+                  <gwdp:nwis pcode="72019" direction="down"/>
+                  <swe:uom code="ft"/>
+                  <swe:value>55.09</swe:value>
+                </swe:Quantity>
+              </wml2:value>
+              <wml2:comment/>
+            </wml2:TimeValuePair>
+          </wml2:element>
+          <wml2:element>
+            <wml2:TimeValuePair>
+              <wml2:time>1980-05-19T12:00:00</wml2:time>
+              <wml2:value sourceCode="USGS">
+                <swe:Quantity>
+                  <gwdp:nwis pcode="72019" direction="down"/>
+                  <swe:uom code="ft"/>
+                  <swe:value>53.98</swe:value>
+                </swe:Quantity>
+              </wml2:value>
+              <wml2:comment/>
+            </wml2:TimeValuePair>
+          </wml2:element>
+          <wml2:element>
+            <wml2:TimeValuePair>
+              <wml2:time>1980-06-24T12:00:00</wml2:time>
+              <wml2:value sourceCode="USGS">
+                <swe:Quantity>
+                  <gwdp:nwis pcode="72019" direction="down"/>
+                  <swe:uom code="ft"/>
+                  <swe:value>54.65</swe:value>
+                </swe:Quantity>
+              </wml2:value>
+              <wml2:comment/>
+            </wml2:TimeValuePair>
+          </wml2:element>
+          <wml2:element>
+            <wml2:TimeValuePair>
+              <wml2:time>1980-08-18T12:00:00</wml2:time>
+              <wml2:value sourceCode="USGS">
+                <swe:Quantity>
+                  <gwdp:nwis pcode="72019" direction="down"/>
+                  <swe:uom code="ft"/>
+                  <swe:value>55.40</swe:value>
+                </swe:Quantity>
+              </wml2:value>
+              <wml2:comment/>
+            </wml2:TimeValuePair>
+          </wml2:element>
+          <wml2:element>
+            <wml2:TimeValuePair>
+              <wml2:time>1980-09-08T12:00:00</wml2:time>
+              <wml2:value sourceCode="USGS">
+                <swe:Quantity>
+                  <gwdp:nwis pcode="72019" direction="down"/>
+                  <swe:uom code="ft"/>
+                  <swe:value>55.50</swe:value>
+                </swe:Quantity>
+              </wml2:value>
+              <wml2:comment/>
+            </wml2:TimeValuePair>
+          </wml2:element>
+          <wml2:element>
+            <wml2:TimeValuePair>
+              <wml2:time>1980-10-23T12:00:00</wml2:time>
+              <wml2:value sourceCode="USGS">
+                <swe:Quantity>
+                  <gwdp:nwis pcode="72019" direction="down"/>
+                  <swe:uom code="ft"/>
+                  <swe:value>55.20</swe:value>
+                </swe:Quantity>
+              </wml2:value>
+              <wml2:comment/>
+            </wml2:TimeValuePair>
+          </wml2:element>
+          <wml2:element>
+            <wml2:TimeValuePair>
+              <wml2:time>1980-11-24T12:00:00</wml2:time>
+              <wml2:value sourceCode="USGS">
+                <swe:Quantity>
+                  <gwdp:nwis pcode="72019" direction="down"/>
+                  <swe:uom code="ft"/>
+                  <swe:value>54.91</swe:value>
+                </swe:Quantity>
+              </wml2:value>
+              <wml2:comment/>
+            </wml2:TimeValuePair>
+          </wml2:element>
+          <wml2:element>
+            <wml2:TimeValuePair>
+              <wml2:time>1980-12-16T12:00:00</wml2:time>
+              <wml2:value sourceCode="USGS">
+                <swe:Quantity>
+                  <gwdp:nwis pcode="72019" direction="down"/>
+                  <swe:uom code="ft"/>
+                  <swe:value>54.73</swe:value>
+                </swe:Quantity>
+              </wml2:value>
+              <wml2:comment/>
+            </wml2:TimeValuePair>
+          </wml2:element>
+          <wml2:element>
+            <wml2:TimeValuePair>
+              <wml2:time>1981-01-29T12:00:00</wml2:time>
+              <wml2:value sourceCode="USGS">
+                <swe:Quantity>
+                  <gwdp:nwis pcode="72019" direction="down"/>
+                  <swe:uom code="ft"/>
+                  <swe:value>55.25</swe:value>
+                </swe:Quantity>
+              </wml2:value>
+              <wml2:comment/>
+            </wml2:TimeValuePair>
+          </wml2:element>
+          <wml2:element>
+            <wml2:TimeValuePair>
+              <wml2:time>1981-02-24T12:00:00</wml2:time>
+              <wml2:value sourceCode="USGS">
+                <swe:Quantity>
+                  <gwdp:nwis pcode="72019" direction="down"/>
+                  <swe:uom code="ft"/>
+                  <swe:value>55.61</swe:value>
+                </swe:Quantity>
+              </wml2:value>
+              <wml2:comment/>
+            </wml2:TimeValuePair>
+          </wml2:element>
+          <wml2:element>
+            <wml2:TimeValuePair>
+              <wml2:time>1981-03-18T12:00:00</wml2:time>
+              <wml2:value sourceCode="USGS">
+                <swe:Quantity>
+                  <gwdp:nwis pcode="72019" direction="down"/>
+                  <swe:uom code="ft"/>
+                  <swe:value>55.49</swe:value>
+                </swe:Quantity>
+              </wml2:value>
+              <wml2:comment/>
+            </wml2:TimeValuePair>
+          </wml2:element>
+          <wml2:element>
+            <wml2:TimeValuePair>
+              <wml2:time>1981-04-29T12:00:00</wml2:time>
+              <wml2:value sourceCode="USGS">
+                <swe:Quantity>
+                  <gwdp:nwis pcode="72019" direction="down"/>
+                  <swe:uom code="ft"/>
+                  <swe:value>55.25</swe:value>
+                </swe:Quantity>
+              </wml2:value>
+              <wml2:comment/>
+            </wml2:TimeValuePair>
+          </wml2:element>
+          <wml2:element>
+            <wml2:TimeValuePair>
+              <wml2:time>1983-01-03T12:00:00</wml2:time>
+              <wml2:value sourceCode="USGS">
+                <swe:Quantity>
+                  <gwdp:nwis pcode="72019" direction="down"/>
+                  <swe:uom code="ft"/>
+                  <swe:value>55.65</swe:value>
+                </swe:Quantity>
+              </wml2:value>
+              <wml2:comment/>
+            </wml2:TimeValuePair>
+          </wml2:element>
+          <wml2:element>
+            <wml2:TimeValuePair>
+              <wml2:time>1983-01-07T12:00:00</wml2:time>
+              <wml2:value sourceCode="USGS">
+                <swe:Quantity>
+                  <gwdp:nwis pcode="72019" direction="down"/>
+                  <swe:uom code="ft"/>
+                  <swe:value>55.67</swe:value>
+                </swe:Quantity>
+              </wml2:value>
+              <wml2:comment/>
+            </wml2:TimeValuePair>
+          </wml2:element>
+          <wml2:element>
+            <wml2:TimeValuePair>
+              <wml2:time>1983-01-10T12:00:00</wml2:time>
+              <wml2:value sourceCode="USGS">
+                <swe:Quantity>
+                  <gwdp:nwis pcode="72019" direction="down"/>
+                  <swe:uom code="ft"/>
+                  <swe:value>55.65</swe:value>
+                </swe:Quantity>
+              </wml2:value>
+              <wml2:comment/>
+            </wml2:TimeValuePair>
+          </wml2:element>
+          <wml2:element>
+            <wml2:TimeValuePair>
+              <wml2:time>1983-01-13T12:00:00</wml2:time>
+              <wml2:value sourceCode="USGS">
+                <swe:Quantity>
+                  <gwdp:nwis pcode="72019" direction="down"/>
+                  <swe:uom code="ft"/>
+                  <swe:value>55.65</swe:value>
+                </swe:Quantity>
+              </wml2:value>
+              <wml2:comment/>
+            </wml2:TimeValuePair>
+          </wml2:element>
+          <wml2:element>
+            <wml2:TimeValuePair>
+              <wml2:time>1983-01-21T12:00:00</wml2:time>
+              <wml2:value sourceCode="USGS">
+                <swe:Quantity>
+                  <gwdp:nwis pcode="72019" direction="down"/>
+                  <swe:uom code="ft"/>
+                  <swe:value>55.67</swe:value>
+                </swe:Quantity>
+              </wml2:value>
+              <wml2:comment/>
+            </wml2:TimeValuePair>
+          </wml2:element>
+          <wml2:element>
+            <wml2:TimeValuePair>
+              <wml2:time>2002-03-20T12:30:00-06:00</wml2:time>
+              <wml2:value sourceCode="USGS">
+                <swe:Quantity>
+                  <gwdp:nwis pcode="72019" direction="down"/>
+                  <swe:uom code="ft"/>
+                  <swe:value>51.05</swe:value>
+                </swe:Quantity>
+              </wml2:value>
+              <wml2:comment/>
+            </wml2:TimeValuePair>
+          </wml2:element>
+          <wml2:element>
+            <wml2:TimeValuePair>
+              <wml2:time>2002-06-05T14:05:00-05:00</wml2:time>
+              <wml2:value sourceCode="USGS">
+                <swe:Quantity>
+                  <gwdp:nwis pcode="72019" direction="down"/>
+                  <swe:uom code="ft"/>
+                  <swe:value>50.94</swe:value>
+                </swe:Quantity>
+              </wml2:value>
+              <wml2:comment/>
+            </wml2:TimeValuePair>
+          </wml2:element>
+          <wml2:element>
+            <wml2:TimeValuePair>
+              <wml2:time>2002-08-26T08:50:00-05:00</wml2:time>
+              <wml2:value sourceCode="USGS">
+                <swe:Quantity>
+                  <gwdp:nwis pcode="72019" direction="down"/>
+                  <swe:uom code="ft"/>
+                  <swe:value>51.52</swe:value>
+                </swe:Quantity>
+              </wml2:value>
+              <wml2:comment/>
+            </wml2:TimeValuePair>
+          </wml2:element>
+          <wml2:element>
+            <wml2:TimeValuePair>
+              <wml2:time>2002-11-02T12:20:00-06:00</wml2:time>
+              <wml2:value sourceCode="USGS">
+                <swe:Quantity>
+                  <gwdp:nwis pcode="72019" direction="down"/>
+                  <swe:uom code="ft"/>
+                  <swe:value>51.51</swe:value>
+                </swe:Quantity>
+              </wml2:value>
+              <wml2:comment/>
+            </wml2:TimeValuePair>
+          </wml2:element>
+          <wml2:element>
+            <wml2:TimeValuePair>
+              <wml2:time>2003-03-29T11:10:00-06:00</wml2:time>
+              <wml2:value sourceCode="USGS">
+                <swe:Quantity>
+                  <gwdp:nwis pcode="72019" direction="down"/>
+                  <swe:uom code="ft"/>
+                  <swe:value>52.75</swe:value>
+                </swe:Quantity>
+              </wml2:value>
+              <wml2:comment/>
+            </wml2:TimeValuePair>
+          </wml2:element>
+          <wml2:element>
+            <wml2:TimeValuePair>
+              <wml2:time>2003-04-11T08:30:00-05:00</wml2:time>
+              <wml2:value sourceCode="USGS">
+                <swe:Quantity>
+                  <gwdp:nwis pcode="72019" direction="down"/>
+                  <swe:uom code="ft"/>
+                  <swe:value>52.78</swe:value>
+                </swe:Quantity>
+              </wml2:value>
+              <wml2:comment/>
+            </wml2:TimeValuePair>
+          </wml2:element>
+          <wml2:element>
+            <wml2:TimeValuePair>
+              <wml2:time>2003-04-22T14:57:00-05:00</wml2:time>
+              <wml2:value sourceCode="USGS">
+                <swe:Quantity>
+                  <gwdp:nwis pcode="72019" direction="down"/>
+                  <swe:uom code="ft"/>
+                  <swe:value>52.92</swe:value>
+                </swe:Quantity>
+              </wml2:value>
+              <wml2:comment/>
+            </wml2:TimeValuePair>
+          </wml2:element>
+          <wml2:element>
+            <wml2:TimeValuePair>
+              <wml2:time>2003-04-22T15:57:00-05:00</wml2:time>
+              <wml2:value sourceCode="USGS">
+                <swe:Quantity>
+                  <gwdp:nwis pcode="72019" direction="down"/>
+                  <swe:uom code="ft"/>
+                  <swe:value>52.00</swe:value>
+                </swe:Quantity>
+              </wml2:value>
+              <wml2:comment/>
+            </wml2:TimeValuePair>
+          </wml2:element>
+          <wml2:element>
+            <wml2:TimeValuePair>
+              <wml2:time>2003-05-10T14:55:00-05:00</wml2:time>
+              <wml2:value sourceCode="USGS">
+                <swe:Quantity>
+                  <gwdp:nwis pcode="72019" direction="down"/>
+                  <swe:uom code="ft"/>
+                  <swe:value>52.98</swe:value>
+                </swe:Quantity>
+              </wml2:value>
+              <wml2:comment/>
+            </wml2:TimeValuePair>
+          </wml2:element>
+          <wml2:element>
+            <wml2:TimeValuePair>
+              <wml2:time>2003-07-01T19:00:00-05:00</wml2:time>
+              <wml2:value sourceCode="USGS">
+                <swe:Quantity>
+                  <gwdp:nwis pcode="72019" direction="down"/>
+                  <swe:uom code="ft"/>
+                  <swe:value>53.52</swe:value>
+                </swe:Quantity>
+              </wml2:value>
+              <wml2:comment/>
+            </wml2:TimeValuePair>
+          </wml2:element>
+          <wml2:element>
+            <wml2:TimeValuePair>
+              <wml2:time>2003-08-08T11:15:00-05:00</wml2:time>
+              <wml2:value sourceCode="USGS">
+                <swe:Quantity>
+                  <gwdp:nwis pcode="72019" direction="down"/>
+                  <swe:uom code="ft"/>
+                  <swe:value>54.13</swe:value>
+                </swe:Quantity>
+              </wml2:value>
+              <wml2:comment/>
+            </wml2:TimeValuePair>
+          </wml2:element>
+          <wml2:element>
+            <wml2:TimeValuePair>
+              <wml2:time>2003-09-18T10:00:00-05:00</wml2:time>
+              <wml2:value sourceCode="USGS">
+                <swe:Quantity>
+                  <gwdp:nwis pcode="72019" direction="down"/>
+                  <swe:uom code="ft"/>
+                  <swe:value>55.15</swe:value>
+                </swe:Quantity>
+              </wml2:value>
+              <wml2:comment/>
+            </wml2:TimeValuePair>
+          </wml2:element>
+          <wml2:element>
+            <wml2:TimeValuePair>
+              <wml2:time>2003-10-24T13:30:00-05:00</wml2:time>
+              <wml2:value sourceCode="USGS">
+                <swe:Quantity>
+                  <gwdp:nwis pcode="72019" direction="down"/>
+                  <swe:uom code="ft"/>
+                  <swe:value>55.78</swe:value>
+                </swe:Quantity>
+              </wml2:value>
+              <wml2:comment/>
+            </wml2:TimeValuePair>
+          </wml2:element>
+          <wml2:element>
+            <wml2:TimeValuePair>
+              <wml2:time>2003-11-26T14:05:00-06:00</wml2:time>
+              <wml2:value sourceCode="USGS">
+                <swe:Quantity>
+                  <gwdp:nwis pcode="72019" direction="down"/>
+                  <swe:uom code="ft"/>
+                  <swe:value>55.80</swe:value>
+                </swe:Quantity>
+              </wml2:value>
+              <wml2:comment/>
+            </wml2:TimeValuePair>
+          </wml2:element>
+          <wml2:element>
+            <wml2:TimeValuePair>
+              <wml2:time>2004-03-29T14:10:00-06:00</wml2:time>
+              <wml2:value sourceCode="USGS">
+                <swe:Quantity>
+                  <gwdp:nwis pcode="72019" direction="down"/>
+                  <swe:uom code="ft"/>
+                  <swe:value>55.97</swe:value>
+                </swe:Quantity>
+              </wml2:value>
+              <wml2:comment/>
+            </wml2:TimeValuePair>
+          </wml2:element>
+          <wml2:element>
+            <wml2:TimeValuePair>
+              <wml2:time>2004-05-27T11:04:00-05:00</wml2:time>
+              <wml2:value sourceCode="USGS">
+                <swe:Quantity>
+                  <gwdp:nwis pcode="72019" direction="down"/>
+                  <swe:uom code="ft"/>
+                  <swe:value>55.61</swe:value>
+                </swe:Quantity>
+              </wml2:value>
+              <wml2:comment/>
+            </wml2:TimeValuePair>
+          </wml2:element>
+          <wml2:element>
+            <wml2:TimeValuePair>
+              <wml2:time>2004-07-10T14:05:00-05:00</wml2:time>
+              <wml2:value sourceCode="USGS">
+                <swe:Quantity>
+                  <gwdp:nwis pcode="72019" direction="down"/>
+                  <swe:uom code="ft"/>
+                  <swe:value>54.34</swe:value>
+                </swe:Quantity>
+              </wml2:value>
+              <wml2:comment/>
+            </wml2:TimeValuePair>
+          </wml2:element>
+          <wml2:element>
+            <wml2:TimeValuePair>
+              <wml2:time>2004-07-23T14:05:00-05:00</wml2:time>
+              <wml2:value sourceCode="USGS">
+                <swe:Quantity>
+                  <gwdp:nwis pcode="72019" direction="down"/>
+                  <swe:uom code="ft"/>
+                  <swe:value>54.21</swe:value>
+                </swe:Quantity>
+              </wml2:value>
+              <wml2:comment/>
+            </wml2:TimeValuePair>
+          </wml2:element>
+          <wml2:element>
+            <wml2:TimeValuePair>
+              <wml2:time>2004-08-03T13:40:00-05:00</wml2:time>
+              <wml2:value sourceCode="USGS">
+                <swe:Quantity>
+                  <gwdp:nwis pcode="72019" direction="down"/>
+                  <swe:uom code="ft"/>
+                  <swe:value>53.99</swe:value>
+                </swe:Quantity>
+              </wml2:value>
+              <wml2:comment/>
+            </wml2:TimeValuePair>
+          </wml2:element>
+          <wml2:element>
+            <wml2:TimeValuePair>
+              <wml2:time>2004-10-05T12:35:00-05:00</wml2:time>
+              <wml2:value sourceCode="USGS">
+                <swe:Quantity>
+                  <gwdp:nwis pcode="72019" direction="down"/>
+                  <swe:uom code="ft"/>
+                  <swe:value>53.78</swe:value>
+                </swe:Quantity>
+              </wml2:value>
+              <wml2:comment/>
+            </wml2:TimeValuePair>
+          </wml2:element>
+          <wml2:element>
+            <wml2:TimeValuePair>
+              <wml2:time>2005-02-01T09:40:00-06:00</wml2:time>
+              <wml2:value sourceCode="USGS">
+                <swe:Quantity>
+                  <gwdp:nwis pcode="72019" direction="down"/>
+                  <swe:uom code="ft"/>
+                  <swe:value>53.95</swe:value>
+                </swe:Quantity>
+              </wml2:value>
+              <wml2:comment/>
+            </wml2:TimeValuePair>
+          </wml2:element>
+          <wml2:element>
+            <wml2:TimeValuePair>
+              <wml2:time>2005-03-14T11:55:00-06:00</wml2:time>
+              <wml2:value sourceCode="USGS">
+                <swe:Quantity>
+                  <gwdp:nwis pcode="72019" direction="down"/>
+                  <swe:uom code="ft"/>
+                  <swe:value>53.95</swe:value>
+                </swe:Quantity>
+              </wml2:value>
+              <wml2:comment/>
+            </wml2:TimeValuePair>
+          </wml2:element>
+          <wml2:element>
+            <wml2:TimeValuePair>
+              <wml2:time>2005-04-19T08:30:00-05:00</wml2:time>
+              <wml2:value sourceCode="USGS">
+                <swe:Quantity>
+                  <gwdp:nwis pcode="72019" direction="down"/>
+                  <swe:uom code="ft"/>
+                  <swe:value>53.71</swe:value>
+                </swe:Quantity>
+              </wml2:value>
+              <wml2:comment/>
+            </wml2:TimeValuePair>
+          </wml2:element>
+          <wml2:element>
+            <wml2:TimeValuePair>
+              <wml2:time>2005-05-19T09:30:00-05:00</wml2:time>
+              <wml2:value sourceCode="USGS">
+                <swe:Quantity>
+                  <gwdp:nwis pcode="72019" direction="down"/>
+                  <swe:uom code="ft"/>
+                  <swe:value>53.68</swe:value>
+                </swe:Quantity>
+              </wml2:value>
+              <wml2:comment/>
+            </wml2:TimeValuePair>
+          </wml2:element>
+          <wml2:element>
+            <wml2:TimeValuePair>
+              <wml2:time>2005-06-23T07:35:00-05:00</wml2:time>
+              <wml2:value sourceCode="USGS">
+                <swe:Quantity>
+                  <gwdp:nwis pcode="72019" direction="down"/>
+                  <swe:uom code="ft"/>
+                  <swe:value>54.20</swe:value>
+                </swe:Quantity>
+              </wml2:value>
+              <wml2:comment/>
+            </wml2:TimeValuePair>
+          </wml2:element>
+          <wml2:element>
+            <wml2:TimeValuePair>
+              <wml2:time>2005-07-19T07:30:00-05:00</wml2:time>
+              <wml2:value sourceCode="USGS">
+                <swe:Quantity>
+                  <gwdp:nwis pcode="72019" direction="down"/>
+                  <swe:uom code="ft"/>
+                  <swe:value>54.95</swe:value>
+                </swe:Quantity>
+              </wml2:value>
+              <wml2:comment/>
+            </wml2:TimeValuePair>
+          </wml2:element>
+          <wml2:element>
+            <wml2:TimeValuePair>
+              <wml2:time>2005-08-25T18:26:00-05:00</wml2:time>
+              <wml2:value sourceCode="USGS">
+                <swe:Quantity>
+                  <gwdp:nwis pcode="72019" direction="down"/>
+                  <swe:uom code="ft"/>
+                  <swe:value>55.38</swe:value>
+                </swe:Quantity>
+              </wml2:value>
+              <wml2:comment/>
+            </wml2:TimeValuePair>
+          </wml2:element>
+          <wml2:element>
+            <wml2:TimeValuePair>
+              <wml2:time>2005-09-15T08:30:00-05:00</wml2:time>
+              <wml2:value sourceCode="USGS">
+                <swe:Quantity>
+                  <gwdp:nwis pcode="72019" direction="down"/>
+                  <swe:uom code="ft"/>
+                  <swe:value>55.71</swe:value>
+                </swe:Quantity>
+              </wml2:value>
+              <wml2:comment/>
+            </wml2:TimeValuePair>
+          </wml2:element>
+          <wml2:element>
+            <wml2:TimeValuePair>
+              <wml2:time>2005-12-20T16:36:00-06:00</wml2:time>
+              <wml2:value sourceCode="USGS">
+                <swe:Quantity>
+                  <gwdp:nwis pcode="72019" direction="down"/>
+                  <swe:uom code="ft"/>
+                  <swe:value>56.40</swe:value>
+                </swe:Quantity>
+              </wml2:value>
+              <wml2:comment/>
+            </wml2:TimeValuePair>
+          </wml2:element>
+          <wml2:element>
+            <wml2:TimeValuePair>
+              <wml2:time>2006-01-06T11:20:00-06:00</wml2:time>
+              <wml2:value sourceCode="USGS">
+                <swe:Quantity>
+                  <gwdp:nwis pcode="72019" direction="down"/>
+                  <swe:uom code="ft"/>
+                  <swe:value>56.46</swe:value>
+                </swe:Quantity>
+              </wml2:value>
+              <wml2:comment/>
+            </wml2:TimeValuePair>
+          </wml2:element>
+          <wml2:element>
+            <wml2:TimeValuePair>
+              <wml2:time>2006-02-21T13:30:00-06:00</wml2:time>
+              <wml2:value sourceCode="USGS">
+                <swe:Quantity>
+                  <gwdp:nwis pcode="72019" direction="down"/>
+                  <swe:uom code="ft"/>
+                  <swe:value>57.05</swe:value>
+                </swe:Quantity>
+              </wml2:value>
+              <wml2:comment/>
+            </wml2:TimeValuePair>
+          </wml2:element>
+          <wml2:element>
+            <wml2:TimeValuePair>
+              <wml2:time>2006-03-30T08:40:00-06:00</wml2:time>
+              <wml2:value sourceCode="USGS">
+                <swe:Quantity>
+                  <gwdp:nwis pcode="72019" direction="down"/>
+                  <swe:uom code="ft"/>
+                  <swe:value>57.40</swe:value>
+                </swe:Quantity>
+              </wml2:value>
+              <wml2:comment/>
+            </wml2:TimeValuePair>
+          </wml2:element>
+          <wml2:element>
+            <wml2:TimeValuePair>
+              <wml2:time>2006-05-25T10:23:00-05:00</wml2:time>
+              <wml2:value sourceCode="USGS">
+                <swe:Quantity>
+                  <gwdp:nwis pcode="72019" direction="down"/>
+                  <swe:uom code="ft"/>
+                  <swe:value>57.29</swe:value>
+                </swe:Quantity>
+              </wml2:value>
+              <wml2:comment/>
+            </wml2:TimeValuePair>
+          </wml2:element>
+          <wml2:element>
+            <wml2:TimeValuePair>
+              <wml2:time>2006-07-18T18:23:00-05:00</wml2:time>
+              <wml2:value sourceCode="USGS">
+                <swe:Quantity>
+                  <gwdp:nwis pcode="72019" direction="down"/>
+                  <swe:uom code="ft"/>
+                  <swe:value>57.98</swe:value>
+                </swe:Quantity>
+              </wml2:value>
+              <wml2:comment/>
+            </wml2:TimeValuePair>
+          </wml2:element>
+          <wml2:element>
+            <wml2:TimeValuePair>
+              <wml2:time>2006-10-23T09:04:00-05:00</wml2:time>
+              <wml2:value sourceCode="USGS">
+                <swe:Quantity>
+                  <gwdp:nwis pcode="72019" direction="down"/>
+                  <swe:uom code="ft"/>
+                  <swe:value>57.96</swe:value>
+                </swe:Quantity>
+              </wml2:value>
+              <wml2:comment/>
+            </wml2:TimeValuePair>
+          </wml2:element>
+          <wml2:element>
+            <wml2:TimeValuePair>
+              <wml2:time>2007-01-31T11:37:00-06:00</wml2:time>
+              <wml2:value sourceCode="USGS">
+                <swe:Quantity>
+                  <gwdp:nwis pcode="72019" direction="down"/>
+                  <swe:uom code="ft"/>
+                  <swe:value>57.86</swe:value>
+                </swe:Quantity>
+              </wml2:value>
+              <wml2:comment/>
+            </wml2:TimeValuePair>
+          </wml2:element>
+          <wml2:element>
+            <wml2:TimeValuePair>
+              <wml2:time>2007-03-20T13:18:00-05:00</wml2:time>
+              <wml2:value sourceCode="USGS">
+                <swe:Quantity>
+                  <gwdp:nwis pcode="72019" direction="down"/>
+                  <swe:uom code="ft"/>
+                  <swe:value>58.15</swe:value>
+                </swe:Quantity>
+              </wml2:value>
+              <wml2:comment/>
+            </wml2:TimeValuePair>
+          </wml2:element>
+          <wml2:element>
+            <wml2:TimeValuePair>
+              <wml2:time>2007-04-25T09:46:00-05:00</wml2:time>
+              <wml2:value sourceCode="USGS">
+                <swe:Quantity>
+                  <gwdp:nwis pcode="72019" direction="down"/>
+                  <swe:uom code="ft"/>
+                  <swe:value>57.40</swe:value>
+                </swe:Quantity>
+              </wml2:value>
+              <wml2:comment/>
+            </wml2:TimeValuePair>
+          </wml2:element>
+          <wml2:element>
+            <wml2:TimeValuePair>
+              <wml2:time>2007-07-03T07:30:00-05:00</wml2:time>
+              <wml2:value sourceCode="USGS">
+                <swe:Quantity>
+                  <gwdp:nwis pcode="72019" direction="down"/>
+                  <swe:uom code="ft"/>
+                  <swe:value>56.56</swe:value>
+                </swe:Quantity>
+              </wml2:value>
+              <wml2:comment/>
+            </wml2:TimeValuePair>
+          </wml2:element>
+          <wml2:element>
+            <wml2:TimeValuePair>
+              <wml2:time>2007-09-07T11:44:00-05:00</wml2:time>
+              <wml2:value sourceCode="USGS">
+                <swe:Quantity>
+                  <gwdp:nwis pcode="72019" direction="down"/>
+                  <swe:uom code="ft"/>
+                  <swe:value>56.10</swe:value>
+                </swe:Quantity>
+              </wml2:value>
+              <wml2:comment/>
+            </wml2:TimeValuePair>
+          </wml2:element>
+          <wml2:element>
+            <wml2:TimeValuePair>
+              <wml2:time>2007-12-21T08:41:00-06:00</wml2:time>
+              <wml2:value sourceCode="USGS">
+                <swe:Quantity>
+                  <gwdp:nwis pcode="72019" direction="down"/>
+                  <swe:uom code="ft"/>
+                  <swe:value>54.19</swe:value>
+                </swe:Quantity>
+              </wml2:value>
+              <wml2:comment/>
+            </wml2:TimeValuePair>
+          </wml2:element>
+          <wml2:element>
+            <wml2:TimeValuePair>
+              <wml2:time>2008-04-16T11:10:00-06:00</wml2:time>
+              <wml2:value sourceCode="USGS">
+                <swe:Quantity>
+                  <gwdp:nwis pcode="72019" direction="down"/>
+                  <swe:uom code="ft"/>
+                  <swe:value>52.89</swe:value>
+                </swe:Quantity>
+              </wml2:value>
+              <wml2:comment/>
+            </wml2:TimeValuePair>
+          </wml2:element>
+          <wml2:element>
+            <wml2:TimeValuePair>
+              <wml2:time>2008-07-25T10:58:00-05:00</wml2:time>
+              <wml2:value sourceCode="USGS">
+                <swe:Quantity>
+                  <gwdp:nwis pcode="72019" direction="down"/>
+                  <swe:uom code="ft"/>
+                  <swe:value>47.20</swe:value>
+                </swe:Quantity>
+              </wml2:value>
+              <wml2:comment/>
+            </wml2:TimeValuePair>
+          </wml2:element>
+          <wml2:element>
+            <wml2:TimeValuePair>
+              <wml2:time>2008-10-17T09:57:00-05:00</wml2:time>
+              <wml2:value sourceCode="USGS">
+                <swe:Quantity>
+                  <gwdp:nwis pcode="72019" direction="down"/>
+                  <swe:uom code="ft"/>
+                  <swe:value>46.21</swe:value>
+                </swe:Quantity>
+              </wml2:value>
+              <wml2:comment/>
+            </wml2:TimeValuePair>
+          </wml2:element>
+          <wml2:element>
+            <wml2:TimeValuePair>
+              <wml2:time>2009-01-29T12:04:00-06:00</wml2:time>
+              <wml2:value sourceCode="USGS">
+                <swe:Quantity>
+                  <gwdp:nwis pcode="72019" direction="down"/>
+                  <swe:uom code="ft"/>
+                  <swe:value>46.23</swe:value>
+                </swe:Quantity>
+              </wml2:value>
+              <wml2:comment/>
+            </wml2:TimeValuePair>
+          </wml2:element>
+          <wml2:element>
+            <wml2:TimeValuePair>
+              <wml2:time>2009-02-23T13:58:00-06:00</wml2:time>
+              <wml2:value sourceCode="USGS">
+                <swe:Quantity>
+                  <gwdp:nwis pcode="72019" direction="down"/>
+                  <swe:uom code="ft"/>
+                  <swe:value>46.60</swe:value>
+                </swe:Quantity>
+              </wml2:value>
+              <wml2:comment/>
+            </wml2:TimeValuePair>
+          </wml2:element>
+          <wml2:element>
+            <wml2:TimeValuePair>
+              <wml2:time>2009-05-21T06:49:00-05:00</wml2:time>
+              <wml2:value sourceCode="USGS">
+                <swe:Quantity>
+                  <gwdp:nwis pcode="72019" direction="down"/>
+                  <swe:uom code="ft"/>
+                  <swe:value>45.47</swe:value>
+                </swe:Quantity>
+              </wml2:value>
+              <wml2:comment/>
+            </wml2:TimeValuePair>
+          </wml2:element>
+          <wml2:element>
+            <wml2:TimeValuePair>
+              <wml2:time>2009-10-26T16:58:00-05:00</wml2:time>
+              <wml2:value sourceCode="USGS">
+                <swe:Quantity>
+                  <gwdp:nwis pcode="72019" direction="down"/>
+                  <swe:uom code="ft"/>
+                  <swe:value>46.12</swe:value>
+                </swe:Quantity>
+              </wml2:value>
+              <wml2:comment/>
+            </wml2:TimeValuePair>
+          </wml2:element>
+          <wml2:element>
+            <wml2:TimeValuePair>
+              <wml2:time>2010-01-06T14:07:00-06:00</wml2:time>
+              <wml2:value sourceCode="USGS">
+                <swe:Quantity>
+                  <gwdp:nwis pcode="72019" direction="down"/>
+                  <swe:uom code="ft"/>
+                  <swe:value>46.45</swe:value>
+                </swe:Quantity>
+              </wml2:value>
+              <wml2:comment/>
+            </wml2:TimeValuePair>
+          </wml2:element>
+          <wml2:element>
+            <wml2:TimeValuePair>
+              <wml2:time>2010-04-26T08:23:00-05:00</wml2:time>
+              <wml2:value sourceCode="USGS">
+                <swe:Quantity>
+                  <gwdp:nwis pcode="72019" direction="down"/>
+                  <swe:uom code="ft"/>
+                  <swe:value>46.77</swe:value>
+                </swe:Quantity>
+              </wml2:value>
+              <wml2:comment/>
+            </wml2:TimeValuePair>
+          </wml2:element>
+          <wml2:element>
+            <wml2:TimeValuePair>
+              <wml2:time>2010-06-29T11:10:00-05:00</wml2:time>
+              <wml2:value sourceCode="USGS">
+                <swe:Quantity>
+                  <gwdp:nwis pcode="72019" direction="down"/>
+                  <swe:uom code="ft"/>
+                  <swe:value>46.36</swe:value>
+                </swe:Quantity>
+              </wml2:value>
+              <wml2:comment/>
+            </wml2:TimeValuePair>
+          </wml2:element>
+          <wml2:element>
+            <wml2:TimeValuePair>
+              <wml2:time>2010-07-21T09:20:00-05:00</wml2:time>
+              <wml2:value sourceCode="USGS">
+                <swe:Quantity>
+                  <gwdp:nwis pcode="72019" direction="down"/>
+                  <swe:uom code="ft"/>
+                  <swe:value>46.03</swe:value>
+                </swe:Quantity>
+              </wml2:value>
+              <wml2:comment/>
+            </wml2:TimeValuePair>
+          </wml2:element>
+          <wml2:element>
+            <wml2:TimeValuePair>
+              <wml2:time>2010-10-28T09:04:00-05:00</wml2:time>
+              <wml2:value sourceCode="USGS">
+                <swe:Quantity>
+                  <gwdp:nwis pcode="72019" direction="down"/>
+                  <swe:uom code="ft"/>
+                  <swe:value>45.16</swe:value>
+                </swe:Quantity>
+              </wml2:value>
+              <wml2:comment/>
+            </wml2:TimeValuePair>
+          </wml2:element>
+          <wml2:element>
+            <wml2:TimeValuePair>
+              <wml2:time>2011-01-26T13:13:00-06:00</wml2:time>
+              <wml2:value sourceCode="USGS">
+                <swe:Quantity>
+                  <gwdp:nwis pcode="72019" direction="down"/>
+                  <swe:uom code="ft"/>
+                  <swe:value>45.49</swe:value>
+                </swe:Quantity>
+              </wml2:value>
+              <wml2:comment/>
+            </wml2:TimeValuePair>
+          </wml2:element>
+          <wml2:element>
+            <wml2:TimeValuePair>
+              <wml2:time>2011-04-14T12:46:00-06:00</wml2:time>
+              <wml2:value sourceCode="USGS">
+                <swe:Quantity>
+                  <gwdp:nwis pcode="72019" direction="down"/>
+                  <swe:uom code="ft"/>
+                  <swe:value>45.32</swe:value>
+                </swe:Quantity>
+              </wml2:value>
+              <wml2:comment/>
+            </wml2:TimeValuePair>
+          </wml2:element>
+          <wml2:element>
+            <wml2:TimeValuePair>
+              <wml2:time>2011-07-27T13:53:00-06:00</wml2:time>
+              <wml2:value sourceCode="USGS">
+                <swe:Quantity>
+                  <gwdp:nwis pcode="72019" direction="down"/>
+                  <swe:uom code="ft"/>
+                  <swe:value>45.15</swe:value>
+                </swe:Quantity>
+              </wml2:value>
+              <wml2:comment/>
+            </wml2:TimeValuePair>
+          </wml2:element>
+          <wml2:element>
+            <wml2:TimeValuePair>
+              <wml2:time>2011-11-16T10:58:00-06:00</wml2:time>
+              <wml2:value sourceCode="USGS">
+                <swe:Quantity>
+                  <gwdp:nwis pcode="72019" direction="down"/>
+                  <swe:uom code="ft"/>
+                  <swe:value>46.05</swe:value>
+                </swe:Quantity>
+              </wml2:value>
+              <wml2:comment/>
+            </wml2:TimeValuePair>
+          </wml2:element>
+          <wml2:element>
+            <wml2:TimeValuePair>
+              <wml2:time>2012-01-10T09:51:00-06:00</wml2:time>
+              <wml2:value sourceCode="USGS">
+                <swe:Quantity>
+                  <gwdp:nwis pcode="72019" direction="down"/>
+                  <swe:uom code="ft"/>
+                  <swe:value>46.45</swe:value>
+                </swe:Quantity>
+              </wml2:value>
+              <wml2:comment/>
+            </wml2:TimeValuePair>
+          </wml2:element>
+          <wml2:element>
+            <wml2:TimeValuePair>
+              <wml2:time>2012-04-18T09:51:00-06:00</wml2:time>
+              <wml2:value sourceCode="USGS">
+                <swe:Quantity>
+                  <gwdp:nwis pcode="72019" direction="down"/>
+                  <swe:uom code="ft"/>
+                  <swe:value>47.65</swe:value>
+                </swe:Quantity>
+              </wml2:value>
+              <wml2:comment/>
+            </wml2:TimeValuePair>
+          </wml2:element>
+          <wml2:element>
+            <wml2:TimeValuePair>
+              <wml2:time>2012-07-18T07:02:00-06:00</wml2:time>
+              <wml2:value sourceCode="USGS">
+                <swe:Quantity>
+                  <gwdp:nwis pcode="72019" direction="down"/>
+                  <swe:uom code="ft"/>
+                  <swe:value>49.39</swe:value>
+                </swe:Quantity>
+              </wml2:value>
+              <wml2:comment/>
+            </wml2:TimeValuePair>
+          </wml2:element>
+          <wml2:element>
+            <wml2:TimeValuePair>
+              <wml2:time>2012-10-10T13:18:00-06:00</wml2:time>
+              <wml2:value sourceCode="USGS">
+                <swe:Quantity>
+                  <gwdp:nwis pcode="72019" direction="down"/>
+                  <swe:uom code="ft"/>
+                  <swe:value>50.18</swe:value>
+                </swe:Quantity>
+              </wml2:value>
+              <wml2:comment/>
+            </wml2:TimeValuePair>
+          </wml2:element>
+          <wml2:element>
+            <wml2:TimeValuePair>
+              <wml2:time>2013-01-17T11:34:00-06:00</wml2:time>
+              <wml2:value sourceCode="USGS">
+                <swe:Quantity>
+                  <gwdp:nwis pcode="72019" direction="down"/>
+                  <swe:uom code="ft"/>
+                  <swe:value>51.25</swe:value>
+                </swe:Quantity>
+              </wml2:value>
+              <wml2:comment/>
+            </wml2:TimeValuePair>
+          </wml2:element>
+          <wml2:element>
+            <wml2:TimeValuePair>
+              <wml2:time>2013-04-02T14:16:00-06:00</wml2:time>
+              <wml2:value sourceCode="USGS">
+                <swe:Quantity>
+                  <gwdp:nwis pcode="72019" direction="down"/>
+                  <swe:uom code="ft"/>
+                  <swe:value>51.62</swe:value>
+                </swe:Quantity>
+              </wml2:value>
+              <wml2:comment/>
+            </wml2:TimeValuePair>
+          </wml2:element>
+          <wml2:element>
+            <wml2:TimeValuePair>
+              <wml2:time>2013-07-09T12:41:00-06:00</wml2:time>
+              <wml2:value sourceCode="USGS">
+                <swe:Quantity>
+                  <gwdp:nwis pcode="72019" direction="down"/>
+                  <swe:uom code="ft"/>
+                  <swe:value>49.64</swe:value>
+                </swe:Quantity>
+              </wml2:value>
+              <wml2:comment/>
+            </wml2:TimeValuePair>
+          </wml2:element>
+          <wml2:element>
+            <wml2:TimeValuePair>
+              <wml2:time>2013-11-06T12:21:00-06:00</wml2:time>
+              <wml2:value sourceCode="USGS">
+                <swe:Quantity>
+                  <gwdp:nwis pcode="72019" direction="down"/>
+                  <swe:uom code="ft"/>
+                  <swe:value>49.03</swe:value>
+                </swe:Quantity>
+              </wml2:value>
+              <wml2:comment/>
+            </wml2:TimeValuePair>
+          </wml2:element>
+          <wml2:element>
+            <wml2:TimeValuePair>
+              <wml2:time>2014-03-10T12:04:00-06:00</wml2:time>
+              <wml2:value sourceCode="USGS">
+                <swe:Quantity>
+                  <gwdp:nwis pcode="72019" direction="down"/>
+                  <swe:uom code="ft"/>
+                  <swe:value>49.59</swe:value>
+                </swe:Quantity>
+              </wml2:value>
+              <wml2:comment/>
+            </wml2:TimeValuePair>
+          </wml2:element>
+          <wml2:element>
+            <wml2:TimeValuePair>
+              <wml2:time>2014-08-26T11:21:00-06:00</wml2:time>
+              <wml2:value sourceCode="USGS">
+                <swe:Quantity>
+                  <gwdp:nwis pcode="72019" direction="down"/>
+                  <swe:uom code="ft"/>
+                  <swe:value>49.33</swe:value>
+                </swe:Quantity>
+              </wml2:value>
+              <wml2:comment/>
+            </wml2:TimeValuePair>
+          </wml2:element>
+          <wml2:element>
+            <wml2:TimeValuePair>
+              <wml2:time>2014-10-01T11:05:00-06:00</wml2:time>
+              <wml2:value sourceCode="USGS">
+                <swe:Quantity>
+                  <gwdp:nwis pcode="72019" direction="down"/>
+                  <swe:uom code="ft"/>
+                  <swe:value>49.29</swe:value>
+                </swe:Quantity>
+              </wml2:value>
+              <wml2:comment/>
+            </wml2:TimeValuePair>
+          </wml2:element>
+          <wml2:element>
+            <wml2:TimeValuePair>
+              <wml2:time>2015-02-04T12:31:00-06:00</wml2:time>
+              <wml2:value sourceCode="USGS">
+                <swe:Quantity>
+                  <gwdp:nwis pcode="72019" direction="down"/>
+                  <swe:uom code="ft"/>
+                  <swe:value>49.99</swe:value>
+                </swe:Quantity>
+              </wml2:value>
+              <wml2:comment/>
+            </wml2:TimeValuePair>
+          </wml2:element>
+          <wml2:element>
+            <wml2:TimeValuePair>
+              <wml2:time>2015-05-05T13:11:00-06:00</wml2:time>
+              <wml2:value sourceCode="USGS">
+                <swe:Quantity>
+                  <gwdp:nwis pcode="72019" direction="down"/>
+                  <swe:uom code="ft"/>
+                  <swe:value>50.74</swe:value>
+                </swe:Quantity>
+              </wml2:value>
+              <wml2:comment/>
+            </wml2:TimeValuePair>
+          </wml2:element>
+          <wml2:element>
+            <wml2:TimeValuePair>
+              <wml2:time>2015-07-21T07:35:00-06:00</wml2:time>
+              <wml2:value sourceCode="USGS">
+                <swe:Quantity>
+                  <gwdp:nwis pcode="72019" direction="down"/>
+                  <swe:uom code="ft"/>
+                  <swe:value>50.77</swe:value>
+                </swe:Quantity>
+              </wml2:value>
+              <wml2:comment/>
+            </wml2:TimeValuePair>
+          </wml2:element>
+          <wml2:element>
+            <wml2:TimeValuePair>
+              <wml2:time>2015-10-02T08:41:00-06:00</wml2:time>
+              <wml2:value sourceCode="USGS">
+                <swe:Quantity>
+                  <gwdp:nwis pcode="72019" direction="down"/>
+                  <swe:uom code="ft"/>
+                  <swe:value>50.95</swe:value>
+                </swe:Quantity>
+              </wml2:value>
+              <wml2:comment/>
+            </wml2:TimeValuePair>
+          </wml2:element>
+          <wml2:element>
+            <wml2:TimeValuePair>
+              <wml2:time>2016-01-26T10:46:00-06:00</wml2:time>
+              <wml2:value sourceCode="USGS">
+                <swe:Quantity>
+                  <gwdp:nwis pcode="72019" direction="down"/>
+                  <swe:uom code="ft"/>
+                  <swe:value>49.80</swe:value>
+                </swe:Quantity>
+              </wml2:value>
+              <wml2:comment/>
+            </wml2:TimeValuePair>
+          </wml2:element>
+        </wml2:TimeSeries>
+      </om:result>
+    </wml2:WaterMonitoringObservation>
+  </om:member>
+</om:ObservationCollection>

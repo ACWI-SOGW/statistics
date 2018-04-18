@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<om:ObservationCollection xmlns:gwdp="https://github.com/USGS-CIDA/ngwmn/sos"
+	xmlns:h="http://apache.org/cocoon/request/2.0" xmlns:md="http://www.isotc211.org/2005/gmd"
+	xmlns:gco="http://www.isotc211.org/2005/gco" xmlns:wfs="http://www.opengis.net/wfs"
+	xmlns:gml="http://www.opengis.net/gml" xmlns:ns2="http://www.cuahsi.org/waterML/1.1/"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:om="http://www.opengis.net/om/2.0"
+	xmlns:sa="http://www.opengis.net/sampling/2.0" xmlns:gwml="http://www.nrcan.gc.ca/xml/gwml/1"
+	xmlns:swe="http://www.opengis.net/swe/2.0" xmlns:xlink="http://www.w3.org/1999/xlink"
+	xmlns:ns1="http://www.cuahsi.org/waterML/1.1/" xmlns:wml2="http://www.wron.net.au/waterml2">
+	<om:member>
+		<wml2:WaterMonitoringObservation
+			gml:id="usgs.gw.obs.ts.NWIS-205154156303801">
+			<gml:name codeSpace="urn:x-usgs:us.usgs.nwis">205154156303801</gml:name>
+			<gml:name codeSpace="urn:x-usgs:us.usgs.nwis">6-5130-02 Waikapu 2, Maui, HI</gml:name>
+			<om:metadata>
+				<wml2:ObservationMetadata>
+					<md:contact xlink:href="http://waterdata.usgs.gov/nwis">
+						<md:CI_ResponsibleParty>
+							<md:organisationName>
+								<gco:CharacterString>National Water Information System
+								</gco:CharacterString>
+							</md:organisationName>
+							<md:role>
+								<md:CI_RoleCode codeList="list" codeListValue="url">TBD
+								</md:CI_RoleCode>
+							</md:role>
+						</md:CI_ResponsibleParty>
+					</md:contact>
+					<md:dateStamp>
+						<gco:Date>2012-11-05T17:57:20.579Z</gco:Date>
+					</md:dateStamp>
+					<md:identificationInfo xlink:href="urn:OGC:unknown" />
+					<wml2:intendedSamplingInterval>
+						<gml:TimePeriod gml:id="invalid.isi.NWIS-205154156303801">
+							<gml:beginPosition>2012-11-05T17:57:20.579Z</gml:beginPosition>
+							<gml:endPosition />
+						</gml:TimePeriod>
+					</wml2:intendedSamplingInterval>
+				</wml2:ObservationMetadata>
+			</om:metadata>
+			<om:phenomenonTime>
+				<gml:TimePeriod gml:id="invalid.pt.NWIS-205154156303801">
+					<gml:beginPosition>2012-11-05T17:57:20.579Z</gml:beginPosition>
+					<gml:endPosition />
+				</gml:TimePeriod>
+			</om:phenomenonTime>
+			<om:resultTime>
+				<gml:TimePeriod gml:id="invalid.rt.NWIS-205154156303801">
+					<gml:beginPosition>2012-11-05T17:57:20.579Z</gml:beginPosition>
+					<gml:endPosition />
+				</gml:TimePeriod>
+			</om:resultTime>
+			<om:procedure xlink:href="urn:ogc:object:Sensor:usgs-gw:NWIS-205154156303801" />
+			<om:parameter>
+				<om:NamedValue>
+					<om:name
+						xlink:href="http://www.opengis.net/req/omxml/2.0/data/samplingGeometry" />
+					<om:value>
+						<gml:Point srsName="EPSG:4326" gml:id="invalid.loc.NWIS-205154156303801">
+							<gml:pos>20.86205556,-156.5075</gml:pos>
+						</gml:Point>
+					</om:value>
+				</om:NamedValue>
+			</om:parameter>
+			<om:parameter>
+				<om:NamedValue>
+					<om:name xlink:href="http://nwis.waterdata.usgs.gov/usa/nwis/pmcodes"
+						xlink:title="NWIS Parameter Code" />
+					<om:value>72150</om:value>
+				</om:NamedValue>
+			</om:parameter>
+			<om:observedProperty xlink:href="urn:ogc:def:property:OGC:GroundWaterLevel" />
+			<om:featureOfInterest xlink:title="Sensor Site NWIS-205154156303801"
+				xlink:href="http://cida.usgs.gov/cocoon/gin/gwdp/agency/NWIS/wfs?request=GetFeature&amp;featureId=205154156303801" />
+			<om:result>
+				<wml2:TimeSeries>
+					<wml2:domainExtent>
+						<gml:TimePeriod gml:id="invalid.de.NWIS-205154156303801">
+							<gml:beginPosition>2012-11-05T17:57:20.579Z</gml:beginPosition>
+							<gml:endPosition />
+						</gml:TimePeriod>
+					</wml2:domainExtent>
+					<wml2:defaultDataType codeSpace="http://usgs.gov/water/">InstVal
+					</wml2:defaultDataType>
+					
+					<wml2:element>
+						<wml2:TimeValuePair>
+							<wml2:time>1983-08-05T00:00:00.000</wml2:time>
+							<wml2:value>
+								<swe:Quantity>
+									<gwdp:nwis pcode="72150" direction="up" />
+									<swe:uom code="ft" />
+									<swe:value>14.35</swe:value>
+								</swe:Quantity>
+							</wml2:value>
+							<wml2:comment>A</wml2:comment>
+						</wml2:TimeValuePair>
+					</wml2:element>
+
+					<!--  fake element to test transform -->
+					<wml2:element>
+						<wml2:TimeValuePair>
+							<wml2:time>1983-08-06T00:00:00.000</wml2:time>
+							<wml2:value>
+								<swe:Quantity>
+									<gwdp:nwis pcode="72019" direction="down" />
+									<swe:uom code="feet" />
+									<swe:value>11.043</swe:value>
+								</swe:Quantity>
+							</wml2:value>
+							<wml2:comment>Comment, with embedded commas, and some "quoted text" as well</wml2:comment>
+						</wml2:TimeValuePair>
+					</wml2:element>
+
+					<wml2:element>
+						<wml2:TimeValuePair>
+							<wml2:time>2005-08-14T00:00:00.000</wml2:time>
+							<wml2:value>
+								<swe:Quantity>
+									<gwdp:nwis pcode="72150" direction="up" />
+									<swe:uom code="ft" />
+									<swe:value>11.32</swe:value>
+								</swe:Quantity>
+							</wml2:value>
+							<wml2:comment>A</wml2:comment>
+						</wml2:TimeValuePair>
+					</wml2:element>
+					
+				</wml2:TimeSeries>
+			</om:result>
+		</wml2:WaterMonitoringObservation>
+	</om:member>
+</om:ObservationCollection>

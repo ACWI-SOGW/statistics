@@ -1,0 +1,2320 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<om:ObservationCollection 
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:schemaLocation="
+	http://www.opengis.net/gml/3.2 http://schemas.opengis.net/gml/3.2.1/gml.xsd
+	http://www.opengis.net/om/2.0 http://schemas.opengis.net/om/2.0/observation.xsd
+	http://www.opengis.net/waterml/2.0 http://schemas.opengis.net/waterml/2.0/waterml2.xsd
+	http://www.isotc211.org/2005/gmd http://www.isotc211.org/2005/gmd/gmd.xsd
+	http://www.opengis.net/gml http://www.opengis.net/gml
+" 
+
+
+
+xmlns:gwdp="https://github.com/USGS-CIDA/ngwmn/sos"
+	xmlns:h="http://apache.org/cocoon/request/2.0" 
+	xmlns:md="http://www.isotc211.org/2005/gmd"
+	xmlns:gco="http://www.isotc211.org/2005/gco" 
+	xmlns:wfs="http://www.opengis.net/wfs"
+	xmlns:gml="http://www.opengis.net/gml" 
+	xmlns:ns2="http://www.cuahsi.org/waterML/1.1/"
+	xmlns:om="http://www.opengis.net/om/2.0"
+	xmlns:sa="http://www.opengis.net/sampling/2.0" 
+	xmlns:gwml="http://www.nrcan.gc.ca/xml/gwml/1"
+	xmlns:swe="http://www.opengis.net/swe/2.0" 
+	xmlns:xlink="http://www.w3.org/1999/xlink"
+	xmlns:ns1="http://www.cuahsi.org/waterML/1.1/" 
+	xmlns:wml2="http://www.opengis.net/waterml/2.0">
+	<om:member>
+		<wml2:WaterMonitoringObservation
+			gml:id="usgs.gw.obs.ts.NWIS-205154156303801">
+			<gml:name codeSpace="urn:x-usgs:us.usgs.nwis">205154156303801</gml:name>
+			<gml:name codeSpace="urn:x-usgs:us.usgs.nwis">6-5130-02 Waikapu 2, Maui, HI</gml:name>
+			<om:metadata>
+				<wml2:ObservationMetadata>
+					<md:contact xlink:href="http://waterdata.usgs.gov/nwis">
+						<md:CI_ResponsibleParty>
+							<md:organisationName>
+								<gco:CharacterString>National Water Information System
+								</gco:CharacterString>
+							</md:organisationName>
+							<md:role>
+								<md:CI_RoleCode codeList="list" codeListValue="url">TBD
+								</md:CI_RoleCode>
+							</md:role>
+						</md:CI_ResponsibleParty>
+					</md:contact>
+					<md:dateStamp>
+						<gco:Date>2012-11-05Z</gco:Date>
+					</md:dateStamp>
+					<md:identificationInfo xlink:href="urn:OGC:unknown" />
+					<wml2:intendedSamplingInterval>
+						<gml:TimePeriod gml:id="invalid.isi.NWIS-205154156303801">
+							<gml:beginPosition>2012-11-05T17:57:20.579Z</gml:beginPosition>
+							<gml:endPosition />
+						</gml:TimePeriod>
+					</wml2:intendedSamplingInterval>
+				</wml2:ObservationMetadata>
+			</om:metadata>
+			<om:phenomenonTime>
+				<gml:TimePeriod gml:id="invalid.pt.NWIS-205154156303801">
+					<gml:beginPosition>2012-11-05T17:57:20.579Z</gml:beginPosition>
+					<gml:endPosition />
+				</gml:TimePeriod>
+			</om:phenomenonTime>
+			<om:resultTime>
+				<gml:TimePeriod gml:id="invalid.rt.NWIS-205154156303801">
+					<gml:beginPosition>2012-11-05T17:57:20.579Z</gml:beginPosition>
+					<gml:endPosition />
+				</gml:TimePeriod>
+			</om:resultTime>
+			<om:procedure xlink:href="urn:ogc:object:Sensor:usgs-gw:NWIS-205154156303801" />
+			<om:parameter>
+				<om:NamedValue>
+					<om:name
+						xlink:href="http://www.opengis.net/req/omxml/2.0/data/samplingGeometry" />
+					<om:value>
+						<gml:Point srsName="EPSG:4326" gml:id="invalid.loc.NWIS-205154156303801">
+							<gml:pos>20.86205556,-156.5075</gml:pos>
+						</gml:Point>
+					</om:value>
+				</om:NamedValue>
+			</om:parameter>
+			<om:parameter>
+				<om:NamedValue>
+					<om:name xlink:href="http://nwis.waterdata.usgs.gov/usa/nwis/pmcodes"
+						xlink:title="NWIS Parameter Code" />
+					<om:value>72150</om:value>
+				</om:NamedValue>
+			</om:parameter>
+			<om:observedProperty xlink:href="urn:ogc:def:property:OGC:GroundWaterLevel" />
+			<om:featureOfInterest xlink:title="Sensor Site NWIS-205154156303801"
+				xlink:href="http://cida.usgs.gov/cocoon/gin/gwdp/agency/NWIS/wfs?request=GetFeature&amp;featureId=205154156303801" />
+			<om:result>
+				<wml2:TimeSeries>
+					<wml2:domainExtent>
+						<gml:TimePeriod gml:id="invalid.de.NWIS-205154156303801">
+							<gml:beginPosition>2012-11-05T17:57:20.579Z</gml:beginPosition>
+							<gml:endPosition />
+						</gml:TimePeriod>
+					</wml2:domainExtent>
+					<wml2:defaultDataType codeSpace="http://usgs.gov/water/">InstVal
+					</wml2:defaultDataType>
+					
+					<!--  fake element to test transform -->
+					<wml2:element>
+						<wml2:TimeValuePair>
+							<wml2:time>1983-08-06T00:00:00.000</wml2:time>
+							<wml2:value>
+								<swe:Quantity>
+									<gwdp:nwis pcode="72019" direction="down" />
+									<swe:uom code="feet" />
+									<swe:value>11.043</swe:value>
+								</swe:Quantity>
+							</wml2:value>
+							<wml2:comment>Wild Guess</wml2:comment>
+						</wml2:TimeValuePair>
+					</wml2:element>
+
+					<wml2:element>
+						<wml2:TimeValuePair>
+							<wml2:time>1983-08-05T00:00:00.000</wml2:time>
+							<wml2:value>
+								<swe:Quantity>
+									<gwdp:nwis pcode="72150" direction="up" />
+									<swe:uom code="ft" />
+									<swe:value>14.35</swe:value>
+								</swe:Quantity>
+							</wml2:value>
+							<wml2:comment>A</wml2:comment>
+						</wml2:TimeValuePair>
+					</wml2:element>
+					<wml2:element>
+						<wml2:TimeValuePair>
+							<wml2:time>1983-08-10T00:00:00.000</wml2:time>
+							<wml2:value>
+								<swe:Quantity>
+									<gwdp:nwis pcode="72150" direction="up" />
+									<swe:uom code="ft" />
+									<swe:value>14.25</swe:value>
+								</swe:Quantity>
+							</wml2:value>
+							<wml2:comment>A</wml2:comment>
+						</wml2:TimeValuePair>
+					</wml2:element>
+					<wml2:element>
+						<wml2:TimeValuePair>
+							<wml2:time>1983-08-15T00:00:00.000</wml2:time>
+							<wml2:value>
+								<swe:Quantity>
+									<gwdp:nwis pcode="72150" direction="up" />
+									<swe:uom code="ft" />
+									<swe:value>14.23</swe:value>
+								</swe:Quantity>
+							</wml2:value>
+							<wml2:comment>A</wml2:comment>
+						</wml2:TimeValuePair>
+					</wml2:element>
+					<wml2:element>
+						<wml2:TimeValuePair>
+							<wml2:time>1983-08-20T00:00:00.000</wml2:time>
+							<wml2:value>
+								<swe:Quantity>
+									<gwdp:nwis pcode="72150" direction="up" />
+									<swe:uom code="ft" />
+									<swe:value>14.17</swe:value>
+								</swe:Quantity>
+							</wml2:value>
+							<wml2:comment>A</wml2:comment>
+						</wml2:TimeValuePair>
+					</wml2:element>
+					<wml2:element>
+						<wml2:TimeValuePair>
+							<wml2:time>1983-08-25T00:00:00.000</wml2:time>
+							<wml2:value>
+								<swe:Quantity>
+									<gwdp:nwis pcode="72150" direction="up" />
+									<swe:uom code="ft" />
+									<swe:value>14.08</swe:value>
+								</swe:Quantity>
+							</wml2:value>
+							<wml2:comment>A</wml2:comment>
+						</wml2:TimeValuePair>
+					</wml2:element>
+					<wml2:element>
+						<wml2:TimeValuePair>
+							<wml2:time>1983-08-31T00:00:00.000</wml2:time>
+							<wml2:value>
+								<swe:Quantity>
+									<gwdp:nwis pcode="72150" direction="up" />
+									<swe:uom code="ft" />
+									<swe:value>14.13</swe:value>
+								</swe:Quantity>
+							</wml2:value>
+							<wml2:comment>A</wml2:comment>
+						</wml2:TimeValuePair>
+					</wml2:element>
+					<wml2:element>
+						<wml2:TimeValuePair>
+							<wml2:time>1983-09-05T00:00:00.000</wml2:time>
+							<wml2:value>
+								<swe:Quantity>
+									<gwdp:nwis pcode="72150" direction="up" />
+									<swe:uom code="ft" />
+									<swe:value>14.10</swe:value>
+								</swe:Quantity>
+							</wml2:value>
+							<wml2:comment>A</wml2:comment>
+						</wml2:TimeValuePair>
+					</wml2:element>
+					<wml2:element>
+						<wml2:TimeValuePair>
+							<wml2:time>1983-09-10T00:00:00.000</wml2:time>
+							<wml2:value>
+								<swe:Quantity>
+									<gwdp:nwis pcode="72150" direction="up" />
+									<swe:uom code="ft" />
+									<swe:value>14.04</swe:value>
+								</swe:Quantity>
+							</wml2:value>
+							<wml2:comment>A</wml2:comment>
+						</wml2:TimeValuePair>
+					</wml2:element>
+					<wml2:element>
+						<wml2:TimeValuePair>
+							<wml2:time>1983-09-15T00:00:00.000</wml2:time>
+							<wml2:value>
+								<swe:Quantity>
+									<gwdp:nwis pcode="72150" direction="up" />
+									<swe:uom code="ft" />
+									<swe:value>14.04</swe:value>
+								</swe:Quantity>
+							</wml2:value>
+							<wml2:comment>A</wml2:comment>
+						</wml2:TimeValuePair>
+					</wml2:element>
+					<wml2:element>
+						<wml2:TimeValuePair>
+							<wml2:time>1983-09-20T00:00:00.000</wml2:time>
+							<wml2:value>
+								<swe:Quantity>
+									<gwdp:nwis pcode="72150" direction="up" />
+									<swe:uom code="ft" />
+									<swe:value>14.03</swe:value>
+								</swe:Quantity>
+							</wml2:value>
+							<wml2:comment>A</wml2:comment>
+						</wml2:TimeValuePair>
+					</wml2:element>
+					<wml2:element>
+						<wml2:TimeValuePair>
+							<wml2:time>1983-09-25T00:00:00.000</wml2:time>
+							<wml2:value>
+								<swe:Quantity>
+									<gwdp:nwis pcode="72150" direction="up" />
+									<swe:uom code="ft" />
+									<swe:value>14.03</swe:value>
+								</swe:Quantity>
+							</wml2:value>
+							<wml2:comment>A</wml2:comment>
+						</wml2:TimeValuePair>
+					</wml2:element>
+					<wml2:element>
+						<wml2:TimeValuePair>
+							<wml2:time>1983-09-30T00:00:00.000</wml2:time>
+							<wml2:value>
+								<swe:Quantity>
+									<gwdp:nwis pcode="72150" direction="up" />
+									<swe:uom code="ft" />
+									<swe:value>14.02</swe:value>
+								</swe:Quantity>
+							</wml2:value>
+							<wml2:comment>A</wml2:comment>
+						</wml2:TimeValuePair>
+					</wml2:element>
+					<wml2:element>
+						<wml2:TimeValuePair>
+							<wml2:time>1983-10-05T00:00:00.000</wml2:time>
+							<wml2:value>
+								<swe:Quantity>
+									<gwdp:nwis pcode="72150" direction="up" />
+									<swe:uom code="ft" />
+									<swe:value>14.05</swe:value>
+								</swe:Quantity>
+							</wml2:value>
+							<wml2:comment>A</wml2:comment>
+						</wml2:TimeValuePair>
+					</wml2:element>
+					<wml2:element>
+						<wml2:TimeValuePair>
+							<wml2:time>1983-10-10T00:00:00.000</wml2:time>
+							<wml2:value>
+								<swe:Quantity>
+									<gwdp:nwis pcode="72150" direction="up" />
+									<swe:uom code="ft" />
+									<swe:value>14.05</swe:value>
+								</swe:Quantity>
+							</wml2:value>
+							<wml2:comment>A</wml2:comment>
+						</wml2:TimeValuePair>
+					</wml2:element>
+					<wml2:element>
+						<wml2:TimeValuePair>
+							<wml2:time>1983-10-15T00:00:00.000</wml2:time>
+							<wml2:value>
+								<swe:Quantity>
+									<gwdp:nwis pcode="72150" direction="up" />
+									<swe:uom code="ft" />
+									<swe:value>14.05</swe:value>
+								</swe:Quantity>
+							</wml2:value>
+							<wml2:comment>A</wml2:comment>
+						</wml2:TimeValuePair>
+					</wml2:element>
+					<wml2:element>
+						<wml2:TimeValuePair>
+							<wml2:time>1983-10-20T00:00:00.000</wml2:time>
+							<wml2:value>
+								<swe:Quantity>
+									<gwdp:nwis pcode="72150" direction="up" />
+									<swe:uom code="ft" />
+									<swe:value>14.02</swe:value>
+								</swe:Quantity>
+							</wml2:value>
+							<wml2:comment>A</wml2:comment>
+						</wml2:TimeValuePair>
+					</wml2:element>
+					<wml2:element>
+						<wml2:TimeValuePair>
+							<wml2:time>1983-10-25T00:00:00.000</wml2:time>
+							<wml2:value>
+								<swe:Quantity>
+									<gwdp:nwis pcode="72150" direction="up" />
+									<swe:uom code="ft" />
+									<swe:value>13.97</swe:value>
+								</swe:Quantity>
+							</wml2:value>
+							<wml2:comment>A</wml2:comment>
+						</wml2:TimeValuePair>
+					</wml2:element>
+					<wml2:element>
+						<wml2:TimeValuePair>
+							<wml2:time>1983-10-31T00:00:00.000</wml2:time>
+							<wml2:value>
+								<swe:Quantity>
+									<gwdp:nwis pcode="72150" direction="up" />
+									<swe:uom code="ft" />
+									<swe:value>13.92</swe:value>
+								</swe:Quantity>
+							</wml2:value>
+							<wml2:comment>A</wml2:comment>
+						</wml2:TimeValuePair>
+					</wml2:element>
+					<wml2:element>
+						<wml2:TimeValuePair>
+							<wml2:time>1983-11-05T00:00:00.000</wml2:time>
+							<wml2:value>
+								<swe:Quantity>
+									<gwdp:nwis pcode="72150" direction="up" />
+									<swe:uom code="ft" />
+									<swe:value>13.91</swe:value>
+								</swe:Quantity>
+							</wml2:value>
+							<wml2:comment>A</wml2:comment>
+						</wml2:TimeValuePair>
+					</wml2:element>
+					<wml2:element>
+						<wml2:TimeValuePair>
+							<wml2:time>1983-11-10T00:00:00.000</wml2:time>
+							<wml2:value>
+								<swe:Quantity>
+									<gwdp:nwis pcode="72150" direction="up" />
+									<swe:uom code="ft" />
+									<swe:value>13.92</swe:value>
+								</swe:Quantity>
+							</wml2:value>
+							<wml2:comment>A</wml2:comment>
+						</wml2:TimeValuePair>
+					</wml2:element>
+					<wml2:element>
+						<wml2:TimeValuePair>
+							<wml2:time>1983-11-15T00:00:00.000</wml2:time>
+							<wml2:value>
+								<swe:Quantity>
+									<gwdp:nwis pcode="72150" direction="up" />
+									<swe:uom code="ft" />
+									<swe:value>13.91</swe:value>
+								</swe:Quantity>
+							</wml2:value>
+							<wml2:comment>A</wml2:comment>
+						</wml2:TimeValuePair>
+					</wml2:element>
+					<wml2:element>
+						<wml2:TimeValuePair>
+							<wml2:time>1983-11-20T00:00:00.000</wml2:time>
+							<wml2:value>
+								<swe:Quantity>
+									<gwdp:nwis pcode="72150" direction="up" />
+									<swe:uom code="ft" />
+									<swe:value>13.86</swe:value>
+								</swe:Quantity>
+							</wml2:value>
+							<wml2:comment>A</wml2:comment>
+						</wml2:TimeValuePair>
+					</wml2:element>
+					<wml2:element>
+						<wml2:TimeValuePair>
+							<wml2:time>1983-11-25T00:00:00.000</wml2:time>
+							<wml2:value>
+								<swe:Quantity>
+									<gwdp:nwis pcode="72150" direction="up" />
+									<swe:uom code="ft" />
+									<swe:value>13.86</swe:value>
+								</swe:Quantity>
+							</wml2:value>
+							<wml2:comment>A</wml2:comment>
+						</wml2:TimeValuePair>
+					</wml2:element>
+					<wml2:element>
+						<wml2:TimeValuePair>
+							<wml2:time>1983-11-30T00:00:00.000</wml2:time>
+							<wml2:value>
+								<swe:Quantity>
+									<gwdp:nwis pcode="72150" direction="up" />
+									<swe:uom code="ft" />
+									<swe:value>13.78</swe:value>
+								</swe:Quantity>
+							</wml2:value>
+							<wml2:comment>A</wml2:comment>
+						</wml2:TimeValuePair>
+					</wml2:element>
+					<wml2:element>
+						<wml2:TimeValuePair>
+							<wml2:time>1983-12-05T00:00:00.000</wml2:time>
+							<wml2:value>
+								<swe:Quantity>
+									<gwdp:nwis pcode="72150" direction="up" />
+									<swe:uom code="ft" />
+									<swe:value>13.76</swe:value>
+								</swe:Quantity>
+							</wml2:value>
+							<wml2:comment>A</wml2:comment>
+						</wml2:TimeValuePair>
+					</wml2:element>
+					<wml2:element>
+						<wml2:TimeValuePair>
+							<wml2:time>1983-12-10T00:00:00.000</wml2:time>
+							<wml2:value>
+								<swe:Quantity>
+									<gwdp:nwis pcode="72150" direction="up" />
+									<swe:uom code="ft" />
+									<swe:value>13.71</swe:value>
+								</swe:Quantity>
+							</wml2:value>
+							<wml2:comment>A</wml2:comment>
+						</wml2:TimeValuePair>
+					</wml2:element>
+					<wml2:element>
+						<wml2:TimeValuePair>
+							<wml2:time>1983-12-15T00:00:00.000</wml2:time>
+							<wml2:value>
+								<swe:Quantity>
+									<gwdp:nwis pcode="72150" direction="up" />
+									<swe:uom code="ft" />
+									<swe:value>13.78</swe:value>
+								</swe:Quantity>
+							</wml2:value>
+							<wml2:comment>A</wml2:comment>
+						</wml2:TimeValuePair>
+					</wml2:element>
+					<wml2:element>
+						<wml2:TimeValuePair>
+							<wml2:time>1983-12-20T00:00:00.000</wml2:time>
+							<wml2:value>
+								<swe:Quantity>
+									<gwdp:nwis pcode="72150" direction="up" />
+									<swe:uom code="ft" />
+									<swe:value>13.79</swe:value>
+								</swe:Quantity>
+							</wml2:value>
+							<wml2:comment>A</wml2:comment>
+						</wml2:TimeValuePair>
+					</wml2:element>
+					<wml2:element>
+						<wml2:TimeValuePair>
+							<wml2:time>1983-12-25T00:00:00.000</wml2:time>
+							<wml2:value>
+								<swe:Quantity>
+									<gwdp:nwis pcode="72150" direction="up" />
+									<swe:uom code="ft" />
+									<swe:value>13.76</swe:value>
+								</swe:Quantity>
+							</wml2:value>
+							<wml2:comment>A</wml2:comment>
+						</wml2:TimeValuePair>
+					</wml2:element>
+					<wml2:element>
+						<wml2:TimeValuePair>
+							<wml2:time>1983-12-31T00:00:00.000</wml2:time>
+							<wml2:value>
+								<swe:Quantity>
+									<gwdp:nwis pcode="72150" direction="up" />
+									<swe:uom code="ft" />
+									<swe:value>13.73</swe:value>
+								</swe:Quantity>
+							</wml2:value>
+							<wml2:comment>A</wml2:comment>
+						</wml2:TimeValuePair>
+					</wml2:element>
+					<wml2:element>
+						<wml2:TimeValuePair>
+							<wml2:time>1984-01-05T00:00:00.000</wml2:time>
+							<wml2:value>
+								<swe:Quantity>
+									<gwdp:nwis pcode="72150" direction="up" />
+									<swe:uom code="ft" />
+									<swe:value>13.71</swe:value>
+								</swe:Quantity>
+							</wml2:value>
+							<wml2:comment>A</wml2:comment>
+						</wml2:TimeValuePair>
+					</wml2:element>
+					<wml2:element>
+						<wml2:TimeValuePair>
+							<wml2:time>1984-01-10T00:00:00.000</wml2:time>
+							<wml2:value>
+								<swe:Quantity>
+									<gwdp:nwis pcode="72150" direction="up" />
+									<swe:uom code="ft" />
+									<swe:value>13.75</swe:value>
+								</swe:Quantity>
+							</wml2:value>
+							<wml2:comment>A</wml2:comment>
+						</wml2:TimeValuePair>
+					</wml2:element>
+					<wml2:element>
+						<wml2:TimeValuePair>
+							<wml2:time>1984-01-15T00:00:00.000</wml2:time>
+							<wml2:value>
+								<swe:Quantity>
+									<gwdp:nwis pcode="72150" direction="up" />
+									<swe:uom code="ft" />
+									<swe:value>13.86</swe:value>
+								</swe:Quantity>
+							</wml2:value>
+							<wml2:comment>A</wml2:comment>
+						</wml2:TimeValuePair>
+					</wml2:element>
+					<wml2:element>
+						<wml2:TimeValuePair>
+							<wml2:time>1984-01-20T00:00:00.000</wml2:time>
+							<wml2:value>
+								<swe:Quantity>
+									<gwdp:nwis pcode="72150" direction="up" />
+									<swe:uom code="ft" />
+									<swe:value>13.71</swe:value>
+								</swe:Quantity>
+							</wml2:value>
+							<wml2:comment>A</wml2:comment>
+						</wml2:TimeValuePair>
+					</wml2:element>
+					<wml2:element>
+						<wml2:TimeValuePair>
+							<wml2:time>1984-01-25T00:00:00.000</wml2:time>
+							<wml2:value>
+								<swe:Quantity>
+									<gwdp:nwis pcode="72150" direction="up" />
+									<swe:uom code="ft" />
+									<swe:value>13.77</swe:value>
+								</swe:Quantity>
+							</wml2:value>
+							<wml2:comment>A</wml2:comment>
+						</wml2:TimeValuePair>
+					</wml2:element>
+					<wml2:element>
+						<wml2:TimeValuePair>
+							<wml2:time>1984-01-30T00:00:00.000</wml2:time>
+							<wml2:value>
+								<swe:Quantity>
+									<gwdp:nwis pcode="72150" direction="up" />
+									<swe:uom code="ft" />
+									<swe:value>13.83</swe:value>
+								</swe:Quantity>
+							</wml2:value>
+							<wml2:comment>A</wml2:comment>
+						</wml2:TimeValuePair>
+					</wml2:element>
+					<wml2:element>
+						<wml2:TimeValuePair>
+							<wml2:time>1984-02-05T00:00:00.000</wml2:time>
+							<wml2:value>
+								<swe:Quantity>
+									<gwdp:nwis pcode="72150" direction="up" />
+									<swe:uom code="ft" />
+									<swe:value>13.82</swe:value>
+								</swe:Quantity>
+							</wml2:value>
+							<wml2:comment>A</wml2:comment>
+						</wml2:TimeValuePair>
+					</wml2:element>
+					<wml2:element>
+						<wml2:TimeValuePair>
+							<wml2:time>1984-02-10T00:00:00.000</wml2:time>
+							<wml2:value>
+								<swe:Quantity>
+									<gwdp:nwis pcode="72150" direction="up" />
+									<swe:uom code="ft" />
+									<swe:value>13.79</swe:value>
+								</swe:Quantity>
+							</wml2:value>
+							<wml2:comment>A</wml2:comment>
+						</wml2:TimeValuePair>
+					</wml2:element>
+					<wml2:element>
+						<wml2:TimeValuePair>
+							<wml2:time>1984-02-15T00:00:00.000</wml2:time>
+							<wml2:value>
+								<swe:Quantity>
+									<gwdp:nwis pcode="72150" direction="up" />
+									<swe:uom code="ft" />
+									<swe:value>13.80</swe:value>
+								</swe:Quantity>
+							</wml2:value>
+							<wml2:comment>A</wml2:comment>
+						</wml2:TimeValuePair>
+					</wml2:element>
+					<wml2:element>
+						<wml2:TimeValuePair>
+							<wml2:time>1984-02-20T00:00:00.000</wml2:time>
+							<wml2:value>
+								<swe:Quantity>
+									<gwdp:nwis pcode="72150" direction="up" />
+									<swe:uom code="ft" />
+									<swe:value>13.77</swe:value>
+								</swe:Quantity>
+							</wml2:value>
+							<wml2:comment>A</wml2:comment>
+						</wml2:TimeValuePair>
+					</wml2:element>
+					<wml2:element>
+						<wml2:TimeValuePair>
+							<wml2:time>1984-02-25T00:00:00.000</wml2:time>
+							<wml2:value>
+								<swe:Quantity>
+									<gwdp:nwis pcode="72150" direction="up" />
+									<swe:uom code="ft" />
+									<swe:value>13.84</swe:value>
+								</swe:Quantity>
+							</wml2:value>
+							<wml2:comment>A</wml2:comment>
+						</wml2:TimeValuePair>
+					</wml2:element>
+					<wml2:element>
+						<wml2:TimeValuePair>
+							<wml2:time>1984-02-29T00:00:00.000</wml2:time>
+							<wml2:value>
+								<swe:Quantity>
+									<gwdp:nwis pcode="72150" direction="up" />
+									<swe:uom code="ft" />
+									<swe:value>13.85</swe:value>
+								</swe:Quantity>
+							</wml2:value>
+							<wml2:comment>A</wml2:comment>
+						</wml2:TimeValuePair>
+					</wml2:element>
+					<wml2:element>
+						<wml2:TimeValuePair>
+							<wml2:time>1984-03-05T00:00:00.000</wml2:time>
+							<wml2:value>
+								<swe:Quantity>
+									<gwdp:nwis pcode="72150" direction="up" />
+									<swe:uom code="ft" />
+									<swe:value>13.80</swe:value>
+								</swe:Quantity>
+							</wml2:value>
+							<wml2:comment>A</wml2:comment>
+						</wml2:TimeValuePair>
+					</wml2:element>
+					<wml2:element>
+						<wml2:TimeValuePair>
+							<wml2:time>1984-03-10T00:00:00.000</wml2:time>
+							<wml2:value>
+								<swe:Quantity>
+									<gwdp:nwis pcode="72150" direction="up" />
+									<swe:uom code="ft" />
+									<swe:value>13.83</swe:value>
+								</swe:Quantity>
+							</wml2:value>
+							<wml2:comment>A</wml2:comment>
+						</wml2:TimeValuePair>
+					</wml2:element>
+					<wml2:element>
+						<wml2:TimeValuePair>
+							<wml2:time>1984-03-15T00:00:00.000</wml2:time>
+							<wml2:value>
+								<swe:Quantity>
+									<gwdp:nwis pcode="72150" direction="up" />
+									<swe:uom code="ft" />
+									<swe:value>13.84</swe:value>
+								</swe:Quantity>
+							</wml2:value>
+							<wml2:comment>A</wml2:comment>
+						</wml2:TimeValuePair>
+					</wml2:element>
+					<wml2:element>
+						<wml2:TimeValuePair>
+							<wml2:time>1984-03-20T00:00:00.000</wml2:time>
+							<wml2:value>
+								<swe:Quantity>
+									<gwdp:nwis pcode="72150" direction="up" />
+									<swe:uom code="ft" />
+									<swe:value>13.97</swe:value>
+								</swe:Quantity>
+							</wml2:value>
+							<wml2:comment>A</wml2:comment>
+						</wml2:TimeValuePair>
+					</wml2:element>
+					<wml2:element>
+						<wml2:TimeValuePair>
+							<wml2:time>1984-03-25T00:00:00.000</wml2:time>
+							<wml2:value>
+								<swe:Quantity>
+									<gwdp:nwis pcode="72150" direction="up" />
+									<swe:uom code="ft" />
+									<swe:value>13.92</swe:value>
+								</swe:Quantity>
+							</wml2:value>
+							<wml2:comment>A</wml2:comment>
+						</wml2:TimeValuePair>
+					</wml2:element>
+					<wml2:element>
+						<wml2:TimeValuePair>
+							<wml2:time>1984-03-30T00:00:00.000</wml2:time>
+							<wml2:value>
+								<swe:Quantity>
+									<gwdp:nwis pcode="72150" direction="up" />
+									<swe:uom code="ft" />
+									<swe:value>13.93</swe:value>
+								</swe:Quantity>
+							</wml2:value>
+							<wml2:comment>A</wml2:comment>
+						</wml2:TimeValuePair>
+					</wml2:element>
+					<wml2:element>
+						<wml2:TimeValuePair>
+							<wml2:time>1984-04-05T00:00:00.000</wml2:time>
+							<wml2:value>
+								<swe:Quantity>
+									<gwdp:nwis pcode="72150" direction="up" />
+									<swe:uom code="ft" />
+									<swe:value>14.01</swe:value>
+								</swe:Quantity>
+							</wml2:value>
+							<wml2:comment>A</wml2:comment>
+						</wml2:TimeValuePair>
+					</wml2:element>
+					<wml2:element>
+						<wml2:TimeValuePair>
+							<wml2:time>1984-04-10T00:00:00.000</wml2:time>
+							<wml2:value>
+								<swe:Quantity>
+									<gwdp:nwis pcode="72150" direction="up" />
+									<swe:uom code="ft" />
+									<swe:value>14.09</swe:value>
+								</swe:Quantity>
+							</wml2:value>
+							<wml2:comment>A</wml2:comment>
+						</wml2:TimeValuePair>
+					</wml2:element>
+					<wml2:element>
+						<wml2:TimeValuePair>
+							<wml2:time>1984-04-15T00:00:00.000</wml2:time>
+							<wml2:value>
+								<swe:Quantity>
+									<gwdp:nwis pcode="72150" direction="up" />
+									<swe:uom code="ft" />
+									<swe:value>14.10</swe:value>
+								</swe:Quantity>
+							</wml2:value>
+							<wml2:comment>A</wml2:comment>
+						</wml2:TimeValuePair>
+					</wml2:element>
+					<wml2:element>
+						<wml2:TimeValuePair>
+							<wml2:time>1984-04-20T00:00:00.000</wml2:time>
+							<wml2:value>
+								<swe:Quantity>
+									<gwdp:nwis pcode="72150" direction="up" />
+									<swe:uom code="ft" />
+									<swe:value>14.20</swe:value>
+								</swe:Quantity>
+							</wml2:value>
+							<wml2:comment>A</wml2:comment>
+						</wml2:TimeValuePair>
+					</wml2:element>
+					<wml2:element>
+						<wml2:TimeValuePair>
+							<wml2:time>1984-04-25T00:00:00.000</wml2:time>
+							<wml2:value>
+								<swe:Quantity>
+									<gwdp:nwis pcode="72150" direction="up" />
+									<swe:uom code="ft" />
+									<swe:value>14.26</swe:value>
+								</swe:Quantity>
+							</wml2:value>
+							<wml2:comment>A</wml2:comment>
+						</wml2:TimeValuePair>
+					</wml2:element>
+					<wml2:element>
+						<wml2:TimeValuePair>
+							<wml2:time>1984-04-30T00:00:00.000</wml2:time>
+							<wml2:value>
+								<swe:Quantity>
+									<gwdp:nwis pcode="72150" direction="up" />
+									<swe:uom code="ft" />
+									<swe:value>14.16</swe:value>
+								</swe:Quantity>
+							</wml2:value>
+							<wml2:comment>A</wml2:comment>
+						</wml2:TimeValuePair>
+					</wml2:element>
+					<wml2:element>
+						<wml2:TimeValuePair>
+							<wml2:time>1984-05-05T00:00:00.000</wml2:time>
+							<wml2:value>
+								<swe:Quantity>
+									<gwdp:nwis pcode="72150" direction="up" />
+									<swe:uom code="ft" />
+									<swe:value>14.26</swe:value>
+								</swe:Quantity>
+							</wml2:value>
+							<wml2:comment>A</wml2:comment>
+						</wml2:TimeValuePair>
+					</wml2:element>
+					<wml2:element>
+						<wml2:TimeValuePair>
+							<wml2:time>1984-05-10T00:00:00.000</wml2:time>
+							<wml2:value>
+								<swe:Quantity>
+									<gwdp:nwis pcode="72150" direction="up" />
+									<swe:uom code="ft" />
+									<swe:value>14.18</swe:value>
+								</swe:Quantity>
+							</wml2:value>
+							<wml2:comment>A</wml2:comment>
+						</wml2:TimeValuePair>
+					</wml2:element>
+					<wml2:element>
+						<wml2:TimeValuePair>
+							<wml2:time>1984-05-15T00:00:00.000</wml2:time>
+							<wml2:value>
+								<swe:Quantity>
+									<gwdp:nwis pcode="72150" direction="up" />
+									<swe:uom code="ft" />
+									<swe:value>14.18</swe:value>
+								</swe:Quantity>
+							</wml2:value>
+							<wml2:comment>A</wml2:comment>
+						</wml2:TimeValuePair>
+					</wml2:element>
+					<wml2:element>
+						<wml2:TimeValuePair>
+							<wml2:time>1984-05-20T00:00:00.000</wml2:time>
+							<wml2:value>
+								<swe:Quantity>
+									<gwdp:nwis pcode="72150" direction="up" />
+									<swe:uom code="ft" />
+									<swe:value>14.17</swe:value>
+								</swe:Quantity>
+							</wml2:value>
+							<wml2:comment>A</wml2:comment>
+						</wml2:TimeValuePair>
+					</wml2:element>
+					<wml2:element>
+						<wml2:TimeValuePair>
+							<wml2:time>1984-05-25T00:00:00.000</wml2:time>
+							<wml2:value>
+								<swe:Quantity>
+									<gwdp:nwis pcode="72150" direction="up" />
+									<swe:uom code="ft" />
+									<swe:value>14.28</swe:value>
+								</swe:Quantity>
+							</wml2:value>
+							<wml2:comment>A</wml2:comment>
+						</wml2:TimeValuePair>
+					</wml2:element>
+					<wml2:element>
+						<wml2:TimeValuePair>
+							<wml2:time>1984-05-31T00:00:00.000</wml2:time>
+							<wml2:value>
+								<swe:Quantity>
+									<gwdp:nwis pcode="72150" direction="up" />
+									<swe:uom code="ft" />
+									<swe:value>14.22</swe:value>
+								</swe:Quantity>
+							</wml2:value>
+							<wml2:comment>A</wml2:comment>
+						</wml2:TimeValuePair>
+					</wml2:element>
+					<wml2:element>
+						<wml2:TimeValuePair>
+							<wml2:time>1984-06-05T00:00:00.000</wml2:time>
+							<wml2:value>
+								<swe:Quantity>
+									<gwdp:nwis pcode="72150" direction="up" />
+									<swe:uom code="ft" />
+									<swe:value>14.24</swe:value>
+								</swe:Quantity>
+							</wml2:value>
+							<wml2:comment>A</wml2:comment>
+						</wml2:TimeValuePair>
+					</wml2:element>
+					<wml2:element>
+						<wml2:TimeValuePair>
+							<wml2:time>1984-06-10T00:00:00.000</wml2:time>
+							<wml2:value>
+								<swe:Quantity>
+									<gwdp:nwis pcode="72150" direction="up" />
+									<swe:uom code="ft" />
+									<swe:value>14.20</swe:value>
+								</swe:Quantity>
+							</wml2:value>
+							<wml2:comment>A</wml2:comment>
+						</wml2:TimeValuePair>
+					</wml2:element>
+					<wml2:element>
+						<wml2:TimeValuePair>
+							<wml2:time>1984-06-15T00:00:00.000</wml2:time>
+							<wml2:value>
+								<swe:Quantity>
+									<gwdp:nwis pcode="72150" direction="up" />
+									<swe:uom code="ft" />
+									<swe:value>14.19</swe:value>
+								</swe:Quantity>
+							</wml2:value>
+							<wml2:comment>A</wml2:comment>
+						</wml2:TimeValuePair>
+					</wml2:element>
+					<wml2:element>
+						<wml2:TimeValuePair>
+							<wml2:time>1984-06-20T00:00:00.000</wml2:time>
+							<wml2:value>
+								<swe:Quantity>
+									<gwdp:nwis pcode="72150" direction="up" />
+									<swe:uom code="ft" />
+									<swe:value>14.17</swe:value>
+								</swe:Quantity>
+							</wml2:value>
+							<wml2:comment>A</wml2:comment>
+						</wml2:TimeValuePair>
+					</wml2:element>
+					<wml2:element>
+						<wml2:TimeValuePair>
+							<wml2:time>1984-06-25T00:00:00.000</wml2:time>
+							<wml2:value>
+								<swe:Quantity>
+									<gwdp:nwis pcode="72150" direction="up" />
+									<swe:uom code="ft" />
+									<swe:value>14.13</swe:value>
+								</swe:Quantity>
+							</wml2:value>
+							<wml2:comment>A</wml2:comment>
+						</wml2:TimeValuePair>
+					</wml2:element>
+					<wml2:element>
+						<wml2:TimeValuePair>
+							<wml2:time>1984-06-30T00:00:00.000</wml2:time>
+							<wml2:value>
+								<swe:Quantity>
+									<gwdp:nwis pcode="72150" direction="up" />
+									<swe:uom code="ft" />
+									<swe:value>14.20</swe:value>
+								</swe:Quantity>
+							</wml2:value>
+							<wml2:comment>A</wml2:comment>
+						</wml2:TimeValuePair>
+					</wml2:element>
+					<wml2:element>
+						<wml2:TimeValuePair>
+							<wml2:time>1984-07-05T00:00:00.000</wml2:time>
+							<wml2:value>
+								<swe:Quantity>
+									<gwdp:nwis pcode="72150" direction="up" />
+									<swe:uom code="ft" />
+									<swe:value>14.22</swe:value>
+								</swe:Quantity>
+							</wml2:value>
+							<wml2:comment>A</wml2:comment>
+						</wml2:TimeValuePair>
+					</wml2:element>
+					<wml2:element>
+						<wml2:TimeValuePair>
+							<wml2:time>1984-07-10T00:00:00.000</wml2:time>
+							<wml2:value>
+								<swe:Quantity>
+									<gwdp:nwis pcode="72150" direction="up" />
+									<swe:uom code="ft" />
+									<swe:value>14.20</swe:value>
+								</swe:Quantity>
+							</wml2:value>
+							<wml2:comment>A</wml2:comment>
+						</wml2:TimeValuePair>
+					</wml2:element>
+					<wml2:element>
+						<wml2:TimeValuePair>
+							<wml2:time>1984-07-15T00:00:00.000</wml2:time>
+							<wml2:value>
+								<swe:Quantity>
+									<gwdp:nwis pcode="72150" direction="up" />
+									<swe:uom code="ft" />
+									<swe:value>14.11</swe:value>
+								</swe:Quantity>
+							</wml2:value>
+							<wml2:comment>A</wml2:comment>
+						</wml2:TimeValuePair>
+					</wml2:element>
+					<wml2:element>
+						<wml2:TimeValuePair>
+							<wml2:time>1984-07-20T00:00:00.000</wml2:time>
+							<wml2:value>
+								<swe:Quantity>
+									<gwdp:nwis pcode="72150" direction="up" />
+									<swe:uom code="ft" />
+									<swe:value>14.12</swe:value>
+								</swe:Quantity>
+							</wml2:value>
+							<wml2:comment>A</wml2:comment>
+						</wml2:TimeValuePair>
+					</wml2:element>
+					<wml2:element>
+						<wml2:TimeValuePair>
+							<wml2:time>1984-07-25T00:00:00.000</wml2:time>
+							<wml2:value>
+								<swe:Quantity>
+									<gwdp:nwis pcode="72150" direction="up" />
+									<swe:uom code="ft" />
+									<swe:value>14.11</swe:value>
+								</swe:Quantity>
+							</wml2:value>
+							<wml2:comment>A</wml2:comment>
+						</wml2:TimeValuePair>
+					</wml2:element>
+					<wml2:element>
+						<wml2:TimeValuePair>
+							<wml2:time>1984-07-31T00:00:00.000</wml2:time>
+							<wml2:value>
+								<swe:Quantity>
+									<gwdp:nwis pcode="72150" direction="up" />
+									<swe:uom code="ft" />
+									<swe:value>14.14</swe:value>
+								</swe:Quantity>
+							</wml2:value>
+							<wml2:comment>A</wml2:comment>
+						</wml2:TimeValuePair>
+					</wml2:element>
+					<wml2:element>
+						<wml2:TimeValuePair>
+							<wml2:time>1984-08-05T00:00:00.000</wml2:time>
+							<wml2:value>
+								<swe:Quantity>
+									<gwdp:nwis pcode="72150" direction="up" />
+									<swe:uom code="ft" />
+									<swe:value>14.08</swe:value>
+								</swe:Quantity>
+							</wml2:value>
+							<wml2:comment>A</wml2:comment>
+						</wml2:TimeValuePair>
+					</wml2:element>
+					<wml2:element>
+						<wml2:TimeValuePair>
+							<wml2:time>1984-08-10T00:00:00.000</wml2:time>
+							<wml2:value>
+								<swe:Quantity>
+									<gwdp:nwis pcode="72150" direction="up" />
+									<swe:uom code="ft" />
+									<swe:value>14.15</swe:value>
+								</swe:Quantity>
+							</wml2:value>
+							<wml2:comment>A</wml2:comment>
+						</wml2:TimeValuePair>
+					</wml2:element>
+					<wml2:element>
+						<wml2:TimeValuePair>
+							<wml2:time>1984-08-15T00:00:00.000</wml2:time>
+							<wml2:value>
+								<swe:Quantity>
+									<gwdp:nwis pcode="72150" direction="up" />
+									<swe:uom code="ft" />
+									<swe:value>14.00</swe:value>
+								</swe:Quantity>
+							</wml2:value>
+							<wml2:comment>A</wml2:comment>
+						</wml2:TimeValuePair>
+					</wml2:element>
+					<wml2:element>
+						<wml2:TimeValuePair>
+							<wml2:time>1984-08-20T00:00:00.000</wml2:time>
+							<wml2:value>
+								<swe:Quantity>
+									<gwdp:nwis pcode="72150" direction="up" />
+									<swe:uom code="ft" />
+									<swe:value>14.06</swe:value>
+								</swe:Quantity>
+							</wml2:value>
+							<wml2:comment>A</wml2:comment>
+						</wml2:TimeValuePair>
+					</wml2:element>
+					<wml2:element>
+						<wml2:TimeValuePair>
+							<wml2:time>1984-08-25T00:00:00.000</wml2:time>
+							<wml2:value>
+								<swe:Quantity>
+									<gwdp:nwis pcode="72150" direction="up" />
+									<swe:uom code="ft" />
+									<swe:value>14.01</swe:value>
+								</swe:Quantity>
+							</wml2:value>
+							<wml2:comment>A</wml2:comment>
+						</wml2:TimeValuePair>
+					</wml2:element>
+					<wml2:element>
+						<wml2:TimeValuePair>
+							<wml2:time>1984-08-31T00:00:00.000</wml2:time>
+							<wml2:value>
+								<swe:Quantity>
+									<gwdp:nwis pcode="72150" direction="up" />
+									<swe:uom code="ft" />
+									<swe:value>13.96</swe:value>
+								</swe:Quantity>
+							</wml2:value>
+							<wml2:comment>A</wml2:comment>
+						</wml2:TimeValuePair>
+					</wml2:element>
+					<wml2:element>
+						<wml2:TimeValuePair>
+							<wml2:time>1984-09-05T00:00:00.000</wml2:time>
+							<wml2:value>
+								<swe:Quantity>
+									<gwdp:nwis pcode="72150" direction="up" />
+									<swe:uom code="ft" />
+									<swe:value>13.98</swe:value>
+								</swe:Quantity>
+							</wml2:value>
+							<wml2:comment>A</wml2:comment>
+						</wml2:TimeValuePair>
+					</wml2:element>
+					<wml2:element>
+						<wml2:TimeValuePair>
+							<wml2:time>1984-09-10T00:00:00.000</wml2:time>
+							<wml2:value>
+								<swe:Quantity>
+									<gwdp:nwis pcode="72150" direction="up" />
+									<swe:uom code="ft" />
+									<swe:value>14.00</swe:value>
+								</swe:Quantity>
+							</wml2:value>
+							<wml2:comment>A</wml2:comment>
+						</wml2:TimeValuePair>
+					</wml2:element>
+					<wml2:element>
+						<wml2:TimeValuePair>
+							<wml2:time>1984-09-15T00:00:00.000</wml2:time>
+							<wml2:value>
+								<swe:Quantity>
+									<gwdp:nwis pcode="72150" direction="up" />
+									<swe:uom code="ft" />
+									<swe:value>13.96</swe:value>
+								</swe:Quantity>
+							</wml2:value>
+							<wml2:comment>A</wml2:comment>
+						</wml2:TimeValuePair>
+					</wml2:element>
+					<wml2:element>
+						<wml2:TimeValuePair>
+							<wml2:time>1984-09-20T00:00:00.000</wml2:time>
+							<wml2:value>
+								<swe:Quantity>
+									<gwdp:nwis pcode="72150" direction="up" />
+									<swe:uom code="ft" />
+									<swe:value>13.93</swe:value>
+								</swe:Quantity>
+							</wml2:value>
+							<wml2:comment>A</wml2:comment>
+						</wml2:TimeValuePair>
+					</wml2:element>
+					<wml2:element>
+						<wml2:TimeValuePair>
+							<wml2:time>1984-09-25T00:00:00.000</wml2:time>
+							<wml2:value>
+								<swe:Quantity>
+									<gwdp:nwis pcode="72150" direction="up" />
+									<swe:uom code="ft" />
+									<swe:value>13.93</swe:value>
+								</swe:Quantity>
+							</wml2:value>
+							<wml2:comment>A</wml2:comment>
+						</wml2:TimeValuePair>
+					</wml2:element>
+					<wml2:element>
+						<wml2:TimeValuePair>
+							<wml2:time>1984-09-30T00:00:00.000</wml2:time>
+							<wml2:value>
+								<swe:Quantity>
+									<gwdp:nwis pcode="72150" direction="up" />
+									<swe:uom code="ft" />
+									<swe:value>13.82</swe:value>
+								</swe:Quantity>
+							</wml2:value>
+							<wml2:comment>A</wml2:comment>
+						</wml2:TimeValuePair>
+					</wml2:element>
+					<wml2:element>
+						<wml2:TimeValuePair>
+							<wml2:time>1984-10-05T00:00:00.000</wml2:time>
+							<wml2:value>
+								<swe:Quantity>
+									<gwdp:nwis pcode="72150" direction="up" />
+									<swe:uom code="ft" />
+									<swe:value>13.79</swe:value>
+								</swe:Quantity>
+							</wml2:value>
+							<wml2:comment>A</wml2:comment>
+						</wml2:TimeValuePair>
+					</wml2:element>
+					<wml2:element>
+						<wml2:TimeValuePair>
+							<wml2:time>1984-10-10T00:00:00.000</wml2:time>
+							<wml2:value>
+								<swe:Quantity>
+									<gwdp:nwis pcode="72150" direction="up" />
+									<swe:uom code="ft" />
+									<swe:value>13.81</swe:value>
+								</swe:Quantity>
+							</wml2:value>
+							<wml2:comment>A</wml2:comment>
+						</wml2:TimeValuePair>
+					</wml2:element>
+					<wml2:element>
+						<wml2:TimeValuePair>
+							<wml2:time>1984-10-15T00:00:00.000</wml2:time>
+							<wml2:value>
+								<swe:Quantity>
+									<gwdp:nwis pcode="72150" direction="up" />
+									<swe:uom code="ft" />
+									<swe:value>13.85</swe:value>
+								</swe:Quantity>
+							</wml2:value>
+							<wml2:comment>A</wml2:comment>
+						</wml2:TimeValuePair>
+					</wml2:element>
+					<wml2:element>
+						<wml2:TimeValuePair>
+							<wml2:time>2004-06-18T00:00:00.000</wml2:time>
+							<wml2:value>
+								<swe:Quantity>
+									<gwdp:nwis pcode="72150" direction="up" />
+									<swe:uom code="ft" />
+									<swe:value>11.62</swe:value>
+								</swe:Quantity>
+							</wml2:value>
+							<wml2:comment>A</wml2:comment>
+						</wml2:TimeValuePair>
+					</wml2:element>
+					<wml2:element>
+						<wml2:TimeValuePair>
+							<wml2:time>2004-06-19T00:00:00.000</wml2:time>
+							<wml2:value>
+								<swe:Quantity>
+									<gwdp:nwis pcode="72150" direction="up" />
+									<swe:uom code="ft" />
+									<swe:value>11.60</swe:value>
+								</swe:Quantity>
+							</wml2:value>
+							<wml2:comment>A</wml2:comment>
+						</wml2:TimeValuePair>
+					</wml2:element>
+					<wml2:element>
+						<wml2:TimeValuePair>
+							<wml2:time>2004-06-20T00:00:00.000</wml2:time>
+							<wml2:value>
+								<swe:Quantity>
+									<gwdp:nwis pcode="72150" direction="up" />
+									<swe:uom code="ft" />
+									<swe:value>11.60</swe:value>
+								</swe:Quantity>
+							</wml2:value>
+							<wml2:comment>A</wml2:comment>
+						</wml2:TimeValuePair>
+					</wml2:element>
+					<wml2:element>
+						<wml2:TimeValuePair>
+							<wml2:time>2004-06-21T00:00:00.000</wml2:time>
+							<wml2:value>
+								<swe:Quantity>
+									<gwdp:nwis pcode="72150" direction="up" />
+									<swe:uom code="ft" />
+									<swe:value>11.59</swe:value>
+								</swe:Quantity>
+							</wml2:value>
+							<wml2:comment>A</wml2:comment>
+						</wml2:TimeValuePair>
+					</wml2:element>
+					<wml2:element>
+						<wml2:TimeValuePair>
+							<wml2:time>2004-06-22T00:00:00.000</wml2:time>
+							<wml2:value>
+								<swe:Quantity>
+									<gwdp:nwis pcode="72150" direction="up" />
+									<swe:uom code="ft" />
+									<swe:value>11.61</swe:value>
+								</swe:Quantity>
+							</wml2:value>
+							<wml2:comment>A</wml2:comment>
+						</wml2:TimeValuePair>
+					</wml2:element>
+					<wml2:element>
+						<wml2:TimeValuePair>
+							<wml2:time>2004-06-23T00:00:00.000</wml2:time>
+							<wml2:value>
+								<swe:Quantity>
+									<gwdp:nwis pcode="72150" direction="up" />
+									<swe:uom code="ft" />
+									<swe:value>11.59</swe:value>
+								</swe:Quantity>
+							</wml2:value>
+							<wml2:comment>A</wml2:comment>
+						</wml2:TimeValuePair>
+					</wml2:element>
+					<wml2:element>
+						<wml2:TimeValuePair>
+							<wml2:time>2004-06-24T00:00:00.000</wml2:time>
+							<wml2:value>
+								<swe:Quantity>
+									<gwdp:nwis pcode="72150" direction="up" />
+									<swe:uom code="ft" />
+									<swe:value>11.58</swe:value>
+								</swe:Quantity>
+							</wml2:value>
+							<wml2:comment>A</wml2:comment>
+						</wml2:TimeValuePair>
+					</wml2:element>
+					<wml2:element>
+						<wml2:TimeValuePair>
+							<wml2:time>2004-06-25T00:00:00.000</wml2:time>
+							<wml2:value>
+								<swe:Quantity>
+									<gwdp:nwis pcode="72150" direction="up" />
+									<swe:uom code="ft" />
+									<swe:value>11.58</swe:value>
+								</swe:Quantity>
+							</wml2:value>
+							<wml2:comment>A</wml2:comment>
+						</wml2:TimeValuePair>
+					</wml2:element>
+					<wml2:element>
+						<wml2:TimeValuePair>
+							<wml2:time>2004-06-26T00:00:00.000</wml2:time>
+							<wml2:value>
+								<swe:Quantity>
+									<gwdp:nwis pcode="72150" direction="up" />
+									<swe:uom code="ft" />
+									<swe:value>11.58</swe:value>
+								</swe:Quantity>
+							</wml2:value>
+							<wml2:comment>A</wml2:comment>
+						</wml2:TimeValuePair>
+					</wml2:element>
+					<wml2:element>
+						<wml2:TimeValuePair>
+							<wml2:time>2004-06-27T00:00:00.000</wml2:time>
+							<wml2:value>
+								<swe:Quantity>
+									<gwdp:nwis pcode="72150" direction="up" />
+									<swe:uom code="ft" />
+									<swe:value>11.59</swe:value>
+								</swe:Quantity>
+							</wml2:value>
+							<wml2:comment>A</wml2:comment>
+						</wml2:TimeValuePair>
+					</wml2:element>
+					<wml2:element>
+						<wml2:TimeValuePair>
+							<wml2:time>2004-06-28T00:00:00.000</wml2:time>
+							<wml2:value>
+								<swe:Quantity>
+									<gwdp:nwis pcode="72150" direction="up" />
+									<swe:uom code="ft" />
+									<swe:value>11.56</swe:value>
+								</swe:Quantity>
+							</wml2:value>
+							<wml2:comment>A</wml2:comment>
+						</wml2:TimeValuePair>
+					</wml2:element>
+					<wml2:element>
+						<wml2:TimeValuePair>
+							<wml2:time>2004-06-29T00:00:00.000</wml2:time>
+							<wml2:value>
+								<swe:Quantity>
+									<gwdp:nwis pcode="72150" direction="up" />
+									<swe:uom code="ft" />
+									<swe:value>11.56</swe:value>
+								</swe:Quantity>
+							</wml2:value>
+							<wml2:comment>A</wml2:comment>
+						</wml2:TimeValuePair>
+					</wml2:element>
+					<wml2:element>
+						<wml2:TimeValuePair>
+							<wml2:time>2004-06-30T00:00:00.000</wml2:time>
+							<wml2:value>
+								<swe:Quantity>
+									<gwdp:nwis pcode="72150" direction="up" />
+									<swe:uom code="ft" />
+									<swe:value>11.54</swe:value>
+								</swe:Quantity>
+							</wml2:value>
+							<wml2:comment>A</wml2:comment>
+						</wml2:TimeValuePair>
+					</wml2:element>
+					<wml2:element>
+						<wml2:TimeValuePair>
+							<wml2:time>2004-07-01T00:00:00.000</wml2:time>
+							<wml2:value>
+								<swe:Quantity>
+									<gwdp:nwis pcode="72150" direction="up" />
+									<swe:uom code="ft" />
+									<swe:value>11.52</swe:value>
+								</swe:Quantity>
+							</wml2:value>
+							<wml2:comment>A</wml2:comment>
+						</wml2:TimeValuePair>
+					</wml2:element>
+					<wml2:element>
+						<wml2:TimeValuePair>
+							<wml2:time>2004-07-02T00:00:00.000</wml2:time>
+							<wml2:value>
+								<swe:Quantity>
+									<gwdp:nwis pcode="72150" direction="up" />
+									<swe:uom code="ft" />
+									<swe:value>11.52</swe:value>
+								</swe:Quantity>
+							</wml2:value>
+							<wml2:comment>A</wml2:comment>
+						</wml2:TimeValuePair>
+					</wml2:element>
+					<wml2:element>
+						<wml2:TimeValuePair>
+							<wml2:time>2004-07-03T00:00:00.000</wml2:time>
+							<wml2:value>
+								<swe:Quantity>
+									<gwdp:nwis pcode="72150" direction="up" />
+									<swe:uom code="ft" />
+									<swe:value>11.49</swe:value>
+								</swe:Quantity>
+							</wml2:value>
+							<wml2:comment>A</wml2:comment>
+						</wml2:TimeValuePair>
+					</wml2:element>
+					<wml2:element>
+						<wml2:TimeValuePair>
+							<wml2:time>2004-07-04T00:00:00.000</wml2:time>
+							<wml2:value>
+								<swe:Quantity>
+									<gwdp:nwis pcode="72150" direction="up" />
+									<swe:uom code="ft" />
+									<swe:value>11.52</swe:value>
+								</swe:Quantity>
+							</wml2:value>
+							<wml2:comment>A</wml2:comment>
+						</wml2:TimeValuePair>
+					</wml2:element>
+					<wml2:element>
+						<wml2:TimeValuePair>
+							<wml2:time>2004-07-05T00:00:00.000</wml2:time>
+							<wml2:value>
+								<swe:Quantity>
+									<gwdp:nwis pcode="72150" direction="up" />
+									<swe:uom code="ft" />
+									<swe:value>11.53</swe:value>
+								</swe:Quantity>
+							</wml2:value>
+							<wml2:comment>A</wml2:comment>
+						</wml2:TimeValuePair>
+					</wml2:element>
+					<wml2:element>
+						<wml2:TimeValuePair>
+							<wml2:time>2004-07-06T00:00:00.000</wml2:time>
+							<wml2:value>
+								<swe:Quantity>
+									<gwdp:nwis pcode="72150" direction="up" />
+									<swe:uom code="ft" />
+									<swe:value>11.50</swe:value>
+								</swe:Quantity>
+							</wml2:value>
+							<wml2:comment>A</wml2:comment>
+						</wml2:TimeValuePair>
+					</wml2:element>
+					<wml2:element>
+						<wml2:TimeValuePair>
+							<wml2:time>2004-07-07T00:00:00.000</wml2:time>
+							<wml2:value>
+								<swe:Quantity>
+									<gwdp:nwis pcode="72150" direction="up" />
+									<swe:uom code="ft" />
+									<swe:value>11.48</swe:value>
+								</swe:Quantity>
+							</wml2:value>
+							<wml2:comment>A</wml2:comment>
+						</wml2:TimeValuePair>
+					</wml2:element>
+					<wml2:element>
+						<wml2:TimeValuePair>
+							<wml2:time>2004-07-08T00:00:00.000</wml2:time>
+							<wml2:value>
+								<swe:Quantity>
+									<gwdp:nwis pcode="72150" direction="up" />
+									<swe:uom code="ft" />
+									<swe:value>11.47</swe:value>
+								</swe:Quantity>
+							</wml2:value>
+							<wml2:comment>A</wml2:comment>
+						</wml2:TimeValuePair>
+					</wml2:element>
+					<wml2:element>
+						<wml2:TimeValuePair>
+							<wml2:time>2004-07-09T00:00:00.000</wml2:time>
+							<wml2:value>
+								<swe:Quantity>
+									<gwdp:nwis pcode="72150" direction="up" />
+									<swe:uom code="ft" />
+									<swe:value>11.50</swe:value>
+								</swe:Quantity>
+							</wml2:value>
+							<wml2:comment>A</wml2:comment>
+						</wml2:TimeValuePair>
+					</wml2:element>
+					<wml2:element>
+						<wml2:TimeValuePair>
+							<wml2:time>2004-07-10T00:00:00.000</wml2:time>
+							<wml2:value>
+								<swe:Quantity>
+									<gwdp:nwis pcode="72150" direction="up" />
+									<swe:uom code="ft" />
+									<swe:value>11.46</swe:value>
+								</swe:Quantity>
+							</wml2:value>
+							<wml2:comment>A</wml2:comment>
+						</wml2:TimeValuePair>
+					</wml2:element>
+					<wml2:element>
+						<wml2:TimeValuePair>
+							<wml2:time>2004-07-11T00:00:00.000</wml2:time>
+							<wml2:value>
+								<swe:Quantity>
+									<gwdp:nwis pcode="72150" direction="up" />
+									<swe:uom code="ft" />
+									<swe:value>11.45</swe:value>
+								</swe:Quantity>
+							</wml2:value>
+							<wml2:comment>A</wml2:comment>
+						</wml2:TimeValuePair>
+					</wml2:element>
+					<wml2:element>
+						<wml2:TimeValuePair>
+							<wml2:time>2004-07-12T00:00:00.000</wml2:time>
+							<wml2:value>
+								<swe:Quantity>
+									<gwdp:nwis pcode="72150" direction="up" />
+									<swe:uom code="ft" />
+									<swe:value>11.43</swe:value>
+								</swe:Quantity>
+							</wml2:value>
+							<wml2:comment>A</wml2:comment>
+						</wml2:TimeValuePair>
+					</wml2:element>
+					<wml2:element>
+						<wml2:TimeValuePair>
+							<wml2:time>2004-07-13T00:00:00.000</wml2:time>
+							<wml2:value>
+								<swe:Quantity>
+									<gwdp:nwis pcode="72150" direction="up" />
+									<swe:uom code="ft" />
+									<swe:value>11.43</swe:value>
+								</swe:Quantity>
+							</wml2:value>
+							<wml2:comment>A</wml2:comment>
+						</wml2:TimeValuePair>
+					</wml2:element>
+					<wml2:element>
+						<wml2:TimeValuePair>
+							<wml2:time>2004-07-14T00:00:00.000</wml2:time>
+							<wml2:value>
+								<swe:Quantity>
+									<gwdp:nwis pcode="72150" direction="up" />
+									<swe:uom code="ft" />
+									<swe:value>11.42</swe:value>
+								</swe:Quantity>
+							</wml2:value>
+							<wml2:comment>A</wml2:comment>
+						</wml2:TimeValuePair>
+					</wml2:element>
+					<wml2:element>
+						<wml2:TimeValuePair>
+							<wml2:time>2004-07-15T00:00:00.000</wml2:time>
+							<wml2:value>
+								<swe:Quantity>
+									<gwdp:nwis pcode="72150" direction="up" />
+									<swe:uom code="ft" />
+									<swe:value>11.43</swe:value>
+								</swe:Quantity>
+							</wml2:value>
+							<wml2:comment>A</wml2:comment>
+						</wml2:TimeValuePair>
+					</wml2:element>
+					<wml2:element>
+						<wml2:TimeValuePair>
+							<wml2:time>2004-07-16T00:00:00.000</wml2:time>
+							<wml2:value>
+								<swe:Quantity>
+									<gwdp:nwis pcode="72150" direction="up" />
+									<swe:uom code="ft" />
+									<swe:value>11.43</swe:value>
+								</swe:Quantity>
+							</wml2:value>
+							<wml2:comment>A</wml2:comment>
+						</wml2:TimeValuePair>
+					</wml2:element>
+					<wml2:element>
+						<wml2:TimeValuePair>
+							<wml2:time>2004-07-17T00:00:00.000</wml2:time>
+							<wml2:value>
+								<swe:Quantity>
+									<gwdp:nwis pcode="72150" direction="up" />
+									<swe:uom code="ft" />
+									<swe:value>11.38</swe:value>
+								</swe:Quantity>
+							</wml2:value>
+							<wml2:comment>A</wml2:comment>
+						</wml2:TimeValuePair>
+					</wml2:element>
+					<wml2:element>
+						<wml2:TimeValuePair>
+							<wml2:time>2004-07-18T00:00:00.000</wml2:time>
+							<wml2:value>
+								<swe:Quantity>
+									<gwdp:nwis pcode="72150" direction="up" />
+									<swe:uom code="ft" />
+									<swe:value>11.38</swe:value>
+								</swe:Quantity>
+							</wml2:value>
+							<wml2:comment>A</wml2:comment>
+						</wml2:TimeValuePair>
+					</wml2:element>
+					<wml2:element>
+						<wml2:TimeValuePair>
+							<wml2:time>2004-07-19T00:00:00.000</wml2:time>
+							<wml2:value>
+								<swe:Quantity>
+									<gwdp:nwis pcode="72150" direction="up" />
+									<swe:uom code="ft" />
+									<swe:value>11.39</swe:value>
+								</swe:Quantity>
+							</wml2:value>
+							<wml2:comment>A</wml2:comment>
+						</wml2:TimeValuePair>
+					</wml2:element>
+					<wml2:element>
+						<wml2:TimeValuePair>
+							<wml2:time>2004-07-20T00:00:00.000</wml2:time>
+							<wml2:value>
+								<swe:Quantity>
+									<gwdp:nwis pcode="72150" direction="up" />
+									<swe:uom code="ft" />
+									<swe:value>11.35</swe:value>
+								</swe:Quantity>
+							</wml2:value>
+							<wml2:comment>A</wml2:comment>
+						</wml2:TimeValuePair>
+					</wml2:element>
+					<wml2:element>
+						<wml2:TimeValuePair>
+							<wml2:time>2004-07-21T00:00:00.000</wml2:time>
+							<wml2:value>
+								<swe:Quantity>
+									<gwdp:nwis pcode="72150" direction="up" />
+									<swe:uom code="ft" />
+									<swe:value>11.35</swe:value>
+								</swe:Quantity>
+							</wml2:value>
+							<wml2:comment>A</wml2:comment>
+						</wml2:TimeValuePair>
+					</wml2:element>
+					<wml2:element>
+						<wml2:TimeValuePair>
+							<wml2:time>2004-07-22T00:00:00.000</wml2:time>
+							<wml2:value>
+								<swe:Quantity>
+									<gwdp:nwis pcode="72150" direction="up" />
+									<swe:uom code="ft" />
+									<swe:value>11.37</swe:value>
+								</swe:Quantity>
+							</wml2:value>
+							<wml2:comment>A</wml2:comment>
+						</wml2:TimeValuePair>
+					</wml2:element>
+					<wml2:element>
+						<wml2:TimeValuePair>
+							<wml2:time>2004-07-23T00:00:00.000</wml2:time>
+							<wml2:value>
+								<swe:Quantity>
+									<gwdp:nwis pcode="72150" direction="up" />
+									<swe:uom code="ft" />
+									<swe:value>11.39</swe:value>
+								</swe:Quantity>
+							</wml2:value>
+							<wml2:comment>A</wml2:comment>
+						</wml2:TimeValuePair>
+					</wml2:element>
+					<wml2:element>
+						<wml2:TimeValuePair>
+							<wml2:time>2004-07-24T00:00:00.000</wml2:time>
+							<wml2:value>
+								<swe:Quantity>
+									<gwdp:nwis pcode="72150" direction="up" />
+									<swe:uom code="ft" />
+									<swe:value>11.35</swe:value>
+								</swe:Quantity>
+							</wml2:value>
+							<wml2:comment>A</wml2:comment>
+						</wml2:TimeValuePair>
+					</wml2:element>
+					<wml2:element>
+						<wml2:TimeValuePair>
+							<wml2:time>2004-07-25T00:00:00.000</wml2:time>
+							<wml2:value>
+								<swe:Quantity>
+									<gwdp:nwis pcode="72150" direction="up" />
+									<swe:uom code="ft" />
+									<swe:value>11.33</swe:value>
+								</swe:Quantity>
+							</wml2:value>
+							<wml2:comment>A</wml2:comment>
+						</wml2:TimeValuePair>
+					</wml2:element>
+					<wml2:element>
+						<wml2:TimeValuePair>
+							<wml2:time>2004-07-26T00:00:00.000</wml2:time>
+							<wml2:value>
+								<swe:Quantity>
+									<gwdp:nwis pcode="72150" direction="up" />
+									<swe:uom code="ft" />
+									<swe:value>11.33</swe:value>
+								</swe:Quantity>
+							</wml2:value>
+							<wml2:comment>A</wml2:comment>
+						</wml2:TimeValuePair>
+					</wml2:element>
+					<wml2:element>
+						<wml2:TimeValuePair>
+							<wml2:time>2004-07-27T00:00:00.000</wml2:time>
+							<wml2:value>
+								<swe:Quantity>
+									<gwdp:nwis pcode="72150" direction="up" />
+									<swe:uom code="ft" />
+									<swe:value>11.34</swe:value>
+								</swe:Quantity>
+							</wml2:value>
+							<wml2:comment>A</wml2:comment>
+						</wml2:TimeValuePair>
+					</wml2:element>
+					<wml2:element>
+						<wml2:TimeValuePair>
+							<wml2:time>2004-07-28T00:00:00.000</wml2:time>
+							<wml2:value>
+								<swe:Quantity>
+									<gwdp:nwis pcode="72150" direction="up" />
+									<swe:uom code="ft" />
+									<swe:value>11.34</swe:value>
+								</swe:Quantity>
+							</wml2:value>
+							<wml2:comment>A</wml2:comment>
+						</wml2:TimeValuePair>
+					</wml2:element>
+					<wml2:element>
+						<wml2:TimeValuePair>
+							<wml2:time>2004-07-29T00:00:00.000</wml2:time>
+							<wml2:value>
+								<swe:Quantity>
+									<gwdp:nwis pcode="72150" direction="up" />
+									<swe:uom code="ft" />
+									<swe:value>11.32</swe:value>
+								</swe:Quantity>
+							</wml2:value>
+							<wml2:comment>A</wml2:comment>
+						</wml2:TimeValuePair>
+					</wml2:element>
+					<wml2:element>
+						<wml2:TimeValuePair>
+							<wml2:time>2004-07-30T00:00:00.000</wml2:time>
+							<wml2:value>
+								<swe:Quantity>
+									<gwdp:nwis pcode="72150" direction="up" />
+									<swe:uom code="ft" />
+									<swe:value>11.33</swe:value>
+								</swe:Quantity>
+							</wml2:value>
+							<wml2:comment>A</wml2:comment>
+						</wml2:TimeValuePair>
+					</wml2:element>
+					<wml2:element>
+						<wml2:TimeValuePair>
+							<wml2:time>2004-07-31T00:00:00.000</wml2:time>
+							<wml2:value>
+								<swe:Quantity>
+									<gwdp:nwis pcode="72150" direction="up" />
+									<swe:uom code="ft" />
+									<swe:value>11.31</swe:value>
+								</swe:Quantity>
+							</wml2:value>
+							<wml2:comment>A</wml2:comment>
+						</wml2:TimeValuePair>
+					</wml2:element>
+					<wml2:element>
+						<wml2:TimeValuePair>
+							<wml2:time>2004-08-01T00:00:00.000</wml2:time>
+							<wml2:value>
+								<swe:Quantity>
+									<gwdp:nwis pcode="72150" direction="up" />
+									<swe:uom code="ft" />
+									<swe:value>11.29</swe:value>
+								</swe:Quantity>
+							</wml2:value>
+							<wml2:comment>A</wml2:comment>
+						</wml2:TimeValuePair>
+					</wml2:element>
+					<wml2:element>
+						<wml2:TimeValuePair>
+							<wml2:time>2004-08-02T00:00:00.000</wml2:time>
+							<wml2:value>
+								<swe:Quantity>
+									<gwdp:nwis pcode="72150" direction="up" />
+									<swe:uom code="ft" />
+									<swe:value>11.33</swe:value>
+								</swe:Quantity>
+							</wml2:value>
+							<wml2:comment>A</wml2:comment>
+						</wml2:TimeValuePair>
+					</wml2:element>
+					<wml2:element>
+						<wml2:TimeValuePair>
+							<wml2:time>2004-08-03T00:00:00.000</wml2:time>
+							<wml2:value>
+								<swe:Quantity>
+									<gwdp:nwis pcode="72150" direction="up" />
+									<swe:uom code="ft" />
+									<swe:value>11.35</swe:value>
+								</swe:Quantity>
+							</wml2:value>
+							<wml2:comment>A</wml2:comment>
+						</wml2:TimeValuePair>
+					</wml2:element>
+					<wml2:element>
+						<wml2:TimeValuePair>
+							<wml2:time>2004-08-04T00:00:00.000</wml2:time>
+							<wml2:value>
+								<swe:Quantity>
+									<gwdp:nwis pcode="72150" direction="up" />
+									<swe:uom code="ft" />
+									<swe:value>11.34</swe:value>
+								</swe:Quantity>
+							</wml2:value>
+							<wml2:comment>A</wml2:comment>
+						</wml2:TimeValuePair>
+					</wml2:element>
+					<wml2:element>
+						<wml2:TimeValuePair>
+							<wml2:time>2004-08-05T00:00:00.000</wml2:time>
+							<wml2:value>
+								<swe:Quantity>
+									<gwdp:nwis pcode="72150" direction="up" />
+									<swe:uom code="ft" />
+									<swe:value>11.31</swe:value>
+								</swe:Quantity>
+							</wml2:value>
+							<wml2:comment>A</wml2:comment>
+						</wml2:TimeValuePair>
+					</wml2:element>
+					<wml2:element>
+						<wml2:TimeValuePair>
+							<wml2:time>2004-08-06T00:00:00.000</wml2:time>
+							<wml2:value>
+								<swe:Quantity>
+									<gwdp:nwis pcode="72150" direction="up" />
+									<swe:uom code="ft" />
+									<swe:value>11.33</swe:value>
+								</swe:Quantity>
+							</wml2:value>
+							<wml2:comment>A</wml2:comment>
+						</wml2:TimeValuePair>
+					</wml2:element>
+					<wml2:element>
+						<wml2:TimeValuePair>
+							<wml2:time>2004-08-07T00:00:00.000</wml2:time>
+							<wml2:value>
+								<swe:Quantity>
+									<gwdp:nwis pcode="72150" direction="up" />
+									<swe:uom code="ft" />
+									<swe:value>11.33</swe:value>
+								</swe:Quantity>
+							</wml2:value>
+							<wml2:comment>A</wml2:comment>
+						</wml2:TimeValuePair>
+					</wml2:element>
+					<wml2:element>
+						<wml2:TimeValuePair>
+							<wml2:time>2004-08-08T00:00:00.000</wml2:time>
+							<wml2:value>
+								<swe:Quantity>
+									<gwdp:nwis pcode="72150" direction="up" />
+									<swe:uom code="ft" />
+									<swe:value>11.29</swe:value>
+								</swe:Quantity>
+							</wml2:value>
+							<wml2:comment>A</wml2:comment>
+						</wml2:TimeValuePair>
+					</wml2:element>
+					<wml2:element>
+						<wml2:TimeValuePair>
+							<wml2:time>2004-08-09T00:00:00.000</wml2:time>
+							<wml2:value>
+								<swe:Quantity>
+									<gwdp:nwis pcode="72150" direction="up" />
+									<swe:uom code="ft" />
+									<swe:value>11.28</swe:value>
+								</swe:Quantity>
+							</wml2:value>
+							<wml2:comment>A</wml2:comment>
+						</wml2:TimeValuePair>
+					</wml2:element>
+					<wml2:element>
+						<wml2:TimeValuePair>
+							<wml2:time>2004-08-10T00:00:00.000</wml2:time>
+							<wml2:value>
+								<swe:Quantity>
+									<gwdp:nwis pcode="72150" direction="up" />
+									<swe:uom code="ft" />
+									<swe:value>11.27</swe:value>
+								</swe:Quantity>
+							</wml2:value>
+							<wml2:comment>A</wml2:comment>
+						</wml2:TimeValuePair>
+					</wml2:element>
+					<wml2:element>
+						<wml2:TimeValuePair>
+							<wml2:time>2004-08-11T00:00:00.000</wml2:time>
+							<wml2:value>
+								<swe:Quantity>
+									<gwdp:nwis pcode="72150" direction="up" />
+									<swe:uom code="ft" />
+									<swe:value>11.29</swe:value>
+								</swe:Quantity>
+							</wml2:value>
+							<wml2:comment>A</wml2:comment>
+						</wml2:TimeValuePair>
+					</wml2:element>
+					<wml2:element>
+						<wml2:TimeValuePair>
+							<wml2:time>2004-08-12T00:00:00.000</wml2:time>
+							<wml2:value>
+								<swe:Quantity>
+									<gwdp:nwis pcode="72150" direction="up" />
+									<swe:uom code="ft" />
+									<swe:value>11.27</swe:value>
+								</swe:Quantity>
+							</wml2:value>
+							<wml2:comment>A</wml2:comment>
+						</wml2:TimeValuePair>
+					</wml2:element>
+					<wml2:element>
+						<wml2:TimeValuePair>
+							<wml2:time>2004-08-13T00:00:00.000</wml2:time>
+							<wml2:value>
+								<swe:Quantity>
+									<gwdp:nwis pcode="72150" direction="up" />
+									<swe:uom code="ft" />
+									<swe:value>11.28</swe:value>
+								</swe:Quantity>
+							</wml2:value>
+							<wml2:comment>A</wml2:comment>
+						</wml2:TimeValuePair>
+					</wml2:element>
+					<wml2:element>
+						<wml2:TimeValuePair>
+							<wml2:time>2004-08-14T00:00:00.000</wml2:time>
+							<wml2:value>
+								<swe:Quantity>
+									<gwdp:nwis pcode="72150" direction="up" />
+									<swe:uom code="ft" />
+									<swe:value>11.24</swe:value>
+								</swe:Quantity>
+							</wml2:value>
+							<wml2:comment>A</wml2:comment>
+						</wml2:TimeValuePair>
+					</wml2:element>
+					<wml2:element>
+						<wml2:TimeValuePair>
+							<wml2:time>2004-08-15T00:00:00.000</wml2:time>
+							<wml2:value>
+								<swe:Quantity>
+									<gwdp:nwis pcode="72150" direction="up" />
+									<swe:uom code="ft" />
+									<swe:value>11.23</swe:value>
+								</swe:Quantity>
+							</wml2:value>
+							<wml2:comment>A</wml2:comment>
+						</wml2:TimeValuePair>
+					</wml2:element>
+					<wml2:element>
+						<wml2:TimeValuePair>
+							<wml2:time>2004-08-16T00:00:00.000</wml2:time>
+							<wml2:value>
+								<swe:Quantity>
+									<gwdp:nwis pcode="72150" direction="up" />
+									<swe:uom code="ft" />
+									<swe:value>11.28</swe:value>
+								</swe:Quantity>
+							</wml2:value>
+							<wml2:comment>A</wml2:comment>
+						</wml2:TimeValuePair>
+					</wml2:element>
+					<wml2:element>
+						<wml2:TimeValuePair>
+							<wml2:time>2004-08-17T00:00:00.000</wml2:time>
+							<wml2:value>
+								<swe:Quantity>
+									<gwdp:nwis pcode="72150" direction="up" />
+									<swe:uom code="ft" />
+									<swe:value>11.28</swe:value>
+								</swe:Quantity>
+							</wml2:value>
+							<wml2:comment>A</wml2:comment>
+						</wml2:TimeValuePair>
+					</wml2:element>
+					<wml2:element>
+						<wml2:TimeValuePair>
+							<wml2:time>2004-08-18T00:00:00.000</wml2:time>
+							<wml2:value>
+								<swe:Quantity>
+									<gwdp:nwis pcode="72150" direction="up" />
+									<swe:uom code="ft" />
+									<swe:value>11.24</swe:value>
+								</swe:Quantity>
+							</wml2:value>
+							<wml2:comment>A</wml2:comment>
+						</wml2:TimeValuePair>
+					</wml2:element>
+					<wml2:element>
+						<wml2:TimeValuePair>
+							<wml2:time>2004-08-19T00:00:00.000</wml2:time>
+							<wml2:value>
+								<swe:Quantity>
+									<gwdp:nwis pcode="72150" direction="up" />
+									<swe:uom code="ft" />
+									<swe:value>11.24</swe:value>
+								</swe:Quantity>
+							</wml2:value>
+							<wml2:comment>A</wml2:comment>
+						</wml2:TimeValuePair>
+					</wml2:element>
+					<wml2:element>
+						<wml2:TimeValuePair>
+							<wml2:time>2004-08-20T00:00:00.000</wml2:time>
+							<wml2:value>
+								<swe:Quantity>
+									<gwdp:nwis pcode="72150" direction="up" />
+									<swe:uom code="ft" />
+									<swe:value>11.24</swe:value>
+								</swe:Quantity>
+							</wml2:value>
+							<wml2:comment>A</wml2:comment>
+						</wml2:TimeValuePair>
+					</wml2:element>
+					<wml2:element>
+						<wml2:TimeValuePair>
+							<wml2:time>2004-08-21T00:00:00.000</wml2:time>
+							<wml2:value>
+								<swe:Quantity>
+									<gwdp:nwis pcode="72150" direction="up" />
+									<swe:uom code="ft" />
+									<swe:value>11.27</swe:value>
+								</swe:Quantity>
+							</wml2:value>
+							<wml2:comment>A</wml2:comment>
+						</wml2:TimeValuePair>
+					</wml2:element>
+					<wml2:element>
+						<wml2:TimeValuePair>
+							<wml2:time>2004-08-22T00:00:00.000</wml2:time>
+							<wml2:value>
+								<swe:Quantity>
+									<gwdp:nwis pcode="72150" direction="up" />
+									<swe:uom code="ft" />
+									<swe:value>11.23</swe:value>
+								</swe:Quantity>
+							</wml2:value>
+							<wml2:comment>A</wml2:comment>
+						</wml2:TimeValuePair>
+					</wml2:element>
+					<wml2:element>
+						<wml2:TimeValuePair>
+							<wml2:time>2004-08-23T00:00:00.000</wml2:time>
+							<wml2:value>
+								<swe:Quantity>
+									<gwdp:nwis pcode="72150" direction="up" />
+									<swe:uom code="ft" />
+									<swe:value>11.26</swe:value>
+								</swe:Quantity>
+							</wml2:value>
+							<wml2:comment>A</wml2:comment>
+						</wml2:TimeValuePair>
+					</wml2:element>
+					<wml2:element>
+						<wml2:TimeValuePair>
+							<wml2:time>2004-08-24T00:00:00.000</wml2:time>
+							<wml2:value>
+								<swe:Quantity>
+									<gwdp:nwis pcode="72150" direction="up" />
+									<swe:uom code="ft" />
+									<swe:value>11.27</swe:value>
+								</swe:Quantity>
+							</wml2:value>
+							<wml2:comment>A</wml2:comment>
+						</wml2:TimeValuePair>
+					</wml2:element>
+					<wml2:element>
+						<wml2:TimeValuePair>
+							<wml2:time>2004-08-25T00:00:00.000</wml2:time>
+							<wml2:value>
+								<swe:Quantity>
+									<gwdp:nwis pcode="72150" direction="up" />
+									<swe:uom code="ft" />
+									<swe:value>11.27</swe:value>
+								</swe:Quantity>
+							</wml2:value>
+							<wml2:comment>A</wml2:comment>
+						</wml2:TimeValuePair>
+					</wml2:element>
+					<wml2:element>
+						<wml2:TimeValuePair>
+							<wml2:time>2004-08-26T00:00:00.000</wml2:time>
+							<wml2:value>
+								<swe:Quantity>
+									<gwdp:nwis pcode="72150" direction="up" />
+									<swe:uom code="ft" />
+									<swe:value>11.25</swe:value>
+								</swe:Quantity>
+							</wml2:value>
+							<wml2:comment>A</wml2:comment>
+						</wml2:TimeValuePair>
+					</wml2:element>
+					<wml2:element>
+						<wml2:TimeValuePair>
+							<wml2:time>2004-08-27T00:00:00.000</wml2:time>
+							<wml2:value>
+								<swe:Quantity>
+									<gwdp:nwis pcode="72150" direction="up" />
+									<swe:uom code="ft" />
+									<swe:value>11.28</swe:value>
+								</swe:Quantity>
+							</wml2:value>
+							<wml2:comment>A</wml2:comment>
+						</wml2:TimeValuePair>
+					</wml2:element>
+					<wml2:element>
+						<wml2:TimeValuePair>
+							<wml2:time>2004-08-28T00:00:00.000</wml2:time>
+							<wml2:value>
+								<swe:Quantity>
+									<gwdp:nwis pcode="72150" direction="up" />
+									<swe:uom code="ft" />
+									<swe:value>11.25</swe:value>
+								</swe:Quantity>
+							</wml2:value>
+							<wml2:comment>A</wml2:comment>
+						</wml2:TimeValuePair>
+					</wml2:element>
+					<wml2:element>
+						<wml2:TimeValuePair>
+							<wml2:time>2004-08-29T00:00:00.000</wml2:time>
+							<wml2:value>
+								<swe:Quantity>
+									<gwdp:nwis pcode="72150" direction="up" />
+									<swe:uom code="ft" />
+									<swe:value>11.28</swe:value>
+								</swe:Quantity>
+							</wml2:value>
+							<wml2:comment>A</wml2:comment>
+						</wml2:TimeValuePair>
+					</wml2:element>
+					<wml2:element>
+						<wml2:TimeValuePair>
+							<wml2:time>2004-08-30T00:00:00.000</wml2:time>
+							<wml2:value>
+								<swe:Quantity>
+									<gwdp:nwis pcode="72150" direction="up" />
+									<swe:uom code="ft" />
+									<swe:value>11.28</swe:value>
+								</swe:Quantity>
+							</wml2:value>
+							<wml2:comment>A</wml2:comment>
+						</wml2:TimeValuePair>
+					</wml2:element>
+					<wml2:element>
+						<wml2:TimeValuePair>
+							<wml2:time>2004-08-31T00:00:00.000</wml2:time>
+							<wml2:value>
+								<swe:Quantity>
+									<gwdp:nwis pcode="72150" direction="up" />
+									<swe:uom code="ft" />
+									<swe:value>11.28</swe:value>
+								</swe:Quantity>
+							</wml2:value>
+							<wml2:comment>A</wml2:comment>
+						</wml2:TimeValuePair>
+					</wml2:element>
+					<wml2:element>
+						<wml2:TimeValuePair>
+							<wml2:time>2004-09-01T00:00:00.000</wml2:time>
+							<wml2:value>
+								<swe:Quantity>
+									<gwdp:nwis pcode="72150" direction="up" />
+									<swe:uom code="ft" />
+									<swe:value>11.28</swe:value>
+								</swe:Quantity>
+							</wml2:value>
+							<wml2:comment>A</wml2:comment>
+						</wml2:TimeValuePair>
+					</wml2:element>
+					<wml2:element>
+						<wml2:TimeValuePair>
+							<wml2:time>2004-09-02T00:00:00.000</wml2:time>
+							<wml2:value>
+								<swe:Quantity>
+									<gwdp:nwis pcode="72150" direction="up" />
+									<swe:uom code="ft" />
+									<swe:value>11.30</swe:value>
+								</swe:Quantity>
+							</wml2:value>
+							<wml2:comment>A</wml2:comment>
+						</wml2:TimeValuePair>
+					</wml2:element>
+					<wml2:element>
+						<wml2:TimeValuePair>
+							<wml2:time>2004-09-03T00:00:00.000</wml2:time>
+							<wml2:value>
+								<swe:Quantity>
+									<gwdp:nwis pcode="72150" direction="up" />
+									<swe:uom code="ft" />
+									<swe:value>11.25</swe:value>
+								</swe:Quantity>
+							</wml2:value>
+							<wml2:comment>A</wml2:comment>
+						</wml2:TimeValuePair>
+					</wml2:element>
+					<wml2:element>
+						<wml2:TimeValuePair>
+							<wml2:time>2004-09-04T00:00:00.000</wml2:time>
+							<wml2:value>
+								<swe:Quantity>
+									<gwdp:nwis pcode="72150" direction="up" />
+									<swe:uom code="ft" />
+									<swe:value>11.22</swe:value>
+								</swe:Quantity>
+							</wml2:value>
+							<wml2:comment>A</wml2:comment>
+						</wml2:TimeValuePair>
+					</wml2:element>
+					<wml2:element>
+						<wml2:TimeValuePair>
+							<wml2:time>2004-09-05T00:00:00.000</wml2:time>
+							<wml2:value>
+								<swe:Quantity>
+									<gwdp:nwis pcode="72150" direction="up" />
+									<swe:uom code="ft" />
+									<swe:value>11.26</swe:value>
+								</swe:Quantity>
+							</wml2:value>
+							<wml2:comment>A</wml2:comment>
+						</wml2:TimeValuePair>
+					</wml2:element>
+					<wml2:element>
+						<wml2:TimeValuePair>
+							<wml2:time>2004-09-06T00:00:00.000</wml2:time>
+							<wml2:value>
+								<swe:Quantity>
+									<gwdp:nwis pcode="72150" direction="up" />
+									<swe:uom code="ft" />
+									<swe:value>11.26</swe:value>
+								</swe:Quantity>
+							</wml2:value>
+							<wml2:comment>A</wml2:comment>
+						</wml2:TimeValuePair>
+					</wml2:element>
+					<wml2:element>
+						<wml2:TimeValuePair>
+							<wml2:time>2005-08-14T00:00:00.000</wml2:time>
+							<wml2:value>
+								<swe:Quantity>
+									<gwdp:nwis pcode="72150" direction="up" />
+									<swe:uom code="ft" />
+									<swe:value>11.32</swe:value>
+								</swe:Quantity>
+							</wml2:value>
+							<wml2:comment>A</wml2:comment>
+						</wml2:TimeValuePair>
+					</wml2:element>
+				</wml2:TimeSeries>
+			</om:result>
+		</wml2:WaterMonitoringObservation>
+	</om:member>
+</om:ObservationCollection>

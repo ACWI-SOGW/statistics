@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <title>@project.name@ Version Information</title>
+    </head>
+    <body>
+        <h1>Test data input form</h1>
+		<h3>Version: <span id="project.version">@project.version@</span> built @timestamp@</h3>
+		
+		<form id='statsForm'> <!-- action="/statistics/calculate" method="POST"> -->
+			<span>Input data:</span><br>
+			<textarea rows="15" cols="45" name="data" id="data"></textarea>
+		</form>
+			<button name="calculate" id="calc" style="margin-left:300px;">Calculate</button>
+		<br>
+		<span>Statistics:</span><br>
+		<textarea rows="15" cols="45" name="stats" id="stats"></textarea>
+		<p id="msg"></p>
+		
+    </body>
+	<script src="https://code.jquery.com/jquery-3.3.1.min.js"
+  		integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+  		crossorigin="anonymous">
+  	</script>
+	<script>
+		$('#calc').click(function(){
+			$.post("/statistics/calculate", $('#statsForm').serialize())
+			.done(function(resp) {
+				$('#stats').text(resp)
+				$('#msg').text('success')
+			})
+			.fail(function(resp){
+				$('#msg').text(resp.responseText)
+			})
+		})
+	</script>
+</html>

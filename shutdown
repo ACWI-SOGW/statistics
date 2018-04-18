@@ -1,0 +1,24 @@
+#!/bin/bash
+
+echo ""
+
+if [[ $1 = "--help" ]]; then
+	echo "Usage: $0"
+	echo ""
+	echo "      This send a kill signal to the pid found in app.pid then remove the file"
+	echo ""
+	echo "      --help prints this message"
+	echo ""
+	exit
+fi
+
+echo ""
+if [[ -e app.pid ]]; then
+	echo "Shutting down old service if running, pid " $(cat app.pid)
+	kill $(cat app.pid)
+	rm -f app.pid
+else
+	echo "No app.pid file to shutdown;"
+	echo "if there is a process running then use the stop script."
+fi
+echo ""
