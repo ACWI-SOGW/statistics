@@ -1,8 +1,10 @@
 package gov.usgs.ngwmn.control;
 
+import static gov.usgs.ngwmn.logic.WaterLevelStatistics.*;
 import static org.junit.Assert.*;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -153,6 +155,50 @@ public class StatsServiceTest {
 		
 		ResponseEntity<String> resp = stats.service(data);
 		
-		assertTrue(true);
+		assertEquals(200, resp.getStatusCode().value());
+		assertTrue( resp.toString().contains("200 OK") );
+		assertTrue( resp.getBody().contains(MONTHLY_WARNING) );
+		
+		// checking for no hiddend 300, 400, or 500 status
+		assertFalse( resp.getBody().contains("'status':3") );
+		assertFalse( resp.getBody().contains("'status':4") );
+		assertFalse( resp.getBody().contains("'status':5") );
+	}
+	
+	@Test
+	public void test_doesThisMonthQualifyForStats_hasTenYearsData() throws Exception {
+		StatsService stats = new StatsService();
+
+		String values =
+				"2005-06-10T04:15:00-05:00, 1.0\n"+
+				"2006-06-10T04:15:00-05:00, 2.0\n"+
+				"2007-06-10T04:15:00-05:00, 1.0\n"+
+				"2008-06-10T04:15:00-05:00, 2.0\n"+
+				"2009-06-10T04:15:00-05:00, 1.0\n"+
+				"2010-06-10T04:15:00-05:00, 2.0\n"+
+				"2011-06-10T04:15:00-05:00, 1.0\n"+
+				"2012-06-10T04:15:00-05:00, 2.0\n"+
+				"2013-06-10T04:15:00-05:00, 1.0\n"+
+				"2014-06-10T04:15:00-05:00, 1.0\n"+
+				"2015-06-10T04:15:00-05:00, 1.0\n"+
+				"2016-06-10T04:15:00-05:00, 1.0\n"+
+				"2017-06-10T04:15:00-05:00, 1.0\n"+
+				"2018-06-10T04:15:00-05:00, 1.0\n";
+		
+		Map<String, String> data = new HashMap<>();
+		data.put("data", values);
+		
+		ResponseEntity<String> resp = stats.service(data);
+		System.err.println(resp.getBody());
+		
+		assertEquals(200, resp.getStatusCode().value());
+		assertTrue( resp.toString().contains("200 OK") );
+		assertFalse( resp.getBody().contains(MONTHLY_WARNING) );
+		
+		// checking for no hiddend 300, 400, or 500 status
+		assertFalse( resp.getBody().contains("'status':3") );
+		assertFalse( resp.getBody().contains("'status':4") );
+		assertFalse( resp.getBody().contains("'status':5") );
+
 	}
 }
