@@ -3,36 +3,41 @@
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
         <title>@project.name@ Version Information</title>
+        <style>
+			textarea {
+			  font-family:Consolas,Monaco,Lucida Console,Liberation Mono,DejaVu Sans Mono,Bitstream Vera Sans Mono,Courier New, monospace;
+			}
+        </style>
     </head>
     <body>
         <h1>Test data input form</h1>
 		<h3>Version: <span id="project.version">@project.version@</span> built @timestamp@</h3>
 		
 		<form id='statsForm'> <!-- action="/statistics/calculate" method="POST"> -->
-			<span>Input data:</span><br>
-			<textarea rows="15" cols="50" name="data" id="data" style="font-family:"Lucida Console", Monaco, monospace;">
+			<span>Input data:</span> <span style="color:#AAA;">Reload browser to recover sample data.</span><br>
+			<textarea rows="15" cols="50" name="data" id="data" alt="foo">
 2005-06-10T04:15:00-05:00, 1.000
-2006-06-10T04:15:00-05:00, 2.000
+2006-06-10T04:15:00-05:00, 22.000
 2007-06-10T04:15:00-05:00, 1.000
 2008-06-10T04:15:00-05:00, 2.000
 2009-06-10T04:15:00-05:00, 1.000
-2010-06-10T04:15:00-05:00, 2.000
+2010-06-10T04:15:00-05:00, 20.000
 2011-06-10T04:15:00-05:00, 1.000
 2012-06-10T04:15:00-05:00, 2.000
 2013-06-10T04:15:00-05:00, 1.000
-2014-06-10T04:15:00-05:00, 1.000
+2014-06-10T04:15:00-05:00, 10.000
 2015-06-10T04:15:00-05:00, 1.000
-2016-06-10T04:15:00-05:00, 1.000
+2016-06-10T04:15:00-05:00, 43.000
 2017-06-10T04:15:00-05:00, 1.000
-2018-06-10T04:15:00-05:00, 1.000
+2018-06-10T04:15:00-05:00, 11.000
 			</textarea>
 		</form>
 			<button name="calculate" id="calc" style="margin-left:300px;">Calculate</button>
 		<br><hr><br>
-		<span>Overall Statistics:</span><br>
+		<span>Overall Statistics:</span> <span style="color:#AAA;">Press calculate to populate statistics.</span><br>
 		<textarea rows="12" cols="50" name="stats" id="statsOverall"></textarea>
 		<br>
-		<span>Monthly Statistics:</span><br>
+		<span>Monthly Statistics:</span> <span style="color:#AAA;">Scrolling monthly might be necessary.</span><br>
 		<textarea rows="15" cols="50" name="stats" id="statsMonthly"></textarea>
 		<p id="msg"></p>
 		<br>
@@ -50,7 +55,9 @@
 			$.post("/statistics/calculate", $('#statsForm').serialize())
 			.done(function(resp) {
 				var re = new RegExp(',', 'g');
-				$('#statsOverall').text(JSON.stringify(resp.overall).replace(re,'\n').replace('{','').replace('}'))
+				$('#statsOverall').text(
+					JSON.stringify(resp.overall).replace(re,'\n').replace('{','').replace('}').replace("undefined",'')
+				)
 				$('#statsMonthly').text(JSON.stringify(resp.monthly).replace(re,'\n').replace('{',''))
 				$('#msg').text('success')
 			})
