@@ -10,7 +10,22 @@
 		
 		<form id='statsForm'> <!-- action="/statistics/calculate" method="POST"> -->
 			<span>Input data:</span><br>
-			<textarea rows="15" cols="75" name="data" id="data"></textarea>
+			<textarea rows="15" cols="50" name="data" id="data" style="font-family:"Lucida Console", Monaco, monospace;">
+2005-06-10T04:15:00-05:00, 1.000
+2006-06-10T04:15:00-05:00, 2.000
+2007-06-10T04:15:00-05:00, 1.000
+2008-06-10T04:15:00-05:00, 2.000
+2009-06-10T04:15:00-05:00, 1.000
+2010-06-10T04:15:00-05:00, 2.000
+2011-06-10T04:15:00-05:00, 1.000
+2012-06-10T04:15:00-05:00, 2.000
+2013-06-10T04:15:00-05:00, 1.000
+2014-06-10T04:15:00-05:00, 1.000
+2015-06-10T04:15:00-05:00, 1.000
+2016-06-10T04:15:00-05:00, 1.000
+2017-06-10T04:15:00-05:00, 1.000
+2018-06-10T04:15:00-05:00, 1.000
+			</textarea>
 		</form>
 			<button name="calculate" id="calc" style="margin-left:300px;">Calculate</button>
 		<br><hr><br>
@@ -18,7 +33,7 @@
 		<textarea rows="12" cols="50" name="stats" id="statsOverall"></textarea>
 		<br>
 		<span>Monthly Statistics:</span><br>
-		<textarea rows="15" cols="150" name="stats" id="statsMonthly"></textarea>
+		<textarea rows="15" cols="50" name="stats" id="statsMonthly"></textarea>
 		<p id="msg"></p>
 		<br>
 		<p>This calculates various monthly percentiles using 
@@ -36,7 +51,7 @@
 			.done(function(resp) {
 				var re = new RegExp(',', 'g');
 				$('#statsOverall').text(JSON.stringify(resp.overall).replace(re,'\n').replace('{','').replace('}'))
-				$('#statsMonthly').text(JSON.stringify(resp.monthly).replace(re,'\n'))
+				$('#statsMonthly').text(JSON.stringify(resp.monthly).replace(re,'\n').replace('{',''))
 				$('#msg').text('success')
 			})
 			.fail(function(resp){
