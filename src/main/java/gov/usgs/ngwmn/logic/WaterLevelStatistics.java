@@ -57,6 +57,8 @@ public class WaterLevelStatistics extends StatisticsCalculator<WLSample> {
 	 * 1 year + 1 month + 1.5 weeks or 365 + 30 + 7 + 4 because of how samples are taken and eventually entered.
 	 */
 	protected static final BigDecimal Days406 = new BigDecimal("406");
+	public static final String MONTHLY_WARNING =  "Too few data values for monthly statistics."
+			+ " Ten years required with no gaps and most recent value within " + Days406 + " days.";
 	
 
 	private final transient Logger logger = LoggerFactory.getLogger(getClass());
@@ -145,7 +147,13 @@ public class WaterLevelStatistics extends StatisticsCalculator<WLSample> {
 //		}
 		Map<String, Object> stats = new HashMap<>();
 		stats.put("overall", overall);
-		stats.put("monthly", monthly);
+		
+		if (monthly == null) {
+			stats.put("monthly", MONTHLY_WARNING);
+		} else {
+			stats.put("monthly", monthly);
+		}
+		
 		String json = "";
 		try {
 			json = new ObjectMapper().writeValueAsString(stats);
