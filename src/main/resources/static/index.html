@@ -10,12 +10,15 @@
 		
 		<form id='statsForm'> <!-- action="/statistics/calculate" method="POST"> -->
 			<span>Input data:</span><br>
-			<textarea rows="15" cols="45" name="data" id="data"></textarea>
+			<textarea rows="15" cols="75" name="data" id="data"></textarea>
 		</form>
 			<button name="calculate" id="calc" style="margin-left:300px;">Calculate</button>
+		<br><hr><br>
+		<span>Overall Statistics:</span><br>
+		<textarea rows="12" cols="50" name="stats" id="statsOverall"></textarea>
 		<br>
-		<span>Statistics:</span><br>
-		<textarea rows="15" cols="45" name="stats" id="stats"></textarea>
+		<span>Monthly Statistics:</span><br>
+		<textarea rows="15" cols="150" name="stats" id="statsMonthly"></textarea>
 		<p id="msg"></p>
 		<br>
 		<p>This calculates various monthly percentiles using 
@@ -31,7 +34,9 @@
 		$('#calc').click(function(){
 			$.post("/statistics/calculate", $('#statsForm').serialize())
 			.done(function(resp) {
-				$('#stats').text(resp)
+				var re = new RegExp(',', 'g');
+				$('#statsOverall').text(JSON.stringify(resp.overall).replace(re,'\n').replace('{','').replace('}'))
+				$('#statsMonthly').text(JSON.stringify(resp.monthly).replace(re,'\n'))
 				$('#msg').text('success')
 			})
 			.fail(function(resp){
