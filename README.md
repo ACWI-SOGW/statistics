@@ -42,3 +42,9 @@ $ ./boot dev
 * http://localhost:8765/statistics/calculate
 	the restful service end to post data and returns the statistics calculations JSON response
 
+
+## Screenshots
+
+![Sample Page](sample_page.png)
+
+
