@@ -687,4 +687,8 @@ public class WellRegistry extends WellRegistryKey {
 	public WellRegistry() {
 		super(null,null);
 	}
+
+	public WellRegistry(String agencyCd, String siteNo) {
+		super(agencyCd, siteNo);
+	}
 }

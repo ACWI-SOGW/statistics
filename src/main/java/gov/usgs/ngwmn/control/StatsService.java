@@ -67,8 +67,11 @@ public class StatsService {
 		try {
 			List<WLSample> samples = parseData(body);
 			
-			Specifier spec = new Specifier(new WellRegistry(), WellDataType.WATERLEVEL);
+			WellRegistry site = new WellRegistry("USGS","12340000");
+			Specifier spec = new Specifier(site, WellDataType.WATERLEVEL);
+			
 			String json = new WaterLevelStatistics().calculate(spec,samples);
+			
 			return ResponseEntity.ok(json);
 		} catch (Exception e) {
 			return ResponseEntity.ok("{'status':400,'message':'"+e.getMessage()+"'");
@@ -94,8 +97,8 @@ public class StatsService {
 			}
 			
 			String time = cols[0].trim();
-			if ( 10 < time.length() ) {
-				throw new RuntimeException("The date must be valid (yyyy/mm/dd). " + time);
+			if ( time.length() < 10 ) {
+				throw new RuntimeException("The date must be valid (yyyy-mm-dd). " + time);
 			}
 			
 			try {
