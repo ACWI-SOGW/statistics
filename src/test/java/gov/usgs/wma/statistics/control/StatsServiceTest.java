@@ -1,4 +1,4 @@
-package gov.usgs.ngwmn.control;
+package gov.usgs.wma.statistics.control;
 
 import static gov.usgs.ngwmn.logic.WaterLevelStatistics.*;
 import static org.junit.Assert.*;
@@ -12,6 +12,7 @@ import org.junit.Test;
 import org.springframework.http.ResponseEntity;
 
 import gov.usgs.ngwmn.model.WLSample;
+import gov.usgs.wma.statistics.control.StatsService;
 
 public class StatsServiceTest {
 

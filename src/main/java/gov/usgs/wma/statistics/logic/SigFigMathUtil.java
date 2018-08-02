@@ -1,4 +1,4 @@
-package gov.usgs.ngwmn.logic;
+package gov.usgs.wma.statistics.logic;
 
 import java.math.BigDecimal;
 import java.math.MathContext;

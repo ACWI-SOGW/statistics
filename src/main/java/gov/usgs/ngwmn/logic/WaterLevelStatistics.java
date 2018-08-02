@@ -37,13 +37,11 @@ import java.math.RoundingMode;
 import gov.usgs.ngwmn.model.DepthDatum;
 import gov.usgs.ngwmn.model.PCode;
 import gov.usgs.ngwmn.model.WLSample;
+import gov.usgs.wma.statistics.logic.StatisticsCalculator;
 import gov.usgs.ngwmn.model.Specifier;
 
 public class WaterLevelStatistics extends StatisticsCalculator<WLSample> {
 	
-	// Calendar returns millis for days and after a diff we need the number of days
-	protected static final long MILLISECONDS_PER_DAY = 1000 * 60 * 60 * 24;// ms * sec * min * hr == ms/day
-
 	/**
 	 * This is the agreed upon days window for a recent value. It is computed from
 	 * 1 year + 1 month + 1.5 weeks or 365 + 30 + 7 + 4 because of how samples are taken and eventually entered.
@@ -266,8 +264,8 @@ public class WaterLevelStatistics extends StatisticsCalculator<WLSample> {
 		
 		BigDecimal days  = BigDecimal.ZERO;
 		try {
-			Date begin   = YEAR_MONTH_DAY.parse( fixMissingMonthAndDay(minDate) );
-			Date end     = YEAR_MONTH_DAY.parse( fixMissingMonthAndDay(maxDate) );
+			Date begin   = DATE_FORMAT_FULL.parse( fixMissingMonthAndDay(minDate) );
+			Date end     = DATE_FORMAT_FULL.parse( fixMissingMonthAndDay(maxDate) );
 			
 			Calendar cal = Calendar.getInstance();
 
@@ -452,7 +450,7 @@ public class WaterLevelStatistics extends StatisticsCalculator<WLSample> {
 		stats.put(LATEST_PCTILE, latestPercentile);
 		
 		stats.put(MEDIATION, mediation.toString());
-		stats.put(CALC_DATE, YEAR_MONTH_DAY.format(new Date()));
+		stats.put(CALC_DATE, DATE_FORMAT_FULL.format(new Date()));
 		
 		return stats;
 	}

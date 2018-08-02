@@ -7,7 +7,6 @@ import java.io.InputStream;
 import java.io.Reader;
 import java.math.BigDecimal;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -25,20 +24,16 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 import gov.usgs.ngwmn.model.Elevation;
+import gov.usgs.wma.statistics.logic.StatisticsCalculator;
+import gov.usgs.wma.statistics.model.Value;
 import gov.usgs.ngwmn.logic.WaterlevelMediator;
 import gov.usgs.ngwmn.logic.WaterlevelMediator.ValidationException;
 
-public class WLSample {
+public class WLSample extends Value {
 	private static final Logger logger = LoggerFactory.getLogger(WLSample.class);
 	
-	public static final SimpleDateFormat DATE_FORMAT_FULL  = new SimpleDateFormat("yyyy-MM-dd");
-	public static final SimpleDateFormat DATE_FORMAT_MONTH = new SimpleDateFormat("yyyy-MM");
-	public static final SimpleDateFormat DATE_FORMAT_YEAR  = new SimpleDateFormat("yyyy");
-	public static final String UNKNOWN_VALUE = "unknown";
 	public static final String PROVISIONAL_CODE = "P";
 
-	public final String time;
-	public final BigDecimal value; // this will be depth below land surface
 	public final BigDecimal originalValue;
 	public final String units;
 	public final String comment;
@@ -52,8 +47,7 @@ public class WLSample {
 	
 	public WLSample(String time, BigDecimal value, String units,
 			BigDecimal originalValue, String comment, Boolean up, String pcode, BigDecimal valueAboveDatum) {
-		this.time = time;
-		this.value = value;
+		super(time, value);
 		this.originalValue = originalValue;
 		this.units = units;
 		this.comment = comment;
@@ -169,22 +163,15 @@ public class WLSample {
 		return time;
 	}
 	public String getMonth() {
-		return monthUTC(time);
+		return StatisticsCalculator.monthUTC(time);
 	}
 	public String getYear() {
-		return yearUTC(time);
+		return StatisticsCalculator.yearUTC(time);
 	}
 	public BigDecimal getValue() {
 		return value;
 	}
 	
-	
-	public static String monthUTC(String utc) {
-		return utc.substring(5,7);
-	}
-	public static String yearUTC(String utc) {
-		return utc.substring(0,4);
-	}
 	
 	public static List<WLSample> extractSamples(Reader source, String agencyCd, String siteNo, Elevation elevation) throws IOException, ParserConfigurationException, SAXException {
 		String mySiteId = agencyCd+":"+siteNo;

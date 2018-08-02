@@ -1,13 +1,12 @@
-package gov.usgs.ngwmn.logic;
+package gov.usgs.wma.statistics.logic;
 
-import static gov.usgs.ngwmn.logic.SigFigMathUtil.*;
-import static gov.usgs.ngwmn.model.WLSample.*;
+import static gov.usgs.wma.statistics.model.Value.*;
+import static gov.usgs.wma.statistics.logic.SigFigMathUtil.*;
 
 import java.io.Reader;
 import java.math.BigDecimal;
 import java.math.MathContext;
 import java.math.RoundingMode;
-import java.text.SimpleDateFormat;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -21,6 +20,7 @@ import org.slf4j.LoggerFactory;
 
 import gov.usgs.ngwmn.model.WellDataType;
 import gov.usgs.ngwmn.model.WLSample;
+import gov.usgs.ngwmn.logic.WaterLevelStatistics;
 import gov.usgs.ngwmn.logic.WaterLevelStatistics.MediationType;
 import gov.usgs.ngwmn.model.Specifier;
 
@@ -33,6 +33,8 @@ import gov.usgs.ngwmn.model.Specifier;
  * @author duselman
  */
 public class StatisticsCalculator<S> {
+	private static final Logger logger = LoggerFactory.getLogger(StatisticsCalculator.class);
+	
 	public static final String RECORD_YEARS  = "RECORD_YEARS";
 	public static final String MIN_DATE      = "MIN_DATE";
 	public static final String MAX_DATE      = "MAX_DATE";
@@ -53,10 +55,11 @@ public class StatisticsCalculator<S> {
 	public static final String MEDIATION     = "MEDIATION";
 	public static final String CALC_DATE     = "CALC_DATE";
 
-	public static final SimpleDateFormat YEAR_MONTH_DAY = new SimpleDateFormat("yyyy-MM-dd"); 
-	protected static final SimpleDateFormat YEAR_MONTH = new SimpleDateFormat("yyyy-MM"); 
 	//protected static final BigDecimal HUNDRED = new BigDecimal("100");
 	protected static final BigDecimal TWELVE  = new BigDecimal("12");
+	// Calendar returns millis for days and after a diff we need the number of days
+	protected static final long MILLISECONDS_PER_DAY = 1000 * 60 * 60 * 24;// ms * sec * min * hr == ms/day
+
 	
 	public static final Map<String, BigDecimal> PERCENTILES;
 	static {
@@ -77,8 +80,6 @@ public class StatisticsCalculator<S> {
 		PERCENTILES.put(name, percentile);
 	}
 
-	private final transient Logger logger = LoggerFactory.getLogger(getClass());
-	
 	/**
 	 * Calculates statistics for a specifier where data must be fetched from the database.
 	 * 
@@ -222,7 +223,7 @@ public class StatisticsCalculator<S> {
 	 * @param samples the samples to examine
 	 * @param mySiteId for logging purposes if there are nulls removed to ID the site with nulls
 	 */
-	protected void removeNulls(List<WLSample> samples, String mySiteId) {
+	public static void removeNulls(List<WLSample> samples, String mySiteId) {
 		List<WLSample> nullSamples = new LinkedList<>();
 		
 		for (WLSample sample : samples) {
@@ -240,11 +241,11 @@ public class StatisticsCalculator<S> {
 	}
 	
 	
-	protected String today() {
-		return YEAR_MONTH_DAY.format(new Date());
+	public static String today() {
+		return DATE_FORMAT_FULL.format(new Date());
 	}
 	
-	protected void sortByDateOrder(List<WLSample> samples) {
+	public static void sortByDateOrder(List<WLSample> samples) {
 		Collections.sort(samples, WLSample.TIME_COMPARATOR);
 	}
 
@@ -286,6 +287,13 @@ public class StatisticsCalculator<S> {
 			samples.add(sample);
 		}
 		return yearSamples;
+	}
+	
+	public static String monthUTC(String utc) {
+		return utc.substring(5,7);
+	}
+	public static String yearUTC(String utc) {
+		return utc.substring(0,4);
 	}
 	
 }

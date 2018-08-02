@@ -1,7 +1,7 @@
-package gov.usgs.ngwmn.logic;
+package gov.usgs.wma.statistics.logic;
 
+import static gov.usgs.wma.statistics.logic.SigFigMathUtil.*;
 import static org.junit.Assert.*;
-import static gov.usgs.ngwmn.logic.SigFigMathUtil.*;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -15,6 +15,8 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import gov.usgs.wma.statistics.logic.SigFigMathUtil;
 
 
 /**

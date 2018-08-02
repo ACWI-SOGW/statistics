@@ -1,15 +1,12 @@
 package gov.usgs.ngwmn.logic;
 
-import static gov.usgs.ngwmn.logic.WaterLevelStatistics.*;
-import static gov.usgs.ngwmn.logic.SigFigMathUtil.*;
-import static gov.usgs.ngwmn.logic.StatisticsCalculator.percentileOfValue;
-import static gov.usgs.ngwmn.logic.StatisticsCalculator.valueOfPercentile;
+import static gov.usgs.wma.statistics.logic.SigFigMathUtil.*;
+import static gov.usgs.wma.statistics.logic.StatisticsCalculator.*;
 import static org.junit.Assert.*;
 
-//import static org.mockito.ArgumentMatchers.any;
-//import static org.mockito.Mockito.doAnswer;
-//import static org.mockito.Mockito.mock;
-//import static org.mockito.Mockito.when;
+//import static gov.usgs.ngwmn.logic.WaterLevelStatistics.*;
+//import static org.mockito.ArgumentMatchers.*;
+//import static org.mockito.Mockito.*;
 
 //import java.io.InputStream;
 //import java.io.InputStreamReader;
@@ -41,6 +38,8 @@ import gov.usgs.ngwmn.model.PCode;
 import gov.usgs.ngwmn.model.Specifier;
 import gov.usgs.ngwmn.model.WLSample;
 import gov.usgs.ngwmn.model.WellDataType;
+import gov.usgs.wma.statistics.logic.SigFigMathUtil;
+import gov.usgs.wma.statistics.logic.StatisticsCalculator;
 
 
 public class WaterLevelStatisticsTest {
@@ -370,7 +369,7 @@ public class WaterLevelStatisticsTest {
 		// and it returns 116 for 2016; hence the deprecation and addition of 1900 for a proper year number
 		@SuppressWarnings("deprecation")
 		String year = ""+(date.getYear()+1900);
-		assertEquals(year, WLSample.yearUTC(today) );
+		assertEquals(year, StatisticsCalculator.yearUTC(today) );
 		
 		// months are zero based in Date and humans use one based - i.e. January return zero but we want 1.
 		// further more, for testing we want a double digit month zero padded. There are many ways (and most better)
@@ -378,7 +377,7 @@ public class WaterLevelStatisticsTest {
 		@SuppressWarnings("deprecation")
 		String month = ""+(date.getMonth()+1);
 		month = (month.length() == 1 ?"0" :"") + month;
-		assertEquals(month, WLSample.monthUTC(today) );
+		assertEquals(month, StatisticsCalculator.monthUTC(today) );
 	}
 	
 	@Test
@@ -391,10 +390,10 @@ public class WaterLevelStatisticsTest {
 		String month = dateUTC.substring(5, 7);
 		assertEquals("12", month);
 		
-		year = WLSample.yearUTC(dateUTC);
+		year = StatisticsCalculator.yearUTC(dateUTC);
 		assertEquals("2000", year);
 		
-		month = WLSample.monthUTC(dateUTC);
+		month = StatisticsCalculator.monthUTC(dateUTC);
 		assertEquals("12", month);
 	}
 	
@@ -1708,7 +1707,7 @@ public class WaterLevelStatisticsTest {
 		
 		Map<String,Integer>yearCounts = new HashMap<>();
 		for (WLSample sample : monthSamples) {
-			String year = WLSample.yearUTC(sample.time);
+			String year = StatisticsCalculator.yearUTC(sample.time);
 			Integer count = yearCounts.get(year);
 			if (count == null) {
 				count = 0;
@@ -1754,10 +1753,10 @@ public class WaterLevelStatisticsTest {
 		WLSample sample2003 = null;
 
 		for (WLSample sample : normalizeMutlipleYearlyValues) {
-			if (WLSample.yearUTC(sample.time).equals("1968")) {
+			if (StatisticsCalculator.yearUTC(sample.time).equals("1968")) {
 				sample1968 = sample;
 			}
-			if (WLSample.yearUTC(sample.time).equals("2003")) {
+			if (StatisticsCalculator.yearUTC(sample.time).equals("2003")) {
 				sample2003 = sample;
 			}
 		}
