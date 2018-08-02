@@ -4,7 +4,6 @@ import static gov.usgs.ngwmn.logic.WaterLevelStatistics.*;
 import static org.junit.Assert.*;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
