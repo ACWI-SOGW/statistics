@@ -1,13 +1,16 @@
 package gov.usgs.ngwmn.logic;
 
-import static gov.usgs.ngwmn.data.WaterLevelStatsDAO.*;
 import static gov.usgs.ngwmn.model.WLSample.*;
 import static  org.apache.commons.lang.StringUtils.*;
 
-import java.io.IOException;
-import java.io.Reader;
+//import java.io.IOException;
+//import java.io.Reader;
+//import java.sql.SQLException;
+//import javax.xml.parsers.ParserConfigurationException;
+//import org.springframework.beans.factory.annotation.Autowired;
+//import org.xml.sax.SAXException;
+
 import java.math.BigDecimal;
-import java.sql.SQLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -23,26 +26,39 @@ import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-import javax.xml.parsers.ParserConfigurationException;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.xml.sax.SAXException;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.math.RoundingMode;
 
-import gov.usgs.ngwmn.data.WaterLevelDAO;
-import gov.usgs.ngwmn.data.WaterLevelStatsDAO;
 import gov.usgs.ngwmn.model.DepthDatum;
 import gov.usgs.ngwmn.model.PCode;
 import gov.usgs.ngwmn.model.WLSample;
 import gov.usgs.ngwmn.model.Specifier;
 
 public class WaterLevelStatistics extends StatisticsCalculator<WLSample> {
+	public static final String RECORD_YEARS  = "RECORD_YEARS";
+	public static final String MIN_DATE      = "MIN_DATE";
+	public static final String MAX_DATE      = "MAX_DATE";
+	public static final String MIN_VALUE     = "MIN_VALUE";
+	public static final String MAX_VALUE     = "MAX_VALUE";
+	public static final String P50_MIN       = "P50_MIN";
+	public static final String P50_MAX       = "P50_MAX";
+	public static final String SAMPLE_COUNT  = "SAMPLE_COUNT";
+	public static final String P10           = "P10";
+	public static final String P25           = "P25";
+	public static final String P50           = "P50";
+	public static final String P75           = "P75";
+	public static final String P90           = "P90";
+	public static final String MEDIAN        = "MEDIAN"; // P50
+	public static final String LATEST_PCTILE = "LATEST_PCTILE";
+	public static final String IS_RANKED     = "IS_RANKED";
+	public static final String LATEST_VALUE  = "LATEST_VALUE";
+	public static final String MEDIATION     = "MEDIATION";
+	public static final String CALC_DATE     = "CALC_DATE";
 
 	protected static final SimpleDateFormat YEAR_MONTH = new SimpleDateFormat("yyyy-MM"); 
 	public static final SimpleDateFormat YEAR_MONTH_DAY = new SimpleDateFormat("yyyy-MM-dd"); 
@@ -79,33 +95,8 @@ public class WaterLevelStatistics extends StatisticsCalculator<WLSample> {
 		AboveDatum;
 	}
 	
-
-	@Autowired
-	protected WaterLevelDAO waterlevelDAO;
-	@Autowired
-	protected WaterLevelStatsDAO waterlevelstatsDAO;
-	
-	
 	// TODO business rule for any one value error? continue without value or error entire statistics calculation?
 
-	@Override
-	public String calculate(Specifier spec, Reader xmlData) throws IOException, SQLException {
-		
-		List<WLSample> samples;
-		try {
-			samples = waterlevelDAO.extractSamples(xmlData, spec.getAgencyCd(), spec.getSiteNo());
-		} catch (ParserConfigurationException e) {
-			throw new IOException("Failed to Parse XML Clob for " + spec,e);
-		} catch (SAXException e) {
-			throw new IOException("Failed to Parse XML Clob for " + spec,e);
-		}
-		return calculate(spec, samples);
-	}
-	@Override
-	public String calculate(Specifier spec) throws SQLException {
-		List<WLSample> samples = waterlevelDAO.getTimeSeries(spec);
-		return calculate(spec, samples);
-	}
 	@Override
 	public String calculate(Specifier spec, List<WLSample> samples) {
 		logger.info("Executing WaterLevel Stats calculations.");
@@ -139,12 +130,6 @@ public class WaterLevelStatistics extends StatisticsCalculator<WLSample> {
 		} else {
 			logger.warn("Record Years is null for {}:{}, by passing monthly stats.", spec.getAgencyCd(), spec.getSiteNo());
 		}
-//		try {
-//			waterlevelstatsDAO.update(spec, overall, monthly);
-//		} catch (SQLException e1) {
-//			// TODO Auto-generated catch block
-//			e1.printStackTrace();
-//		}
 		Map<String, Object> stats = new HashMap<>();
 		stats.put("overall", overall);
 		
@@ -502,9 +487,11 @@ public class WaterLevelStatistics extends StatisticsCalculator<WLSample> {
 			return new HashMap<String,String>();
 		}
 		
+		Map<String,String> stats = findMinMaxDatesAndDateRange(samples,sortedByValue); // after this samples is sorted by date for certain
+		
 		WLSample minValue = sortedByValue.get(0);
 		WLSample maxValue = sortedByValue.get(sortedByValue.size()-1);
-		Map<String,String> stats = findMinMaxDatesAndDateRange(samples,sortedByValue); // after this samples is sorted by date for certain
+
 		stats.put(IS_RANKED, "N"); // default not ranked status
 
 		// value range
@@ -574,14 +561,6 @@ public class WaterLevelStatistics extends StatisticsCalculator<WLSample> {
 		} else {
 			sortByValueOrderAscending(sortedByValue);
 		}
-	}
-	
-
-//	public void setWaterlevelDAO(WaterLevelDAO waterlevelDAO) {
-//		this.waterlevelDAO = waterlevelDAO;
-//	}
-	public void setWaterlevelstatsDAO(WaterLevelStatsDAO waterlevelstatsDAO) {
-		this.waterlevelstatsDAO = waterlevelstatsDAO;
 	}
 	
 	public List<WLSample> normalizeMutlipleYearlyValues(List<WLSample> monthSamples, MediationType mediation) {

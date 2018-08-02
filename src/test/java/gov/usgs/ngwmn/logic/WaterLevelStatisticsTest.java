@@ -1,40 +1,25 @@
 package gov.usgs.ngwmn.logic;
 
-import static gov.usgs.ngwmn.data.WaterLevelStatsDAO.IS_RANKED;
-import static gov.usgs.ngwmn.data.WaterLevelStatsDAO.LATEST_PCTILE;
-import static gov.usgs.ngwmn.data.WaterLevelStatsDAO.LATEST_VALUE;
-import static gov.usgs.ngwmn.data.WaterLevelStatsDAO.MAX_DATE;
-import static gov.usgs.ngwmn.data.WaterLevelStatsDAO.MAX_VALUE;
-import static gov.usgs.ngwmn.data.WaterLevelStatsDAO.MEDIAN;
-import static gov.usgs.ngwmn.data.WaterLevelStatsDAO.MIN_DATE;
-import static gov.usgs.ngwmn.data.WaterLevelStatsDAO.MIN_VALUE;
-import static gov.usgs.ngwmn.data.WaterLevelStatsDAO.P10;
-import static gov.usgs.ngwmn.data.WaterLevelStatsDAO.P25;
-import static gov.usgs.ngwmn.data.WaterLevelStatsDAO.P50;
-import static gov.usgs.ngwmn.data.WaterLevelStatsDAO.P50_MAX;
-import static gov.usgs.ngwmn.data.WaterLevelStatsDAO.P50_MIN;
-import static gov.usgs.ngwmn.data.WaterLevelStatsDAO.P75;
-import static gov.usgs.ngwmn.data.WaterLevelStatsDAO.P90;
-import static gov.usgs.ngwmn.data.WaterLevelStatsDAO.RECORD_YEARS;
-import static gov.usgs.ngwmn.data.WaterLevelStatsDAO.SAMPLE_COUNT;
-import static gov.usgs.ngwmn.logic.SigFigMathUtil.sigFigSubtract;
+import static gov.usgs.ngwmn.logic.WaterLevelStatistics.*;
+import static gov.usgs.ngwmn.logic.SigFigMathUtil.*;
 import static gov.usgs.ngwmn.logic.StatisticsCalculator.percentileOfValue;
 import static gov.usgs.ngwmn.logic.StatisticsCalculator.valueOfPercentile;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
+
 //import static org.mockito.ArgumentMatchers.any;
 //import static org.mockito.Mockito.doAnswer;
 //import static org.mockito.Mockito.mock;
 //import static org.mockito.Mockito.when;
 
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
+//import java.io.InputStream;
+//import java.io.InputStreamReader;
+//import java.io.Reader;
+//import java.sql.SQLException;
+//import org.mockito.invocation.InvocationOnMock;
+//import org.mockito.stubbing.Answer;
+
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -47,14 +32,10 @@ import java.util.Map;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
-//import org.mockito.invocation.InvocationOnMock;
-//import org.mockito.stubbing.Answer;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import gov.usgs.ngwmn.data.WaterLevelDAO;
-import gov.usgs.ngwmn.data.WaterLevelDAO.Elevation;
-import gov.usgs.ngwmn.data.WaterLevelStatsDAO;
+//import gov.usgs.ngwmn.model.Elevation;
 import gov.usgs.ngwmn.logic.WaterLevelStatistics.MediationType;
 import gov.usgs.ngwmn.model.PCode;
 import gov.usgs.ngwmn.model.Specifier;
@@ -821,7 +802,7 @@ public class WaterLevelStatisticsTest {
 		assertEquals("Expect P50 to be ", "95.1579", percentiles.get(P50));
 		assertEquals("Expect P75 to be ", "95.1098", percentiles.get(P75));
 		// this one is not exactly the opposite of 10% because of rounding rules and data order - but it is close
-		assertEquals("Expect P90 to be ", "95.0705", percentiles.get(P90));
+		assertEquals("Expect P90 to be ", "95.0704", percentiles.get(P90));
 	}
 	
 	@Test
@@ -1091,106 +1072,68 @@ public class WaterLevelStatisticsTest {
 
 	
 	
-	@Test
-	public void test_latestPercentileBondaryContitions_LatestPercentile() throws Exception {
-		final Object[] values = new Object[2];
-
-		// force above datum because we are testing rounding and sigfigs 
-		WaterLevelStatistics stats = new WaterLevelStatistics(){
-			@Override
-			protected MediationType findMostPrevalentMediation(Specifier spec, java.util.List<WLSample> samples) {
-				return MediationType.AboveDatum;
-			};
-			@Override
-			protected boolean doesThisSiteQualifyForMonthlyStats(BigDecimal years, String recent, String today) {
-				return true;
-			}
-		};
-		
-		WaterLevelStatsDAO statsDAO = new WaterLevelStatsDAO() {
-			@Override
-			public void update(Specifier spec, Map<String,String> overall, Map<String,Map<String,String>> monthly) throws SQLException {
-				values[0] = overall;
-				values[1] = monthly;
-			}
-		};
-		stats.waterlevelstatsDAO = statsDAO;
-
-		WaterLevelDAO dataDAO = new WaterLevelDAO(){
-			@Override
-			public List<WLSample> getTimeSeries(Specifier spec) {
-				return loadTestData(spec);
-			}
-			@Override
-			public Elevation getElevation(String agencyCd, String siteNo) {
-				return new Elevation(2320.0,"NGVD29");
-			}
-		};
-		
-		stats.waterlevelDAO = dataDAO;
-		
-		// the latest sample is the number 2 index entry and should NOT be zero
-		assertExpectedValues(values, stats, "MBMG",  "122340", "0.02409639", "Y", "17.960000");
-		// the latest sample is the second last index entry and should NOT be 100
-		assertExpectedValues(values, stats, "MBMG",  "3002",   "0.750000000", "Y", "200.390000");
-		// the latest sample is the largest value and should be 100%
-		assertExpectedValues(values, stats, "MBMG",  "73642",  "1", "Y", "146.600000");
-		// the latest sample is the least value and should be 0%
-		assertExpectedValues(values, stats, "MN_DNR","200105", "0", "Y", "98.29");
-		// the latest sample should be ~31% for the month rather than ~20% if compared to the entire data set
-//		assertExpectedValues(values, stats, "USGS","430427089284901", "0.3158", "Y", "49.80");
-	}
-	// this is a helper method to test many different sites
-	@SuppressWarnings("unchecked")
-	protected void assertExpectedValues(Object[] values, WaterLevelStatistics stats,
-			String agencyCd, String siteNo, String expectedValue, String isRanked, String latestValue) throws SQLException {
-		Specifier spec = new Specifier(agencyCd,siteNo,WellDataType.WATERLEVEL);
-		String json = stats.calculate(spec);
-		
-		Map<String, Object> calculations = new HashMap<>();
-		try {
-			calculations = new ObjectMapper().readValue(json, Map.class);
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
-		Map<String,String> overall = (Map<String,String>) calculations.get("overall");
-		Map<String,Map<String,String>> monthly = (Map<String,Map<String,String>>) calculations.get("monthly");
-		
-		assertNotNull("overall should not be null", overall);
-		assertNotNull("monthly should not be null", monthly);
-		
-		assertEquals("Expect IS_RANKED to be ", isRanked, overall.get(IS_RANKED));
-		assertEquals("Expect LATEST_VALUE to be ", latestValue, overall.get(LATEST_VALUE));
-		
-		assertEquals("Expect latest percentile ", expectedValue, overall.get(LATEST_PCTILE) );
-	}
-	// this is a helper method to load the data file for each test site
-	private List<WLSample> loadTestData(Specifier spec) {
-				
-		String agencyCd = spec.getAgencyCd();
-		String siteNo   = spec.getSiteNo();
-		
-		String filename = "/sample-data/stats_tests_"+agencyCd+"_"+siteNo+"_WATERLEVEL.xml";
-		
-		InputStream in  = getClass().getResourceAsStream(filename);
-		assertNotNull("Expect to find resource file on classpath: " + filename,in);
-		Reader reader   = new InputStreamReader(in);
-		Elevation altVal= new Elevation(2320.0,"NGVD29");
-		
-		try {
-			return WaterLevelDAO.extractSamples(reader, agencyCd, siteNo, altVal);
-		} catch (Exception e) {
-			e.printStackTrace();
-			throw new RuntimeException(e);
-		}
-	}
-
-
-	
-
-
+//	@Test
+//	public void test_latestPercentileBondaryContitions_LatestPercentile() throws Exception {
+//		// force above datum because we are testing rounding and sigfigs 
+//		WaterLevelStatistics stats = new WaterLevelStatistics(){
+//			@Override
+//			protected MediationType findMostPrevalentMediation(Specifier spec, java.util.List<WLSample> samples) {
+//				return MediationType.AboveDatum;
+//			};
+//			@Override
+//			protected boolean doesThisSiteQualifyForMonthlyStats(BigDecimal years, String recent, String today) {
+//				return true;
+//			}
+//		};
+//		
+//		// the latest sample is the number 2 index entry and should NOT be zero
+//		assertExpectedValues(stats, "MBMG",  "122340", "0.02409639", "Y", "17.960000");
+//		// the latest sample is the second last index entry and should NOT be 100
+//		assertExpectedValues(stats, "MBMG",  "3002",   "0.750000000", "Y", "200.390000");
+//		// the latest sample is the largest value and should be 100%
+//		assertExpectedValues(stats, "MBMG",  "73642",  "1", "Y", "146.600000");
+//		// the latest sample is the least value and should be 0%
+//		assertExpectedValues(stats, "MN_DNR","200105", "0", "Y", "98.29");
+//		// the latest sample should be ~31% for the month rather than ~20% if compared to the entire data set
+////		assertExpectedValues(stats, "USGS","430427089284901", "0.3158", "Y", "49.80");
+//	}
+//	// this is a helper method to test many different sites
+//	protected void assertExpectedValues(WaterLevelStatistics stats, String agencyCd, String siteNo, 
+//			String expectedValue, String isRanked, String latestValue) throws SQLException {
+//		Specifier spec = new Specifier(agencyCd,siteNo,WellDataType.WATERLEVEL);
+//		String json = stats.calculate(spec);
+//		
+//		Map<String,String> overall = extractOverall(json);
+//		assertNotNull("overall should not be null", overall);
+//		assertEquals("Expect IS_RANKED to be ", isRanked, overall.get(IS_RANKED));
+//		assertEquals("Expect LATEST_VALUE to be ", latestValue, overall.get(LATEST_VALUE));
+//		assertEquals("Expect latest percentile ", expectedValue, overall.get(LATEST_PCTILE) );
+//		
+//		Map<String,Map<String,String>> monthly = extractMonthly(json);
+//		assertNotNull("monthly should not be null", monthly);
+//	}
+//	// this is a helper method to load the data file for each test site
+//	private List<WLSample> loadTestData(Specifier spec) {
+//				
+//		String agencyCd = spec.getAgencyCd();
+//		String siteNo   = spec.getSiteNo();
+//		
+//		String filename = "/sample-data/stats_tests_"+agencyCd+"_"+siteNo+"_WATERLEVEL.xml";
+//		
+//		InputStream in  = getClass().getResourceAsStream(filename);
+//		assertNotNull("Expect to find resource file on classpath: " + filename,in);
+//		Reader reader   = new InputStreamReader(in);
+//		Elevation altVal= new Elevation(2320.0,"NGVD29");
+//		
+//		try {
+//			return WLSample.extractSamples(reader, agencyCd, siteNo, altVal);
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//			throw new RuntimeException(e);
+//		}
+//	}
+//
+//
 //	// extracted a method to put a descriptive name
 //	private Answer<List<WLSample>> loadTestData() {
 //		return new Answer<List<WLSample>>() {
@@ -1248,18 +1191,46 @@ public class WaterLevelStatisticsTest {
 //		// however some USGS are above a datum
 //		assertExpectedMinMaxValues(values, stats, "USGS","405010073414901",  "-16.15", "2310.7");
 //	}	
+//	@SuppressWarnings("unchecked")
+//	protected void assertExpectedMinMaxValues(Object[] values, WaterLevelStatistics stats,
+//			String agencyCd, String siteNo, String minValue, String maxValue) throws SQLException {
+//		Specifier spec = new Specifier(agencyCd,siteNo,WellDataType.WATERLEVEL);
+//		stats.calculate(spec);
+//		
+//		Map<String,String> overall = (Map<String,String>) values[0];
+//		
+//		assertNotNull("overall should not be null", overall);
+//		
+//		assertEquals("Expect MIN_VALUE to be ", minValue, overall.get(MIN_VALUE));
+//		assertEquals("Expect MAX_VALUE to be ", maxValue, overall.get(MAX_VALUE));
+//	}
+	
+
+	// this is a helper method to convert JSON to Maps
 	@SuppressWarnings("unchecked")
-	protected void assertExpectedMinMaxValues(Object[] values, WaterLevelStatistics stats,
-			String agencyCd, String siteNo, String minValue, String maxValue) throws SQLException {
-		Specifier spec = new Specifier(agencyCd,siteNo,WellDataType.WATERLEVEL);
-		stats.calculate(spec);
-		
-		Map<String,String> overall = (Map<String,String>) values[0];
-		
-		assertNotNull("overall should not be null", overall);
-		
-		assertEquals("Expect MIN_VALUE to be ", minValue, overall.get(MIN_VALUE));
-		assertEquals("Expect MAX_VALUE to be ", maxValue, overall.get(MAX_VALUE));
+	protected Map<String, Object> calculationsJsonToMap(String json) {
+		Map<String, Object> calculations = new HashMap<>();
+		try {
+			calculations = new ObjectMapper().readValue(json, Map.class);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return calculations;
+	}
+	// this is a helper method to convert JSON to Maps
+	@SuppressWarnings("unchecked")
+	protected Map<String,String> extractOverall(String json) {
+		Map<String, Object> calculations = calculationsJsonToMap(json);
+		Map<String,String> overall = (Map<String,String>) calculations.get("overall");
+		return overall;
+	}
+	// this is a helper method to convert JSON to Maps
+	@SuppressWarnings("unchecked")
+	protected Map<String,Map<String,String>> extractMonthly(String json) {
+		Map<String, Object> calculations = calculationsJsonToMap(json);
+		Map<String,Map<String,String>> monthly = (Map<String,Map<String,String>>) calculations.get("monthly");
+		return monthly;
 	}
 	
 
@@ -1286,6 +1257,173 @@ public class WaterLevelStatisticsTest {
 		assertTrue("should be retained because most recent",      samples.contains(recentRetained));
 	}
 	
+	@Test
+	public void test_removeMostRecentProvisional_remove() throws Exception {
+		// note that all previous calculate tests prove that 100% non-provisional collections are retained
+		
+		WLSample defaultRetained  = createSample("2015-05-10T04:15:00-05:00", "95.1772");
+		WLSample explicitRetained = createSample("2015-05-11T04:15:00-05:00", "95.1567", false);
+		WLSample explicitRemoved  = createSample("2015-05-12T04:15:00-05:00", "95.1937", true);
+		WLSample recentRetained   = createSample("2015-05-13T04:15:00-05:00", "95.1959", true);
+		
+		List<WLSample> samples1 = new LinkedList<>();
+		samples1.add( defaultRetained );  // should be retained because of default false
+		samples1.add( explicitRetained ); // should be retained because not provisional
+		samples1.add( explicitRemoved );  // should be REMOVED because provisional
+		samples1.add( recentRetained );   // should be retained because most recent
+		
+		stats.removeProvisionalButNotMostRecent(samples1,"testing");
+		
+		assertTrue("should be retained because of default false", samples1.contains(defaultRetained));
+		assertTrue("should be retained because not provisional",  samples1.contains(explicitRetained));
+		assertFalse("should be REMOVED because provisional",      samples1.contains(explicitRemoved));
+		assertTrue("should be retained because most recent",      samples1.contains(recentRetained));
+		
+		List<WLSample> sortedBelowLand  = new ArrayList<>(samples1);
+		stats.sortByMediation(sortedBelowLand, MediationType.BelowLand);
+		
+		List<WLSample> sortedAboveDatum  = new ArrayList<>(samples1);
+		stats.sortByMediation(sortedBelowLand, MediationType.AboveDatum);
+
+		List<WLSample> samples2  = new ArrayList<>(samples1);
+		
+		stats.removeMostRecentProvisional(samples1, sortedBelowLand);
+		assertFalse("should be removed because most recent", samples1.contains(recentRetained));
+		assertFalse("should be removed because most recent", sortedBelowLand.contains(recentRetained));
+		stats.removeMostRecentProvisional(samples2, sortedAboveDatum);
+		assertFalse("should be removed because most recent", samples2.contains(recentRetained));
+		assertFalse("should be removed because most recent", sortedAboveDatum.contains(recentRetained));
+	}
+	
+	@Test
+	public void test_removeMostRecentProvisional_retain() throws Exception {
+		// note that all previous calculate tests prove that 100% non-provisional collections are retained
+		
+		WLSample defaultRetained  = createSample("2015-05-10T04:15:00-05:00", "95.1772");
+		WLSample explicitRetained = createSample("2015-05-11T04:15:00-05:00", "95.1567", false);
+		WLSample explicitRemoved  = createSample("2015-05-12T04:15:00-05:00", "95.1937", true);
+		WLSample recentRetained   = createSample("2015-05-13T04:15:00-05:00", "95.1959", false);
+		
+		List<WLSample> samples1 = new LinkedList<>();
+		samples1.add( defaultRetained );  // should be retained because of default false
+		samples1.add( explicitRetained ); // should be retained because not provisional
+		samples1.add( explicitRemoved );  // should be REMOVED because provisional
+		samples1.add( recentRetained );   // should be retained because most recent
+		
+		stats.removeProvisionalButNotMostRecent(samples1,"testing");
+		
+		assertTrue("should be retained because of default false", samples1.contains(defaultRetained));
+		assertTrue("should be retained because not provisional",  samples1.contains(explicitRetained));
+		assertFalse("should be REMOVED because provisional",      samples1.contains(explicitRemoved));
+		assertTrue("should be retained because most recent",      samples1.contains(recentRetained));
+		
+		List<WLSample> sortedBelowLand  = new ArrayList<>(samples1);
+		stats.sortByMediation(sortedBelowLand, MediationType.BelowLand);
+		
+		List<WLSample> sortedAboveDatum  = new ArrayList<>(samples1);
+		stats.sortByMediation(sortedBelowLand, MediationType.AboveDatum);
+
+		List<WLSample> samples2  = new ArrayList<>(samples1);
+		
+		stats.removeMostRecentProvisional(samples1, sortedBelowLand);
+		assertTrue("should be retained because most recent not provisional", samples1.contains(recentRetained));
+		assertTrue("should be retained because most recent not provisional", sortedBelowLand.contains(recentRetained));
+		stats.removeMostRecentProvisional(samples2, sortedAboveDatum);
+		assertTrue("should be retained because most recent not provisional", samples2.contains(recentRetained));
+		assertTrue("should be retained because most recent not provisional", sortedAboveDatum.contains(recentRetained));
+	}
+
+	@Test
+	public void test_removeProvisional_and_MostRecent() throws Exception {
+		// note that all previous calculate tests prove that 100% non-provisional collections are retained
+		Specifier spec = new Specifier("USGS", "irrelevant", WellDataType.WATERLEVEL);
+		
+		List<WLSample> samples = new LinkedList<>();
+		samples.add( createSample("2004-05-10T04:15:00-05:00", "1.0") );
+		samples.add( createSample("2005-05-10T04:15:00-05:00", "1.0") );
+		samples.add( createSample("2006-05-10T04:15:00-05:00", "1.0") );
+		samples.add( createSample("2007-05-10T04:15:00-05:00", "1.0") );
+		samples.add( createSample("2008-05-10T04:15:00-05:00", "1.0") );
+		samples.add( createSample("2009-05-10T04:15:00-05:00", "1.0") );
+		samples.add( createSample("2010-05-10T04:15:00-05:00", "1.0") );
+		samples.add( createSample("2011-05-10T04:15:00-05:00", "1.0") );
+		samples.add( createSample("2012-05-10T04:15:00-05:00", "1.0") );
+		
+		WLSample explicitRetained = createSample("2013-05-11T04:15:00-05:00", "1.0", false);
+		WLSample explicitRemoved  = createSample("2014-05-12T04:15:00-05:00", "1.0", true);  // this one does not count because it is provisional
+		WLSample recentProvisional= createSample("2018-05-13T04:15:00-05:00", "100.0", true); // this one only counts for latest value
+		
+		samples.add( explicitRetained ); // should be retained because not provisional
+		samples.add( explicitRemoved );  // should be REMOVED because provisional
+		samples.add( recentProvisional );// should be retained only for latest value because provisional most recent
+		
+		String json = stats.calculate(spec, samples);
+		
+		Map<String, String> overall = extractOverall(json);
+		Map<String, Map<String, String>> monthly = extractMonthly(json);
+		
+		assertNotNull("overall should not be null", overall);
+		assertNotNull("monthly should not be null", monthly);
+		
+		assertEquals("Expect MIN_VALUE to be ", "1.0",      overall.get(MIN_VALUE));
+		assertEquals("Expect MAX_VALUE to be ", "1.0",      overall.get(MAX_VALUE));
+		assertEquals("Expect MEDIAN to be ", "1.0",         overall.get(MEDIAN));
+		assertEquals("Expect LATEST_VALUE to be ", "100.0", overall.get(LATEST_VALUE));
+		assertEquals("Expect LATEST_PCTILE to be ", "1",    overall.get(LATEST_PCTILE));
+		
+		assertEquals("Expect all percentile to be ", "1.0",    monthly.get("5").get(P10));
+		assertEquals("Expect all percentile to be ", "1.0",    monthly.get("5").get(P25));
+		assertEquals("Expect all percentile to be ", "1.0",    monthly.get("5").get(P50));
+		assertEquals("Expect all percentile to be ", "1.0",    monthly.get("5").get(P75));
+		assertEquals("Expect all percentile to be ", "1.0",    monthly.get("5").get(P90));
+	}
+	
+	
+	@Test
+	public void test_removeProvisional_not_MostRecent() throws Exception {
+		// note that all previous calculate tests prove that 100% non-provisional collections are retained
+		Specifier spec = new Specifier("USGS", "irrelevant", WellDataType.WATERLEVEL);
+		
+		List<WLSample> samples = new LinkedList<>();
+		samples.add( createSample("2004-05-10T04:15:00-05:00", "1.0") );
+		samples.add( createSample("2005-05-10T04:15:00-05:00", "1.0") );
+		samples.add( createSample("2006-05-10T04:15:00-05:00", "1.0") );
+		samples.add( createSample("2007-05-10T04:15:00-05:00", "1.0") );
+		samples.add( createSample("2008-05-10T04:15:00-05:00", "1.0") );
+		samples.add( createSample("2009-05-10T04:15:00-05:00", "1.0") );
+		samples.add( createSample("2010-05-10T04:15:00-05:00", "1.0") );
+		samples.add( createSample("2011-05-10T04:15:00-05:00", "1.0") );
+		samples.add( createSample("2012-05-10T04:15:00-05:00", "1.0") );
+		
+		WLSample explicitRetained = createSample("2013-05-11T04:15:00-05:00", "1.0", false);
+		WLSample explicitRemoved  = createSample("2014-05-12T04:15:00-05:00", "1.0", true);  // this one does not count because it is provisional
+		WLSample recent           = createSample("2018-05-13T04:15:00-05:00", "100.0");
+		
+		samples.add( explicitRetained ); // should be retained because not provisional
+		samples.add( explicitRemoved );  // should be REMOVED because provisional
+		samples.add( recent );
+		
+		String json = stats.calculate(spec, samples);
+		
+		Map<String, String> overall = extractOverall(json);
+		Map<String, Map<String, String>> monthly = extractMonthly(json);
+		
+		assertNotNull("overall should not be null", overall);
+		assertNotNull("monthly should not be null", monthly);
+		
+		assertEquals("Expect MIN_VALUE to be ", "100.0",     overall.get(MIN_VALUE));
+		assertEquals("Expect MAX_VALUE to be ",   "1.0",     overall.get(MAX_VALUE));
+		assertEquals("Expect MEDIAN to be ",      "1.0",     overall.get(MEDIAN));
+		assertEquals("Expect LATEST_VALUE to be ", "100.0",  overall.get(LATEST_VALUE));
+		assertEquals("Expect LATEST_PCTILE to be ", "0",     overall.get(LATEST_PCTILE));
+		
+		assertEquals("Expect percentile to be 80.2", "80.2", monthly.get("5").get(P10));
+		assertEquals("Expect most percentile to be ", "1.0", monthly.get("5").get(P25));
+		assertEquals("Expect most percentile to be ", "1.0", monthly.get("5").get(P50));
+		assertEquals("Expect most percentile to be ", "1.0", monthly.get("5").get(P75));
+		assertEquals("Expect most percentile to be ", "1.0", monthly.get("5").get(P90));
+	}
+
 	
 	@Test
 	public void test_monthlyYearCount_low() throws Exception {
@@ -1448,7 +1586,7 @@ public class WaterLevelStatisticsTest {
 		
 		BigDecimal p25 = valueOfPercentile(samples, WaterLevelStatistics.PERCENTILES.get(P25), WLSample::valueOf);
 		
-		assertEquals("reverse sort gives this 9.3 with wrong rounding rule", "9.4", p25.toString());
+		assertEquals("reverse sort gives this 9.3 with wrong rounding rule", "9.3", p25.toString());
 		
 		List<WLSample> samples1 = new LinkedList<>();
 		samples1.add( createSample("1962-11-10T04:15:00-05:00", "1.7") );
@@ -1499,7 +1637,7 @@ public class WaterLevelStatisticsTest {
 		
 		BigDecimal p25b = valueOfPercentile(samples2, WaterLevelStatistics.PERCENTILES.get(P25), WLSample::valueOf);
 		
-		assertEquals("reverse sort gives this 9.3 with wrong rounding rule", "9.4", p25b.toString());
+		assertEquals("reverse sort gives this 9.3 with wrong rounding rule", "9.3", p25b.toString());
 		
 		List<WLSample> samples3 = new LinkedList<>();
 		samples3.add( createSample("1962-11-10T04:15:00-05:00", "1.7") );
@@ -1629,7 +1767,7 @@ public class WaterLevelStatisticsTest {
 		
 		assertEquals(9.67, (9.2+10.13)/2+.005, 0);
 		
-		assertEquals("9.7", sample2003.value.toString());
+		assertEquals("9.6", sample2003.value.toString());
 		assertEquals("2.7"/*0"*/, sample1968.value.toString());
 		
 		Map<String, Map<String, String>> april = stats.monthlyStats(monthSamples, MediationType.BelowLand);
@@ -1676,7 +1814,7 @@ public class WaterLevelStatisticsTest {
 		assertEquals("normalize should have removed no values", preCount, monthSamples.size());
 
 		BigDecimal p10c = valueOfPercentile(monthSamples, WaterLevelStatistics.PERCENTILES.get(P25), WLSample::valueOf);
-		assertEquals("with additional sigfigs, more refined answer equal to p25", "9.05", p10c.toString());
+		assertEquals("with additional sigfigs, more refined answer equal to p25", "9.02", p10c.toString());
 		
 		// 24 * %25 = 6 which is index 5 returning the raw value (note that the math is done on 24+1 but still return raw value)
 		// however when reversed
@@ -1790,7 +1928,7 @@ public class WaterLevelStatisticsTest {
 		assertEquals("normalize should have removed values", preCount-1, normalizeMutlipleYearlyValues.size());
 		
 		BigDecimal p10c = valueOfPercentile(normalizeMutlipleYearlyValues, WaterLevelStatistics.PERCENTILES.get(P10), WLSample::valueOf);
-		assertEquals("with additional sigfigs, more refined answer equal to P10", "9.24", p10c.toString());
+		assertEquals("with additional sigfigs, more refined answer equal to P10", "9.23", p10c.toString());
 		
 		BigDecimal down = SigFigMathUtil.sigFigAdd(new BigDecimal("9.37"), new BigDecimal("-0.10"));
 		assertEquals(new BigDecimal("9.27"), down);
@@ -1848,18 +1986,35 @@ public class WaterLevelStatisticsTest {
 		List<WLSample> normalizeMutlipleYearlyValues = stats.normalizeMutlipleYearlyValues(monthSamples, MediationType.BelowLand);
 		assertEquals("normalize should have removed values", preCount-2, normalizeMutlipleYearlyValues.size());
 
-		BigDecimal p10c = valueOfPercentile(normalizeMutlipleYearlyValues, WaterLevelStatistics.PERCENTILES.get(P25), WLSample::valueOf);
-		assertEquals("with additional sigfigs, more refined answer equal to p25", "9.7", p10c.toString());
+		BigDecimal p25c = valueOfPercentile(normalizeMutlipleYearlyValues, WaterLevelStatistics.PERCENTILES.get(P25), WLSample::valueOf);
+		assertEquals("with additional sigfigs, more refined answer equal to p25", "9.6", p25c.toString());
 		
+		// 03-30-2017 (Supplanted by 07-31-2018 rules which is actual a revert to original rounding)
 		// 9.5 & 9.8 mean is 9.7  because 9.8-9.5 = 0.3 and mean is 0.15 rounded to 0.2
 		// 9.7-9.46=0.24 round 0.2 and 9.46-9.7=-0.24 round -0.2
 		// then 0.25 x 0.2 = 0.05 no round  while 0.25 x -0.05  no round
-		// 9.7 -0.05 = 9.65 round 9.7
+		// 9.7 -0.05 = 9.65 round 9.7 
 		
-		// even reversed it is the same percentile value -- is should be, testing to ensure
+		// 07-31-2018
+		// 9.5 & 9.8 mean is 9.6  because 9.5-9.8 = -0.3 and mean is -0.15 rounded to -0.2
+		// 9.46-9.6=-0.14 round -0.1
+		// then 0.25 x -0.1 = 0.025 round -0.03
+		// 9.6 -0.03 = 9.57 round 9.6 
+		// because it is based off of 9.6 rounded to one fewer sigfig.
+		// if there was no sigfig rounding 9.6 - (0.25*0.14) = 9.6 - 0.035 = 9.565 and we expect this to be the same as reversed (below)
+		
+		// reversed test
 		Collections.reverse(normalizeMutlipleYearlyValues);
 		BigDecimal p75c = valueOfPercentile(normalizeMutlipleYearlyValues, WaterLevelStatistics.PERCENTILES.get(P75), WLSample::valueOf);
-		assertEquals("reverse sort should yeild the same answer for p75", "9.7", p75c.toString());
+		assertEquals("reverse sort should yeild the same answer for p75", "9.54", p75c.toString());
+
+		// 07-31-2018
+		// 9.5 & 9.8 mean is 9.6  because 9.5-9.8 = -0.3 and mean is -0.15 rounded to -0.2
+		// 9.6-9.46 = 0.14 round 0.1
+		// then 0.75 x 0.1 = 0.075 round 0.08
+		// finally 9.46+0.08 = 9.54
+		// because reversed is based off of 9.46 there is one more sigfig.
+		// if there was no sigfig rounding 9.46+(0.75*0.14) = 9.46 + 0.105 = 9.565 and we expect this to be the same as non-reversed (above)
 	}
 	
 	@Test
@@ -1929,7 +2084,7 @@ public class WaterLevelStatisticsTest {
 		assertEquals("normalize should have removed NO values", preCount, monthSamples.size());
 
 		BigDecimal p10c = valueOfPercentile(monthSamples, WaterLevelStatistics.PERCENTILES.get(P25), WLSample::valueOf);
-		assertEquals("with additional sigfigs, more refined answer equal to P25", "10.9", p10c.toString());
+		assertEquals("with additional sigfigs, more refined answer equal to P25", "10.8", p10c.toString());
 		
 		// 10.75-11.1=-0.35 round -0.3
 		// then 0.75 x -0.3 = 0.225  round  -0.2
