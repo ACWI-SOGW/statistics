@@ -2,7 +2,7 @@ package gov.usgs.ngwmn.logic;
 
 import java.math.BigDecimal;
 
-import org.apache.commons.lang.StringEscapeUtils;
+//import org.apache.commons.lang.StringEscapeUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -83,6 +83,7 @@ public class WaterlevelMediator {
             return SigFigMathUtil.sigFigAdd(measure.siteElevation, directionalValue);
 		}
 	}
+	
 	
 	/**
 	 * Helper method for below ground level situations  
@@ -174,6 +175,7 @@ public class WaterlevelMediator {
 			throw new ValidationException(NA_SITE_PCODE_DATUM_MISMATCH + " pcode datum: '" + measure.pcode.getDatum() + "' site datum: '" + measure.siteDatum + "'"); 
 		}
 	}
+	
 	
 	/**
 	 * Helper method that negates the given value based on a condition. The condition may
@@ -338,67 +340,4 @@ public class WaterlevelMediator {
 			this.effectiveDatum = (this.datum.isUnspecified()) ?this.siteDatum :this.datum;
 		 }
 	}
-
-	
-	/**
-	 * This method is used by Xalan lib not by NGWMN directly.
-	 * 
-	 * Is med lexically in the half-open interval bounded by left and right?
-	 * Special case: null or "" is treated as unbounded on that side.
-	 * 
-	 * @param left
-	 * @param med
-	 * @param right
-	 * @return
-	 */
-	public static boolean between(String left, String med, String right) {
-		logger.trace("between({},{},{})", new Object[]{left, med, right});
-		if ( ! isEmpty(left)) {
-			if (left.compareTo(med) > 0) {
-				logger.trace("->false left");
-				return false;
-			}
-		}
-		if ( ! isEmpty(right)) {
-			if (med.compareTo(right) >= 0) {
-				logger.trace("->false right");
-				return false;
-			}
-		}
-		logger.trace("->true");
-		return true;
-	}
-    protected static boolean isEmpty(String str) {
-        return str == null || str.length() == 0;
-    }
-	/**
-	 * This method is used by Xalan lib not by NGWMN directly.
-	 * 
-	 * Cleans and escapes a String for use in CSV.
-	 * 
-	 * This does two things:  First, consecutive whitespace is condensed to a
-	 * single space (similar to xslt normalize-space), then commas and quotes are
-	 * escaped and/or the string is wrapped in quotes if needed.
-	 * 
-	 * Null strings are converted to an empty string.
-	 * 
-	 * @param v
-	 * @return 
-	 */
-	public static String csv_escape(String v) {
-		if (v == null) {
-			return "";
-		}
-		
-		return StringEscapeUtils.escapeCsv(v);
-	}
-	
-	
-	public static String lowercase(String value) {
-		if ( value == null ) {
-			return ""; 
-		}
-		return value.toLowerCase();
-	}
-
 }

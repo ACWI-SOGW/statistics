@@ -9,10 +9,10 @@ import static  org.apache.commons.lang.StringUtils.*;
 //import javax.xml.parsers.ParserConfigurationException;
 //import org.springframework.beans.factory.annotation.Autowired;
 //import org.xml.sax.SAXException;
+//import java.text.SimpleDateFormat;
 
 import java.math.BigDecimal;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
@@ -40,30 +40,6 @@ import gov.usgs.ngwmn.model.WLSample;
 import gov.usgs.ngwmn.model.Specifier;
 
 public class WaterLevelStatistics extends StatisticsCalculator<WLSample> {
-	public static final String RECORD_YEARS  = "RECORD_YEARS";
-	public static final String MIN_DATE      = "MIN_DATE";
-	public static final String MAX_DATE      = "MAX_DATE";
-	public static final String MIN_VALUE     = "MIN_VALUE";
-	public static final String MAX_VALUE     = "MAX_VALUE";
-	public static final String P50_MIN       = "P50_MIN";
-	public static final String P50_MAX       = "P50_MAX";
-	public static final String SAMPLE_COUNT  = "SAMPLE_COUNT";
-	public static final String P10           = "P10";
-	public static final String P25           = "P25";
-	public static final String P50           = "P50";
-	public static final String P75           = "P75";
-	public static final String P90           = "P90";
-	public static final String MEDIAN        = "MEDIAN"; // P50
-	public static final String LATEST_PCTILE = "LATEST_PCTILE";
-	public static final String IS_RANKED     = "IS_RANKED";
-	public static final String LATEST_VALUE  = "LATEST_VALUE";
-	public static final String MEDIATION     = "MEDIATION";
-	public static final String CALC_DATE     = "CALC_DATE";
-
-	protected static final SimpleDateFormat YEAR_MONTH = new SimpleDateFormat("yyyy-MM"); 
-	public static final SimpleDateFormat YEAR_MONTH_DAY = new SimpleDateFormat("yyyy-MM-dd"); 
-	//protected static final BigDecimal HUNDRED = new BigDecimal("100");
-	protected static final BigDecimal TWELVE  = new BigDecimal("12");
 	
 	// Calendar returns millis for days and after a diff we need the number of days
 	protected static final long MILLISECONDS_PER_DAY = 1000 * 60 * 60 * 24;// ms * sec * min * hr == ms/day
@@ -75,20 +51,8 @@ public class WaterLevelStatistics extends StatisticsCalculator<WLSample> {
 	protected static final BigDecimal Days406 = new BigDecimal("406");
 	public static final String MONTHLY_WARNING =  "Too few data values for monthly statistics."
 			+ " Ten years required with no gaps and most recent value within " + Days406 + " days.";
-	
 
 	private final transient Logger logger = LoggerFactory.getLogger(getClass());
-	
-	public static final Map<String, BigDecimal> PERCENTILES;
-	static {
-		PERCENTILES =  new HashMap<>();
-		// these are exact percentiles and should not limit measured precision
-		PERCENTILES.put(P10, new BigDecimal("0.100000000"));
-		PERCENTILES.put(P25, new BigDecimal("0.250000000"));
-		PERCENTILES.put(P50, new BigDecimal("0.500000000"));
-		PERCENTILES.put(P75, new BigDecimal("0.750000000"));
-		PERCENTILES.put(P90, new BigDecimal("0.900000000"));
-	}
 	
 	public static enum MediationType {
 		BelowLand, 
@@ -242,28 +206,6 @@ public class WaterLevelStatistics extends StatisticsCalculator<WLSample> {
 		}
 	}
 
-	/**
-	 * This removes null value samples from a collection of samples.
-	 * @param samples the samples to examine
-	 * @param mySiteId for logging purposes if there are nulls removed to ID the site with nulls
-	 */
-	protected void removeNulls(List<WLSample> samples, String mySiteId) {
-		List<WLSample> nullSamples = new LinkedList<>();
-		
-		for (WLSample sample : samples) {
-			// TODO decide on actual rules and understand why there are nulls
-			// actually, I now think that the DAO filters out nulls 
-			if (sample == null || sample.value==null || sample.time==null) {
-				nullSamples.add(sample);
-			}
-		}
-		samples.removeAll(nullSamples);
-		
-		if (nullSamples.size() > 0) {
-			logger.warn("Removed {} samples from {}",nullSamples.size(), mySiteId);
-		}
-	}
-
 
 	/**
 	 * This convenience method is suppost to be self documenting by its name. But just to be clear it
@@ -282,9 +224,6 @@ public class WaterLevelStatistics extends StatisticsCalculator<WLSample> {
 		return BigDecimal.TEN.compareTo(years) <= 0 && Days406.compareTo(daysDiff(today, recent)) >= 0;
 	}
 
-	protected String today() {
-		return YEAR_MONTH_DAY.format(new Date());
-	}
 	/**
 	 * returns empty string if there is no date at all.
 	 * returns the date if there is one containing 10 chars
@@ -386,6 +325,13 @@ public class WaterLevelStatistics extends StatisticsCalculator<WLSample> {
 		return stats;
 	}
 
+	@Override
+	public List<WLSample> normalizeMutlipleYearlyValues(List<WLSample> monthSamples, MediationType mediation) {
+		List<WLSample> normalizedSamples = super.normalizeMutlipleYearlyValues(monthSamples, mediation);
+		sortByMediation(normalizedSamples, mediation);
+		return normalizedSamples;
+	}
+	
 	protected boolean doesThisMonthQualifyForStats(List<WLSample> monthSamples) {
 		if (monthSamples.size()<10) {
 			return false;
@@ -546,9 +492,6 @@ public class WaterLevelStatistics extends StatisticsCalculator<WLSample> {
 		}
 	}
 
-	protected void sortByDateOrder(List<WLSample> samples) {
-		Collections.sort(samples, WLSample.TIME_COMPARATOR);
-	}
 	protected void sortByValueOrderAscending(List<WLSample> samples) {
 		Collections.sort(samples, WLSample.DEPTH_ABOVE_DATUM_COMPARATOR);
 	}
@@ -561,48 +504,6 @@ public class WaterLevelStatistics extends StatisticsCalculator<WLSample> {
 		} else {
 			sortByValueOrderAscending(sortedByValue);
 		}
-	}
-	
-	public List<WLSample> normalizeMutlipleYearlyValues(List<WLSample> monthSamples, MediationType mediation) {
-		List<WLSample> normalizedSamples = new LinkedList<>();
-
-		Map<String, List<WLSample>> yearSamples = sortSamplesByYear(monthSamples);
-		for (String year : yearSamples.keySet()) {
-			List<WLSample> samples = yearSamples.get(year);
-			if (samples.size() > 1) {
-				// have to remove the averaged values from the monthly list
-				monthSamples.removeAll(samples);
-				// years median in the this month
-				BigDecimal median = valueOfPercentile(samples, PERCENTILES.get(P50), WLSample::valueOf);
-				WLSample base = samples.get( (int)(samples.size()/2) );
-				
-				WLSample medianSample = new WLSample(base.time, median, base.units, median, 
-						base.comment, base.up, base.pcode, base.valueAboveDatum);
-				
-				normalizedSamples.add(medianSample);
-			}
-			else {
-				normalizedSamples.addAll(samples);
-			}
-		}
-		
-		sortByMediation(normalizedSamples, mediation);
-		
-		return normalizedSamples;
-	}
-	
-	private Map<String, List<WLSample>> sortSamplesByYear(List<WLSample> monthSamples) {
-		Map<String,List<WLSample>>yearSamples = new HashMap<>();
-		for (WLSample sample : monthSamples) {
-			String year = yearUTC(sample.time);
-			List<WLSample> samples = yearSamples.get(year);
-			if (samples == null) {
-				samples = new LinkedList<>();
-				yearSamples.put(year,samples);
-			}
-			samples.add(sample);
-		}
-		return yearSamples;
 	}
 	
 }

@@ -1,17 +1,27 @@
 package gov.usgs.ngwmn.logic;
 
 import static gov.usgs.ngwmn.logic.SigFigMathUtil.*;
-
+import static gov.usgs.ngwmn.model.WLSample.*;
 
 import java.io.Reader;
 import java.math.BigDecimal;
 import java.math.MathContext;
 import java.math.RoundingMode;
+import java.text.SimpleDateFormat;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Function;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import gov.usgs.ngwmn.model.WellDataType;
 import gov.usgs.ngwmn.model.WLSample;
+import gov.usgs.ngwmn.logic.WaterLevelStatistics.MediationType;
 import gov.usgs.ngwmn.model.Specifier;
 
 /**
@@ -23,6 +33,52 @@ import gov.usgs.ngwmn.model.Specifier;
  * @author duselman
  */
 public class StatisticsCalculator<S> {
+	public static final String RECORD_YEARS  = "RECORD_YEARS";
+	public static final String MIN_DATE      = "MIN_DATE";
+	public static final String MAX_DATE      = "MAX_DATE";
+	public static final String MIN_VALUE     = "MIN_VALUE";
+	public static final String MAX_VALUE     = "MAX_VALUE";
+	public static final String P50_MIN       = "P50_MIN";
+	public static final String P50_MAX       = "P50_MAX";
+	public static final String SAMPLE_COUNT  = "SAMPLE_COUNT";
+	public static final String P10           = "P10";
+	public static final String P25           = "P25";
+	public static final String P50           = "P50";
+	public static final String P75           = "P75";
+	public static final String P90           = "P90";
+	public static final String MEDIAN        = "MEDIAN"; // P50
+	public static final String LATEST_PCTILE = "LATEST_PCTILE";
+	public static final String IS_RANKED     = "IS_RANKED";
+	public static final String LATEST_VALUE  = "LATEST_VALUE";
+	public static final String MEDIATION     = "MEDIATION";
+	public static final String CALC_DATE     = "CALC_DATE";
+
+	public static final SimpleDateFormat YEAR_MONTH_DAY = new SimpleDateFormat("yyyy-MM-dd"); 
+	protected static final SimpleDateFormat YEAR_MONTH = new SimpleDateFormat("yyyy-MM"); 
+	//protected static final BigDecimal HUNDRED = new BigDecimal("100");
+	protected static final BigDecimal TWELVE  = new BigDecimal("12");
+	
+	public static final Map<String, BigDecimal> PERCENTILES;
+	static {
+		PERCENTILES =  new HashMap<>();
+		// these are exact percentiles and should not limit measured precision
+		addPercentile(P10, "0.100000000");
+		addPercentile(P25, "0.250000000");
+		addPercentile(P50, "0.500000000");
+		addPercentile(P75, "0.750000000");
+		addPercentile(P90, "0.900000000");
+	}
+	// Setter to allow for extra percentiles in string format
+	public static void addPercentile(String name, String value) {
+		addPercentile(name, new BigDecimal(value));
+	}
+	// Setter to allow for extra percentiles
+	private static void addPercentile(String name, BigDecimal percentile) {
+		PERCENTILES.put(name, percentile);
+	}
+
+	private final transient Logger logger = LoggerFactory.getLogger(getClass());
+	
 	/**
 	 * Calculates statistics for a specifier where data must be fetched from the database.
 	 * 
@@ -159,4 +215,77 @@ public class StatisticsCalculator<S> {
 			Function<T, BigDecimal> valueOf) {
 		return valueOfPercentile(samples, percentileAsFraction, percentileAsFraction.precision(), valueOf);
 	}
+	
+	
+	/**
+	 * This removes null value samples from a collection of samples.
+	 * @param samples the samples to examine
+	 * @param mySiteId for logging purposes if there are nulls removed to ID the site with nulls
+	 */
+	protected void removeNulls(List<WLSample> samples, String mySiteId) {
+		List<WLSample> nullSamples = new LinkedList<>();
+		
+		for (WLSample sample : samples) {
+			// TODO decide on actual rules and understand why there are nulls
+			// actually, I now think that the DAO filters out nulls 
+			if (sample == null || sample.value==null || sample.time==null) {
+				nullSamples.add(sample);
+			}
+		}
+		samples.removeAll(nullSamples);
+		
+		if (nullSamples.size() > 0) {
+			logger.warn("Removed {} samples from {}",nullSamples.size(), mySiteId);
+		}
+	}
+	
+	
+	protected String today() {
+		return YEAR_MONTH_DAY.format(new Date());
+	}
+	
+	protected void sortByDateOrder(List<WLSample> samples) {
+		Collections.sort(samples, WLSample.TIME_COMPARATOR);
+	}
+
+	public List<WLSample> normalizeMutlipleYearlyValues(List<WLSample> monthSamples, MediationType mediation) {
+		List<WLSample> normalizedSamples = new LinkedList<>();
+
+		Map<String, List<WLSample>> yearSamples = sortSamplesByYear(monthSamples);
+		for (String year : yearSamples.keySet()) {
+			List<WLSample> samples = yearSamples.get(year);
+			if (samples.size() > 1) {
+				// have to remove the averaged values from the monthly list
+				monthSamples.removeAll(samples);
+				// years median in the this month
+				BigDecimal median = valueOfPercentile(samples, PERCENTILES.get(P50), WLSample::valueOf);
+				WLSample base = samples.get( (int)(samples.size()/2) );
+				
+				WLSample medianSample = new WLSample(base.time, median, base.units, median, 
+						base.comment, base.up, base.pcode, base.valueAboveDatum);
+				
+				normalizedSamples.add(medianSample);
+			}
+			else {
+				normalizedSamples.addAll(samples);
+			}
+		}
+		
+		return normalizedSamples;
+	}
+	
+	public Map<String, List<WLSample>> sortSamplesByYear(List<WLSample> monthSamples) {
+		Map<String,List<WLSample>>yearSamples = new HashMap<>();
+		for (WLSample sample : monthSamples) {
+			String year = yearUTC(sample.time);
+			List<WLSample> samples = yearSamples.get(year);
+			if (samples == null) {
+				samples = new LinkedList<>();
+				yearSamples.put(year,samples);
+			}
+			samples.add(sample);
+		}
+		return yearSamples;
+	}
+	
 }
