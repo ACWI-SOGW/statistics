@@ -1438,48 +1438,48 @@ public class WaterLevelStatisticsTest {
 	}
 
 
-	@Test
-	public void test_monthlyYearCount_low() throws Exception {
-		List<WLSample> samples = new LinkedList<>();
-		// here are some extra data points in months that have a <10 year window and excluded for calculation
-		samples.add( createSample("2013-08-10T04:15:00-05:00", "93.1937") );
-		samples.add( createSample("2013-08-11T04:15:00-05:00", "93.1937") );
-		samples.add( createSample("2013-08-10T04:15:00-05:00", "93.1937") );
-
-		int count = stats.uniqueYears(samples);
-		assertEquals("Expect that when the given record years is 1",1, count);
-	}
-
-	@Test
-	public void test_monthlyYearCount_mix() throws Exception {
-		List<WLSample> samples = new LinkedList<>();
-		// here are some extra data points in months that have a <10 year window and excluded for calculation
-		samples.add( createSample("2013-08-10T04:15:00-05:00", "93.1937") );
-		samples.add( createSample("2013-08-11T04:15:00-05:00", "93.1937") );
-		samples.add( createSample("2023-09-10T04:15:00-05:00", "93.1937") );
-
-		int count2 = stats.uniqueYears(samples);
-		assertEquals("Expect that when the given data has more than one month then it return a uniques month count for the first month",2, count2);
-	}
-
-	@Test
-	public void test_monthlyYearCount_10() throws Exception {
-		List<WLSample> samples = new LinkedList<>();
-		// here are some extra data points in months that have a <10 year window and excluded for calculation
-		samples.add( createSample("2001-08-10T04:15:00-05:00", "93.1937") );
-		samples.add( createSample("2002-08-11T04:15:00-05:00", "93.1937") );
-		samples.add( createSample("2003-09-10T04:15:00-05:00", "93.1937") );
-		samples.add( createSample("2004-08-10T04:15:00-05:00", "93.1937") );
-		samples.add( createSample("2005-08-11T04:15:00-05:00", "93.1937") );
-		samples.add( createSample("2006-09-10T04:15:00-05:00", "93.1937") );
-		samples.add( createSample("2007-08-10T04:15:00-05:00", "93.1937") );
-		samples.add( createSample("2008-08-11T04:15:00-05:00", "93.1937") );
-		samples.add( createSample("2009-09-10T04:15:00-05:00", "93.1937") );
-		samples.add( createSample("2010-09-10T04:15:00-05:00", "93.1937") );
-
-		int count10 = stats.uniqueYears(samples);
-		assertEquals("While the difference of 2010-2001 is 9 we expect 10",10, count10);
-	}
+//	@Test
+//	public void test_monthlyYearCount_low() throws Exception {
+//		List<WLSample> samples = new LinkedList<>();
+//		// here are some extra data points in months that have a <10 year window and excluded for calculation
+//		samples.add( createSample("2013-08-10T04:15:00-05:00", "93.1937") );
+//		samples.add( createSample("2013-08-11T04:15:00-05:00", "93.1937") );
+//		samples.add( createSample("2013-08-10T04:15:00-05:00", "93.1937") );
+//
+//		int count = stats.uniqueYears(samples);
+//		assertEquals("Expect that when the given record years is 1",1, count);
+//	}
+//
+//	@Test
+//	public void test_monthlyYearCount_mix() throws Exception {
+//		List<WLSample> samples = new LinkedList<>();
+//		// here are some extra data points in months that have a <10 year window and excluded for calculation
+//		samples.add( createSample("2013-08-10T04:15:00-05:00", "93.1937") );
+//		samples.add( createSample("2013-08-11T04:15:00-05:00", "93.1937") );
+//		samples.add( createSample("2023-09-10T04:15:00-05:00", "93.1937") );
+//
+//		int count2 = stats.uniqueYears(samples);
+//		assertEquals("Expect that when the given data has more than one month then it return a uniques month count for the first month",2, count2);
+//	}
+//
+//	@Test
+//	public void test_monthlyYearCount_10() throws Exception {
+//		List<WLSample> samples = new LinkedList<>();
+//		// here are some extra data points in months that have a <10 year window and excluded for calculation
+//		samples.add( createSample("2001-08-10T04:15:00-05:00", "93.1937") );
+//		samples.add( createSample("2002-08-11T04:15:00-05:00", "93.1937") );
+//		samples.add( createSample("2003-09-10T04:15:00-05:00", "93.1937") );
+//		samples.add( createSample("2004-08-10T04:15:00-05:00", "93.1937") );
+//		samples.add( createSample("2005-08-11T04:15:00-05:00", "93.1937") );
+//		samples.add( createSample("2006-09-10T04:15:00-05:00", "93.1937") );
+//		samples.add( createSample("2007-08-10T04:15:00-05:00", "93.1937") );
+//		samples.add( createSample("2008-08-11T04:15:00-05:00", "93.1937") );
+//		samples.add( createSample("2009-09-10T04:15:00-05:00", "93.1937") );
+//		samples.add( createSample("2010-09-10T04:15:00-05:00", "93.1937") );
+//
+//		int count10 = stats.uniqueYears(samples);
+//		assertEquals("While the difference of 2010-2001 is 9 we expect 10",10, count10);
+//	}
 
 
 	@Test

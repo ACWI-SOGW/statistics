@@ -1,8 +1,8 @@
 package gov.usgs.wma.statistics.logic;
 
+import static gov.usgs.wma.statistics.logic.SigFigMathUtil.*;
 import static gov.usgs.wma.statistics.model.Value.*;
 import static org.apache.commons.lang.StringUtils.*;
-import static gov.usgs.wma.statistics.logic.SigFigMathUtil.*;
 
 import java.io.Reader;
 import java.math.BigDecimal;
@@ -13,9 +13,11 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -23,11 +25,11 @@ import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import gov.usgs.ngwmn.logic.WaterLevelStatistics;
+import gov.usgs.ngwmn.model.Specifier;
+import gov.usgs.ngwmn.model.WLSample;
 import gov.usgs.ngwmn.model.WellDataType;
 import gov.usgs.wma.statistics.model.Value;
-import gov.usgs.ngwmn.logic.WaterLevelStatistics;
-import gov.usgs.ngwmn.logic.WaterLevelStatistics.MediationType;
-import gov.usgs.ngwmn.model.Specifier;
 
 /**
  * The base statistics does nothing as place holder instances.
@@ -248,6 +250,55 @@ public class StatisticsCalculator<S extends Value> {
 		};
 		List<S> monthSamples = samples.stream().filter(monthly).collect(Collectors.toList());
 		return monthSamples;
+	}
+
+	
+	/**
+	 * Returns the number of unique years in samples. It is used to determine if a month qualifies
+	 * for statistical evaluation and it is used for the number of years on record for the month.
+	 * It looks like GWW does this rather than a date difference. NGWMN used the date difference and
+	 * was off by being less a year on some monthly data.
+	 * 
+	 * This, rounding method, data to used, and significant figures are prime examples of the difficulty
+	 * in trying to reverse engineer a series of calculations. First, you presume the method was done
+	 * with due diligence, then you compare results. If results match then you presume you have the a
+	 * matching method. This method is only the most recent guess as to how GWW deviates for expectations.
+	 * 
+	 * @param samples
+	 * @return count of years
+	 */
+	protected int uniqueYears(List<S> samples) {
+		// if the data is empty (we should not have gotten this far but) there are zero years. 
+		if (samples == null || samples.size() == 0) {
+			return 0;
+		}
+		Set<String> uniqueYears = new HashSet<>();
+		for (S sample : samples) {
+			uniqueYears.add( yearUTC(sample.time) );
+		}
+		return uniqueYears.size();
+	}
+
+		
+	/**
+	 * This removes provisional value samples from a collection of samples.
+	 * @param samples the samples to examine in temporal order
+	 * @param mySiteId for logging purposes if there are nulls removed to ID the site with nulls
+	 */
+	protected void removeProvisional(List<S> samples, String mySiteId) {
+		List<S> provisionalSamples = new LinkedList<>();
+		
+		for (int s=0; s<samples.size(); s++) {
+			S sample = samples.get(s);
+			if ( sample != null && sample.isProvisional()) {
+				provisionalSamples.add(sample);
+			}
+		}
+		samples.removeAll(provisionalSamples);
+		
+		if (provisionalSamples.size() > 0) {
+			logger.warn("Removed {} provisional samples from {}",provisionalSamples.size(), mySiteId);
+		}
 	}
 	
 	/**

@@ -1,6 +1,6 @@
 package gov.usgs.ngwmn.logic;
 
-import static gov.usgs.ngwmn.model.WLSample.*;
+import static gov.usgs.wma.statistics.model.Value.*;
 import static  org.apache.commons.lang.StringUtils.*;
 
 //import java.io.IOException;
@@ -36,10 +36,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import gov.usgs.ngwmn.model.DepthDatum;
 import gov.usgs.ngwmn.model.PCode;
+import gov.usgs.ngwmn.model.Specifier;
 import gov.usgs.ngwmn.model.WLSample;
 import gov.usgs.wma.statistics.logic.StatisticsCalculator;
 import gov.usgs.wma.statistics.model.Value;
-import gov.usgs.ngwmn.model.Specifier;
 
 public class WaterLevelStatistics extends StatisticsCalculator<WLSample> {
 	
@@ -189,19 +189,14 @@ public class WaterLevelStatistics extends StatisticsCalculator<WLSample> {
 	 * @param mySiteId for logging purposes if there are nulls removed to ID the site with nulls
 	 */
 	protected void removeProvisionalButNotMostRecent(List<WLSample> samples, String mySiteId) {
-		List<WLSample> provisionalSamples = new LinkedList<>();
+		// retain most recent sample
+		WLSample latestSample = samples.get(samples.size()-1);
 		
-		// s<size-1 will ensure we always retain the most recent sample
-		for (int s=0; s<samples.size()-1; s++) {
-			WLSample sample = samples.get(s);
-			if ( sample != null && sample.isProvisional()) {
-				provisionalSamples.add(sample);
-			}
-		}
-		samples.removeAll(provisionalSamples);
+		super.removeProvisional(samples, mySiteId);
 		
-		if (provisionalSamples.size() > 0) {
-			logger.warn("Removed {} provisional samples from {}",provisionalSamples.size(), mySiteId);
+		// but only add it back in if it is provisional
+		if (latestSample.isProvisional()) {
+			samples.add(latestSample);
 		}
 	}
 
@@ -274,33 +269,6 @@ public class WaterLevelStatistics extends StatisticsCalculator<WLSample> {
 		return uniqueYears(monthSamples)>=10;
 	}
 	
-	/**
-	 * Returns the number of unique years in samples. It is used to determine if a month qualifies
-	 * for statistical evaluation and it is used for the number of years on record for the month.
-	 * It looks like GWW does this rather than a date difference. NGWMN used the date difference and
-	 * was off by being less a year on some monthly data.
-	 * 
-	 * This, rounding method, data to used, and significant figures are prime examples of the difficulty
-	 * in trying to reverse engineer a series of calculations. First, you presume the method was done
-	 * with due diligence, then you compare results. If results match then you presume you have the a
-	 * matching method. This method is only the most recent guess as to how GWW deviates for expectations.
-	 * 
-	 * @param samples
-	 * @return count of years
-	 */
-	protected int uniqueYears(List<WLSample> samples) {
-		// if the data is empty (we should not have gotten this far but) there are zero years. 
-		if (samples == null || samples.size() == 0) {
-			return 0;
-		}
-		Set<String> uniqueYears = new HashSet<>();
-		for (WLSample sample : samples) {
-			uniqueYears.add( yearUTC(sample.time) );
-		}
-		return uniqueYears.size();
-	}
-
-		
 	/**
 	 * @param samples a many year single month filtered sample list in value order
 	 * @return a list of new samples holding the yearly medians in value order
