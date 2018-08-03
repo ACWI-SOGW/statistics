@@ -10,12 +10,13 @@ import static  org.apache.commons.lang.StringUtils.*;
 //import org.springframework.beans.factory.annotation.Autowired;
 //import org.xml.sax.SAXException;
 //import java.text.SimpleDateFormat;
+//import java.util.Calendar;
+//import java.text.ParseException;
+//import java.math.RoundingMode;
+//import java.util.Collections;
 
 import java.math.BigDecimal;
-import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -23,6 +24,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -32,12 +34,11 @@ import org.slf4j.LoggerFactory;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import java.math.RoundingMode;
-
 import gov.usgs.ngwmn.model.DepthDatum;
 import gov.usgs.ngwmn.model.PCode;
 import gov.usgs.ngwmn.model.WLSample;
 import gov.usgs.wma.statistics.logic.StatisticsCalculator;
+import gov.usgs.wma.statistics.model.Value;
 import gov.usgs.ngwmn.model.Specifier;
 
 public class WaterLevelStatistics extends StatisticsCalculator<WLSample> {
@@ -222,68 +223,6 @@ public class WaterLevelStatistics extends StatisticsCalculator<WLSample> {
 		return BigDecimal.TEN.compareTo(years) <= 0 && Days406.compareTo(daysDiff(today, recent)) >= 0;
 	}
 
-	/**
-	 * returns empty string if there is no date at all.
-	 * returns the date if there is one containing 10 chars
-	 * returns the 15th of the month if day of month is missing
-	 * returns June 30th if the year is all that is specified
-	 * returns empty string as default
-	 * @param date the date string to refine
-	 * @return refined date
-	 */
-	protected String fixMissingMonthAndDay(String date) {
-		if ( isBlank(date) ) {
-			return "";
-		}
-		if (date.length() >= 10) { // YYYY-MM-DD
-			return date.substring(0,10);
-		}
-		if (date.length() >= 7) { // YYYY-MM
-			return date.substring(0,7) + "-15";
-		}
-		if (date.length() >= 4) { // YYYY
-			return date.substring(0,4) + "-06-30";
-		}
-		
-		return "";
-	}
-	
-	
-	protected BigDecimal yearDiff(String maxDate, String minDate) {
-		BigDecimal diff = new BigDecimal(yearUTC(maxDate))
-				.subtract( new BigDecimal(yearUTC(minDate)) )
-				.add( new BigDecimal(monthUTC(maxDate))
-						.subtract(new BigDecimal(monthUTC(minDate)))
-						.divide(TWELVE, 1, RoundingMode.HALF_EVEN)
-					);
-		return diff;
-	}
-	
-	
-	protected BigDecimal daysDiff(String maxDate, String minDate) {
-		
-		BigDecimal days  = BigDecimal.ZERO;
-		try {
-			Date begin   = DATE_FORMAT_FULL.parse( fixMissingMonthAndDay(minDate) );
-			Date end     = DATE_FORMAT_FULL.parse( fixMissingMonthAndDay(maxDate) );
-			
-			Calendar cal = Calendar.getInstance();
-
-			cal.setTime(begin);
-			long start   = cal.getTimeInMillis();
-			
-			cal.setTime(end);
-			long stop    = cal.getTimeInMillis();
-			
-			long diff    = stop - start;
-			days         = new BigDecimal ( diff/MILLISECONDS_PER_DAY ); 
-			
-		} catch (ParseException e) {
-			throw new IllegalArgumentException("Bad dates: '" + minDate + "' or '" + maxDate +"'");
-		}
-		
-		return days;
-	}
 
 	/**
 	 * @param sortedByValue a list of all site samples in sorted order by value
@@ -323,10 +262,8 @@ public class WaterLevelStatistics extends StatisticsCalculator<WLSample> {
 		return stats;
 	}
 
-	@Override
 	public List<WLSample> normalizeMutlipleYearlyValues(List<WLSample> monthSamples, MediationType mediation) {
-		List<WLSample> normalizedSamples = super.normalizeMutlipleYearlyValues(monthSamples, mediation);
-		sortByMediation(normalizedSamples, mediation);
+		List<WLSample> normalizedSamples = super.normalizeMutlipleYearlyValues(monthSamples, sortByMediation(mediation));
 		return normalizedSamples;
 	}
 	
@@ -363,35 +300,7 @@ public class WaterLevelStatistics extends StatisticsCalculator<WLSample> {
 		return uniqueYears.size();
 	}
 
-	protected List<WLSample> filterValuesByGivenMonth(List<WLSample> samples, final String month) {
-		// using predicate because spring 3.x includes cglib that cannot compile lambdas
-		Predicate<WLSample> monthly = new Predicate<WLSample>() {
-			@Override
-			public boolean test(WLSample sample) {
-				if (sample == null || month == null) {
-					return false;
-				}
-				String paddedMonth =  ((month.length()==1) ?"0" :"")+month;
-				return monthUTC(sample.time).equals(paddedMonth);
-			}
-		};
-		List<WLSample> monthSamples = samples.stream().filter(monthly).collect(Collectors.toList());
-		return monthSamples;
-	}
-	
-	/**
-	 * @param samples for a given sample set in order 
-	 * @return map of 10th 25th 50th 75th and 90th percentiles for the given list
-	 */
-	protected Map<String,String> generatePercentiles(List<WLSample> samples, Map<String, BigDecimal> percentiles) {
-		Map<String,String> generatedPercentiles = new HashMap<>();
-		for(String percentile : percentiles.keySet()) {
-			BigDecimal pct = percentiles.get(percentile);
-			generatedPercentiles.put(percentile, valueOfPercentile(samples, pct, WLSample::valueOf).toString());
-		}
-		return generatedPercentiles;
-	}
-	
+		
 	/**
 	 * @param samples a many year single month filtered sample list in value order
 	 * @return a list of new samples holding the yearly medians in value order
@@ -420,6 +329,16 @@ public class WaterLevelStatistics extends StatisticsCalculator<WLSample> {
 		return monthYearlyMedians;
 	}
 
+	protected WLSample makeMedian(List<WLSample> samples) {
+		// years median in the this month
+		BigDecimal medianValue = valueOfPercentile(samples, StatisticsCalculator.PERCENTILES.get(StatisticsCalculator.P50), Value::valueOf);
+		BigDecimal medianAbove = valueOfPercentile(samples, StatisticsCalculator.PERCENTILES.get(StatisticsCalculator.P50), WLSample::valueOfAboveDatum);
+		WLSample base = samples.get( (int)(samples.size()/2) );
+		WLSample medianSample = new WLSample(medianValue, medianAbove, base);
+		return medianSample;
+	}
+
+	
 	/**
 	 * This calculates the overall series statistics: min, max, count, first, last, years, and percentile of the most recent
 	 * @param samples time series data in temporal order
@@ -489,19 +408,20 @@ public class WaterLevelStatistics extends StatisticsCalculator<WLSample> {
 			sortedByValue.remove(maxDate);
 		}
 	}
-
-	protected void sortByValueOrderAscending(List<WLSample> samples) {
-		Collections.sort(samples, WLSample.DEPTH_ABOVE_DATUM_COMPARATOR);
-	}
-	protected void sortByValueOrderDescending(List<WLSample> samples) {
-		Collections.sort(samples, WLSample.DEPTH_BELOW_SURFACE_COMPARATOR);
-	}
 	protected void sortByMediation(List<WLSample> sortedByValue, MediationType mediation) {
 		if (mediation == MediationType.BelowLand) {
 			sortByValueOrderDescending(sortedByValue);
 		} else {
 			sortByValueOrderAscending(sortedByValue);
 		}
+	}
+	protected Function<List<WLSample>, List<WLSample>> sortByMediation(MediationType mediation) {
+		Function<List<WLSample>, List<WLSample>> sortBy = StatisticsCalculator::sortByValueOrderAscending;
+		
+		if (mediation == MediationType.BelowLand) {
+			sortBy = StatisticsCalculator::sortByValueOrderDescending;
+		}
+		return sortBy;
 	}
 	
 }

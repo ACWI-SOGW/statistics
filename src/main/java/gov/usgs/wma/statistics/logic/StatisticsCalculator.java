@@ -1,12 +1,15 @@
 package gov.usgs.wma.statistics.logic;
 
 import static gov.usgs.wma.statistics.model.Value.*;
+import static org.apache.commons.lang.StringUtils.*;
 import static gov.usgs.wma.statistics.logic.SigFigMathUtil.*;
 
 import java.io.Reader;
 import java.math.BigDecimal;
 import java.math.MathContext;
 import java.math.RoundingMode;
+import java.text.ParseException;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -14,12 +17,14 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import gov.usgs.ngwmn.model.WellDataType;
-import gov.usgs.ngwmn.model.WLSample;
+import gov.usgs.wma.statistics.model.Value;
 import gov.usgs.ngwmn.logic.WaterLevelStatistics;
 import gov.usgs.ngwmn.logic.WaterLevelStatistics.MediationType;
 import gov.usgs.ngwmn.model.Specifier;
@@ -32,7 +37,7 @@ import gov.usgs.ngwmn.model.Specifier;
  * 
  * @author duselman
  */
-public class StatisticsCalculator<S> {
+public class StatisticsCalculator<S extends Value> {
 	private static final Logger logger = LoggerFactory.getLogger(StatisticsCalculator.class);
 	
 	public static final String RECORD_YEARS  = "RECORD_YEARS";
@@ -109,7 +114,7 @@ public class StatisticsCalculator<S> {
 	 * Calculates statistics for a specifier where data must be supplied as a list of Samples.
 	 * 
 	 * @param spec the specifier only checks the agency and site. It ignores the data type.
-	 * @param samples list of DAO samples. For example, {@link WLSample} for {@link WaterLevelStatistics}.
+	 * @param samples list of DAO samples. For example, {@link Value} for {@link WaterLevelStatistics}.
 	 * @throws Exception Thrown if there is an issue calculating statisics
 	 */
 	public String calculate(Specifier spec, List<S> samples)  {
@@ -169,8 +174,8 @@ public class StatisticsCalculator<S> {
 	 * @param percentileAsFraction a value between 0 and 1 inclusive for the fractional percent to compute. 50% is .5
 	 * @return the interpolated value of the requested percentile
 	 */
-	public static <T> BigDecimal valueOfPercentile(List<T> samples, BigDecimal percentileAsFraction, int precision,
-			Function<T, BigDecimal> valueOf) {
+	public BigDecimal valueOfPercentile(List<S> samples, BigDecimal percentileAsFraction, int precision,
+			Function<S, BigDecimal> valueOf) {
 		
 		// protection from null and ranges
 		if (   samples == null                                          // samples are required (no null nor zero sample count)
@@ -212,21 +217,48 @@ public class StatisticsCalculator<S> {
 		BigDecimal yp    = sigFigAdd(yk, delta);                        // and finally, the percentile value 
 		return yp;
 	}
-	public static <T> BigDecimal valueOfPercentile(List<T> samples, BigDecimal percentileAsFraction,
-			Function<T, BigDecimal> valueOf) {
+	public BigDecimal valueOfPercentile(List<S> samples, BigDecimal percentileAsFraction,
+			Function<S, BigDecimal> valueOf) {
 		return valueOfPercentile(samples, percentileAsFraction, percentileAsFraction.precision(), valueOf);
 	}
+	/**
+	 * @param samples for a given sample set in order 
+	 * @return map of 10th 25th 50th 75th and 90th percentiles for the given list
+	 */
+	protected Map<String,String> generatePercentiles(List<S> samples, Map<String, BigDecimal> percentiles) {
+		Map<String,String> generatedPercentiles = new HashMap<>();
+		for(String percentile : percentiles.keySet()) {
+			BigDecimal pct = percentiles.get(percentile);
+			generatedPercentiles.put(percentile, valueOfPercentile(samples, pct, Value::valueOf).toString());
+		}
+		return generatedPercentiles;
+	}
 	
+	public List<S> filterValuesByGivenMonth(List<S> samples, final String month) {
+		// using predicate because spring 3.x includes cglib that cannot compile lambdas
+		Predicate<S> monthly = new Predicate<S>() {
+			@Override
+			public boolean test(S value) {
+				if (value == null || month == null) {
+					return false;
+				}
+				String paddedMonth =  ((month.length()==1) ?"0" :"")+month;
+				return monthUTC(value.time).equals(paddedMonth);
+			}
+		};
+		List<S> monthSamples = samples.stream().filter(monthly).collect(Collectors.toList());
+		return monthSamples;
+	}
 	
 	/**
 	 * This removes null value samples from a collection of samples.
 	 * @param samples the samples to examine
 	 * @param mySiteId for logging purposes if there are nulls removed to ID the site with nulls
 	 */
-	public static void removeNulls(List<WLSample> samples, String mySiteId) {
-		List<WLSample> nullSamples = new LinkedList<>();
+	public void removeNulls(List<S> samples, String mySiteId) {
+		List<S> nullSamples = new LinkedList<>();
 		
-		for (WLSample sample : samples) {
+		for (S sample : samples) {
 			// TODO decide on actual rules and understand why there are nulls
 			// actually, I now think that the DAO filters out nulls 
 			if (sample == null || sample.value==null || sample.time==null) {
@@ -245,41 +277,56 @@ public class StatisticsCalculator<S> {
 		return DATE_FORMAT_FULL.format(new Date());
 	}
 	
-	public static void sortByDateOrder(List<WLSample> samples) {
-		Collections.sort(samples, WLSample.TIME_COMPARATOR);
+	public static <V extends Value> void sortByDateOrder(List<V> samples) {
+		Collections.sort(samples, Value.TIME_COMPARATOR);
+	}
+	
+	public static <S extends Value> List<S> sortByValueOrderAscending(List<S> samples) {
+		Collections.sort(samples, SORT_VALUE_ASCENDING);
+		return samples;
+	}
+	public static <S extends Value> List<S> sortByValueOrderDescending(List<S> samples) {
+		Collections.sort(samples, SORT_VALUE_DESCENDING);
+		return samples;
 	}
 
-	public List<WLSample> normalizeMutlipleYearlyValues(List<WLSample> monthSamples, MediationType mediation) {
-		List<WLSample> normalizedSamples = new LinkedList<>();
+	public List<S> normalizeMutlipleYearlyValues(List<S> monthSamples, Function<List<S>, List<S>> sortBy) {
+		List<S> normalizedSamples = new LinkedList<>();
 
-		Map<String, List<WLSample>> yearSamples = sortSamplesByYear(monthSamples);
+		Map<String, List<S>> yearSamples = sortSamplesByYear(monthSamples);
 		for (String year : yearSamples.keySet()) {
-			List<WLSample> samples = yearSamples.get(year);
+			List<S> samples = yearSamples.get(year);
 			if (samples.size() > 1) {
-				// have to remove the averaged values from the monthly list
+				// have to remove the original values from the monthly list
 				monthSamples.removeAll(samples);
-				// years median in the this month
-				BigDecimal median = valueOfPercentile(samples, PERCENTILES.get(P50), WLSample::valueOf);
-				WLSample base = samples.get( (int)(samples.size()/2) );
-				
-				WLSample medianSample = new WLSample(base.time, median, base.units, median, 
-						base.comment, base.up, base.pcode, base.valueAboveDatum);
-				
+				S medianSample = makeMedian(samples);
 				normalizedSamples.add(medianSample);
 			}
 			else {
 				normalizedSamples.addAll(samples);
 			}
 		}
+		normalizedSamples = sortBy.apply(normalizedSamples);
 		
 		return normalizedSamples;
 	}
 	
-	public Map<String, List<WLSample>> sortSamplesByYear(List<WLSample> monthSamples) {
-		Map<String,List<WLSample>>yearSamples = new HashMap<>();
-		for (WLSample sample : monthSamples) {
+	// This method must be overridden by subclasses that do not use Value for samples
+	@SuppressWarnings("unchecked")
+	protected S makeMedian(List<S> samples) {
+		// years median in the this month
+		BigDecimal median = valueOfPercentile(samples, PERCENTILES.get(P50), Value::valueOf);
+		S base = samples.get( (int)(samples.size()/2) );
+		Value medianSample = new Value(base.time, median);
+		return (S)medianSample;
+	}
+	
+	
+	public Map<String, List<S>> sortSamplesByYear(List<S> monthSamples) {
+		Map<String,List<S>>yearSamples = new HashMap<>();
+		for (S sample : monthSamples) {
 			String year = yearUTC(sample.time);
-			List<WLSample> samples = yearSamples.get(year);
+			List<S> samples = yearSamples.get(year);
 			if (samples == null) {
 				samples = new LinkedList<>();
 				yearSamples.put(year,samples);
@@ -294,6 +341,68 @@ public class StatisticsCalculator<S> {
 	}
 	public static String yearUTC(String utc) {
 		return utc.substring(0,4);
+	}
+	
+	public static BigDecimal yearDiff(String maxDate, String minDate) {
+		BigDecimal diff = new BigDecimal(yearUTC(maxDate))
+				.subtract( new BigDecimal(yearUTC(minDate)) )
+				.add( new BigDecimal(monthUTC(maxDate))
+						.subtract(new BigDecimal(monthUTC(minDate)))
+						.divide(TWELVE, 1, RoundingMode.HALF_EVEN)
+					);
+		return diff;
+	}
+	
+	
+	public static BigDecimal daysDiff(String maxDate, String minDate) {
+		
+		BigDecimal days  = BigDecimal.ZERO;
+		try {
+			Date begin   = DATE_FORMAT_FULL.parse( fixMissingMonthAndDay(minDate) );
+			Date end     = DATE_FORMAT_FULL.parse( fixMissingMonthAndDay(maxDate) );
+			
+			Calendar cal = Calendar.getInstance();
+
+			cal.setTime(begin);
+			long start   = cal.getTimeInMillis();
+			
+			cal.setTime(end);
+			long stop    = cal.getTimeInMillis();
+			
+			long diff    = stop - start;
+			days         = new BigDecimal ( diff/MILLISECONDS_PER_DAY ); 
+			
+		} catch (ParseException e) {
+			throw new IllegalArgumentException("Bad dates: '" + minDate + "' or '" + maxDate +"'");
+		}
+		
+		return days;
+	}
+	
+	/**
+	 * returns empty string if there is no date at all.
+	 * returns the date if there is one containing 10 chars
+	 * returns the 15th of the month if day of month is missing
+	 * returns June 30th if the year is all that is specified
+	 * returns empty string as default
+	 * @param date the date string to refine
+	 * @return refined date
+	 */
+	public static String fixMissingMonthAndDay(String date) {
+		if ( isBlank(date) ) {
+			return "";
+		}
+		if (date.length() >= 10) { // YYYY-MM-DD
+			return date.substring(0,10);
+		}
+		if (date.length() >= 7) { // YYYY-MM
+			return date.substring(0,7) + "-15";
+		}
+		if (date.length() >= 4) { // YYYY
+			return date.substring(0,4) + "-06-30";
+		}
+		
+		return "";
 	}
 	
 }
