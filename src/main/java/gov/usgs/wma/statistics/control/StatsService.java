@@ -65,9 +65,10 @@ public class StatsService {
 		try {
 			List<WLSample> samples = parseData(body);
 			
-			Specifier spec = new Specifier("USGS","12340000");
+			// A random identifier for the service unless we parameterize the date set ID.
+			Specifier spec = new Specifier();
 			
-			String json = new WaterLevelStatistics().calculate(spec,samples);
+			String json = new WaterLevelStatistics().calculate(spec, samples);
 			
 			return ResponseEntity.ok(json);
 		} catch (Exception e) {

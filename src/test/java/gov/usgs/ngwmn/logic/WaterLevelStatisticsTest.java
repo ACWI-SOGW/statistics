@@ -30,6 +30,7 @@ import gov.usgs.wma.statistics.model.Value;
 public class WaterLevelStatisticsTest {
 
 	WaterLevelStatistics stats = null;
+	Specifier spec = new Specifier();
 
 	private WLSample createSample(String time, String value) {
 		BigDecimal val = null;
@@ -87,6 +88,8 @@ public class WaterLevelStatisticsTest {
 	@Before
 	public void setup() {
 		stats = new WaterLevelStatistics();
+		spec = new Specifier("USGS", "Testing");
+
 	}
 
 
@@ -446,7 +449,6 @@ public class WaterLevelStatisticsTest {
 	@Test
 	public void test_removeProvisional_and_MostRecent() throws Exception {
 		// note that all previous calculate tests prove that 100% non-provisional collections are retained
-		Specifier spec = new Specifier("USGS", "irrelevant");
 
 		List<WLSample> samples = new LinkedList<>();
 		samples.add( createSample("2004-05-10T04:15:00-05:00", "1.0") );
@@ -492,7 +494,6 @@ public class WaterLevelStatisticsTest {
 	@Test
 	public void test_removeProvisional_not_MostRecent() throws Exception {
 		// note that all previous calculate tests prove that 100% non-provisional collections are retained
-		Specifier spec = new Specifier("USGS", "irrelevant");
 
 		List<WLSample> samples = new LinkedList<>();
 		samples.add( createSample("2004-05-10T04:15:00-05:00", "1.0") );

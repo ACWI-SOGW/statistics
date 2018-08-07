@@ -98,8 +98,36 @@ public class WaterLevelStatistics extends StatisticsCalculator<WLSample> {
 		setMediation(mediation);
 		
 		List<WLSample> samplesByDate = useMostPrevalentPCodeMediatedValue(spec, samples, mediation); 
-		removeProvisionalButNotMostRecent(samplesByDate, spec.getAgencyCd()+":"+spec.getSiteNo());
 		return samplesByDate;
+	}
+	@Override
+	protected void removeProvisional(List<WLSample> samplesByDate, String dataSetId) {
+		removeProvisionalButNotMostRecent(samplesByDate, dataSetId);
+	}
+	/**
+	 * This removes provisional value samples from a collection of samples.
+	 * However, it is required that the most recent sample be retained regardless of status
+	 * @param samples the samples to examine in temporal order
+	 * @param mySiteId for logging purposes if there are nulls removed to ID the site with nulls
+	 */
+	protected void removeProvisionalButNotMostRecent(List<WLSample> samples, String mySiteId) {
+		// retain most recent sample
+		WLSample latestSample = samples.get(samples.size()-1);
+		
+		super.removeProvisional(samples, mySiteId);
+		
+		// but only add it back in if it is provisional
+		if (latestSample.isProvisional()) {
+			samples.add(latestSample);
+		}
+	}
+	protected void removeMostRecentProvisional(List<WLSample> samples, List<WLSample> sortedByValue) {
+		WLSample maxDate =samples.get(samples.size()-1);
+		
+		if (maxDate.isProvisional()) {
+			samples.remove(maxDate);
+			sortedByValue.remove(maxDate);
+		}
 	}
 	
 	// TODO business rule for any one value error? continue without value or error entire statistics calculation?
@@ -214,6 +242,7 @@ public class WaterLevelStatistics extends StatisticsCalculator<WLSample> {
 	 * @return the original list if below surface mediation and a new sample list if above datum mediation
 	 */
 	protected List<WLSample> useMostPrevalentPCodeMediatedValue(Specifier spec, List<WLSample> samples, MediationType mediation) {
+		// all non-USGS sites have one mediation
 		if (! "USGS".equals(spec.getAgencyCd())) {
 			return samples;
 		}
@@ -233,33 +262,6 @@ public class WaterLevelStatistics extends StatisticsCalculator<WLSample> {
 		return mostPrevalent;
 	}
 	
-	
-	/**
-	 * This removes provisional value samples from a collection of samples.
-	 * However, it is required that the most recent sample be retained regardless of status
-	 * @param samples the samples to examine in temporal order
-	 * @param mySiteId for logging purposes if there are nulls removed to ID the site with nulls
-	 */
-	protected void removeProvisionalButNotMostRecent(List<WLSample> samples, String mySiteId) {
-		// retain most recent sample
-		WLSample latestSample = samples.get(samples.size()-1);
-		
-		super.removeProvisional(samples, mySiteId);
-		
-		// but only add it back in if it is provisional
-		if (latestSample.isProvisional()) {
-			samples.add(latestSample);
-		}
-	}
-	protected void removeMostRecentProvisional(List<WLSample> samples, List<WLSample> sortedByValue) {
-		WLSample maxDate =samples.get(samples.size()-1);
-		
-		if (maxDate.isProvisional()) {
-			samples.remove(maxDate);
-			sortedByValue.remove(maxDate);
-		}
-	}
-
 
 	/**
 	 * This convenience method is suppost to be self documenting by its name. But just to be clear it

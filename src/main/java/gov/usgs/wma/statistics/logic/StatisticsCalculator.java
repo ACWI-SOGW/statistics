@@ -87,6 +87,7 @@ public class StatisticsCalculator<S extends Value> {
 	
 	public List<S> conditioning(Specifier spec, List<S> samples) {
 		removeNulls(samples, spec.getAgencyCd()+":"+spec.getSiteNo());
+		removeProvisional(samples, spec.toString());
 		return samples;
 	}
 	
