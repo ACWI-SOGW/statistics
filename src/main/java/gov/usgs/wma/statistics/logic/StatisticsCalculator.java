@@ -25,12 +25,11 @@ import org.slf4j.LoggerFactory;
 
 import gov.usgs.ngwmn.logic.WaterLevelStatistics;
 import gov.usgs.ngwmn.model.Specifier;
-import gov.usgs.ngwmn.model.WellDataType;
 import gov.usgs.wma.statistics.model.Value;
 
 /**
  * The base statistics does nothing as place holder instances.
- * Each subclass will implement statistics calculations specific to the data type, {@link WellDataType}.
+ * Each subclass will implement statistics calculations specific to the data type.
  * 
  * An example implementation is {@link WaterLevelStatistics}
  * 

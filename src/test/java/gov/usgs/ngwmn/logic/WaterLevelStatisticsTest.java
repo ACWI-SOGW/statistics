@@ -23,7 +23,6 @@ import gov.usgs.ngwmn.logic.WaterLevelStatistics.WLMonthlyStats;
 import gov.usgs.ngwmn.model.PCode;
 import gov.usgs.ngwmn.model.Specifier;
 import gov.usgs.ngwmn.model.WLSample;
-import gov.usgs.ngwmn.model.WellDataType;
 import gov.usgs.wma.statistics.logic.StatisticsCalculator;
 import gov.usgs.wma.statistics.model.Value;
 
@@ -447,7 +446,7 @@ public class WaterLevelStatisticsTest {
 	@Test
 	public void test_removeProvisional_and_MostRecent() throws Exception {
 		// note that all previous calculate tests prove that 100% non-provisional collections are retained
-		Specifier spec = new Specifier("USGS", "irrelevant", WellDataType.WATERLEVEL);
+		Specifier spec = new Specifier("USGS", "irrelevant");
 
 		List<WLSample> samples = new LinkedList<>();
 		samples.add( createSample("2004-05-10T04:15:00-05:00", "1.0") );
@@ -493,7 +492,7 @@ public class WaterLevelStatisticsTest {
 	@Test
 	public void test_removeProvisional_not_MostRecent() throws Exception {
 		// note that all previous calculate tests prove that 100% non-provisional collections are retained
-		Specifier spec = new Specifier("USGS", "irrelevant", WellDataType.WATERLEVEL);
+		Specifier spec = new Specifier("USGS", "irrelevant");
 
 		List<WLSample> samples = new LinkedList<>();
 		samples.add( createSample("2004-05-10T04:15:00-05:00", "1.0") );
@@ -550,7 +549,7 @@ public class WaterLevelStatisticsTest {
 		samples.add( c );
 		samples.add( d );
 
-		Specifier site = new Specifier("not USGS", "irrelevant", WellDataType.WATERLEVEL);
+		Specifier site = new Specifier("not USGS", "irrelevant");
 
 		MediationType mediation = stats.findMostPrevalentMediation(site, samples);
 		assertEquals("non-USGS sites should default to, below land surface type.", MediationType.BelowLand, mediation);
@@ -574,7 +573,7 @@ public class WaterLevelStatisticsTest {
 		samples.add( c );
 		samples.add( d );
 
-		Specifier site = new Specifier("USGS", "irrelevant", WellDataType.WATERLEVEL);
+		Specifier site = new Specifier("USGS", "irrelevant");
 
 		MediationType mediation = stats.findMostPrevalentMediation(site, samples);
 		assertEquals("USGS sites should default to, below land surface type, with no PCODE.", MediationType.BelowLand, mediation);
@@ -599,7 +598,7 @@ public class WaterLevelStatisticsTest {
 		samples.add( c );
 		samples.add( d );
 
-		Specifier site = new Specifier("USGS", "irrelevant", WellDataType.WATERLEVEL);
+		Specifier site = new Specifier("USGS", "irrelevant");
 
 		MediationType mediation = stats.findMostPrevalentMediation(site, samples);
 		assertEquals("PCODE P72019, below land surface type, is most prevalent.", MediationType.BelowLand, mediation);
@@ -623,7 +622,7 @@ public class WaterLevelStatisticsTest {
 		samples.add( c );
 		samples.add( d );
 
-		Specifier site = new Specifier("USGS", "irrelevant", WellDataType.WATERLEVEL);
+		Specifier site = new Specifier("USGS", "irrelevant");
 
 		MediationType mediation = stats.findMostPrevalentMediation(site, samples);
 		assertEquals("PCODE P62610, above a datum type, is most prevalent.", MediationType.AboveDatum, mediation);

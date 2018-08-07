@@ -22,8 +22,6 @@ import org.springframework.web.bind.annotation.RestController;
 import gov.usgs.ngwmn.logic.WaterLevelStatistics;
 import gov.usgs.ngwmn.model.Specifier;
 import gov.usgs.ngwmn.model.WLSample;
-import gov.usgs.ngwmn.model.WellDataType;
-import gov.usgs.ngwmn.model.WellRegistry;
 
 @RestController
 @CrossOrigin(origins = "*") // no credentials by default
@@ -67,8 +65,7 @@ public class StatsService {
 		try {
 			List<WLSample> samples = parseData(body);
 			
-			WellRegistry site = new WellRegistry("USGS","12340000");
-			Specifier spec = new Specifier(site, WellDataType.WATERLEVEL);
+			Specifier spec = new Specifier("USGS","12340000");
 			
 			String json = new WaterLevelStatistics().calculate(spec,samples);
 			
