@@ -476,4 +476,26 @@ public class SigFigMathUtilTest {
         BigDecimal quotient = SigFigMathUtil.sigFigMultiplyByExact(b1, exact);
         assertEquals("3.33", quotient.toPlainString());
     }
+    
+	@Test
+	public void testBigDecimalScale() {
+		// testing if understanding of divide and rounding to the expect scale as expected
+
+		BigDecimal twelve = new BigDecimal(12);
+
+		int a = 10;
+
+		int b = 6;
+		String val = new BigDecimal(a).subtract(new BigDecimal(b))
+		.divide(twelve, 1, RoundingMode.HALF_EVEN).toString();
+
+		assertEquals("0.3", val);
+
+		b = 4;
+		val = new BigDecimal(a).subtract(new BigDecimal(b))
+		.divide(twelve, 1, RoundingMode.HALF_EVEN).toString();
+
+		assertEquals("0.5", val);
+	}
+    
 }

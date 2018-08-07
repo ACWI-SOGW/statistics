@@ -1,32 +1,14 @@
 package gov.usgs.ngwmn.logic;
 
-import static gov.usgs.wma.statistics.model.Value.*;
-import static  org.apache.commons.lang.StringUtils.*;
-
-//import java.io.IOException;
-//import java.io.Reader;
-//import java.sql.SQLException;
-//import javax.xml.parsers.ParserConfigurationException;
-//import org.springframework.beans.factory.annotation.Autowired;
-//import org.xml.sax.SAXException;
-//import java.text.SimpleDateFormat;
-//import java.util.Calendar;
-//import java.text.ParseException;
-//import java.math.RoundingMode;
-//import java.util.Collections;
+import static gov.usgs.wma.statistics.logic.OverallStatistics.*;
+import static org.apache.commons.lang.StringUtils.*;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.function.Function;
-import java.util.function.Predicate;
-import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,10 +20,54 @@ import gov.usgs.ngwmn.model.DepthDatum;
 import gov.usgs.ngwmn.model.PCode;
 import gov.usgs.ngwmn.model.Specifier;
 import gov.usgs.ngwmn.model.WLSample;
+import gov.usgs.wma.statistics.logic.MonthlyStatistics;
+import gov.usgs.wma.statistics.logic.OverallStatistics;
 import gov.usgs.wma.statistics.logic.StatisticsCalculator;
-import gov.usgs.wma.statistics.model.Value;
 
 public class WaterLevelStatistics extends StatisticsCalculator<WLSample> {
+	
+	protected static class WLMonthlyStats extends MonthlyStatistics<WLSample, WaterLevelStatistics.MediationType> {
+		public WLMonthlyStats(MediationType qualifier) {
+			super(qualifier);
+		}
+		@Override
+		public void sortValueByQualifier(List<WLSample> samples) {
+			if (qualifier == MediationType.BelowLand) {
+				sortByValueOrderDescending(samples);
+			} else {
+				sortByValueOrderAscending(samples);
+			}
+		}
+		@Override
+		public Function<List<WLSample>, List<WLSample>> sortFunctionByQualifier() {
+			Function<List<WLSample>, List<WLSample>> sortBy = StatisticsCalculator::sortByValueOrderAscending;
+			
+			if (qualifier == MediationType.BelowLand) {
+				sortBy = StatisticsCalculator::sortByValueOrderDescending;
+			}
+			return sortBy;
+		}
+		@Override
+		public boolean doesThisMonthQualifyForStats(List<WLSample> monthSamples) {
+			if (monthSamples.size()<10) {
+				return false;
+			}
+			return uniqueYears(monthSamples)>=10;
+		}
+		
+	};
+	
+	
+	OverallStatistics<WLSample> overallStatistics = new OverallStatistics<WLSample>() {
+		@Override
+		public Map<String,String> findMinMaxDatesAndDateRange(List<WLSample> samples, List<WLSample> sortedByValue) {
+			Map<String,String>  stats = super.findMinMaxDatesAndDateRange(samples, sortedByValue);
+			removeMostRecentProvisional(samples, sortedByValue);
+			return stats;
+		}
+	};
+	
+	MonthlyStatistics<WLSample, MediationType> monthlyStats;
 	
 	/**
 	 * This is the agreed upon days window for a recent value. It is computed from
@@ -58,22 +84,35 @@ public class WaterLevelStatistics extends StatisticsCalculator<WLSample> {
 		AboveDatum;
 	}
 	
+	private MediationType mediation;
+	public void setMediation(MediationType mediation) {
+		this.mediation = mediation;
+		monthlyStats = new WLMonthlyStats(mediation);
+	}
+	
+	
+	@Override
+	public List<WLSample> conditioning(Specifier spec, List<WLSample> samples) {
+		super.conditioning(spec, samples);
+		MediationType mediation = findMostPrevalentMediation(spec, samples);
+		setMediation(mediation);
+		
+		List<WLSample> samplesByDate = useMostPrevalentPCodeMediatedValue(spec, samples, mediation); 
+		removeProvisionalButNotMostRecent(samplesByDate, spec.getAgencyCd()+":"+spec.getSiteNo());
+		return samplesByDate;
+	}
+	
 	// TODO business rule for any one value error? continue without value or error entire statistics calculation?
 
 	@Override
 	public String calculate(Specifier spec, List<WLSample> samples) {
 		logger.info("Executing WaterLevel Stats calculations.");
 		
-		MediationType mediation = findMostPrevalentMediation(spec, samples);
-		List<WLSample> samplesByDate = useMostPrevalentPCodeMediatedValue(spec, samples, mediation); 
-		
-		removeProvisionalButNotMostRecent(samplesByDate, spec.getAgencyCd()+":"+spec.getSiteNo());
-		removeNulls(samplesByDate, spec.getAgencyCd()+":"+spec.getSiteNo());
-		
+		List<WLSample> samplesByDate = conditioning(spec, samples);
 		List<WLSample> sortedByValue  = new ArrayList<>(samplesByDate);
-		sortByMediation(sortedByValue, mediation);
+		monthlyStats.sortValueByQualifier(sortedByValue);
 		
-		Map<String, String> overall = overallStats(samplesByDate, sortedByValue, mediation);
+		Map<String, String> overall = overallStats(samplesByDate, sortedByValue);
 		Map<String, Map<String, String>> monthly = null; // Could use empty collection rather than null?
 		
 		if ( isNotBlank( overall.get(RECORD_YEARS) ) ) {
@@ -84,7 +123,7 @@ public class WaterLevelStatistics extends StatisticsCalculator<WLSample> {
 			try {
 				if ( doesThisSiteQualifyForMonthlyStats(years, recent, today) ) {
 					overall.put(IS_RANKED, "Y");
-					monthly = monthlyStats(sortedByValue, mediation);
+					monthly = monthlyStats.monthlyStats(sortedByValue);
 				}
 			} catch (Exception e) {
 				// if anything goes wrong here we still want the overall
@@ -113,6 +152,19 @@ public class WaterLevelStatistics extends StatisticsCalculator<WLSample> {
 		System.err.println(json);
 		
 		return json;
+	}
+
+	protected Map<String,String> overallStats(List<WLSample> samples, List<WLSample> sortedByValue) {
+		Map<String,String> stats = overallStatistics.overallStats(samples, sortedByValue);
+		if (stats.size() == 0) {
+			return stats;
+		}
+		
+		String latestPercentile = monthlyStats.percentileBasedOnMonthlyData(samples.get(samples.size()-1), samples);
+		stats.put(LATEST_PCTILE, latestPercentile);
+		
+		stats.put(MEDIATION, mediation.toString());
+		return stats;
 	}
 	
 
@@ -199,6 +251,14 @@ public class WaterLevelStatistics extends StatisticsCalculator<WLSample> {
 			samples.add(latestSample);
 		}
 	}
+	protected void removeMostRecentProvisional(List<WLSample> samples, List<WLSample> sortedByValue) {
+		WLSample maxDate =samples.get(samples.size()-1);
+		
+		if (maxDate.isProvisional()) {
+			samples.remove(maxDate);
+			sortedByValue.remove(maxDate);
+		}
+	}
 
 
 	/**
@@ -218,178 +278,13 @@ public class WaterLevelStatistics extends StatisticsCalculator<WLSample> {
 		return BigDecimal.TEN.compareTo(years) <= 0 && Days406.compareTo(daysDiff(today, recent)) >= 0;
 	}
 
-
-	/**
-	 * @param sortedByValue a list of all site samples in sorted order by value
-	 * @return a map of monthly maps of percentile data
-	 */
-	protected Map<String,Map<String,String>> monthlyStats(List<WLSample> sortedByValue, MediationType mediation) {
-		Map<String,Map<String,String>> stats = new HashMap<>();
-		if (sortedByValue == null || sortedByValue.size() == 0) {
-			return stats;
-		}
-		
-		for(int m=1; m<=12; m++) {
-			String month = ""+m;
-			logger.debug("MONTH="+m);
-			logger.debug("SBVC="+sortedByValue.size());
-			List<WLSample> monthSamples = filterValuesByGivenMonth(sortedByValue, month);
-			logger.debug("MSC="+monthSamples.size());
-			String monthCount = ""+monthSamples.size();
-			Map<String, List<WLSample>> sortSamplesByYear = sortSamplesByYear(monthSamples);
-			List<WLSample> normalizeMutlipleYearlyValues = normalizeMutlipleYearlyValues(monthSamples, mediation);
-			logger.debug("NMYVC="+normalizeMutlipleYearlyValues.size());
-			
-			if ( doesThisMonthQualifyForStats(normalizeMutlipleYearlyValues) ) {
-				Map<String,String> monthStats = generatePercentiles(normalizeMutlipleYearlyValues, PERCENTILES);
-				stats.put(month, monthStats);
-				
-				List<WLSample> monthYearlyMedians = generateMonthYearlyPercentiles(normalizeMutlipleYearlyValues, mediation);
-				monthStats.put(P50_MIN, monthYearlyMedians.get(0).value.toString());
-				monthStats.put(P50_MAX, monthYearlyMedians.get( monthYearlyMedians.size()-1 ).value.toString());
-				monthStats.put(SAMPLE_COUNT, monthCount);
-
-				int recordYears = sortSamplesByYear.keySet().size();
-				monthStats.put(RECORD_YEARS, ""+recordYears);
-			}
-		}
-		
-		return stats;
-	}
-
-	public List<WLSample> normalizeMutlipleYearlyValues(List<WLSample> monthSamples, MediationType mediation) {
-		List<WLSample> normalizedSamples = super.normalizeMutlipleYearlyValues(monthSamples, sortByMediation(mediation));
-		return normalizedSamples;
-	}
-	
-	protected boolean doesThisMonthQualifyForStats(List<WLSample> monthSamples) {
-		if (monthSamples.size()<10) {
-			return false;
-		}
-		return uniqueYears(monthSamples)>=10;
-	}
-	
-	/**
-	 * @param samples a many year single month filtered sample list in value order
-	 * @return a list of new samples holding the yearly medians in value order
-	 */
-	protected List<WLSample> generateMonthYearlyPercentiles(List<WLSample> samples, MediationType mediation) {
-		samples = new ArrayList<>(samples);
-		List<WLSample> monthYearlyMedians = new LinkedList<>(); 
-
-		while (samples.size() > 0) {
-			// calculate a year's median
-			final String year = yearUTC(samples.get(0).time);
-			// using predicate because spring 3.x includes cglib that cannot compile lambdas
-			Predicate<WLSample> yearly = new Predicate<WLSample>() {
-				@Override
-				public boolean test(WLSample sample) {
-					return year.equals( yearUTC(sample.time) );
-				}
-			};
-			List<WLSample> yearSamples = samples.stream().filter(yearly).collect(Collectors.toList());
-			monthYearlyMedians.add( new WLSample(valueOfPercentile( yearSamples, PERCENTILES.get(P50), WLSample::valueOf)) );
-			// remove the current year
-			samples.removeAll(yearSamples);
-		}
-		
-		sortByMediation(monthYearlyMedians, mediation);
-		return monthYearlyMedians;
-	}
-
 	protected WLSample makeMedian(List<WLSample> samples) {
 		// years median in the this month
-		BigDecimal medianValue = valueOfPercentile(samples, StatisticsCalculator.PERCENTILES.get(StatisticsCalculator.P50), Value::valueOf);
-		BigDecimal medianAbove = valueOfPercentile(samples, StatisticsCalculator.PERCENTILES.get(StatisticsCalculator.P50), WLSample::valueOfAboveDatum);
+		BigDecimal medianValue = super.makeMedian(samples).value;
+		BigDecimal medianAbove = valueOfPercentile(samples, MEDIAN_PERCENTIAL, WLSample::valueOfAboveDatum);
 		WLSample base = samples.get( (int)(samples.size()/2) );
 		WLSample medianSample = new WLSample(medianValue, medianAbove, base);
 		return medianSample;
-	}
-
-	
-	/**
-	 * This calculates the overall series statistics: min, max, count, first, last, years, and percentile of the most recent
-	 * @param samples time series data in temporal order
-	 * @param sortedByValue  time series data in value order
-	 * @return computed statistics map
-	 */
-	protected Map<String,String> overallStats(List<WLSample> samples, List<WLSample> sortedByValue, MediationType mediation) {
-		if (samples == null || samples.size() == 0) {
-			return new HashMap<String,String>();
-		}
-		
-		Map<String,String> stats = findMinMaxDatesAndDateRange(samples,sortedByValue); // after this samples is sorted by date for certain
-		
-		WLSample minValue = sortedByValue.get(0);
-		WLSample maxValue = sortedByValue.get(sortedByValue.size()-1);
-
-		stats.put(IS_RANKED, "N"); // default not ranked status
-
-		// value range
-		stats.put(MIN_VALUE, minValue.value.toString());
-		stats.put(MAX_VALUE, maxValue.value.toString());
-		// number of samples
-		stats.put(SAMPLE_COUNT, ""+samples.size());
-		// percentile statistics
-		stats.put(MEDIAN, valueOfPercentile(sortedByValue, PERCENTILES.get(P50), WLSample::valueOf).toString());
-		
-		String latestPercentile = generateLatestPercentileBasedOnMonthlyData(samples, stats.get(MAX_DATE), mediation);
-		stats.put(LATEST_PCTILE, latestPercentile);
-		
-		stats.put(MEDIATION, mediation.toString());
-		stats.put(CALC_DATE, DATE_FORMAT_FULL.format(new Date()));
-		
-		return stats;
-	}
-	
-	protected String generateLatestPercentileBasedOnMonthlyData(List<WLSample> samplesByDate, String maxDate, MediationType mediation) {
-		String month = monthUTC(maxDate);
-		List<WLSample> monthlySamples = filterValuesByGivenMonth(samplesByDate, month);
-		WLSample latestSample = monthlySamples.get( monthlySamples.size()-1 );
-		sortByMediation(monthlySamples, mediation);
-		BigDecimal percentile = percentileOfValue(monthlySamples, latestSample, WLSample::valueOf);
-		return percentile.toString();
-	}
-
-	protected Map<String,String> findMinMaxDatesAndDateRange(List<WLSample> samples, List<WLSample> sortedByValue) {
-		Map<String,String> stats = new HashMap<String,String>();
-		sortByDateOrder(samples); // ensure date order for sample sourced from db or tests
-		WLSample minDate =samples.get(0);
-		WLSample maxDate =samples.get(samples.size()-1);
-		removeMostRecentProvisional(samples, sortedByValue);
-		
-		stats.put(LATEST_VALUE, maxDate.value.toString());
-		// date range
-		stats.put(MIN_DATE, minDate.time);
-		stats.put(MAX_DATE, maxDate.time);
-		// years of data
-		stats.put(RECORD_YEARS, ""+yearDiff(maxDate.time, minDate.time) );
-		
-		return stats;
-	}
-	
-	protected void removeMostRecentProvisional(List<WLSample> samples, List<WLSample> sortedByValue) {
-		WLSample maxDate =samples.get(samples.size()-1);
-		
-		if (maxDate.isProvisional()) {
-			samples.remove(maxDate);
-			sortedByValue.remove(maxDate);
-		}
-	}
-	protected void sortByMediation(List<WLSample> sortedByValue, MediationType mediation) {
-		if (mediation == MediationType.BelowLand) {
-			sortByValueOrderDescending(sortedByValue);
-		} else {
-			sortByValueOrderAscending(sortedByValue);
-		}
-	}
-	protected Function<List<WLSample>, List<WLSample>> sortByMediation(MediationType mediation) {
-		Function<List<WLSample>, List<WLSample>> sortBy = StatisticsCalculator::sortByValueOrderAscending;
-		
-		if (mediation == MediationType.BelowLand) {
-			sortBy = StatisticsCalculator::sortByValueOrderDescending;
-		}
-		return sortBy;
 	}
 	
 }

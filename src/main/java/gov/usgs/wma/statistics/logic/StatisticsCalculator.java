@@ -19,15 +19,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
-import java.util.function.Predicate;
-import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import gov.usgs.ngwmn.logic.WaterLevelStatistics;
 import gov.usgs.ngwmn.model.Specifier;
-import gov.usgs.ngwmn.model.WLSample;
 import gov.usgs.ngwmn.model.WellDataType;
 import gov.usgs.wma.statistics.model.Value;
 
@@ -42,50 +39,15 @@ import gov.usgs.wma.statistics.model.Value;
 public class StatisticsCalculator<S extends Value> {
 	private static final Logger logger = LoggerFactory.getLogger(StatisticsCalculator.class);
 	
-	public static final String RECORD_YEARS  = "RECORD_YEARS";
-	public static final String MIN_DATE      = "MIN_DATE";
-	public static final String MAX_DATE      = "MAX_DATE";
-	public static final String MIN_VALUE     = "MIN_VALUE";
-	public static final String MAX_VALUE     = "MAX_VALUE";
-	public static final String P50_MIN       = "P50_MIN";
-	public static final String P50_MAX       = "P50_MAX";
 	public static final String SAMPLE_COUNT  = "SAMPLE_COUNT";
-	public static final String P10           = "P10";
-	public static final String P25           = "P25";
-	public static final String P50           = "P50";
-	public static final String P75           = "P75";
-	public static final String P90           = "P90";
-	public static final String MEDIAN        = "MEDIAN"; // P50
-	public static final String LATEST_PCTILE = "LATEST_PCTILE";
-	public static final String IS_RANKED     = "IS_RANKED";
-	public static final String LATEST_VALUE  = "LATEST_VALUE";
-	public static final String MEDIATION     = "MEDIATION";
-	public static final String CALC_DATE     = "CALC_DATE";
-
+	
+	public static final BigDecimal MEDIAN_PERCENTIAL = new BigDecimal("0.500000000");
 	//protected static final BigDecimal HUNDRED = new BigDecimal("100");
 	protected static final BigDecimal TWELVE  = new BigDecimal("12");
 	// Calendar returns millis for days and after a diff we need the number of days
 	protected static final long MILLISECONDS_PER_DAY = 1000 * 60 * 60 * 24;// ms * sec * min * hr == ms/day
 
 	
-	public static final Map<String, BigDecimal> PERCENTILES;
-	static {
-		PERCENTILES =  new HashMap<>();
-		// these are exact percentiles and should not limit measured precision
-		addPercentile(P10, "0.100000000");
-		addPercentile(P25, "0.250000000");
-		addPercentile(P50, "0.500000000");
-		addPercentile(P75, "0.750000000");
-		addPercentile(P90, "0.900000000");
-	}
-	// Setter to allow for extra percentiles in string format
-	public static void addPercentile(String name, String value) {
-		addPercentile(name, new BigDecimal(value));
-	}
-	// Setter to allow for extra percentiles
-	private static void addPercentile(String name, BigDecimal percentile) {
-		PERCENTILES.put(name, percentile);
-	}
 
 	/**
 	 * Calculates statistics for a specifier where data must be fetched from the database.
@@ -123,7 +85,13 @@ public class StatisticsCalculator<S extends Value> {
 		return "";
 	}
 	
-
+	
+	public List<S> conditioning(Specifier spec, List<S> samples) {
+		removeNulls(samples, spec.getAgencyCd()+":"+spec.getSiteNo());
+		return samples;
+	}
+	
+	
 
 	/**
 	 * This returns the percentile of a given a sample in a sample "set"
@@ -236,22 +204,6 @@ public class StatisticsCalculator<S extends Value> {
 		return generatedPercentiles;
 	}
 	
-	public List<S> filterValuesByGivenMonth(List<S> samples, final String month) {
-		// using predicate because spring 3.x includes cglib that cannot compile lambdas
-		Predicate<S> monthly = new Predicate<S>() {
-			@Override
-			public boolean test(S value) {
-				if (value == null || month == null) {
-					return false;
-				}
-				String paddedMonth =  ((month.length()==1) ?"0" :"")+month;
-				return monthUTC(value.time).equals(paddedMonth);
-			}
-		};
-		List<S> monthSamples = samples.stream().filter(monthly).collect(Collectors.toList());
-		return monthSamples;
-	}
-
 	
 	/**
 	 * Returns the number of unique years in samples. It is used to determine if a month qualifies
@@ -366,7 +318,7 @@ public class StatisticsCalculator<S extends Value> {
 	@SuppressWarnings("unchecked")
 	protected S makeMedian(List<S> samples) {
 		// years median in the this month
-		BigDecimal median = valueOfPercentile(samples, PERCENTILES.get(P50), Value::valueOf);
+		BigDecimal median = valueOfPercentile(samples, MEDIAN_PERCENTIAL, Value::valueOf);
 		S base = samples.get( (int)(samples.size()/2) );
 		Value medianSample = new Value(base.time, median);
 		return (S)medianSample;

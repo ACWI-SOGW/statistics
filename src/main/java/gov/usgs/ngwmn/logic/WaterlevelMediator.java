@@ -211,7 +211,7 @@ public class WaterlevelMediator {
 	 */
 	protected static Measure initialValidation(String valueStr, String unitStr, String pcodeStr, String measureDatumStr, String siteElevation, String siteDatumStr) 
 			throws ValidationException {
-		
+		logger.trace("enter");
 		Measure measure = new Measure(valueStr, unitStr, pcodeStr, measureDatumStr, siteElevation, siteDatumStr);
 		
 		if (measure.pcode.isUnrecognized()) {
@@ -224,6 +224,7 @@ public class WaterlevelMediator {
 			throw new ValidationException(NA_NO_UNIT + " Value: '" + unitStr + "'");
 		}
 		
+		logger.trace("exit");
 		return measure;
 	}
 
