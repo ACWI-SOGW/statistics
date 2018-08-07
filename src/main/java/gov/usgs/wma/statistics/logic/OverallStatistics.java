@@ -23,6 +23,7 @@ public class OverallStatistics <S extends Value> extends StatisticsCalculator<S>
 	public static final String RECORD_YEARS  = "RECORD_YEARS";
 
 	
+	// TODO work this into the calculate model
 	/**
 	 * This calculates the overall series statistics: min, max, count, first, last, years, and percentile of the most recent
 	 * @param samples time series data in temporal order

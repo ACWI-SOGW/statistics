@@ -102,6 +102,7 @@ public class MonthlyStatistics<S extends Value, Q> extends StatisticsCalculator<
 		return monthSamples;
 	}
 
+	// TODO work this into the calculate model
 	/**
 	 * @param sortedByValue a list of all site samples in sorted order by value
 	 * @return a map of monthly maps of percentile data

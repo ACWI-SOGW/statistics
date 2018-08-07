@@ -1,10 +1,12 @@
 package gov.usgs.wma.statistics.logic;
 
 import static gov.usgs.wma.statistics.logic.OverallStatistics.*;
+import static gov.usgs.wma.statistics.model.Value.*;
 import static org.junit.Assert.*;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -26,7 +28,21 @@ public class OverallStatisticsTest {
 
 
 	@Test
-	public void testMostRecentProvistionalData_Removed() {
+	public void test_overallStats_empty() {
+		List<Value> empty = new LinkedList<>();
+		Map<String, String> stat = stats.overallStats(empty, empty);
+		assertEquals(0, stat.size());
+	}
+	
+	@Test
+	public void test_overallStats_null() {
+		Map<String, String> stat = stats.overallStats(null, null);
+		assertEquals(0, stat.size());
+	}
+	
+	
+	@Test
+	public void test_findMinMaxDatesAndDateRange() {
 		List<Value> valueOrder = new LinkedList<>();
 		fillMarchData(valueOrder);
 		List<Value> monthSamples = new ArrayList<Value>(valueOrder);
@@ -35,10 +51,37 @@ public class OverallStatisticsTest {
 
 		Map<String, String> stat = stats.findMinMaxDatesAndDateRange(monthSamples, valueOrder);
 		
-		assertEquals("10.0", stat.get(RECORD_YEARS));
+		assertEquals("11.0", stat.get(RECORD_YEARS));
 		assertEquals("2006-03-01", stat.get(MIN_DATE));
-		assertEquals("2016-03-01", stat.get(MAX_DATE));
-		assertEquals("8.96", stat.get(LATEST_VALUE));
+		assertEquals("2017-03-01", stat.get(MAX_DATE));
+		assertEquals("9.17", stat.get(LATEST_VALUE));
+	}
+	
+	@Test
+	public void test_overallStats() {
+		List<Value> valueOrder = new LinkedList<>();
+		fillMarchData(valueOrder);
+		StatisticsCalculator.sortByValueOrderAscending(valueOrder);
+		List<Value> monthSamples = new ArrayList<Value>(valueOrder);
+		StatisticsCalculator.sortByDateOrder(monthSamples);
+
+		Map<String, String> stat = stats.overallStats(monthSamples, valueOrder);
+		
+		assertEquals("11.0", stat.get(RECORD_YEARS));
+		assertEquals("2006-03-01", stat.get(MIN_DATE));
+		assertEquals("2017-03-01", stat.get(MAX_DATE));
+		assertEquals("9.17", stat.get(LATEST_VALUE));
+		
+		assertEquals("N", stat.get(IS_RANKED)); // default not ranked status
+		// value range
+		assertEquals("1.39", stat.get(MIN_VALUE));
+		assertEquals("9.44", stat.get(MAX_VALUE));
+		// number of samples
+		assertEquals("332", stat.get(SAMPLE_COUNT));
+		// percentile statistics
+		assertEquals("7.98", stat.get(MEDIAN));
+		
+		assertEquals(DATE_FORMAT_FULL.format(new Date()), stat.get(CALC_DATE));
 	}
 
 	protected void fillMarchData(List<Value> monthSamples) {
@@ -79,7 +122,7 @@ public class OverallStatisticsTest {
 		monthSamples.add( createSample("2013-03-01","9.24") );
 		monthSamples.add( createSample("2013-03-01","9.2") );
 		monthSamples.add( createSample("2013-03-01","9.17") );
-		monthSamples.add( createSample("2016-03-01","9.17") );
+		monthSamples.add( createSample("2017-03-01","9.17") ); // the date was changed here to ensure most recent
 		monthSamples.add( createSample("2013-03-01","9.16") );
 		monthSamples.add( createSample("2013-03-01","9.16") );
 		monthSamples.add( createSample("2013-03-01","9.16") );
