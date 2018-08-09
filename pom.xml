@@ -8,7 +8,7 @@
 	<artifactId>statistics</artifactId>
 	<name>statistics</name>
 	<description>Proof of concept to pull statistics out of monolithic NGWMN and use it for scientific review.</description>
-	<version>0.2.0</version>
+	<version>0.2.0-SNAPSHOT</version>
 	<packaging>jar</packaging>
 	<properties>
 		<java.version>1.8</java.version>
