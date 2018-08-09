@@ -2,16 +2,16 @@
 A time series statistics micro service. It accepts time series data and returns overall and monthly statistics for months that qualify.
 
 Overall statistics returned include:
-Highest Water Level	
+```Highest Water Level	
 Median Water Level	
 Lowest Water Level	
 First Measurement Date	
 Last Measurement Date	
 Years of Record
 Number of Measurements	
-
+```
 Monthly statistics are returned only of they qualify. Each month must have ten unique years of data and latest sample must be within 406 days from submission date. The returns statistics include:
-10th Percentile	
+```10th Percentile	
 25th Percentile	
 50th Percentile	
 75th Percentile	
@@ -20,8 +20,9 @@ Lowest Median
 Highest Median	
 Years of Record
 Number of Measurements for the month
-
-Sample JSON respone
+```
+Sample JSON respones
+```
 {
   "overall": {
     "MEDIATION":"BelowLand",
@@ -61,3 +62,4 @@ Sample JSON respone
     }
   },
 }
+```
