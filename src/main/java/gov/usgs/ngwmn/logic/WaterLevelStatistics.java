@@ -49,10 +49,8 @@ public class WaterLevelStatistics extends StatisticsCalculator<WLSample> {
 		}
 		@Override
 		public boolean doesThisMonthQualifyForStats(List<WLSample> monthSamples) {
-			if (monthSamples.size()<10) {
-				return false;
-			}
-			return uniqueYears(monthSamples)>=10;
+			return  super.doesThisMonthQualifyForStats(monthSamples)
+					&& uniqueYears(monthSamples) >= 10;
 		}
 		
 	};
@@ -94,6 +92,7 @@ public class WaterLevelStatistics extends StatisticsCalculator<WLSample> {
 	@Override
 	public List<WLSample> conditioning(Specifier spec, List<WLSample> samples) {
 		super.conditioning(spec, samples);
+		
 		MediationType mediation = findMostPrevalentMediation(spec, samples);
 		setMediation(mediation);
 		
@@ -169,6 +168,11 @@ public class WaterLevelStatistics extends StatisticsCalculator<WLSample> {
 			stats.put("monthly", monthly);
 		}
 		
+		String json = toJSON(stats);
+		return json;
+	}
+	
+	public static String toJSON(Map<String, Object> stats) {
 		String json = "";
 		try {
 			json = new ObjectMapper().writeValueAsString(stats);
@@ -178,7 +182,6 @@ public class WaterLevelStatistics extends StatisticsCalculator<WLSample> {
 		}
 		
 		System.err.println(json);
-		
 		return json;
 	}
 
