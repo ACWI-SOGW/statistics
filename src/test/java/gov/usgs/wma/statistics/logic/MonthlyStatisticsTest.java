@@ -159,7 +159,7 @@ public class MonthlyStatisticsTest {
 //				return monthSamples.size()>0;
 //			}
 			@Override
-			public List<Value> normalizeMutlipleYearlyValues(List<Value> monthSamples, Function<List<Value>, List<Value>> sortBy) {
+			public List<Value> medianMonthlyValues(List<Value> monthSamples, Function<List<Value>, List<Value>> sortBy) {
 				return monthSamples;
 			}
 		};
@@ -226,7 +226,7 @@ public class MonthlyStatisticsTest {
 		// we are not testing this method so mock it to return what we need
 		MonthlyStatistics<Value, MediationType> mockstats = new MonthlyStatistics<Value, MediationType>(MediationType.AboveDatum) {
 			@Override
-			public List<Value> normalizeMutlipleYearlyValues(List<Value> monthSamples,
+			public List<Value> medianMonthlyValues(List<Value> monthSamples,
 					Function<List<Value>, List<Value>> sortBy) {
 				// do not modify, testing the months. This prevents normalization to test aggregations
 				return monthSamples;
@@ -721,7 +721,7 @@ public class MonthlyStatisticsTest {
 		// then check that averages removes them and that the new values are correct
 
 		int preCount = monthSamples.size();
-		List<Value> normalizeMutlipleYearlyValues = stats.normalizeMutlipleYearlyValues(monthSamples, stats.sortFunctionByQualifier());
+		List<Value> normalizeMutlipleYearlyValues = stats.medianMonthlyValues(monthSamples, stats.sortFunctionByQualifier());
 
 		assertEquals("normalize should have removed two values, one from each of two years", preCount-2, normalizeMutlipleYearlyValues.size());
 

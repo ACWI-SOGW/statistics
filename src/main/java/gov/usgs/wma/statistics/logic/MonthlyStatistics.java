@@ -121,7 +121,7 @@ public class MonthlyStatistics<S extends Value, Q> extends StatisticsCalculator<
 			logger.debug("MSC="+monthSamples.size());
 			String monthCount = ""+monthSamples.size();
 			Map<String, List<S>> sortSamplesByYear = sortSamplesByYear(monthSamples);
-			List<S> normalizeMutlipleYearlyValues = normalizeMutlipleYearlyValues(monthSamples,  sortFunctionByQualifier());
+			List<S> normalizeMutlipleYearlyValues = medianMonthlyValues(monthSamples,  sortFunctionByQualifier());
 			logger.debug("NMYVC="+normalizeMutlipleYearlyValues.size());
 			
 			if ( doesThisMonthQualifyForStats(normalizeMutlipleYearlyValues) ) {
@@ -173,6 +173,27 @@ public class MonthlyStatistics<S extends Value, Q> extends StatisticsCalculator<
 		// this cast works
 		sortValueByQualifier((List<S>)monthYearlyMedians);
 		return monthYearlyMedians;
+	}
+	
+	public List<S> medianMonthlyValues(List<S> monthSamples, Function<List<S>, List<S>> sortBy) {
+		List<S> normalizedSamples = new LinkedList<>();
+
+		Map<String, List<S>> yearSamples = sortSamplesByYear(monthSamples);
+		for (String year : yearSamples.keySet()) {
+			List<S> samples = yearSamples.get(year);
+			if (samples.size() > 1) {
+				// have to remove the original values from the monthly list
+				monthSamples.removeAll(samples);
+				S medianSample = makeMedian(samples);
+				normalizedSamples.add(medianSample);
+			}
+			else {
+				normalizedSamples.addAll(samples);
+			}
+		}
+		normalizedSamples = sortBy.apply(normalizedSamples);
+		
+		return normalizedSamples;
 	}
 	
 }

@@ -20,6 +20,7 @@ import org.junit.Test;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import gov.usgs.ngwmn.logic.WaterLevelStatistics.MediationType;
 import gov.usgs.wma.statistics.model.Value;
 
 
@@ -27,7 +28,8 @@ import gov.usgs.wma.statistics.model.Value;
 
 public class StatisticsCalculatorTest {
 
-	StatisticsCalculator<Value> stats = null;
+	StatisticsCalculator<Value> stats;
+	MonthlyStatistics<Value, MediationType> monthlyStats;
 
 	private Value createSample(String time, String value) {
 		BigDecimal val = null;
@@ -82,6 +84,7 @@ public class StatisticsCalculatorTest {
 	@Before
 	public void setup() {
 		stats = new StatisticsCalculator<Value>();
+		monthlyStats = new MonthlyStatistics<Value, MediationType>(MediationType.AboveDatum);
 	}
 
 
@@ -800,7 +803,7 @@ public class StatisticsCalculatorTest {
 		fillJuneData(monthSamples);
 
 		int preCount = monthSamples.size();
-		stats.normalizeMutlipleYearlyValues(monthSamples, StatisticsCalculator::sortByValueOrderDescending);
+		monthlyStats.medianMonthlyValues(monthSamples, StatisticsCalculator::sortByValueOrderDescending);
 		assertEquals("normalize should have removed no values", preCount, monthSamples.size());
 
 		BigDecimal p10c = stats.valueOfPercentile(monthSamples, PERCENTILES.get(P25), Value::valueOf);
@@ -827,7 +830,7 @@ public class StatisticsCalculatorTest {
 		assertTrue(replaceValue(monthSamples, 6,  createSample("1995-06-05T12:00:00", "9.00"), "9.0"));
 
 		int preCount = monthSamples.size();
-		stats.normalizeMutlipleYearlyValues(monthSamples, StatisticsCalculator::sortByValueOrderDescending);
+		monthlyStats.medianMonthlyValues(monthSamples, StatisticsCalculator::sortByValueOrderDescending);
 		assertEquals("normalize should have removed no values", preCount, monthSamples.size());
 
 		BigDecimal p10c = stats.valueOfPercentile(monthSamples, PERCENTILES.get(P25), Value::valueOf);
@@ -878,7 +881,7 @@ public class StatisticsCalculatorTest {
 		fillJulyData(monthSamples);
 
 		int preCount = monthSamples.size();
-		List<Value> normalizeMutlipleYearlyValues = stats.normalizeMutlipleYearlyValues(monthSamples, StatisticsCalculator::sortByValueOrderDescending);
+		List<Value> normalizeMutlipleYearlyValues = monthlyStats.medianMonthlyValues(monthSamples, StatisticsCalculator::sortByValueOrderDescending);
 		assertEquals("normalize should have removed values", preCount-1, normalizeMutlipleYearlyValues.size());
 
 		BigDecimal p10c = stats.valueOfPercentile(monthSamples, PERCENTILES.get(P10), Value::valueOf);
@@ -914,7 +917,7 @@ public class StatisticsCalculatorTest {
 		assertTrue(replaceValue(monthSamples, 1, createSample("2002-07-17T12:00:00-04:00", "9.10"), "9.1"));
 
 		int preCount = monthSamples.size();
-		List<Value> normalizeMutlipleYearlyValues = stats.normalizeMutlipleYearlyValues(monthSamples, StatisticsCalculator::sortByValueOrderDescending);
+		List<Value> normalizeMutlipleYearlyValues = monthlyStats.medianMonthlyValues(monthSamples, StatisticsCalculator::sortByValueOrderDescending);
 		assertEquals("normalize should have removed values", preCount-1, normalizeMutlipleYearlyValues.size());
 
 		BigDecimal p10c = stats.valueOfPercentile(normalizeMutlipleYearlyValues, PERCENTILES.get(P10), Value::valueOf);
@@ -973,7 +976,7 @@ public class StatisticsCalculatorTest {
 		fillAugData(monthSamples);
 
 		int preCount = monthSamples.size();
-		List<Value> normalizeMutlipleYearlyValues = stats.normalizeMutlipleYearlyValues(monthSamples, StatisticsCalculator::sortByValueOrderDescending);
+		List<Value> normalizeMutlipleYearlyValues = monthlyStats.medianMonthlyValues(monthSamples, StatisticsCalculator::sortByValueOrderDescending);
 		assertEquals("normalize should have removed values", preCount-2, normalizeMutlipleYearlyValues.size());
 
 		BigDecimal p25c = stats.valueOfPercentile(normalizeMutlipleYearlyValues, PERCENTILES.get(P25), Value::valueOf);
@@ -1018,7 +1021,7 @@ public class StatisticsCalculatorTest {
 		assertTrue(replaceValue(monthSamples, 5, createSample("2005-08-03T10:32:00-04:00", "9.50"), "9.5"));
 
 		int preCount = monthSamples.size();
-		List<Value> normalizeMutlipleYearlyValues = stats.normalizeMutlipleYearlyValues(monthSamples, StatisticsCalculator::sortByValueOrderDescending);
+		List<Value> normalizeMutlipleYearlyValues = monthlyStats.medianMonthlyValues(monthSamples, StatisticsCalculator::sortByValueOrderDescending);
 		assertEquals("normalize should have removed values", preCount-2, normalizeMutlipleYearlyValues.size());
 
 		BigDecimal p25c = stats.valueOfPercentile(normalizeMutlipleYearlyValues, PERCENTILES.get(P25), Value::valueOf);
@@ -1070,7 +1073,7 @@ public class StatisticsCalculatorTest {
 		fillDecData(monthSamples);
 
 		int preCount = monthSamples.size();
-		stats.normalizeMutlipleYearlyValues(monthSamples, StatisticsCalculator::sortByValueOrderDescending);
+		monthlyStats.medianMonthlyValues(monthSamples, StatisticsCalculator::sortByValueOrderDescending);
 		assertEquals("normalize should have removed NO values", preCount, monthSamples.size());
 
 		BigDecimal p10c = stats.valueOfPercentile(monthSamples, PERCENTILES.get(P25), Value::valueOf);
@@ -1095,7 +1098,7 @@ public class StatisticsCalculatorTest {
 		assertTrue(replaceValue(monthSamples, 5, createSample("2000-12-08T12:00:00", "11.10"), "11.1"));
 
 		int preCount = monthSamples.size();
-		stats.normalizeMutlipleYearlyValues(monthSamples, StatisticsCalculator::sortByValueOrderDescending);
+		monthlyStats.medianMonthlyValues(monthSamples, StatisticsCalculator::sortByValueOrderDescending);
 		assertEquals("normalize should have removed NO values", preCount, monthSamples.size());
 
 		BigDecimal p10c = stats.valueOfPercentile(monthSamples, PERCENTILES.get(P25), Value::valueOf);

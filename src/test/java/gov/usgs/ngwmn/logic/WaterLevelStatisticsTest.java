@@ -1095,7 +1095,7 @@ public class WaterLevelStatisticsTest {
 		// we are not testing this method so mock it to return what we need
 		WLMonthlyStats mockstats = new WLMonthlyStats(MediationType.AboveDatum) {
 			@Override
-			public List<WLSample> normalizeMutlipleYearlyValues(List<WLSample> monthSamples,
+			public List<WLSample> medianMonthlyValues(List<WLSample> monthSamples,
 					Function<List<WLSample>, List<WLSample>> sortBy) {
 				// do not modify, testing the months. This prevents normalization to test aggregations
 				return monthSamples;

@@ -293,26 +293,6 @@ public class StatisticsCalculator<S extends Value> {
 		return samples;
 	}
 
-	public List<S> normalizeMutlipleYearlyValues(List<S> monthSamples, Function<List<S>, List<S>> sortBy) {
-		List<S> normalizedSamples = new LinkedList<>();
-
-		Map<String, List<S>> yearSamples = sortSamplesByYear(monthSamples);
-		for (String year : yearSamples.keySet()) {
-			List<S> samples = yearSamples.get(year);
-			if (samples.size() > 1) {
-				// have to remove the original values from the monthly list
-				monthSamples.removeAll(samples);
-				S medianSample = makeMedian(samples);
-				normalizedSamples.add(medianSample);
-			}
-			else {
-				normalizedSamples.addAll(samples);
-			}
-		}
-		normalizedSamples = sortBy.apply(normalizedSamples);
-		
-		return normalizedSamples;
-	}
 	
 	// This method must be overridden by subclasses that do not use Value for samples
 	@SuppressWarnings("unchecked")

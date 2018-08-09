@@ -32,7 +32,7 @@ public class WaterLevelStatisticsControllerHelper {
 		stats.monthlyStats.sortValueByQualifier(sortedByValue);
 		
 		samples = fetchMonthOrAll(sortedByValue, month);
-		return sortAndMedian(samples, median, mediation);
+		return sortAndMedian(stats, samples, median);
 	}
 	
 	
@@ -58,8 +58,7 @@ public class WaterLevelStatisticsControllerHelper {
 	}
 	
 	
-	protected List<WLSample> sortAndMedian(List<WLSample> sortedByValue, boolean median, MediationType mediation )  {
-		WaterLevelStatistics stats = new WaterLevelStatistics();
+	protected static List<WLSample> sortAndMedian(WaterLevelStatistics stats, List<WLSample> sortedByValue, boolean median)  {
 		// we want the values grouped by month
 		List<WLSample> monthlyGroupedSamplesOrderedByValue = new LinkedList<>();
 		for (int m=1; m<=12; m++) {
@@ -70,7 +69,7 @@ public class WaterLevelStatisticsControllerHelper {
 				// if medians is wanted then process all months (could be one) for median values
 				if (median) {
 					monthlyGroupedSamplesOrderedByValue.addAll(
-							stats.normalizeMutlipleYearlyValues(monthlySamples, 
+							stats.monthlyStats.medianMonthlyValues(monthlySamples, 
 									stats.monthlyStats.sortFunctionByQualifier()));
 				} else {
 					monthlyGroupedSamplesOrderedByValue.addAll( monthlySamples );
