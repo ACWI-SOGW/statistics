@@ -50,6 +50,8 @@ public class SigFigMathUtil {
     // For example: (v)->HALF_EVEN will always use HALF EVEN UP
     //
     // July  30 2018 - Change of specification - they want the default Java behavior back.
+    //     This is not currently used anywhere but there is a high likelihood that is will
+    //     be called back into use by any level of statistics.
     public static final class MathmaticsPositiveInfinityRoundingRule implements CustomRoundingRule {
         private static final RoundingMode DEFAULT_ROUNDING_MODE_POSITIVE_VALUE = RoundingMode.HALF_UP; 
         private static final RoundingMode DEFAULT_ROUNDING_MODE_NEGATIVE_VALUE = RoundingMode.HALF_DOWN;
@@ -192,7 +194,7 @@ public class SigFigMathUtil {
             LOGGER.info("BigDecimal arg was null.");
             return null;
         }
-
+        
         if (rm == null) {
             LOGGER.info("RoundingMode arg was null. Did you mean to use the 2 arg method that applies the default rounding mode?");
             return null;
