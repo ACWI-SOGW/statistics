@@ -1,5 +1,6 @@
 .settings/
 .idea/
+.springBeans
 logs/
 target/
 venv/
