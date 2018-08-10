@@ -1,0 +1,21 @@
+pipeline {
+    agent any
+
+    stages {
+        stage('Prepare') {
+            steps {
+                withMaven(maven:'maven_3_5_4') {
+                    sh 'mvn --batch-mode release:prepare'
+                }
+            }
+        }
+        stage('Perform') {
+            steps {
+                withMaven(maven:'maven_3_5_4') {
+                    sh 'mvn --batch-mode release:perform'
+                }
+            }
+        }
+    }
+}
+
