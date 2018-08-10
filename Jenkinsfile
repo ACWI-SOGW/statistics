@@ -2,12 +2,6 @@ pipeline {
     agent any
 
     stages {
-        stage('Git Clone') {
-            steps {
-                sh 'git clone git@github.com:ACWI-SOGW/statistics.git'
-            }
-        }
-
         stage('Package') {
             steps {
                 withMaven(maven:'maven_3_5_4') {
