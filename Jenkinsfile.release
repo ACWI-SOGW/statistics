@@ -2,6 +2,31 @@ pipeline {
     agent any
 
     stages {
+        // TODO this might work to import and run the build jenkins
+/*
+        stage ('Invoke_pipeline') {
+            steps {
+                build job: 'Jenkinsfile.build'
+            }
+        }
+*/
+		// TODO might be necessary to call to ensure a good release
+/*
+        stage('Package') {
+            steps {
+                withMaven(maven:'maven_3_5_4') {
+                    sh 'mvn clean package'
+                }
+            }
+        }
+        stage('Test') {
+            steps {
+                withMaven(maven:'maven_3_5_4') {
+                    sh 'mvn test'
+                }
+            }
+        }
+*/
         stage('Prepare') {
             steps {
                 withMaven(maven:'maven_3_5_4') {
