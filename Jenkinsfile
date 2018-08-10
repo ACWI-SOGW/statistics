@@ -4,11 +4,7 @@ pipeline {
     stages {
         stage('Git Clone') {
             steps {
-                checkout([$class: 'GitSCM', branches: [[name: '*/master']],
-                    doGenerateSubmoduleConfigurations: false,
-                    extensions: [], submoduleCfg: [], 
-                    userRemoteConfigs: [[url: 'git@github.com:ACWI-SOGW/statistics.git']]
-                ]) 
+                sh 'git clone git@github.com:ACWI-SOGW/statistics.git'
             }
         }
 

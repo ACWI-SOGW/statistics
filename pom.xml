@@ -9,15 +9,15 @@
 	<name>statistics</name>
 	<description>Proof of concept to pull statistics out of monolithic NGWMN and use it for scientific review.</description>
 	<version>0.1.0-SNAPSHOT</version>
-	<packaging>jar</packaging>
+	<packaging>war</packaging>
 	<properties>
 		<java.version>1.8</java.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<timestamp>${maven.build.timestamp}</timestamp>
 		<maven.build.timestamp.format>yyyy-MM-dd HH:mm:ss' 'z</maven.build.timestamp.format>
-		<scm.urlBase>https://code.chs.usgs.gov/nwisweb/services/</scm.urlBase>
-		<scm.devConnectionBase>scm:git:ssh://git@code.chs.usgs.gov:nwisweb/services/</scm.devConnectionBase>
+		<scm.urlBase>https://github.com/ACWI-SOGW/statistics</scm.urlBase>
+		<scm.devConnectionBase>git@github.com:ACWI-SOGW/statistics.git</scm.devConnectionBase>
 	</properties>
 
 	<scm>
