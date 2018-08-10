@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <title>@project.name@ Version Information</title>
+<!-- 
+	String scmUrl = "@project.scm.url@";
+	String scmCommitsUrl = scmUrl.replace("/browse", "/commits");
+-->
+    </head>
+    <body>
+        <h1>@project.name@ Version Information</h1>
+		<h3>Version: <span id="project.version">@project.version@</span> built @timestamp@</h3>
+<span id="SNAPSHOT">
+		<h3>This deployment is a SNAPSHOT version</h3>
+		<p>
+			A SNAPSHOT version is a development version based on the most recent
+			source code (called <i>the head</i>) at the moment this snapshot was built.
+			Thus, this deployment is a work in progress and may not be fully working.
+			This deployment is also not repeatable, since the source code used in
+			this deployment has likely moved on and there is no way to deploy
+			another snapshot <em>just like this one</em>.
+		</p>
+		<p>
+			The links below go to the source code and change list.
+			Note that the snapshot version deployed here is likely to be
+			out of date with the source code and changes listed.
+		</p>
+		<h3><a href="@project.scm.url@">Source code</a> head (the ever-changing latest version of the code is available.</a></h3>
+		<h3><a href="@project.scm.url@/commits/master">Source Code</a> check-ins and changes are available.</h3>
+</span><span id="RELEASE">
+		<h3>This deployment is a RELEASED version</h3>
+		<p>
+			A RELEASED version is stable version of the application.
+			The links below will reflect the exact source code and changes of this deployment.
+		</p>
+		
+		<h3><a href="@project.scm.url@/tags/@project.artifactId@-@project.version@">Source code</a> for this release is available.</h3>
+		<h3><a href="@project.scm.url@/commits/@project.artifactId@-@project.version@">Code check-ins and changes</a> 
+		included in this release (as well as prior changes) are tagged.</h3>
+</span>
+    </body>
+    <script>
+      function remove(id) {
+          var elem = document.getElementById(id);
+          return elem.parentNode.removeChild(elem);
+      }
+      var version = "@project.version@";
+      var dropId  = "SNAPSHOT";
+      if (version.indexOf(dropId) >= 0) {
+          dropId = "RELEASE"
+      }
+      remove(dropId)
+    </script>
+</html>

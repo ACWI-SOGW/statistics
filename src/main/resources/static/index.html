@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <title>@project.name@ Version Information</title>
+        <style>
+			textarea {
+			  font-family:Consolas,Monaco,Lucida Console,Liberation Mono,DejaVu Sans Mono,Bitstream Vera Sans Mono,Courier New, monospace;
+			}
+        </style>
+    </head>
+    <body>
+        <h1>Test data input form</h1>
+		<h3>Version: <span id="project.version">@project.version@</span> built @timestamp@</h3>
+		
+		<form id='statsForm'> <!-- action="/statistics/calculate" method="POST"> -->
+			<span>Input data:</span> <span style="color:#AAA;">Reload browser to recover sample data.</span><br>
+			<textarea rows="15" cols="50" name="data" id="data" alt="foo">
+2005-06-10T04:15:00-05:00, 1.000
+2006-06-10T04:15:00-05:00, 22.000
+2007-06-10T04:15:00-05:00, 1.000
+2008-06-10T04:15:00-05:00, 2.000
+2009-06-10T04:15:00-05:00, 1.000
+2010-06-10T04:15:00-05:00, 20.000
+2011-06-10T04:15:00-05:00, 1.000
+2012-06-10T04:15:00-05:00, 2.000
+2013-06-10T04:15:00-05:00, 1.000
+2014-06-10T04:15:00-05:00, 10.000
+2015-06-10T04:15:00-05:00, 1.000
+2016-06-10T04:15:00-05:00, 43.000
+2017-06-10T04:15:00-05:00, 1.000
+2018-06-10T04:15:00-05:00, 11.000
+2005-07-10T04:15:00-05:00, 1.000
+2006-07-10T04:15:00-05:00, 22.000
+2007-07-10T04:15:00-05:00, 1.000
+2008-07-10T04:15:00-05:00, 2.000
+2009-07-10T04:15:00-05:00, 1.000
+2010-07-10T04:15:00-05:00, 20.000
+2011-07-10T04:15:00-05:00, 1.000
+2012-07-10T04:15:00-05:00, 2.000
+2013-07-10T04:15:00-05:00, 1.000
+2014-07-10T04:15:00-05:00, 10.000
+2015-07-10T04:15:00-05:00, 1.000
+2016-07-10T04:15:00-05:00, 43.000
+2017-07-10T04:15:00-05:00, 1.000
+2018-06-10T04:15:00-05:00, 11.000
+			</textarea>
+		</form>
+		<div id="mediansDiv" style="display:none;position: relative;top: -240px;left: 400px;">
+		    <span>Median data:</span> <span style="color:#AAA;">Press calculate to see updated values.</span><br>
+			<textarea rows="15" cols="50" name="medians" id="medians" alt="foo" ></textarea>
+		</div>
+	 <div id="results">
+			<button name="calculate" id="calc" style="margin-left:300px;">Calculate</button>
+		<br><hr><br>
+		<span>Overall Statistics:</span> <span style="color:#AAA;">Press calculate to populate statistics.</span><br>
+		<textarea rows="12" cols="50" name="stats" id="statsOverall"></textarea>
+		<br>
+		<span>Monthly Statistics:</span> <span style="color:#AAA;">Scrolling monthly might be necessary.</span><br>
+		<textarea rows="15" cols="50" name="stats" id="statsMonthly"></textarea>
+		<p id="msg"></p>
+		<br>
+		<p>This calculates various monthly percentiles using 
+		<a href="https://www.itl.nist.gov/div898/handbook/prc/section2/prc262.htm">NIST 7.2.6.2.Percentiles</a> 
+		</p>
+	</div>		
+    </body>
+	<script src="https://code.jquery.com/jquery-3.3.1.min.js"
+  		integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+  		crossorigin="anonymous">
+  	</script>
+	<!--  script
+	  src="https://code.jquery.com/jquery-3.3.1.js"
+	  integrity="sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60="
+	  crossorigin="anonymous"></script -->
+  	<script>
+  	
+		$('#calc').click(function(){
+			var medians = ""
+			if (true) {
+				medians = "/medians"
+			}
+			$.post("/statistics/calculate"+medians, $('#statsForm').serialize())
+			.done(function(resp) {
+				var reCommas = new RegExp(',', 'g');
+				$('#statsOverall').val(
+					JSON.stringify(resp.overall)
+						.replace(reCommas,'\n')
+						.replace('{','')
+						.replace('}')
+						.replace("undefined",'')
+				)
+				var reColons = new RegExp(':{', 'g');
+				var reCurlys = new RegExp('\\}', 'g');
+				$('#statsMonthly').val(JSON.stringify(resp.monthly)
+						.replace(reCommas,'\n')
+						.replace('{','')
+						.replace(reColons,':\n')
+						.replace(reCurlys, '\n')
+						.replace(reCurlys, '\n')
+				)
+				if (resp.medians) {
+					var height = $("#statsForm").css("height")
+					$("#mediansDiv")
+						.css("position", "relative")
+						.css("top","-"+height)
+						.show()
+
+					var height = $("#data").css("height")
+					$("#medians")
+						.val(resp.medians)
+						.css("height", height)
+					
+					var height = $("#mediansDiv").css("height")
+					$("#results").css("position", "relative").css("top","-"+height)
+				}
+				$('#msg').text('success')
+			})
+			.fail(function(resp){
+				$('#msg').text(resp.responseText)
+			})
+		})
+	</script>
+</html>

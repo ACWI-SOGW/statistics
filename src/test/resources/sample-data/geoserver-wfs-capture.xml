@@ -1,0 +1,250 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wfs:FeatureCollection xmlns="http://www.opengis.net/wfs" xmlns:wfs="http://www.opengis.net/wfs" xmlns:ngwmn="gov.usgs.cida.ngwmn" xmlns:gml="http://www.opengis.net/gml" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="gov.usgs.cida.ngwmn http://cida-eros-ngwmndev.er.usgs.gov:8081/ngwmn-geoserver/ngwmn/wfs?service=WFS&amp;version=1.0.0&amp;request=DescribeFeatureType&amp;typeName=ngwmn%3AVW_GWDP_GEOSERVER http://www.opengis.net/wfs http://cida-eros-ngwmndev.er.usgs.gov:8081/ngwmn-geoserver/schemas/wfs/1.0.0/WFS-basic.xsd">
+  <gml:boundedBy>
+    <gml:null>unknown</gml:null>
+  </gml:boundedBy>
+  <gml:featureMember>
+    <ngwmn:VW_GWDP_GEOSERVER fid="VW_GWDP_GEOSERVER.fid--67b915e1_1407e52744c_764a">
+      <ngwmn:MY_SITEID>MPCA:695359</ngwmn:MY_SITEID>
+      <ngwmn:ID>MPCA:695359</ngwmn:ID>
+      <ngwmn:AGENCY_CD>MPCA</ngwmn:AGENCY_CD>
+      <ngwmn:AGENCY_NM>Minnesota Pollution Control Agency</ngwmn:AGENCY_NM>
+      <ngwmn:AGENCY_MED>MN Pollution Control Agency</ngwmn:AGENCY_MED>
+      <ngwmn:SITE_NO>695359</ngwmn:SITE_NO>
+      <ngwmn:DISPLAY_FLAG>1</ngwmn:DISPLAY_FLAG>
+      <ngwmn:DEC_LAT_VA>44.02846111</ngwmn:DEC_LAT_VA>
+      <ngwmn:DEC_LONG_VA>-91.76380556</ngwmn:DEC_LONG_VA>
+      <ngwmn:HORZ_DATUM>NAD83</ngwmn:HORZ_DATUM>
+      <ngwmn:ALT_UNITS>0</ngwmn:ALT_UNITS>
+      <ngwmn:ALT_UNITS_NM>Unknown</ngwmn:ALT_UNITS_NM>
+      <ngwmn:ALT_DATUM_CD>NA</ngwmn:ALT_DATUM_CD>
+      <ngwmn:WELL_DEPTH_UNITS>0</ngwmn:WELL_DEPTH_UNITS>
+      <ngwmn:WELL_DEPTH_UNITS_NM>Unknown</ngwmn:WELL_DEPTH_UNITS_NM>
+      <ngwmn:NAT_AQUIFER_CD>S300CAMORD</ngwmn:NAT_AQUIFER_CD>
+      <ngwmn:NAT_AQFR_DESC>Cambrian-Ordovician aquifer system</ngwmn:NAT_AQFR_DESC>
+      <ngwmn:COUNTRY_CD>US</ngwmn:COUNTRY_CD>
+      <ngwmn:COUNTRY_NM>UNITED STATES OF AMERICA</ngwmn:COUNTRY_NM>
+      <ngwmn:STATE_CD>27</ngwmn:STATE_CD>
+      <ngwmn:STATE_NM>MINNESOTA</ngwmn:STATE_NM>
+      <ngwmn:COUNTY_CD>000</ngwmn:COUNTY_CD>
+      <ngwmn:COUNTY_NM>UNSPECIFIED</ngwmn:COUNTY_NM>
+      <ngwmn:LOCAL_AQUIFER_NAME>371FRNC, Franconia Sandstone</ngwmn:LOCAL_AQUIFER_NAME>
+      <ngwmn:QW_SYS_NAME>MN EQuIS</ngwmn:QW_SYS_NAME>
+      <ngwmn:QW_SN_FLAG>1</ngwmn:QW_SN_FLAG>
+      <ngwmn:QW_SN_DESC>Yes</ngwmn:QW_SN_DESC>
+      <ngwmn:QW_BASELINE_FLAG>0</ngwmn:QW_BASELINE_FLAG>
+      <ngwmn:QW_BASELINE_DESC>No</ngwmn:QW_BASELINE_DESC>
+      <ngwmn:QW_WELL_CHARS>999</ngwmn:QW_WELL_CHARS>
+      <ngwmn:QW_WELL_CHARS_DESC>Unknown</ngwmn:QW_WELL_CHARS_DESC>
+      <ngwmn:QW_WELL_TYPE>2</ngwmn:QW_WELL_TYPE>
+      <ngwmn:QW_WELL_TYPE_DESC>Trend</ngwmn:QW_WELL_TYPE_DESC>
+      <ngwmn:QW_WELL_PURPOSE>1</ngwmn:QW_WELL_PURPOSE>
+      <ngwmn:QW_WELL_PURPOSE_DESC>Dedicated Monitoring/Observation</ngwmn:QW_WELL_PURPOSE_DESC>
+      <ngwmn:WL_SN_FLAG>0</ngwmn:WL_SN_FLAG>
+      <ngwmn:WL_SN_DESC>No</ngwmn:WL_SN_DESC>
+      <ngwmn:WL_BASELINE_FLAG>999</ngwmn:WL_BASELINE_FLAG>
+      <ngwmn:WL_BASELINE_DESC>Unknown</ngwmn:WL_BASELINE_DESC>
+      <ngwmn:WL_WELL_CHARS>999</ngwmn:WL_WELL_CHARS>
+      <ngwmn:WL_WELL_CHARS_DESC>Unknown</ngwmn:WL_WELL_CHARS_DESC>
+      <ngwmn:WL_WELL_TYPE>999</ngwmn:WL_WELL_TYPE>
+      <ngwmn:WL_WELL_TYPE_DESC>Unknown</ngwmn:WL_WELL_TYPE_DESC>
+      <ngwmn:WL_WELL_PURPOSE>1</ngwmn:WL_WELL_PURPOSE>
+      <ngwmn:WL_WELL_PURPOSE_DESC>Dedicated Monitoring/Observation</ngwmn:WL_WELL_PURPOSE_DESC>
+      <ngwmn:GEOM>
+        <gml:Point srsName="http://www.opengis.net/gml/srs/epsg.xml#4269">
+          <gml:coordinates xmlns:gml="http://www.opengis.net/gml" decimal="." cs="," ts=" ">-91.76380556,44.02846111</gml:coordinates>
+        </gml:Point>
+      </ngwmn:GEOM>
+      <ngwmn:INSERT_DATE>2011-01-28T10:35:16</ngwmn:INSERT_DATE>
+      <ngwmn:UPDATE_DATE>2012-08-16T09:13:42</ngwmn:UPDATE_DATE>
+      <ngwmn:QW_DATA_PROVIDER>MPCA</ngwmn:QW_DATA_PROVIDER>
+      <ngwmn:WL_DATA_FLAG>0</ngwmn:WL_DATA_FLAG>
+      <ngwmn:QW_DATA_FLAG>0</ngwmn:QW_DATA_FLAG>
+      <ngwmn:LOG_DATA_FLAG>0</ngwmn:LOG_DATA_FLAG>
+    </ngwmn:VW_GWDP_GEOSERVER>
+  </gml:featureMember>
+  <gml:featureMember>
+    <ngwmn:VW_GWDP_GEOSERVER fid="VW_GWDP_GEOSERVER.fid--67b915e1_1407e52744c_7ab6">
+      <ngwmn:MY_SITEID>USGS:395229074571202</ngwmn:MY_SITEID>
+      <ngwmn:ID>USGS:395229074571202</ngwmn:ID>
+      <ngwmn:AGENCY_CD>USGS</ngwmn:AGENCY_CD>
+      <ngwmn:AGENCY_NM>U.S. Geological Survey</ngwmn:AGENCY_NM>
+      <ngwmn:AGENCY_MED>U.S. Geological Survey</ngwmn:AGENCY_MED>
+      <ngwmn:SITE_NO>395229074571202</ngwmn:SITE_NO>
+      <ngwmn:SITE_NAME>070118-- Hutton Hill 2 Obs</ngwmn:SITE_NAME>
+      <ngwmn:DISPLAY_FLAG>1</ngwmn:DISPLAY_FLAG>
+      <ngwmn:DEC_LAT_VA>39.8748359933598</ngwmn:DEC_LAT_VA>
+      <ngwmn:DEC_LONG_VA>-74.9529444448741</ngwmn:DEC_LONG_VA>
+      <ngwmn:HORZ_DATUM>NAD27</ngwmn:HORZ_DATUM>
+      <ngwmn:ALT_VA>157.53</ngwmn:ALT_VA>
+      <ngwmn:ALT_UNITS>1</ngwmn:ALT_UNITS>
+      <ngwmn:ALT_UNITS_NM>Feet</ngwmn:ALT_UNITS_NM>
+      <ngwmn:ALT_DATUM_CD>NGVD29</ngwmn:ALT_DATUM_CD>
+      <ngwmn:WELL_DEPTH>147</ngwmn:WELL_DEPTH>
+      <ngwmn:WELL_DEPTH_UNITS>1</ngwmn:WELL_DEPTH_UNITS>
+      <ngwmn:WELL_DEPTH_UNITS_NM>Feet</ngwmn:WELL_DEPTH_UNITS_NM>
+      <ngwmn:NAT_AQUIFER_CD>S100NATLCP</ngwmn:NAT_AQUIFER_CD>
+      <ngwmn:NAT_AQFR_DESC>Northern Atlantic Coastal Plain aquifer system</ngwmn:NAT_AQFR_DESC>
+      <ngwmn:COUNTRY_CD>US</ngwmn:COUNTRY_CD>
+      <ngwmn:COUNTRY_NM>UNITED STATES OF AMERICA</ngwmn:COUNTRY_NM>
+      <ngwmn:STATE_CD>34</ngwmn:STATE_CD>
+      <ngwmn:STATE_NM>NEW JERSEY</ngwmn:STATE_NM>
+      <ngwmn:COUNTY_CD>007</ngwmn:COUNTY_CD>
+      <ngwmn:COUNTY_NM>CAMDEN</ngwmn:COUNTY_NM>
+      <ngwmn:LOCAL_AQUIFER_CD>211MLRW</ngwmn:LOCAL_AQUIFER_CD>
+      <ngwmn:LOCAL_AQUIFER_NAME>Mount Laurel Sand-Wenonah Formation</ngwmn:LOCAL_AQUIFER_NAME>
+      <ngwmn:QW_SN_FLAG>0</ngwmn:QW_SN_FLAG>
+      <ngwmn:QW_SN_DESC>No</ngwmn:QW_SN_DESC>
+      <ngwmn:QW_BASELINE_FLAG>999</ngwmn:QW_BASELINE_FLAG>
+      <ngwmn:QW_BASELINE_DESC>Unknown</ngwmn:QW_BASELINE_DESC>
+      <ngwmn:QW_WELL_CHARS>999</ngwmn:QW_WELL_CHARS>
+      <ngwmn:QW_WELL_CHARS_DESC>Unknown</ngwmn:QW_WELL_CHARS_DESC>
+      <ngwmn:QW_WELL_TYPE>999</ngwmn:QW_WELL_TYPE>
+      <ngwmn:QW_WELL_TYPE_DESC>Unknown</ngwmn:QW_WELL_TYPE_DESC>
+      <ngwmn:QW_WELL_PURPOSE>1</ngwmn:QW_WELL_PURPOSE>
+      <ngwmn:QW_WELL_PURPOSE_DESC>Dedicated Monitoring/Observation</ngwmn:QW_WELL_PURPOSE_DESC>
+      <ngwmn:WL_SYS_NAME>NJ WSC NWIS GWSI DATABASE and NJ WSC ADAPS DATABAS</ngwmn:WL_SYS_NAME>
+      <ngwmn:WL_SN_FLAG>1</ngwmn:WL_SN_FLAG>
+      <ngwmn:WL_SN_DESC>Yes</ngwmn:WL_SN_DESC>
+      <ngwmn:WL_BASELINE_FLAG>1</ngwmn:WL_BASELINE_FLAG>
+      <ngwmn:WL_BASELINE_DESC>Yes</ngwmn:WL_BASELINE_DESC>
+      <ngwmn:WL_WELL_CHARS>1</ngwmn:WL_WELL_CHARS>
+      <ngwmn:WL_WELL_CHARS_DESC>Background</ngwmn:WL_WELL_CHARS_DESC>
+      <ngwmn:WL_WELL_TYPE>2</ngwmn:WL_WELL_TYPE>
+      <ngwmn:WL_WELL_TYPE_DESC>Trend</ngwmn:WL_WELL_TYPE_DESC>
+      <ngwmn:WL_WELL_PURPOSE>1</ngwmn:WL_WELL_PURPOSE>
+      <ngwmn:WL_WELL_PURPOSE_DESC>Dedicated Monitoring/Observation</ngwmn:WL_WELL_PURPOSE_DESC>
+      <ngwmn:GEOM>
+        <gml:Point srsName="http://www.opengis.net/gml/srs/epsg.xml#4269">
+          <gml:coordinates xmlns:gml="http://www.opengis.net/gml" decimal="." cs="," ts=" ">-74.95294444,39.87483599</gml:coordinates>
+        </gml:Point>
+      </ngwmn:GEOM>
+      <ngwmn:INSERT_DATE>2011-01-28T10:34:56</ngwmn:INSERT_DATE>
+      <ngwmn:UPDATE_DATE>2013-08-05T10:39:44</ngwmn:UPDATE_DATE>
+      <ngwmn:DATA_PROVIDER>nwisnj_er_usgs_gov</ngwmn:DATA_PROVIDER>
+      <ngwmn:WL_DATA_FLAG>1</ngwmn:WL_DATA_FLAG>
+      <ngwmn:QW_DATA_FLAG>0</ngwmn:QW_DATA_FLAG>
+      <ngwmn:LOG_DATA_FLAG>0</ngwmn:LOG_DATA_FLAG>
+      <ngwmn:LINK>http://waterdata.usgs.gov/nwis/inventory?search_site_no=395229074571202&amp;search_site_no_match_type=exact&amp;sort_key=site_no&amp;group_key=NONE&amp;sitefile_output_format=html_table&amp;column_name=agency_cd&amp;column_name=site_no&amp;column_name=station_nm&amp;format=station_manuscript&amp;list_of_search_criteria=search_site_no</ngwmn:LINK>
+    </ngwmn:VW_GWDP_GEOSERVER>
+  </gml:featureMember>
+  <gml:featureMember>
+    <ngwmn:VW_GWDP_GEOSERVER fid="VW_GWDP_GEOSERVER.fid--67b915e1_1407e52744c_7ab7">
+      <ngwmn:MY_SITEID>USGS:395229074571201</ngwmn:MY_SITEID>
+      <ngwmn:ID>USGS:395229074571201</ngwmn:ID>
+      <ngwmn:AGENCY_CD>USGS</ngwmn:AGENCY_CD>
+      <ngwmn:AGENCY_NM>U.S. Geological Survey</ngwmn:AGENCY_NM>
+      <ngwmn:AGENCY_MED>U.S. Geological Survey</ngwmn:AGENCY_MED>
+      <ngwmn:SITE_NO>395229074571201</ngwmn:SITE_NO>
+      <ngwmn:SITE_NAME>070117-- Hutton Hill 1 Obs</ngwmn:SITE_NAME>
+      <ngwmn:DISPLAY_FLAG>1</ngwmn:DISPLAY_FLAG>
+      <ngwmn:DEC_LAT_VA>39.8748359933598</ngwmn:DEC_LAT_VA>
+      <ngwmn:DEC_LONG_VA>-74.9529444448741</ngwmn:DEC_LONG_VA>
+      <ngwmn:HORZ_DATUM>NAD27</ngwmn:HORZ_DATUM>
+      <ngwmn:ALT_VA>157.61</ngwmn:ALT_VA>
+      <ngwmn:ALT_UNITS>1</ngwmn:ALT_UNITS>
+      <ngwmn:ALT_UNITS_NM>Feet</ngwmn:ALT_UNITS_NM>
+      <ngwmn:ALT_DATUM_CD>NGVD29</ngwmn:ALT_DATUM_CD>
+      <ngwmn:WELL_DEPTH>562</ngwmn:WELL_DEPTH>
+      <ngwmn:WELL_DEPTH_UNITS>1</ngwmn:WELL_DEPTH_UNITS>
+      <ngwmn:WELL_DEPTH_UNITS_NM>Feet</ngwmn:WELL_DEPTH_UNITS_NM>
+      <ngwmn:NAT_AQUIFER_CD>S100NATLCP</ngwmn:NAT_AQUIFER_CD>
+      <ngwmn:NAT_AQFR_DESC>Northern Atlantic Coastal Plain aquifer system</ngwmn:NAT_AQFR_DESC>
+      <ngwmn:COUNTRY_CD>US</ngwmn:COUNTRY_CD>
+      <ngwmn:COUNTRY_NM>UNITED STATES OF AMERICA</ngwmn:COUNTRY_NM>
+      <ngwmn:STATE_CD>34</ngwmn:STATE_CD>
+      <ngwmn:STATE_NM>NEW JERSEY</ngwmn:STATE_NM>
+      <ngwmn:COUNTY_CD>007</ngwmn:COUNTY_CD>
+      <ngwmn:COUNTY_NM>CAMDEN</ngwmn:COUNTY_NM>
+      <ngwmn:LOCAL_AQUIFER_CD>211MRPAU</ngwmn:LOCAL_AQUIFER_CD>
+      <ngwmn:LOCAL_AQUIFER_NAME>Magothy-Raritan-Potomac Aquifer System, Upper Aquifer</ngwmn:LOCAL_AQUIFER_NAME>
+      <ngwmn:QW_SYS_NAME>NJ WSC NWIS QWDATA DATABASE</ngwmn:QW_SYS_NAME>
+      <ngwmn:QW_SN_FLAG>1</ngwmn:QW_SN_FLAG>
+      <ngwmn:QW_SN_DESC>Yes</ngwmn:QW_SN_DESC>
+      <ngwmn:QW_BASELINE_FLAG>0</ngwmn:QW_BASELINE_FLAG>
+      <ngwmn:QW_BASELINE_DESC>No</ngwmn:QW_BASELINE_DESC>
+      <ngwmn:QW_WELL_CHARS>1</ngwmn:QW_WELL_CHARS>
+      <ngwmn:QW_WELL_CHARS_DESC>Background</ngwmn:QW_WELL_CHARS_DESC>
+      <ngwmn:QW_WELL_TYPE>1</ngwmn:QW_WELL_TYPE>
+      <ngwmn:QW_WELL_TYPE_DESC>Surveillance</ngwmn:QW_WELL_TYPE_DESC>
+      <ngwmn:QW_WELL_PURPOSE>1</ngwmn:QW_WELL_PURPOSE>
+      <ngwmn:QW_WELL_PURPOSE_DESC>Dedicated Monitoring/Observation</ngwmn:QW_WELL_PURPOSE_DESC>
+      <ngwmn:WL_SYS_NAME>NJ WSC NWIS GWSI DATABASE and NJ WSC ADAPS DATABAS</ngwmn:WL_SYS_NAME>
+      <ngwmn:WL_SN_FLAG>1</ngwmn:WL_SN_FLAG>
+      <ngwmn:WL_SN_DESC>Yes</ngwmn:WL_SN_DESC>
+      <ngwmn:WL_BASELINE_FLAG>1</ngwmn:WL_BASELINE_FLAG>
+      <ngwmn:WL_BASELINE_DESC>Yes</ngwmn:WL_BASELINE_DESC>
+      <ngwmn:WL_WELL_CHARS>3</ngwmn:WL_WELL_CHARS>
+      <ngwmn:WL_WELL_CHARS_DESC>Known Changes</ngwmn:WL_WELL_CHARS_DESC>
+      <ngwmn:WL_WELL_TYPE>2</ngwmn:WL_WELL_TYPE>
+      <ngwmn:WL_WELL_TYPE_DESC>Trend</ngwmn:WL_WELL_TYPE_DESC>
+      <ngwmn:WL_WELL_PURPOSE>1</ngwmn:WL_WELL_PURPOSE>
+      <ngwmn:WL_WELL_PURPOSE_DESC>Dedicated Monitoring/Observation</ngwmn:WL_WELL_PURPOSE_DESC>
+      <ngwmn:GEOM>
+        <gml:Point srsName="http://www.opengis.net/gml/srs/epsg.xml#4269">
+          <gml:coordinates xmlns:gml="http://www.opengis.net/gml" decimal="." cs="," ts=" ">-74.95294444,39.87483599</gml:coordinates>
+        </gml:Point>
+      </ngwmn:GEOM>
+      <ngwmn:INSERT_DATE>2011-01-28T10:34:56</ngwmn:INSERT_DATE>
+      <ngwmn:UPDATE_DATE>2013-08-05T10:39:44</ngwmn:UPDATE_DATE>
+      <ngwmn:DATA_PROVIDER>nwisnj_er_usgs_gov</ngwmn:DATA_PROVIDER>
+      <ngwmn:WL_DATA_FLAG>1</ngwmn:WL_DATA_FLAG>
+      <ngwmn:QW_DATA_FLAG>1</ngwmn:QW_DATA_FLAG>
+      <ngwmn:LOG_DATA_FLAG>0</ngwmn:LOG_DATA_FLAG>
+      <ngwmn:LINK>http://waterdata.usgs.gov/nwis/inventory?search_site_no=395229074571201&amp;search_site_no_match_type=exact&amp;sort_key=site_no&amp;group_key=NONE&amp;sitefile_output_format=html_table&amp;column_name=agency_cd&amp;column_name=site_no&amp;column_name=station_nm&amp;format=station_manuscript&amp;list_of_search_criteria=search_site_no</ngwmn:LINK>
+    </ngwmn:VW_GWDP_GEOSERVER>
+  </gml:featureMember>
+  <gml:featureMember>
+    <ngwmn:VW_GWDP_GEOSERVER fid="VW_GWDP_GEOSERVER.fid--67b915e1_1407e52744c_7ab8">
+      <ngwmn:MY_SITEID>NJGS:2288614</ngwmn:MY_SITEID>
+      <ngwmn:ID>NJGS:2288614</ngwmn:ID>
+      <ngwmn:AGENCY_CD>NJGS</ngwmn:AGENCY_CD>
+      <ngwmn:AGENCY_NM>New Jersey Geological Survey</ngwmn:AGENCY_NM>
+      <ngwmn:AGENCY_MED>NJ Geological Survey</ngwmn:AGENCY_MED>
+      <ngwmn:SITE_NO>2288614</ngwmn:SITE_NO>
+      <ngwmn:SITE_NAME>BasicServletTest Site</ngwmn:SITE_NAME>
+      <ngwmn:DISPLAY_FLAG>1</ngwmn:DISPLAY_FLAG>
+      <ngwmn:DEC_LAT_VA>8</ngwmn:DEC_LAT_VA>
+      <ngwmn:DEC_LONG_VA>5</ngwmn:DEC_LONG_VA>
+      <ngwmn:HORZ_DATUM>WGS84</ngwmn:HORZ_DATUM>
+      <ngwmn:ALT_VA>12</ngwmn:ALT_VA>
+      <ngwmn:ALT_UNITS>1</ngwmn:ALT_UNITS>
+      <ngwmn:ALT_UNITS_NM>Feet</ngwmn:ALT_UNITS_NM>
+      <ngwmn:ALT_DATUM_CD>NAVD88</ngwmn:ALT_DATUM_CD>
+      <ngwmn:WELL_DEPTH>12</ngwmn:WELL_DEPTH>
+      <ngwmn:WELL_DEPTH_UNITS>1</ngwmn:WELL_DEPTH_UNITS>
+      <ngwmn:WELL_DEPTH_UNITS_NM>Feet</ngwmn:WELL_DEPTH_UNITS_NM>
+      <ngwmn:NAT_AQUIFER_CD>N9999OTHER</ngwmn:NAT_AQUIFER_CD>
+      <ngwmn:NAT_AQFR_DESC>Other aquifers</ngwmn:NAT_AQFR_DESC>
+      <ngwmn:COUNTRY_CD>US</ngwmn:COUNTRY_CD>
+      <ngwmn:COUNTRY_NM>UNITED STATES OF AMERICA</ngwmn:COUNTRY_NM>
+      <ngwmn:STATE_CD>00</ngwmn:STATE_CD>
+      <ngwmn:STATE_NM>UNSPECIFIED</ngwmn:STATE_NM>
+      <ngwmn:COUNTY_CD>000</ngwmn:COUNTY_CD>
+      <ngwmn:COUNTY_NM>UNSPECIFIED</ngwmn:COUNTY_NM>
+      <ngwmn:QW_SN_FLAG>0</ngwmn:QW_SN_FLAG>
+      <ngwmn:QW_SN_DESC>No</ngwmn:QW_SN_DESC>
+      <ngwmn:WL_SYS_NAME>FOR BUILD TEST</ngwmn:WL_SYS_NAME>
+      <ngwmn:WL_SN_FLAG>1</ngwmn:WL_SN_FLAG>
+      <ngwmn:WL_SN_DESC>Yes</ngwmn:WL_SN_DESC>
+      <ngwmn:WL_BASELINE_FLAG>1</ngwmn:WL_BASELINE_FLAG>
+      <ngwmn:WL_BASELINE_DESC>Yes</ngwmn:WL_BASELINE_DESC>
+      <ngwmn:WL_WELL_CHARS>2</ngwmn:WL_WELL_CHARS>
+      <ngwmn:WL_WELL_CHARS_DESC>Suspected / Anticipated Changes</ngwmn:WL_WELL_CHARS_DESC>
+      <ngwmn:WL_WELL_TYPE>1</ngwmn:WL_WELL_TYPE>
+      <ngwmn:WL_WELL_TYPE_DESC>Surveillance</ngwmn:WL_WELL_TYPE_DESC>
+      <ngwmn:WL_WELL_PURPOSE>1</ngwmn:WL_WELL_PURPOSE>
+      <ngwmn:WL_WELL_PURPOSE_DESC>Dedicated Monitoring/Observation</ngwmn:WL_WELL_PURPOSE_DESC>
+      <ngwmn:GEOM>
+        <gml:Point srsName="http://www.opengis.net/gml/srs/epsg.xml#4269">
+          <gml:coordinates xmlns:gml="http://www.opengis.net/gml" decimal="." cs="," ts=" ">5,8</gml:coordinates>
+        </gml:Point>
+      </ngwmn:GEOM>
+      <ngwmn:INSERT_DATE>2012-04-19T10:00:51</ngwmn:INSERT_DATE>
+      <ngwmn:UPDATE_DATE>2012-08-16T12:47:12</ngwmn:UPDATE_DATE>
+      <ngwmn:WL_DATA_FLAG>0</ngwmn:WL_DATA_FLAG>
+      <ngwmn:QW_DATA_FLAG>0</ngwmn:QW_DATA_FLAG>
+      <ngwmn:LOG_DATA_FLAG>0</ngwmn:LOG_DATA_FLAG>
+    </ngwmn:VW_GWDP_GEOSERVER>
+  </gml:featureMember>
+</wfs:FeatureCollection>

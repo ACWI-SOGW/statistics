@@ -63,3 +63,55 @@ Sample JSON respones
   },
 }
 ```
+
+Statistics Microservice
+================================
+
+A web service that returns a JSON formated statistics analysis of input data.
+
+## Install
+
+This project uses maven build.
+
+```sh
+# spring-boot build
+$ maven package
+```
+
+## Usage
+
+This is only a documentation package. You can print out [spec.md](spec.md) to your console:
+
+```sh
+# for INFO level debug spring-boot launch
+$ ./boot
+
+# for DEBUG level (and other dev env settings) launch
+$ ./boot dev
+
+# shutdown procedure is simply
+./shutdown
+
+# if the app.pid does not exist or is wrong
+./stop
+# kills all spring-boot
+```
+
+
+* http://localhost:8777/
+* http://localhost:8777/statistics/
+	both return up status of service
+* http://localhost:8777/statistics/version
+	returns the build version page
+* http://localhost:8777/statistics/input
+	returns a data test input page
+* http://localhost:8777/statistics/calculate
+	the restful service end to post data and returns the statistics calculations JSON response
+* http://localhost:8777/statistics/calculate/medians
+	Like the caclculates service but also return intermediate median values as well.
+
+
+
+## Screenshots
+
+![Sample Page](sample_page.png)

@@ -1,0 +1,1064 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<om:ObservationCollection xmlns:swe="http://www.opengis.net/swe/2.0" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:wml2="http://www.wron.net.au/waterml2" xmlns:md="http://www.isotc211.org/2005/gmd" xmlns:gco="http://www.isotc211.org/2005/gco" xmlns:wfs="http://www.opengis.net/wfs" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:gwml="http://www.nrcan.gc.ca/xml/gwml/1" xmlns:gwic="http://mbmgweb.mtech.edu:8080/gwic" xmlns:gml="http://www.opengis.net/gml" xmlns:h="http://apache.org/cocoon/request/2.0" xmlns:om="http://www.opengis.net/om/2.0" xmlns:gml2="http://www.opengis.net/gml/3.2" xmlns:sa="http://www.opengis.net/sampling/2.0">
+  <om:member>
+    <wml2:WaterMonitoringObservation gml:id="usgs.gw.obs.ts.MBMG-3002">
+      <gml:name codeSpace="urn:x-usgs:edu.mtech.mbmg">3002</gml:name>
+      <om:metadata>
+        <wml2:ObservationMetadata>
+          <md:contact xlink:href="http://www.mbmg.mtech.edu/grw/grw-main.asp">
+            <md:CI_ResponsibleParty>
+              <md:organisationName>
+                <gco:CharacterString>Montana Bureau of Mines and Geology</gco:CharacterString>
+              </md:organisationName>
+              <md:role>
+                <md:CI_RoleCode codeList="list" codeListValue="url">TBD</md:CI_RoleCode>
+              </md:role>
+            </md:CI_ResponsibleParty>
+          </md:contact>
+          <md:dateStamp>
+            <gco:Date/>
+          </md:dateStamp>
+          <md:identificationInfo xlink:href="urn:OGC:unknown"/>
+          <wml2:intendedSamplingInterval>
+            <gml:TimePeriod gml:id="invalid.isi.MBMG-3002">
+              <gml:beginPosition/>
+              <gml:endPosition/>
+            </gml:TimePeriod>
+          </wml2:intendedSamplingInterval>
+        </wml2:ObservationMetadata>
+      </om:metadata>
+      <om:phenomenonTime>
+        <gml:TimePeriod gml:id="invalid.pt.MBMG-3002">
+          <gml:beginPosition/>
+          <gml:endPosition/>
+        </gml:TimePeriod>
+      </om:phenomenonTime>
+      <om:resultTime>
+        <gml:TimePeriod gml:id="invalid.rt.MBMG-3002">
+          <gml:beginPosition/>
+          <gml:endPosition/>
+        </gml:TimePeriod>
+      </om:resultTime>
+      <om:procedure xlink:href="urn:ogc:object:Sensor:usgs-gw:MBMG-3002"/>
+      <om:parameter>
+        <om:NamedValue>
+          <om:name xlink:href="http://www.opengis.net/req/omxml/2.0/data/samplingGeometry"/>
+          <om:value>
+            <gml:Point srsName="EPSG:4326" gml:id="invalid.loc.MBMG-3002">
+              <gml:pos/>
+            </gml:Point>
+          </om:value>
+        </om:NamedValue>
+      </om:parameter>
+      <om:observedProperty xlink:href="urn:ogc:def:property:OGC:GroundWaterLevel"/>
+      <om:featureOfInterest xlink:title="Sensor Site MBMG-3002" xlink:href="http://cida.usgs.gov/cocoon/gin/gwdp/agency/MBMG/wfs?request=GetFeature&amp;featureId=MBMG.3002"/>
+      <om:result>
+        <wml2:TimeSeries>
+          <wml2:domainExtent>
+            <gml:TimePeriod gml:id="invalid.de.MBMG-3002">
+              <gml:beginPosition/>
+              <gml:endPosition/>
+            </gml:TimePeriod>
+          </wml2:domainExtent>
+          <wml2:defaultDataType codeSpace="http://usgs.gov/water/">InstVal</wml2:defaultDataType>
+          <wml2:element>
+            <wml2:TimeValuePair>
+              <wml2:time>1984-09-30</wml2:time>
+              <wml2:value sourceCode="GWIC">
+                <swe:Quantity>
+                  <swe:uom code="FEET"/>
+                  <swe:value>195.190000</swe:value>
+                </swe:Quantity>
+              </wml2:value>
+              <wml2:comment/>
+            </wml2:TimeValuePair>
+          </wml2:element>
+          <wml2:element>
+            <wml2:TimeValuePair>
+              <wml2:time>1985-10-20</wml2:time>
+              <wml2:value sourceCode="GWIC">
+                <swe:Quantity>
+                  <swe:uom code="FEET"/>
+                  <swe:value>196.010000</swe:value>
+                </swe:Quantity>
+              </wml2:value>
+              <wml2:comment/>
+            </wml2:TimeValuePair>
+          </wml2:element>
+          <wml2:element>
+            <wml2:TimeValuePair>
+              <wml2:time>1986-10-17</wml2:time>
+              <wml2:value sourceCode="GWIC">
+                <swe:Quantity>
+                  <swe:uom code="FEET"/>
+                  <swe:value>194.920000</swe:value>
+                </swe:Quantity>
+              </wml2:value>
+              <wml2:comment/>
+            </wml2:TimeValuePair>
+          </wml2:element>
+          <wml2:element>
+            <wml2:TimeValuePair>
+              <wml2:time>1987-09-25</wml2:time>
+              <wml2:value sourceCode="GWIC">
+                <swe:Quantity>
+                  <swe:uom code="FEET"/>
+                  <swe:value>195.860000</swe:value>
+                </swe:Quantity>
+              </wml2:value>
+              <wml2:comment/>
+            </wml2:TimeValuePair>
+          </wml2:element>
+          <wml2:element>
+            <wml2:TimeValuePair>
+              <wml2:time>1988-10-15</wml2:time>
+              <wml2:value sourceCode="GWIC">
+                <swe:Quantity>
+                  <swe:uom code="FEET"/>
+                  <swe:value>194.490000</swe:value>
+                </swe:Quantity>
+              </wml2:value>
+              <wml2:comment/>
+            </wml2:TimeValuePair>
+          </wml2:element>
+          <wml2:element>
+            <wml2:TimeValuePair>
+              <wml2:time>1989-10-13</wml2:time>
+              <wml2:value sourceCode="GWIC">
+                <swe:Quantity>
+                  <swe:uom code="FEET"/>
+                  <swe:value>195.120000</swe:value>
+                </swe:Quantity>
+              </wml2:value>
+              <wml2:comment/>
+            </wml2:TimeValuePair>
+          </wml2:element>
+          <wml2:element>
+            <wml2:TimeValuePair>
+              <wml2:time>1990-09-21</wml2:time>
+              <wml2:value sourceCode="GWIC">
+                <swe:Quantity>
+                  <swe:uom code="FEET"/>
+                  <swe:value>195.140000</swe:value>
+                </swe:Quantity>
+              </wml2:value>
+              <wml2:comment/>
+            </wml2:TimeValuePair>
+          </wml2:element>
+          <wml2:element>
+            <wml2:TimeValuePair>
+              <wml2:time>1991-10-10</wml2:time>
+              <wml2:value sourceCode="GWIC">
+                <swe:Quantity>
+                  <swe:uom code="FEET"/>
+                  <swe:value>196.280000</swe:value>
+                </swe:Quantity>
+              </wml2:value>
+              <wml2:comment/>
+            </wml2:TimeValuePair>
+          </wml2:element>
+          <wml2:element>
+            <wml2:TimeValuePair>
+              <wml2:time>1992-08-28</wml2:time>
+              <wml2:value sourceCode="GWIC">
+                <swe:Quantity>
+                  <swe:uom code="FEET"/>
+                  <swe:value>195.850000</swe:value>
+                </swe:Quantity>
+              </wml2:value>
+              <wml2:comment/>
+            </wml2:TimeValuePair>
+          </wml2:element>
+          <wml2:element>
+            <wml2:TimeValuePair>
+              <wml2:time>1993-10-29</wml2:time>
+              <wml2:value sourceCode="GWIC">
+                <swe:Quantity>
+                  <swe:uom code="FEET"/>
+                  <swe:value>194.400000</swe:value>
+                </swe:Quantity>
+              </wml2:value>
+              <wml2:comment/>
+            </wml2:TimeValuePair>
+          </wml2:element>
+          <wml2:element>
+            <wml2:TimeValuePair>
+              <wml2:time>1994-07-21</wml2:time>
+              <wml2:value sourceCode="GWIC">
+                <swe:Quantity>
+                  <swe:uom code="FEET"/>
+                  <swe:value>196.250000</swe:value>
+                </swe:Quantity>
+              </wml2:value>
+              <wml2:comment/>
+            </wml2:TimeValuePair>
+          </wml2:element>
+          <wml2:element>
+            <wml2:TimeValuePair>
+              <wml2:time>1994-11-18</wml2:time>
+              <wml2:value sourceCode="GWIC">
+                <swe:Quantity>
+                  <swe:uom code="FEET"/>
+                  <swe:value>194.080000</swe:value>
+                </swe:Quantity>
+              </wml2:value>
+              <wml2:comment/>
+            </wml2:TimeValuePair>
+          </wml2:element>
+          <wml2:element>
+            <wml2:TimeValuePair>
+              <wml2:time>1995-02-15</wml2:time>
+              <wml2:value sourceCode="GWIC">
+                <swe:Quantity>
+                  <swe:uom code="FEET"/>
+                  <swe:value>195.170000</swe:value>
+                </swe:Quantity>
+              </wml2:value>
+              <wml2:comment/>
+            </wml2:TimeValuePair>
+          </wml2:element>
+          <wml2:element>
+            <wml2:TimeValuePair>
+              <wml2:time>1995-05-10</wml2:time>
+              <wml2:value sourceCode="GWIC">
+                <swe:Quantity>
+                  <swe:uom code="FEET"/>
+                  <swe:value>193.510000</swe:value>
+                </swe:Quantity>
+              </wml2:value>
+              <wml2:comment/>
+            </wml2:TimeValuePair>
+          </wml2:element>
+          <wml2:element>
+            <wml2:TimeValuePair>
+              <wml2:time>1995-08-16</wml2:time>
+              <wml2:value sourceCode="GWIC">
+                <swe:Quantity>
+                  <swe:uom code="FEET"/>
+                  <swe:value>193.790000</swe:value>
+                </swe:Quantity>
+              </wml2:value>
+              <wml2:comment/>
+            </wml2:TimeValuePair>
+          </wml2:element>
+          <wml2:element>
+            <wml2:TimeValuePair>
+              <wml2:time>1995-11-15</wml2:time>
+              <wml2:value sourceCode="GWIC">
+                <swe:Quantity>
+                  <swe:uom code="FEET"/>
+                  <swe:value>194.920000</swe:value>
+                </swe:Quantity>
+              </wml2:value>
+              <wml2:comment/>
+            </wml2:TimeValuePair>
+          </wml2:element>
+          <wml2:element>
+            <wml2:TimeValuePair>
+              <wml2:time>1996-02-14</wml2:time>
+              <wml2:value sourceCode="GWIC">
+                <swe:Quantity>
+                  <swe:uom code="FEET"/>
+                  <swe:value>193.690000</swe:value>
+                </swe:Quantity>
+              </wml2:value>
+              <wml2:comment/>
+            </wml2:TimeValuePair>
+          </wml2:element>
+          <wml2:element>
+            <wml2:TimeValuePair>
+              <wml2:time>1996-05-13</wml2:time>
+              <wml2:value sourceCode="GWIC">
+                <swe:Quantity>
+                  <swe:uom code="FEET"/>
+                  <swe:value>194.180000</swe:value>
+                </swe:Quantity>
+              </wml2:value>
+              <wml2:comment/>
+            </wml2:TimeValuePair>
+          </wml2:element>
+          <wml2:element>
+            <wml2:TimeValuePair>
+              <wml2:time>1996-11-20</wml2:time>
+              <wml2:value sourceCode="GWIC">
+                <swe:Quantity>
+                  <swe:uom code="FEET"/>
+                  <swe:value>194.260000</swe:value>
+                </swe:Quantity>
+              </wml2:value>
+              <wml2:comment/>
+            </wml2:TimeValuePair>
+          </wml2:element>
+          <wml2:element>
+            <wml2:TimeValuePair>
+              <wml2:time>1997-08-29</wml2:time>
+              <wml2:value sourceCode="GWIC">
+                <swe:Quantity>
+                  <swe:uom code="FEET"/>
+                  <swe:value>196.450000</swe:value>
+                </swe:Quantity>
+              </wml2:value>
+              <wml2:comment/>
+            </wml2:TimeValuePair>
+          </wml2:element>
+          <wml2:element>
+            <wml2:TimeValuePair>
+              <wml2:time>1998-02-18</wml2:time>
+              <wml2:value sourceCode="GWIC">
+                <swe:Quantity>
+                  <swe:uom code="FEET"/>
+                  <swe:value>194.060000</swe:value>
+                </swe:Quantity>
+              </wml2:value>
+              <wml2:comment/>
+            </wml2:TimeValuePair>
+          </wml2:element>
+          <wml2:element>
+            <wml2:TimeValuePair>
+              <wml2:time>1998-09-17</wml2:time>
+              <wml2:value sourceCode="GWIC">
+                <swe:Quantity>
+                  <swe:uom code="FEET"/>
+                  <swe:value>193.810000</swe:value>
+                </swe:Quantity>
+              </wml2:value>
+              <wml2:comment/>
+            </wml2:TimeValuePair>
+          </wml2:element>
+          <wml2:element>
+            <wml2:TimeValuePair>
+              <wml2:time>1999-02-17</wml2:time>
+              <wml2:value sourceCode="GWIC">
+                <swe:Quantity>
+                  <swe:uom code="FEET"/>
+                  <swe:value>197.170000</swe:value>
+                </swe:Quantity>
+              </wml2:value>
+              <wml2:comment/>
+            </wml2:TimeValuePair>
+          </wml2:element>
+          <wml2:element>
+            <wml2:TimeValuePair>
+              <wml2:time>1999-05-19</wml2:time>
+              <wml2:value sourceCode="GWIC">
+                <swe:Quantity>
+                  <swe:uom code="FEET"/>
+                  <swe:value>193.400000</swe:value>
+                </swe:Quantity>
+              </wml2:value>
+              <wml2:comment/>
+            </wml2:TimeValuePair>
+          </wml2:element>
+          <wml2:element>
+            <wml2:TimeValuePair>
+              <wml2:time>1999-09-15</wml2:time>
+              <wml2:value sourceCode="GWIC">
+                <swe:Quantity>
+                  <swe:uom code="FEET"/>
+                  <swe:value>194.490000</swe:value>
+                </swe:Quantity>
+              </wml2:value>
+              <wml2:comment/>
+            </wml2:TimeValuePair>
+          </wml2:element>
+          <wml2:element>
+            <wml2:TimeValuePair>
+              <wml2:time>1999-11-17</wml2:time>
+              <wml2:value sourceCode="GWIC">
+                <swe:Quantity>
+                  <swe:uom code="FEET"/>
+                  <swe:value>194.600000</swe:value>
+                </swe:Quantity>
+              </wml2:value>
+              <wml2:comment/>
+            </wml2:TimeValuePair>
+          </wml2:element>
+          <wml2:element>
+            <wml2:TimeValuePair>
+              <wml2:time>2000-02-16</wml2:time>
+              <wml2:value sourceCode="GWIC">
+                <swe:Quantity>
+                  <swe:uom code="FEET"/>
+                  <swe:value>194.070000</swe:value>
+                </swe:Quantity>
+              </wml2:value>
+              <wml2:comment/>
+            </wml2:TimeValuePair>
+          </wml2:element>
+          <wml2:element>
+            <wml2:TimeValuePair>
+              <wml2:time>2000-08-23</wml2:time>
+              <wml2:value sourceCode="GWIC">
+                <swe:Quantity>
+                  <swe:uom code="FEET"/>
+                  <swe:value>194.460000</swe:value>
+                </swe:Quantity>
+              </wml2:value>
+              <wml2:comment/>
+            </wml2:TimeValuePair>
+          </wml2:element>
+          <wml2:element>
+            <wml2:TimeValuePair>
+              <wml2:time>2000-11-15</wml2:time>
+              <wml2:value sourceCode="GWIC">
+                <swe:Quantity>
+                  <swe:uom code="FEET"/>
+                  <swe:value>193.720000</swe:value>
+                </swe:Quantity>
+              </wml2:value>
+              <wml2:comment/>
+            </wml2:TimeValuePair>
+          </wml2:element>
+          <wml2:element>
+            <wml2:TimeValuePair>
+              <wml2:time>2001-02-28</wml2:time>
+              <wml2:value sourceCode="GWIC">
+                <swe:Quantity>
+                  <swe:uom code="FEET"/>
+                  <swe:value>193.680000</swe:value>
+                </swe:Quantity>
+              </wml2:value>
+              <wml2:comment/>
+            </wml2:TimeValuePair>
+          </wml2:element>
+          <wml2:element>
+            <wml2:TimeValuePair>
+              <wml2:time>2001-05-31</wml2:time>
+              <wml2:value sourceCode="GWIC">
+                <swe:Quantity>
+                  <swe:uom code="FEET"/>
+                  <swe:value>194.270000</swe:value>
+                </swe:Quantity>
+              </wml2:value>
+              <wml2:comment/>
+            </wml2:TimeValuePair>
+          </wml2:element>
+          <wml2:element>
+            <wml2:TimeValuePair>
+              <wml2:time>2001-08-28</wml2:time>
+              <wml2:value sourceCode="GWIC">
+                <swe:Quantity>
+                  <swe:uom code="FEET"/>
+                  <swe:value>193.990000</swe:value>
+                </swe:Quantity>
+              </wml2:value>
+              <wml2:comment/>
+            </wml2:TimeValuePair>
+          </wml2:element>
+          <wml2:element>
+            <wml2:TimeValuePair>
+              <wml2:time>2001-11-14</wml2:time>
+              <wml2:value sourceCode="GWIC">
+                <swe:Quantity>
+                  <swe:uom code="FEET"/>
+                  <swe:value>193.850000</swe:value>
+                </swe:Quantity>
+              </wml2:value>
+              <wml2:comment/>
+            </wml2:TimeValuePair>
+          </wml2:element>
+          <wml2:element>
+            <wml2:TimeValuePair>
+              <wml2:time>2002-08-07</wml2:time>
+              <wml2:value sourceCode="GWIC">
+                <swe:Quantity>
+                  <swe:uom code="FEET"/>
+                  <swe:value>196.280000</swe:value>
+                </swe:Quantity>
+              </wml2:value>
+              <wml2:comment/>
+            </wml2:TimeValuePair>
+          </wml2:element>
+          <wml2:element>
+            <wml2:TimeValuePair>
+              <wml2:time>2002-11-06</wml2:time>
+              <wml2:value sourceCode="GWIC">
+                <swe:Quantity>
+                  <swe:uom code="FEET"/>
+                  <swe:value>195.240000</swe:value>
+                </swe:Quantity>
+              </wml2:value>
+              <wml2:comment/>
+            </wml2:TimeValuePair>
+          </wml2:element>
+          <wml2:element>
+            <wml2:TimeValuePair>
+              <wml2:time>2003-02-05</wml2:time>
+              <wml2:value sourceCode="GWIC">
+                <swe:Quantity>
+                  <swe:uom code="FEET"/>
+                  <swe:value>196.090000</swe:value>
+                </swe:Quantity>
+              </wml2:value>
+              <wml2:comment/>
+            </wml2:TimeValuePair>
+          </wml2:element>
+          <wml2:element>
+            <wml2:TimeValuePair>
+              <wml2:time>2003-05-14</wml2:time>
+              <wml2:value sourceCode="GWIC">
+                <swe:Quantity>
+                  <swe:uom code="FEET"/>
+                  <swe:value>194.790000</swe:value>
+                </swe:Quantity>
+              </wml2:value>
+              <wml2:comment/>
+            </wml2:TimeValuePair>
+          </wml2:element>
+          <wml2:element>
+            <wml2:TimeValuePair>
+              <wml2:time>2003-08-06</wml2:time>
+              <wml2:value sourceCode="GWIC">
+                <swe:Quantity>
+                  <swe:uom code="FEET"/>
+                  <swe:value>196.990000</swe:value>
+                </swe:Quantity>
+              </wml2:value>
+              <wml2:comment/>
+            </wml2:TimeValuePair>
+          </wml2:element>
+          <wml2:element>
+            <wml2:TimeValuePair>
+              <wml2:time>2003-11-04</wml2:time>
+              <wml2:value sourceCode="GWIC">
+                <swe:Quantity>
+                  <swe:uom code="FEET"/>
+                  <swe:value>194.820000</swe:value>
+                </swe:Quantity>
+              </wml2:value>
+              <wml2:comment/>
+            </wml2:TimeValuePair>
+          </wml2:element>
+          <wml2:element>
+            <wml2:TimeValuePair>
+              <wml2:time>2004-02-27</wml2:time>
+              <wml2:value sourceCode="GWIC">
+                <swe:Quantity>
+                  <swe:uom code="FEET"/>
+                  <swe:value>191.180000</swe:value>
+                </swe:Quantity>
+              </wml2:value>
+              <wml2:comment/>
+            </wml2:TimeValuePair>
+          </wml2:element>
+          <wml2:element>
+            <wml2:TimeValuePair>
+              <wml2:time>2004-05-06</wml2:time>
+              <wml2:value sourceCode="GWIC">
+                <swe:Quantity>
+                  <swe:uom code="FEET"/>
+                  <swe:value>194.920000</swe:value>
+                </swe:Quantity>
+              </wml2:value>
+              <wml2:comment/>
+            </wml2:TimeValuePair>
+          </wml2:element>
+          <wml2:element>
+            <wml2:TimeValuePair>
+              <wml2:time>2004-08-11</wml2:time>
+              <wml2:value sourceCode="GWIC">
+                <swe:Quantity>
+                  <swe:uom code="FEET"/>
+                  <swe:value>209.290000</swe:value>
+                </swe:Quantity>
+              </wml2:value>
+              <wml2:comment/>
+            </wml2:TimeValuePair>
+          </wml2:element>
+          <wml2:element>
+            <wml2:TimeValuePair>
+              <wml2:time>2004-11-02</wml2:time>
+              <wml2:value sourceCode="GWIC">
+                <swe:Quantity>
+                  <swe:uom code="FEET"/>
+                  <swe:value>194.620000</swe:value>
+                </swe:Quantity>
+              </wml2:value>
+              <wml2:comment/>
+            </wml2:TimeValuePair>
+          </wml2:element>
+          <wml2:element>
+            <wml2:TimeValuePair>
+              <wml2:time>2005-02-09</wml2:time>
+              <wml2:value sourceCode="GWIC">
+                <swe:Quantity>
+                  <swe:uom code="FEET"/>
+                  <swe:value>195.360000</swe:value>
+                </swe:Quantity>
+              </wml2:value>
+              <wml2:comment/>
+            </wml2:TimeValuePair>
+          </wml2:element>
+          <wml2:element>
+            <wml2:TimeValuePair>
+              <wml2:time>2005-05-04</wml2:time>
+              <wml2:value sourceCode="GWIC">
+                <swe:Quantity>
+                  <swe:uom code="FEET"/>
+                  <swe:value>194.120000</swe:value>
+                </swe:Quantity>
+              </wml2:value>
+              <wml2:comment/>
+            </wml2:TimeValuePair>
+          </wml2:element>
+          <wml2:element>
+            <wml2:TimeValuePair>
+              <wml2:time>2005-08-25</wml2:time>
+              <wml2:value sourceCode="GWIC">
+                <swe:Quantity>
+                  <swe:uom code="FEET"/>
+                  <swe:value>197.930000</swe:value>
+                </swe:Quantity>
+              </wml2:value>
+              <wml2:comment/>
+            </wml2:TimeValuePair>
+          </wml2:element>
+          <wml2:element>
+            <wml2:TimeValuePair>
+              <wml2:time>2005-11-09</wml2:time>
+              <wml2:value sourceCode="GWIC">
+                <swe:Quantity>
+                  <swe:uom code="FEET"/>
+                  <swe:value>198.430000</swe:value>
+                </swe:Quantity>
+              </wml2:value>
+              <wml2:comment/>
+            </wml2:TimeValuePair>
+          </wml2:element>
+          <wml2:element>
+            <wml2:TimeValuePair>
+              <wml2:time>2006-02-08</wml2:time>
+              <wml2:value sourceCode="GWIC">
+                <swe:Quantity>
+                  <swe:uom code="FEET"/>
+                  <swe:value>200.950000</swe:value>
+                </swe:Quantity>
+              </wml2:value>
+              <wml2:comment/>
+            </wml2:TimeValuePair>
+          </wml2:element>
+          <wml2:element>
+            <wml2:TimeValuePair>
+              <wml2:time>2006-05-17</wml2:time>
+              <wml2:value sourceCode="GWIC">
+                <swe:Quantity>
+                  <swe:uom code="FEET"/>
+                  <swe:value>196.890000</swe:value>
+                </swe:Quantity>
+              </wml2:value>
+              <wml2:comment/>
+            </wml2:TimeValuePair>
+          </wml2:element>
+          <wml2:element>
+            <wml2:TimeValuePair>
+              <wml2:time>2006-08-10</wml2:time>
+              <wml2:value sourceCode="GWIC">
+                <swe:Quantity>
+                  <swe:uom code="FEET"/>
+                  <swe:value>205.910000</swe:value>
+                </swe:Quantity>
+              </wml2:value>
+              <wml2:comment/>
+            </wml2:TimeValuePair>
+          </wml2:element>
+          <wml2:element>
+            <wml2:TimeValuePair>
+              <wml2:time>2006-11-01</wml2:time>
+              <wml2:value sourceCode="GWIC">
+                <swe:Quantity>
+                  <swe:uom code="FEET"/>
+                  <swe:value>194.210000</swe:value>
+                </swe:Quantity>
+              </wml2:value>
+              <wml2:comment/>
+            </wml2:TimeValuePair>
+          </wml2:element>
+          <wml2:element>
+            <wml2:TimeValuePair>
+              <wml2:time>2007-02-07</wml2:time>
+              <wml2:value sourceCode="GWIC">
+                <swe:Quantity>
+                  <swe:uom code="FEET"/>
+                  <swe:value>205.310000</swe:value>
+                </swe:Quantity>
+              </wml2:value>
+              <wml2:comment/>
+            </wml2:TimeValuePair>
+          </wml2:element>
+          <wml2:element>
+            <wml2:TimeValuePair>
+              <wml2:time>2007-05-09</wml2:time>
+              <wml2:value sourceCode="GWIC">
+                <swe:Quantity>
+                  <swe:uom code="FEET"/>
+                  <swe:value>194.250000</swe:value>
+                </swe:Quantity>
+              </wml2:value>
+              <wml2:comment/>
+            </wml2:TimeValuePair>
+          </wml2:element>
+          <wml2:element>
+            <wml2:TimeValuePair>
+              <wml2:time>2007-08-22</wml2:time>
+              <wml2:value sourceCode="GWIC">
+                <swe:Quantity>
+                  <swe:uom code="FEET"/>
+                  <swe:value>198.390000</swe:value>
+                </swe:Quantity>
+              </wml2:value>
+              <wml2:comment/>
+            </wml2:TimeValuePair>
+          </wml2:element>
+          <wml2:element>
+            <wml2:TimeValuePair>
+              <wml2:time>2007-11-07</wml2:time>
+              <wml2:value sourceCode="GWIC">
+                <swe:Quantity>
+                  <swe:uom code="FEET"/>
+                  <swe:value>193.920000</swe:value>
+                </swe:Quantity>
+              </wml2:value>
+              <wml2:comment/>
+            </wml2:TimeValuePair>
+          </wml2:element>
+          <wml2:element>
+            <wml2:TimeValuePair>
+              <wml2:time>2008-02-19</wml2:time>
+              <wml2:value sourceCode="GWIC">
+                <swe:Quantity>
+                  <swe:uom code="FEET"/>
+                  <swe:value>195.900000</swe:value>
+                </swe:Quantity>
+              </wml2:value>
+              <wml2:comment/>
+            </wml2:TimeValuePair>
+          </wml2:element>
+          <wml2:element>
+            <wml2:TimeValuePair>
+              <wml2:time>2008-08-06</wml2:time>
+              <wml2:value sourceCode="GWIC">
+                <swe:Quantity>
+                  <swe:uom code="FEET"/>
+                  <swe:value>193.230000</swe:value>
+                </swe:Quantity>
+              </wml2:value>
+              <wml2:comment/>
+            </wml2:TimeValuePair>
+          </wml2:element>
+          <wml2:element>
+            <wml2:TimeValuePair>
+              <wml2:time>2008-11-06</wml2:time>
+              <wml2:value sourceCode="GWIC">
+                <swe:Quantity>
+                  <swe:uom code="FEET"/>
+                  <swe:value>209.790000</swe:value>
+                </swe:Quantity>
+              </wml2:value>
+              <wml2:comment/>
+            </wml2:TimeValuePair>
+          </wml2:element>
+          <wml2:element>
+            <wml2:TimeValuePair>
+              <wml2:time>2009-02-11</wml2:time>
+              <wml2:value sourceCode="GWIC">
+                <swe:Quantity>
+                  <swe:uom code="FEET"/>
+                  <swe:value>202.120000</swe:value>
+                </swe:Quantity>
+              </wml2:value>
+              <wml2:comment/>
+            </wml2:TimeValuePair>
+          </wml2:element>
+          <wml2:element>
+            <wml2:TimeValuePair>
+              <wml2:time>2009-05-13</wml2:time>
+              <wml2:value sourceCode="GWIC">
+                <swe:Quantity>
+                  <swe:uom code="FEET"/>
+                  <swe:value>200.500000</swe:value>
+                </swe:Quantity>
+              </wml2:value>
+              <wml2:comment/>
+            </wml2:TimeValuePair>
+          </wml2:element>
+          <wml2:element>
+            <wml2:TimeValuePair>
+              <wml2:time>2009-08-04</wml2:time>
+              <wml2:value sourceCode="GWIC">
+                <swe:Quantity>
+                  <swe:uom code="FEET"/>
+                  <swe:value>194.980000</swe:value>
+                </swe:Quantity>
+              </wml2:value>
+              <wml2:comment/>
+            </wml2:TimeValuePair>
+          </wml2:element>
+          <wml2:element>
+            <wml2:TimeValuePair>
+              <wml2:time>2009-11-04</wml2:time>
+              <wml2:value sourceCode="GWIC">
+                <swe:Quantity>
+                  <swe:uom code="FEET"/>
+                  <swe:value>194.340000</swe:value>
+                </swe:Quantity>
+              </wml2:value>
+              <wml2:comment/>
+            </wml2:TimeValuePair>
+          </wml2:element>
+          <wml2:element>
+            <wml2:TimeValuePair>
+              <wml2:time>2010-02-11</wml2:time>
+              <wml2:value sourceCode="GWIC">
+                <swe:Quantity>
+                  <swe:uom code="FEET"/>
+                  <swe:value>196.100000</swe:value>
+                </swe:Quantity>
+              </wml2:value>
+              <wml2:comment/>
+            </wml2:TimeValuePair>
+          </wml2:element>
+          <wml2:element>
+            <wml2:TimeValuePair>
+              <wml2:time>2010-05-11</wml2:time>
+              <wml2:value sourceCode="GWIC">
+                <swe:Quantity>
+                  <swe:uom code="FEET"/>
+                  <swe:value>195.060000</swe:value>
+                </swe:Quantity>
+              </wml2:value>
+              <wml2:comment/>
+            </wml2:TimeValuePair>
+          </wml2:element>
+          <wml2:element>
+            <wml2:TimeValuePair>
+              <wml2:time>2010-08-26</wml2:time>
+              <wml2:value sourceCode="GWIC">
+                <swe:Quantity>
+                  <swe:uom code="FEET"/>
+                  <swe:value>205.750000</swe:value>
+                </swe:Quantity>
+              </wml2:value>
+              <wml2:comment/>
+            </wml2:TimeValuePair>
+          </wml2:element>
+          <wml2:element>
+            <wml2:TimeValuePair>
+              <wml2:time>2010-11-02</wml2:time>
+              <wml2:value sourceCode="GWIC">
+                <swe:Quantity>
+                  <swe:uom code="FEET"/>
+                  <swe:value>208.030000</swe:value>
+                </swe:Quantity>
+              </wml2:value>
+              <wml2:comment/>
+            </wml2:TimeValuePair>
+          </wml2:element>
+          <wml2:element>
+            <wml2:TimeValuePair>
+              <wml2:time>2011-05-16</wml2:time>
+              <wml2:value sourceCode="GWIC">
+                <swe:Quantity>
+                  <swe:uom code="FEET"/>
+                  <swe:value>180.620000</swe:value>
+                </swe:Quantity>
+              </wml2:value>
+              <wml2:comment/>
+            </wml2:TimeValuePair>
+          </wml2:element>
+          <wml2:element>
+            <wml2:TimeValuePair>
+              <wml2:time>2011-08-10</wml2:time>
+              <wml2:value sourceCode="GWIC">
+                <swe:Quantity>
+                  <swe:uom code="FEET"/>
+                  <swe:value>194.460000</swe:value>
+                </swe:Quantity>
+              </wml2:value>
+              <wml2:comment/>
+            </wml2:TimeValuePair>
+          </wml2:element>
+          <wml2:element>
+            <wml2:TimeValuePair>
+              <wml2:time>2011-11-16</wml2:time>
+              <wml2:value sourceCode="GWIC">
+                <swe:Quantity>
+                  <swe:uom code="FEET"/>
+                  <swe:value>196.040000</swe:value>
+                </swe:Quantity>
+              </wml2:value>
+              <wml2:comment/>
+            </wml2:TimeValuePair>
+          </wml2:element>
+          <wml2:element>
+            <wml2:TimeValuePair>
+              <wml2:time>2012-02-14</wml2:time>
+              <wml2:value sourceCode="GWIC">
+                <swe:Quantity>
+                  <swe:uom code="FEET"/>
+                  <swe:value>195.040000</swe:value>
+                </swe:Quantity>
+              </wml2:value>
+              <wml2:comment/>
+            </wml2:TimeValuePair>
+          </wml2:element>
+          <wml2:element>
+            <wml2:TimeValuePair>
+              <wml2:time>2012-05-09</wml2:time>
+              <wml2:value sourceCode="GWIC">
+                <swe:Quantity>
+                  <swe:uom code="FEET"/>
+                  <swe:value>196.740000</swe:value>
+                </swe:Quantity>
+              </wml2:value>
+              <wml2:comment/>
+            </wml2:TimeValuePair>
+          </wml2:element>
+          <wml2:element>
+            <wml2:TimeValuePair>
+              <wml2:time>2012-08-07</wml2:time>
+              <wml2:value sourceCode="GWIC">
+                <swe:Quantity>
+                  <swe:uom code="FEET"/>
+                  <swe:value>194.540000</swe:value>
+                </swe:Quantity>
+              </wml2:value>
+              <wml2:comment/>
+            </wml2:TimeValuePair>
+          </wml2:element>
+          <wml2:element>
+            <wml2:TimeValuePair>
+              <wml2:time>2012-11-13</wml2:time>
+              <wml2:value sourceCode="GWIC">
+                <swe:Quantity>
+                  <swe:uom code="FEET"/>
+                  <swe:value>193.340000</swe:value>
+                </swe:Quantity>
+              </wml2:value>
+              <wml2:comment/>
+            </wml2:TimeValuePair>
+          </wml2:element>
+          <wml2:element>
+            <wml2:TimeValuePair>
+              <wml2:time>2013-02-12</wml2:time>
+              <wml2:value sourceCode="GWIC">
+                <swe:Quantity>
+                  <swe:uom code="FEET"/>
+                  <swe:value>195.530000</swe:value>
+                </swe:Quantity>
+              </wml2:value>
+              <wml2:comment/>
+            </wml2:TimeValuePair>
+          </wml2:element>
+          <wml2:element>
+            <wml2:TimeValuePair>
+              <wml2:time>2013-05-14</wml2:time>
+              <wml2:value sourceCode="GWIC">
+                <swe:Quantity>
+                  <swe:uom code="FEET"/>
+                  <swe:value>198.990000</swe:value>
+                </swe:Quantity>
+              </wml2:value>
+              <wml2:comment/>
+            </wml2:TimeValuePair>
+          </wml2:element>
+          <wml2:element>
+            <wml2:TimeValuePair>
+              <wml2:time>2013-11-12</wml2:time>
+              <wml2:value sourceCode="GWIC">
+                <swe:Quantity>
+                  <swe:uom code="FEET"/>
+                  <swe:value>197.190000</swe:value>
+                </swe:Quantity>
+              </wml2:value>
+              <wml2:comment/>
+            </wml2:TimeValuePair>
+          </wml2:element>
+          <wml2:element>
+            <wml2:TimeValuePair>
+              <wml2:time>2014-02-04</wml2:time>
+              <wml2:value sourceCode="GWIC">
+                <swe:Quantity>
+                  <swe:uom code="FEET"/>
+                  <swe:value>194.840000</swe:value>
+                </swe:Quantity>
+              </wml2:value>
+              <wml2:comment/>
+            </wml2:TimeValuePair>
+          </wml2:element>
+          <wml2:element>
+            <wml2:TimeValuePair>
+              <wml2:time>2014-05-21</wml2:time>
+              <wml2:value sourceCode="GWIC">
+                <swe:Quantity>
+                  <swe:uom code="FEET"/>
+                  <swe:value>203.290000</swe:value>
+                </swe:Quantity>
+              </wml2:value>
+              <wml2:comment/>
+            </wml2:TimeValuePair>
+          </wml2:element>
+          <wml2:element>
+            <wml2:TimeValuePair>
+              <wml2:time>2014-11-04</wml2:time>
+              <wml2:value sourceCode="GWIC">
+                <swe:Quantity>
+                  <swe:uom code="FEET"/>
+                  <swe:value>197.840000</swe:value>
+                </swe:Quantity>
+              </wml2:value>
+              <wml2:comment/>
+            </wml2:TimeValuePair>
+          </wml2:element>
+          <wml2:element>
+            <wml2:TimeValuePair>
+              <wml2:time>2015-02-04</wml2:time>
+              <wml2:value sourceCode="GWIC">
+                <swe:Quantity>
+                  <swe:uom code="FEET"/>
+                  <swe:value>201.230000</swe:value>
+                </swe:Quantity>
+              </wml2:value>
+              <wml2:comment/>
+            </wml2:TimeValuePair>
+          </wml2:element>
+          <wml2:element>
+            <wml2:TimeValuePair>
+              <wml2:time>2015-08-04</wml2:time>
+              <wml2:value sourceCode="GWIC">
+                <swe:Quantity>
+                  <swe:uom code="FEET"/>
+                  <swe:value>193.800000</swe:value>
+                </swe:Quantity>
+              </wml2:value>
+              <wml2:comment/>
+            </wml2:TimeValuePair>
+          </wml2:element>
+          <wml2:element>
+            <wml2:TimeValuePair>
+              <wml2:time>2015-11-10</wml2:time>
+              <wml2:value sourceCode="GWIC">
+                <swe:Quantity>
+                  <swe:uom code="FEET"/>
+                  <swe:value>193.680000</swe:value>
+                </swe:Quantity>
+              </wml2:value>
+              <wml2:comment/>
+            </wml2:TimeValuePair>
+          </wml2:element>
+          <wml2:element>
+            <wml2:TimeValuePair>
+              <wml2:time>2016-02-02</wml2:time>
+              <wml2:value sourceCode="GWIC">
+                <swe:Quantity>
+                  <swe:uom code="FEET"/>
+                  <swe:value>200.390000</swe:value>
+                </swe:Quantity>
+              </wml2:value>
+              <wml2:comment/>
+            </wml2:TimeValuePair>
+          </wml2:element>
+        </wml2:TimeSeries>
+      </om:result>
+    </wml2:WaterMonitoringObservation>
+  </om:member>
+</om:ObservationCollection>

@@ -1,0 +1,14 @@
+.settings/
+.idea/
+.springBeans
+logs/
+target/
+venv/
+testing/
+.DS_Store
+.project
+.classpath*
+Untitled*
+*.retry
+*.orig
+app.pid
