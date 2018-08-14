@@ -30,14 +30,14 @@
 
 	<distributionManagement>
 		<repository>
-			<id>cida-releases</id>
-			<name>CIDA Releases</name>
-			<url>https://internal.cida.usgs.gov/maven/content/repositories/cida-releases</url>
+			<id>releases</id>
+			<name>Releases</name>
+			<url>https://cida.usgs.gov/artifactory/wma-maven-releases</url>
 		</repository>
 		<snapshotRepository>
-			<id>cida-snapshots</id>
-			<name>CIDA Snapshots</name>
-			<url>https://internal.cida.usgs.gov/maven/content/repositories/cida-snapshots</url>
+			<id>snapshots</id>
+			<name>Snapshots</name>
+			<url>https://cida.usgs.gov/artifactory/wma-maven-snapshots</url>
 		</snapshotRepository>
 	</distributionManagement>
 	<parent>
