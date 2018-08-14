@@ -1,0 +1,18 @@
+pipeline {
+    agent none
+
+    stages {
+        stage ('Invoke build pipeline') {
+            steps {
+                build job: 'buid_statistics', parameters: [
+                string(name: 'param1', value: "value1")
+                ]
+            }
+        }
+		stage ('deploy') {
+			sshagent(['CREDENTIALS_ID']) {
+		    	sh 'scp target/statistics*.war cida-eros-ngwmndv.er.usgs.gov:/opt/tomcat/webapps/statistics.war'
+		    }
+		}
+	}
+}
