@@ -9,6 +9,7 @@ pipeline {
     stages {
         stage('Package') {
             steps {
+            	// differ testing to test stage
                 sh 'mvn clean package -Dmaven.test.skip=true'
             }
         }
@@ -24,6 +25,7 @@ pipeline {
         }
         stage('Repository') {
             steps {
+            	// test complete in test stage
                 sh 'mvn deploy -Dmaven.test.skip=true'
             }
         }

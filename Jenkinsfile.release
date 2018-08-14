@@ -1,44 +1,37 @@
 pipeline {
     agent any
+    tools { 
+        maven 'maven_3_5_4' 
+        jdk 'jdk8' 
+    }
 
     stages {
-        // TODO this might work to import and run the build jenkins
-/*
-        stage ('Invoke_pipeline') {
+        stage ('build project') {
             steps {
-                build job: 'Jenkinsfile.build'
+                build job: 'build statistics'
+                // sample build job params
+                // [ string(name: 'param1', value: "value1") ]
             }
         }
-*/
-		// TODO might be necessary to call to ensure a good release
-/*
-        stage('Package') {
+        stage('Pre Tag') {
             steps {
-                withMaven(maven:'maven_3_5_4') {
-                    sh 'mvn clean package'
-                }
+                sh 'mvn --batch-mode release:prepare'
             }
         }
         stage('Test') {
             steps {
-                withMaven(maven:'maven_3_5_4') {
-                    sh 'mvn test'
-                }
+                sh 'mvn clean test'
             }
         }
-*/
-        stage('Prepare') {
+        stage('Repository') {
             steps {
-                withMaven(maven:'maven_3_5_4') {
-                    sh 'mvn --batch-mode release:prepare'
-                }
+            	// test complete in test stage
+                sh 'mvn deploy -Dmaven.test.skip=true'
             }
         }
-        stage('Perform') {
+        stage('Post Tag') {
             steps {
-                withMaven(maven:'maven_3_5_4') {
-                    sh 'mvn --batch-mode release:perform'
-                }
+                sh 'mvn --batch-mode release:perform'
             }
         }
     }

@@ -2,12 +2,7 @@ pipeline {
     agent none
 
     stages {
-        stage ('Invoke build pipeline') {
-            steps {
-                build job: 'buid_statistics', parameters: [
-                string(name: 'param1', value: "value1")
-                ]
-            }
+        stage ('download artifact') {
         }
 		stage ('deploy') {
 			sshagent(['CREDENTIALS_ID']) {
