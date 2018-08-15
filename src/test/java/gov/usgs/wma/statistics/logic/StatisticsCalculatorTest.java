@@ -17,6 +17,8 @@ import java.util.Map;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -27,6 +29,7 @@ import gov.usgs.wma.statistics.model.Value;
 
 
 public class StatisticsCalculatorTest {
+	private static final Logger LOGGER = LoggerFactory.getLogger(StatisticsCalculatorTest.class);
 
 	StatisticsCalculator<Value> stats;
 	MonthlyStatistics<Value, MediationType> monthlyStats;
@@ -457,13 +460,13 @@ public class StatisticsCalculatorTest {
 			samples.add( createSample("", randomNumber(10) ) );
 		}
 		long genDur = System.currentTimeMillis() - start;
-		System.out.println("gen done " + genDur);
+		LOGGER.trace("gen done " + genDur);
 
 		start = System.currentTimeMillis();
 		List<Value> sorted = new LinkedList<>(samples);
 		StatisticsCalculator.sortByValueOrderAscending(sorted);
 		long quick = System.currentTimeMillis() - start;
-		System.out.println("quick done " + quick);
+		LOGGER.trace("quick done " + quick);
 
 		start = System.currentTimeMillis();
 		List<Value> simplesort = new OrderedSamples();
@@ -471,7 +474,7 @@ public class StatisticsCalculatorTest {
 			simplesort.add(sample);
 		}
 		long simple = System.currentTimeMillis() - start;
-		System.out.println("simple done " + simple);
+		LOGGER.trace("simple done " + simple);
 
 		assertEquals("Expect quicksorted to be the same size", samples.size(), sorted.size() );
 		assertEquals("Expect simplesorted to be the same size", samples.size(), simplesort.size() );
@@ -487,13 +490,13 @@ public class StatisticsCalculatorTest {
 			samples.add( createSample("", randomNumber(10) ) );
 		}
 		long genDur = System.currentTimeMillis() - start;
-		System.out.println("gen done " + genDur);
+		LOGGER.trace("gen done " + genDur);
 
 		start = System.currentTimeMillis();
 		List<Value> sorted = new LinkedList<>(samples);
 		StatisticsCalculator.sortByValueOrderAscending(sorted);
 		long quick = System.currentTimeMillis() - start;
-		System.out.println("quick  done " + quick);
+		LOGGER.trace("quick  done " + quick);
 
 		start = System.currentTimeMillis();
 		List<Value> simplesort = new OrderedSamples();
@@ -501,13 +504,13 @@ public class StatisticsCalculatorTest {
 			simplesort.add(sample);
 		}
 		long simple = System.currentTimeMillis() - start;
-		System.out.println("simple done " + simple);
+		LOGGER.trace("simple done " + simple);
 
 		assertEquals("Expect quicksorted to be the same size", samples.size(), sorted.size() );
 		assertEquals("Expect simplesorted to be the same size", samples.size(), simplesort.size() );
 		assertTrue("Expect quicksorted to be the slower most of the time (there is a performace variation based on the random data)", (quick >= simple));
-		System.out.println("quick   " + quick);
-		System.out.println("simple  " + simple);
+		LOGGER.trace("quick   " + quick);
+		LOGGER.trace("simple  " + simple);
 	}
 
 

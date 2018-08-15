@@ -113,7 +113,7 @@ public class StatsService {
 			json.append(sample.value).append("\\n");
 		}
 		json.append("\"");
-		System.err.println(json);
+		LOGGER.debug(json.toString());
 		return json.toString();
 	}
 

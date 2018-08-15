@@ -14,7 +14,7 @@ import gov.usgs.wma.statistics.logic.SigFigMathUtil;
 
 public class WaterlevelMediator {
 
-	private static Logger logger = LoggerFactory.getLogger(WaterlevelMediator.class);
+	private static Logger LOGGER = LoggerFactory.getLogger(WaterlevelMediator.class);
 	
 	//Conversion not possible because of missing or unrecognized data
 	public static final String NA_PREFIX = "NA";	//All NA type responses start w/ this so we can ID them
@@ -211,7 +211,7 @@ public class WaterlevelMediator {
 	 */
 	protected static Measure initialValidation(String valueStr, String unitStr, String pcodeStr, String measureDatumStr, String siteElevation, String siteDatumStr) 
 			throws ValidationException {
-		logger.trace("enter");
+		LOGGER.trace("enter");
 		Measure measure = new Measure(valueStr, unitStr, pcodeStr, measureDatumStr, siteElevation, siteDatumStr);
 		
 		if (measure.pcode.isUnrecognized()) {
@@ -224,7 +224,7 @@ public class WaterlevelMediator {
 			throw new ValidationException(NA_NO_UNIT + " Value: '" + unitStr + "'");
 		}
 		
-		logger.trace("exit");
+		LOGGER.trace("exit");
 		return measure;
 	}
 

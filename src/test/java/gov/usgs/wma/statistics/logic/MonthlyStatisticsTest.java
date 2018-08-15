@@ -14,11 +14,15 @@ import java.util.Map;
 import java.util.function.Function;
 
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import gov.usgs.ngwmn.logic.WaterLevelStatistics.MediationType;
 import gov.usgs.wma.statistics.model.Value;
 
 public class MonthlyStatisticsTest {
+	private static final Logger LOGGER = LoggerFactory.getLogger(MonthlyStatisticsTest.class);
+	
 	MonthlyStatistics<Value, MediationType> stats = new MonthlyStatistics<>(MediationType.BelowLand);
 
 	private Value createSample(String time, String value) {
@@ -704,7 +708,7 @@ public class MonthlyStatisticsTest {
 		for (String year : yearCounts.keySet()) {
 			int count = yearCounts.get(year);
 			if (count > 1) {
-				System.out.println(year);
+				LOGGER.trace(year);
 				yearCountsGreaterThan1++;
 			}
 		}
@@ -754,7 +758,7 @@ public class MonthlyStatisticsTest {
 
 		Map<String, Map<String, String>> april = stats.monthlyStats(monthSamples);
 
-		System.err.println(april);
+		LOGGER.trace(april.toString());
 
 	}
 	protected void fillAprilData(List<Value> monthSamples) {

@@ -9,13 +9,16 @@ import java.util.List;
 import java.util.Map;
 
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 
 import gov.usgs.ngwmn.model.WLSample;
 import gov.usgs.wma.statistics.control.StatsService;
 
 public class StatsServiceTest {
-
+	private static final Logger LOGGER = LoggerFactory.getLogger(StatsServiceTest.class);
+			
 	@Test
 	public void test_parseData_oneFineDatum() {
 		StatsService stats = new StatsService();
@@ -189,7 +192,7 @@ public class StatsServiceTest {
 		data.put("data", values);
 		
 		ResponseEntity<String> resp = stats.service(data);
-		System.err.println(resp.getBody());
+		LOGGER.trace(resp.getBody());
 		
 		assertEquals(200, resp.getStatusCode().value());
 		assertTrue( resp.toString().contains("200 OK") );
