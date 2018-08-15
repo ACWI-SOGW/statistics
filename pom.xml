@@ -18,6 +18,9 @@
 		<maven.build.timestamp.format>yyyy-MM-dd HH:mm:ss' 'z</maven.build.timestamp.format>
 		<scm.urlBase>https://github.com/ACWI-SOGW/statistics</scm.urlBase>
 		<scm.devConnectionBase>git@github.com:ACWI-SOGW/statistics</scm.devConnectionBase>
+		<artifactory.urlBase>https://cida.usgs.gov/artifactory/</artifactory.urlBase>
+		<artifactory.snapshots>wma-maven-snapshots</artifactory.snapshots>
+		<artifactory.releases>wma-maven-releases</artifactory.releases>
 	</properties>
 
 	<scm>
@@ -32,12 +35,12 @@
 		<repository>
 			<id>releases</id>
 			<name>Releases</name>
-			<url>https://cida.usgs.gov/artifactory/wma-maven-releases</url>
+			<url>${artifactory.urlBase}${artifactory.releases}</url>
 		</repository>
 		<snapshotRepository>
 			<id>snapshots</id>
 			<name>Snapshots</name>
-			<url>https://cida.usgs.gov/artifactory/wma-maven-snapshots</url>
+			<url>${artifactory.urlBase}${artifactory.snapshots}</url>
 		</snapshotRepository>
 	</distributionManagement>
 	<parent>
