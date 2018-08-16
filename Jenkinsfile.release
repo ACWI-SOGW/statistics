@@ -31,7 +31,7 @@ pipeline {
         }
         stage('Post Tag') {
             steps {
-                sh 'mvn --batch-mode release:perform'
+                sh 'mvn --batch-mode release:prepare release:perform'
             }
         }
     }

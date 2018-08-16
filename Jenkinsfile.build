@@ -40,7 +40,7 @@ pipeline {
 				// incorporate the maven dryRun flag
 				script {
 					if (params.DRY_RUN) {
-						dryRun='--dryRun=true'
+						dryRun='-DdryRun=true'
 					} else {
 						dryRun=''
 					}
