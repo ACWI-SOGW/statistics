@@ -115,3 +115,31 @@ $ ./boot dev
 ## Screenshots
 
 ![Sample Page](sample_page.png)
+
+
+## setting up Jenkins
+
+### build
+* Use pipelines
+	create a pipeline build pointing to this repo and the Jenkinsfile
+* Make it a parameterized build
+    DRY_RUN - boolean to test builds without deploying artifacts
+    	A dry run can be performed for either snapshots or releases
+    RELEASE_BUILD - boolean to initiate a maven release
+
+### deploy
+* Use cargo generic webapp deployer
+	point to the cargo project
+* Make it a parameterized build
+	TOMCAT_SERVER - list and enter cargo IDs configured in settings.xml
+		this is the server target to deploy to
+	REPO_NAME	  - the name of the Artifcatory repo. Example: wmn-maven-centralized
+		this is used buy the cargo pom to find the repo while the next is for version numbers
+	CARGO_DEPLOY  - "list maven artifact versions" to select the artifact version to deploy
+		this is named to be version number used in the cargo pom
+		Repository Base URL - Artifactory URL including the repo name
+		Group Id    - set to "gov.usgs.water"
+		Artifact Id - set to "statistics"
+		Packaging   - set to "war"
+	
+
