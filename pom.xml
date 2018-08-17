@@ -9,7 +9,7 @@
 	<name>statistics</name>
 	<description>Proof of concept to pull statistics out of monolithic NGWMN and use it for scientific review.</description>
 	<version>0.1.0-SNAPSHOT</version>
-	<packaging>war</packaging>
+	<packaging>${packaging.type}</packaging>
 	<properties>
 		<java.version>1.8</java.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -22,6 +22,31 @@
 		<artifactory.snapshots>wma-maven-snapshots</artifactory.snapshots>
 		<artifactory.releases>wma-maven-releases</artifactory.releases>
 	</properties>
+
+	  <profiles>
+	    <profile>
+	      <id>jar</id>
+	      <properties>
+	        <packaging.type>jar</packaging.type>
+	      </properties>
+	    </profile>
+	    <profile>
+	      <id>war</id>
+	      <properties>
+	        <packaging.type>war</packaging.type>
+	      </properties>
+		  <activation>
+		  	<activeByDefault>true</activeByDefault>
+		  </activation>
+	      <dependencies>
+	        <dependency>
+	          <groupId>org.springframework.boot</groupId>
+	          <artifactId>spring-boot-starter-tomcat</artifactId>
+	          <scope>provided</scope>
+	        </dependency>
+	      </dependencies>
+	    </profile>
+	  </profiles>
 
 	<scm>
 		<!-- store the artifact under its own artifact ID -->
@@ -46,7 +71,7 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>2.0.2.RELEASE</version>
+		<version>2.0.4.RELEASE</version>
 	</parent>
 
 	<dependencies>
