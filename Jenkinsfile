@@ -34,7 +34,7 @@ pipeline {
 		stage('Release') {
 			// only release build when triggered
 			when {
-				expression( params.RELEASE_BUILD )
+				expression{ params.RELEASE_BUILD }
 			}
 			steps {
 				// incorporate the maven dryRun flag
