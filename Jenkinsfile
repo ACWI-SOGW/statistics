@@ -17,7 +17,7 @@ pipeline {
 		stage('Package') {
 			steps {
 				// differ testing to test stage
-				sh 'mvn clean package -Dmaven.test.skip=true -Dmaven.javadoc.skip=true'
+				sh 'mvn clean package -Dmaven.test.skip=true'
 			}
 		}
 		stage('Test') {
@@ -45,7 +45,8 @@ pipeline {
 						dryRun=''
 					}
 				}
-				sh 'mvn --batch-mode $dryRun  -Dmaven.javadoc.skip=true -Dmaven.javadoc.failOnError=false release:prepare release:perform'
+				// tests are run in prior tests
+				sh 'mvn --batch-mode $dryRun -Dmaven.test.skip=true release:prepare release:perform'
 			}
 		}
 		stage('Publish') {
@@ -55,7 +56,7 @@ pipeline {
 			}
 			steps {
 				// test complete in test stage
-				sh 'mvn deploy -Dmaven.test.skip=true -Dmaven.javadoc.skip=true'
+				sh 'mvn deploy -Dmaven.test.skip=true'
 			}
 		}
 	}
