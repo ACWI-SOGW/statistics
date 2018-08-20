@@ -21,8 +21,6 @@
 		<artifactory.urlBase>https://cida.usgs.gov/artifactory/</artifactory.urlBase>
 		<artifactory.snapshots>wma-maven-snapshots</artifactory.snapshots>
 		<artifactory.releases>wma-maven-releases</artifactory.releases>
-		<maven.javadoc.failOnError>false</maven.javadoc.failOnError>
-		<maven.javadoc.skip>true</maven.javadoc.skip>
 	</properties>
 
 	  <profiles>
@@ -136,6 +134,9 @@
 					<preparationGoals>package</preparationGoals>
 					<tagNameFormat>${project.version}</tagNameFormat>
 					<remoteTagging>false</remoteTagging>
+					<maven.javadoc.failOnError>false</maven.javadoc.failOnError>
+					<maven.javadoc.skip>true</maven.javadoc.skip>
+                    <additionalparam>-Xdoclint:none  -Ddoclint:none -Dmaven.javadoc.skip=true -Dmaven.javadoc.failOnError=false</additionalparam>
 				</configuration>
 			</plugin>
 		    <plugin>
