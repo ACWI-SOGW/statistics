@@ -46,7 +46,7 @@ pipeline {
 					}
 				}
 				// tests are run in prior tests
-				sh 'mvn --batch-mode $dryRun -Dmaven.test.skip=true release:prepare release:perform'
+				sh 'mvn --batch-mode $dryRun -Dmaven.test.skip=true -Darguments=-Pjenkins-release release:prepare release:perform'
 			}
 		}
 		stage('Publish') {
