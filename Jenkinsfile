@@ -45,7 +45,7 @@ pipeline {
 						dryRun=''
 					}
 				}
-				sh 'mvn --batch-mode $dryRun release:prepare release:perform -Dmaven.javadoc.skip=true'
+				sh 'mvn --batch-mode $dryRun  -Dmaven.javadoc.skip=true -Dmaven.javadoc.failOnError=false release:prepare release:perform'
 			}
 		}
 		stage('Publish') {
