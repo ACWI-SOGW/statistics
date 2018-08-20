@@ -21,6 +21,8 @@
 		<artifactory.urlBase>https://cida.usgs.gov/artifactory/</artifactory.urlBase>
 		<artifactory.snapshots>wma-maven-snapshots</artifactory.snapshots>
 		<artifactory.releases>wma-maven-releases</artifactory.releases>
+		<maven.javadoc.failOnError>false</maven.javadoc.failOnError>
+		<maven.javadoc.skip>true</maven.javadoc.skip>
 	</properties>
 
 	  <profiles>
