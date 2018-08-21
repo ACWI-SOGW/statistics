@@ -46,10 +46,8 @@ pipeline {
                     }
                 }
                 // tests are run in prior tests
-                withMaven() {
-	                sh 'mvn --batch-mode $dryRun -Dmaven.test.skip=true release:prepare'
-	                sh 'mvn --batch-mode $dryRun -Dmaven.test.skip=true release:perform -Darguments="-Dmaven.javadoc.skip=true"'
-                }
+                sh 'mvn --batch-mode $dryRun -Dmaven.test.skip=true release:prepare'
+                sh 'mvn --batch-mode $dryRun -Dmaven.test.skip=true release:perform'
             }
         }
         stage('Publish') {
