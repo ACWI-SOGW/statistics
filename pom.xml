@@ -21,6 +21,7 @@
         <artifactory.snapshots>wma-maven-snapshots</artifactory.snapshots>
         <artifactory.releases>wma-maven-releases</artifactory.releases>
         <additionalparam>-Xdoclint:none</additionalparam>
+        <maven.javadoc.skip>true</maven.javadoc.skip>
     </properties>
 
       <profiles>
@@ -136,6 +137,7 @@
                     <remoteTagging>false</remoteTagging>
                     <maven.javadoc.failOnError>false</maven.javadoc.failOnError>
                     <maven.javadoc.skip>true</maven.javadoc.skip>
+                    <arguments>-Dmaven.javadoc.skip=true</arguments>
                     <additionalparam>-Xdoclint:none  -Ddoclint:none -Dmaven.javadoc.skip=true -Dmaven.javadoc.failOnError=false</additionalparam>
                 </configuration>
             </plugin>
