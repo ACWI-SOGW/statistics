@@ -9,6 +9,7 @@ pipeline {
         // requires the Pipeline Utility Steps plugin
         pom = readMavenPom file: 'pom.xml'
         pomVersion = pom.getVersion()
+        pomArtifactId = pom.getArtifactId()
         //pomReleases = pom.getProperties().get("artifactory.releases")
         //pomSnapshots = pom.getProperties().get("artifactory.snapshots")
     }
@@ -44,9 +45,10 @@ pipeline {
                     } else {
                         dryRun=''
                     }
+                    releaseVersion = pomVersion.replace("-SNAPSHOT","")
                 }
                 // tests are run in prior tests
-                sh 'mvn --batch-mode $dryRun -Dmaven.test.skip=true release:prepare'
+                sh 'mvn --batch-mode $dryRun -Dtag=$pomArtifactId-$releaseVersion -Dmaven.test.skip=true release:prepare'
                 sh 'mvn --batch-mode $dryRun -Dmaven.test.skip=true release:perform'
             }
         }
