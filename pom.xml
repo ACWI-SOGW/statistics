@@ -106,7 +106,39 @@
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-scm-api</artifactId>
+                <version>1.10.0</version>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-scm-provider-git-commons</artifactId>
+                <version>1.10.0</version>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-scm-provider-gitexe</artifactId>
+                <version>1.10.0</version>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>2.22.0</version>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.8.0</version>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-clean-plugin</artifactId>
+                <version>3.1.0</version>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-resources-plugin</artifactId>
+                <version>3.1.0</version>
                 <configuration>
                     <encoding>${project.reporting.outputEncoding}</encoding>
                     <resources>
@@ -130,6 +162,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-release-plugin</artifactId>
+                <version>2.5.3</version>
                 <configuration>
                     <goals>pre-integration-test</goals>
                     <preparationGoals>package</preparationGoals>
@@ -144,6 +177,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
+                <version>3.0.1</version>
                 <configuration>
                     <additionalparam>-Xdoclint:none</additionalparam>
                     <failOnError>false</failOnError>
@@ -180,8 +214,10 @@
             <url>http://internal.cida.usgs.gov/maven/content/repositories/cida-thirdparty/</url>
         </repository>
     </repositories>
+    
     <organization>
         <name>USGS</name>
         <url>usgs.gov</url>
     </organization>
+
 </project>
