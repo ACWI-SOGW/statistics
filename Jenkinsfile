@@ -48,12 +48,12 @@ pipeline {
                     releaseVersion = pomVersion.replace("-SNAPSHOT","")
                 }
                 // tests are run in prior tests
-                sh 'mvn --batch-mode $dryRun -Dtag=$pomArtifactId-$releaseVersion -Dmaven.test.skip=true release:prepare'
-                sh 'mvn --batch-mode $dryRun -Dmaven.test.skip=true release:perform'
+                sh "mvn --batch-mode ${dryRun} -Dtag=${pomArtifactId}-${releaseVersion} release:prepare"
+                sh "mvn --batch-mode ${dryRun} release:perform"
             }
         }
         stage('Publish') {
-            // only pulish when NOT a dry run
+            // only publish when NOT a dry run
             when {
                 expression { params.DRY_RUN == false }
             }
