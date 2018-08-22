@@ -15,16 +15,19 @@ pipeline {
     }
 
     stages {
-        stage('Package') {
+        stage('Rest Repo') {
+            // it is not clear that the repo is a clean checkout
             steps {
-                // differ testing to test stage
-                sh 'mvn clean package -Dmaven.test.skip=true'
+                // remove potentially old release files if exist
+                sh 'rm pom.xml.releaseBackup release.properties 2>/dev/null || true'
+                // rest the git state
+                sh 'git checkout -f master'
+                sh 'git reset --hard'
             }
         }
-        stage('Test') {
-            // unit test and publish results
+        stage('Build/Test') {
             steps {
-                sh 'mvn test -Dmaven.javadoc.skip=true'
+                sh 'mvn clean package test'
             }
             post {
                 success {
