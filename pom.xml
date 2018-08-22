@@ -129,18 +129,25 @@
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-scm-api</artifactId>
+                <artifactId>maven-scm-plugin</artifactId>
                 <version>1.10.0</version>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-scm-provider-git-commons</artifactId>
-                <version>1.10.0</version>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-scm-provider-gitexe</artifactId>
-                <version>1.10.0</version>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.apache.maven.scm</groupId>
+                        <artifactId>maven-scm-api</artifactId>
+                        <version>1.10.0</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>org.apache.maven.scm</groupId>
+                        <artifactId>maven-scm-provider-git-commons</artifactId>
+                        <version>1.10.0</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>org.apache.maven.scm</groupId>
+                        <artifactId>maven-scm-provider-gitexe</artifactId>
+                        <version>1.10.0</version>
+                    </dependency>
+                </dependencies>
             </plugin>
  
             <plugin>
@@ -198,7 +205,7 @@
       <snapshots>
         <enabled>false</enabled>
       </snapshots>
-      <id>central</id>
+      <id>maven_central</id>
       <name>Central Repository</name>
       <!-- 
        https://mvnrepository.com/repos/central
