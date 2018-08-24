@@ -15,8 +15,6 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -33,31 +31,6 @@ public class StatsService {
 
 	private static final ResponseEntity<String> _404_ = new ResponseEntity<String>(HttpStatus.NOT_FOUND);
 	
-	/**
-	 * Example call: curl -X GET --header 'Accept: application/json' "http://localhost:8766/qualifiers/lookup/q"
-	 * Example call: curl -X GET --header 'Accept: application/json' "http://localhost:8766/qualifiers/lookup/Eqp"
-	 * Example call: curl -X GET --header 'Accept: application/json' "http://localhost:8766/qualifiers/lookup/Equipment"
-	 * 
-	 * @param agencyCd
-	 * @param siteNo
-	 * @return The JSON containing the statistics calculations.<br>
-	 * 	This is an example output of a sample site:<br>
-	 */
-	@RequestMapping(value = "/statistics/calculate/agencyCd/siteNo",
-			method   = RequestMethod.GET,
-			produces = "application/json; charset=utf-8")
-	public ResponseEntity<String> service(@PathVariable("qualifierCode") String agencyCd, @PathVariable("qualifierCode") String siteNo) {
-		
-		if ( StringUtils.isBlank(agencyCd) || StringUtils.isBlank(siteNo) ) {
-			return _404_;
-		}
-		
-		String json = "placeholder";
-//		json = new JsonResponseBuilder().build(codes);
-		
-		
-		return ResponseEntity.ok(json);
-	}
 	
 	@PostMapping(value = "/statistics/calculate",
 			produces = "application/json; charset=utf-8",
@@ -151,7 +124,7 @@ public class StatsService {
 	}
 
 	
-	@RequestMapping(value="/statistics/calculate/internal", produces="text/html;charset=UTF-8")
+	@PostMapping(value="/statistics/calculate/internal", produces="text/html;charset=UTF-8")
 //	consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE
 	public String waterLevelStatsDataValuesUsed(
 			@PathVariable("agency") String agencyCd,
