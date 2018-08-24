@@ -75,7 +75,7 @@ public class WaterLevelStatistics extends StatisticsCalculator<WLSample> {
 	public static final String MONTHLY_WARNING =  "Too few data values for monthly statistics."
 			+ " Ten years required with no gaps and most recent value within " + Days406 + " days.";
 
-	private final transient Logger logger = LoggerFactory.getLogger(getClass());
+	private static final Logger LOGGER = LoggerFactory.getLogger(WaterLevelStatistics.class);
 	
 	public static enum MediationType {
 		BelowLand, 
@@ -133,7 +133,7 @@ public class WaterLevelStatistics extends StatisticsCalculator<WLSample> {
 
 	@Override
 	public String calculate(Specifier spec, List<WLSample> samples) {
-		logger.info("Executing WaterLevel Stats calculations.");
+		LOGGER.trace("Executing WaterLevel Stats calculations.");
 		
 		List<WLSample> samplesByDate = conditioning(spec, samples);
 		List<WLSample> sortedByValue  = new ArrayList<>(samplesByDate);
@@ -157,7 +157,7 @@ public class WaterLevelStatistics extends StatisticsCalculator<WLSample> {
 				// TODO should we log it?
 			}
 		} else {
-			logger.warn("Record Years is null for {}:{}, by passing monthly stats.", spec.getAgencyCd(), spec.getSiteNo());
+			LOGGER.warn("Record Years is null for {}:{}, by passing monthly stats.", spec.getAgencyCd(), spec.getSiteNo());
 		}
 		Map<String, Object> stats = new HashMap<>();
 		stats.put("overall", overall);
@@ -169,6 +169,7 @@ public class WaterLevelStatistics extends StatisticsCalculator<WLSample> {
 		}
 		
 		String json = toJSON(stats);
+		LOGGER.debug(json);
 		return json;
 	}
 	
@@ -181,7 +182,6 @@ public class WaterLevelStatistics extends StatisticsCalculator<WLSample> {
 			e.printStackTrace();
 		}
 		
-		System.err.println(json);
 		return json;
 	}
 

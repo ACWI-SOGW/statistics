@@ -12,7 +12,7 @@ import gov.usgs.wma.statistics.logic.StatisticsCalculator;
 
 
 public class Value {
-	private static final Logger logger = LoggerFactory.getLogger(Value.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(Value.class);
 	
 	public static final SimpleDateFormat DATE_FORMAT_FULL  = new SimpleDateFormat("yyyy-MM-dd");
 	public static final SimpleDateFormat DATE_FORMAT_MONTH = new SimpleDateFormat("yyyy-MM");
@@ -106,7 +106,7 @@ public class Value {
 		
 	public static boolean checkBadValue(String value, int record, String mySiteId) {
 		if (value == null) {
-			logger.warn("Water Level Error - value:null record:{} site:{}", record, mySiteId);
+			LOGGER.warn("Water Level Error - value:null record:{} site:{}", record, mySiteId);
 			return true;
 		} if ( isUnknown(value) ) {
 			// unknown values are not "bad" values
@@ -115,7 +115,7 @@ public class Value {
 			try {
 				new BigDecimal(value);
 			} catch (Exception e) {
-				logger.warn("Water Level Error - value:'{}' record:{} site:{}", new Object[]{value, record, mySiteId});
+				LOGGER.warn("Water Level Error - value:'{}' record:{} site:{}", new Object[]{value, record, mySiteId});
 				return true;
 			}
 		}
@@ -125,7 +125,7 @@ public class Value {
 
 	public static boolean checkBadTime(String time, int record, String mySiteId) {
 		if (time == null) {
-			logger.warn("Water Level Error - time:null record:{} site:{}", record, mySiteId);
+			LOGGER.warn("Water Level Error - time:null record:{} site:{}", record, mySiteId);
 			return true;
 		} else {
 			int formatMatches = 0;
@@ -138,7 +138,7 @@ public class Value {
 				formatMatches++;
 			} catch (ParseException e) {
 				if (formatMatches == 0) {
-					logger.warn("Water Level Error - time:'{}' record:{} site:{}", new Object[]{time, record, mySiteId});
+					LOGGER.warn("Water Level Error - time:'{}' record:{} site:{}", new Object[]{time, record, mySiteId});
 					return true;
 				}
 			}

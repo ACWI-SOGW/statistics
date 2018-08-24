@@ -36,7 +36,7 @@ import gov.usgs.wma.statistics.model.Value;
  * @author duselman
  */
 public class StatisticsCalculator<S extends Value> {
-	private static final Logger logger = LoggerFactory.getLogger(StatisticsCalculator.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(StatisticsCalculator.class);
 	
 	public static final String SAMPLE_COUNT  = "SAMPLE_COUNT";
 	
@@ -249,7 +249,8 @@ public class StatisticsCalculator<S extends Value> {
 		samples.removeAll(provisionalSamples);
 		
 		if (provisionalSamples.size() > 0) {
-			logger.warn("Removed {} provisional samples from {}",provisionalSamples.size(), mySiteId);
+			int count = provisionalSamples.size();
+			LOGGER.info("Removed {} provisional sample{} from '{}'", count, count==1?"":"s", mySiteId);
 		}
 	}
 	
@@ -271,7 +272,7 @@ public class StatisticsCalculator<S extends Value> {
 		samples.removeAll(nullSamples);
 		
 		if (nullSamples.size() > 0) {
-			logger.warn("Removed {} samples from {}",nullSamples.size(), mySiteId);
+			LOGGER.warn("Removed {} samples from {}",nullSamples.size(), mySiteId);
 		}
 	}
 	

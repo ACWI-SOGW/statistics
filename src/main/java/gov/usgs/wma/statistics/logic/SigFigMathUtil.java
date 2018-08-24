@@ -112,18 +112,18 @@ public class SigFigMathUtil {
     public static BigDecimal sigFigAdd(List<BigDecimal> bdList, CustomRoundingRule rm) {
 
         if (bdList == null || bdList.isEmpty()) {
-            LOGGER.info("Missing BigDecimal list or list was empty. Can not determine scale.");
+            LOGGER.warn("Missing BigDecimal list or list was empty. Can not determine scale.");
             return null;
         }
         if (rm == null) {
-            LOGGER.info("RoundingMode not defined. Did you mean to use the 2 arg method which uses the default rounding mode?");
+            LOGGER.warn("RoundingMode not defined. Did you mean to use the 2 arg method which uses the default rounding mode?");
             return null;
         }
         BigDecimal result = BigDecimal.ZERO;
 
         for (BigDecimal bd : bdList) {
             if (bd == null) {
-                LOGGER.info("A BigDecimal in the list was found to be null. Returning null.");
+                LOGGER.warn("A BigDecimal in the list was found to be null. Returning null.");
                 return null;
             }
             result = result.add(bd);
@@ -167,7 +167,7 @@ public class SigFigMathUtil {
      */
     public static BigDecimal sigFigAdd(BigDecimal augend, BigDecimal addend) {
         if (augend == null || addend == null) {
-            LOGGER.info("BigDecimal arg was null.");
+            LOGGER.warn("BigDecimal arg was null.");
             return null;
         }
 
@@ -191,12 +191,12 @@ public class SigFigMathUtil {
      */
     public static BigDecimal sigFigAdd(BigDecimal augend, BigDecimal addend, CustomRoundingRule rm) {
         if (augend == null || addend == null) {
-            LOGGER.info("BigDecimal arg was null.");
+            LOGGER.warn("BigDecimal arg was null.");
             return null;
         }
         
         if (rm == null) {
-            LOGGER.info("RoundingMode arg was null. Did you mean to use the 2 arg method that applies the default rounding mode?");
+            LOGGER.warn("RoundingMode arg was null. Did you mean to use the 2 arg method that applies the default rounding mode?");
             return null;
         }
         List<BigDecimal> bdList = new ArrayList<>(2);
@@ -221,11 +221,11 @@ public class SigFigMathUtil {
     public static BigDecimal sigFigSubtract(List<BigDecimal> bdList, CustomRoundingRule rm) {
 
         if (bdList == null || bdList.isEmpty()) {
-            LOGGER.info("Missing BigDecimal list or list was empty. Can not determine scale.");
+            LOGGER.warn("Missing BigDecimal list or list was empty. Can not determine scale.");
             return null;
         }
         if (rm == null) {
-            LOGGER.info("RoundingMode not defined. Did you mean to use the 2 arg method which uses the default rounding mode?");
+            LOGGER.warn("RoundingMode not defined. Did you mean to use the 2 arg method which uses the default rounding mode?");
             return null;
         }
         BigDecimal finalAnswer = null;
@@ -238,7 +238,7 @@ public class SigFigMathUtil {
                 if (bd != null) {
                     result = result.subtract(bigDecimalList[i]);
                 } else {
-                    LOGGER.info("A BigDecimal in the list was found to be null. Returning null.");
+                    LOGGER.warn("A BigDecimal in the list was found to be null. Returning null.");
                     return null;
                 }
             }
@@ -248,7 +248,7 @@ public class SigFigMathUtil {
                 finalAnswer = result.setScale(leastScale.scale(), rm.valueRule(result));
             }
         } else {
-            LOGGER.info("The first BigDecimal in the list was found to be null. Returning null.");
+            LOGGER.warn("The first BigDecimal in the list was found to be null. Returning null.");
             return null;
         }
         return finalAnswer;
@@ -284,7 +284,7 @@ public class SigFigMathUtil {
      */
     public static BigDecimal sigFigSubtract(BigDecimal minuend, BigDecimal subtrahend) {
         if (minuend == null || subtrahend == null) {
-            LOGGER.info("BigDecimal arg was null. Can not determine scale.");
+            LOGGER.warn("BigDecimal arg was null. Can not determine scale.");
             return null;
         }
 
@@ -308,12 +308,12 @@ public class SigFigMathUtil {
      */
     public static BigDecimal sigFigSubtract(BigDecimal minuend, BigDecimal subtrahend, CustomRoundingRule rm) {
         if ((minuend == null || subtrahend == null)) {
-            LOGGER.info("BigDecimal arg was null. Can not determine scale.");
+            LOGGER.warn("BigDecimal arg was null. Can not determine scale.");
             return null;
         }
 
         if (rm == null) {
-            LOGGER.info("RoundingMode arg was null. Did you mean to use the 2 arg method that applies the default rounding mode?");
+            LOGGER.warn("RoundingMode arg was null. Did you mean to use the 2 arg method that applies the default rounding mode?");
             return null;
         }
         List<BigDecimal> bdList = new ArrayList<>(2);
@@ -336,7 +336,7 @@ public class SigFigMathUtil {
     private static BigDecimal getLeastScale(List<BigDecimal> bdList) {
 
         if (bdList == null || bdList.isEmpty()) {
-            LOGGER.info("Missing BigDecimal list or list was empty. Can not determine scale.");
+            LOGGER.warn("Missing BigDecimal list or list was empty. Can not determine scale.");
             return null;
         }
         BigDecimal[] bigDecimalList = bdList.toArray(new BigDecimal[bdList.size()]);
@@ -349,7 +349,7 @@ public class SigFigMathUtil {
                 result = bd;
             }
         }
-        LOGGER.debug("BigDecimal value with smallest scale: {}", result.toPlainString());
+        LOGGER.trace("BigDecimal value with smallest scale: {}", result.toPlainString());
         return result;
     }
 
@@ -364,7 +364,7 @@ public class SigFigMathUtil {
     private static BigDecimal getLeastPrecise(BigDecimal bd1, BigDecimal bd2) {
 
         if (bd1 == null || bd2 == null) {
-            LOGGER.info("Missing BigDecimal for comparison. Can not determine precision.");
+            LOGGER.warn("Missing BigDecimal for comparison. Can not determine precision.");
             return null;
         }
 
@@ -382,11 +382,11 @@ public class SigFigMathUtil {
      */
     public static BigDecimal sigFigMultiply(BigDecimal multiplicand, BigDecimal multiplier, CustomRoundingRule rm) {
         if (multiplicand == null || multiplier == null) {
-            LOGGER.info("BigDecimal was null. Can not determine precision.");
+            LOGGER.warn("BigDecimal was null. Can not determine precision.");
             return null;
         }
         if (rm == null) {
-            LOGGER.info("RoundingMode arg was null. Did you mean to use the 2 arg method that applies the default rounding mode?");
+            LOGGER.warn("RoundingMode arg was null. Did you mean to use the 2 arg method that applies the default rounding mode?");
             return null;
         }
         BigDecimal leastPreciseBD = getLeastPrecise(multiplicand, multiplier);
@@ -409,11 +409,11 @@ public class SigFigMathUtil {
      */
     public static BigDecimal sigFigMultiplyByExact(BigDecimal multiplicand, BigDecimal exactMultiplier, CustomRoundingRule rm) {
         if (multiplicand == null || exactMultiplier == null) {
-            LOGGER.info("BigDecimal was null. Can not determine precision.");
+            LOGGER.warn("BigDecimal was null. Can not determine precision.");
             return null;
         }
         if (rm == null) {
-            LOGGER.info("RoundingMode arg was null. Did you mean to use the 2 arg method that applies the default rounding mode?");
+            LOGGER.warn("RoundingMode arg was null. Did you mean to use the 2 arg method that applies the default rounding mode?");
             return null;
         }
         MathContext mc = new MathContext(multiplicand.precision(), rm.productRule(multiplicand, exactMultiplier));
@@ -432,7 +432,7 @@ public class SigFigMathUtil {
      */
     public static BigDecimal sigFigMultiplyByExact(BigDecimal multiplicand, BigDecimal exactMultiplier) {
         if (multiplicand == null || exactMultiplier == null) {
-            LOGGER.info("BigDecimal was null. Can not determine precision.");
+            LOGGER.warn("BigDecimal was null. Can not determine precision.");
             return null;
         }
         BigDecimal product = sigFigMultiplyByExact(multiplicand, exactMultiplier, DEFAULT_ROUNDING_RULE);
@@ -449,7 +449,7 @@ public class SigFigMathUtil {
      */
     public static BigDecimal sigFigMultiply(BigDecimal multiplicand, BigDecimal multiplier) {
         if (multiplicand == null || multiplier == null) {
-            LOGGER.info("BigDecimal was null. Can not determine precision.");
+            LOGGER.warn("BigDecimal was null. Can not determine precision.");
             return null;
         }
         BigDecimal product = sigFigMultiply(multiplicand, multiplier, DEFAULT_ROUNDING_RULE);
@@ -467,11 +467,11 @@ public class SigFigMathUtil {
      */
     public static BigDecimal sigFigDivide(BigDecimal numerator, BigDecimal denominator, CustomRoundingRule rm) {
         if (numerator == null || denominator == null) {
-            LOGGER.info("BigDecimal was null. Can not determine precision."); // divisor that is 0 will throw the arithmetic exception
+            LOGGER.warn("BigDecimal was null. Can not determine precision."); // divisor that is 0 will throw the arithmetic exception
             return null;
         }
         if (rm == null) {
-            LOGGER.info("RoundingMode arg was null. Did you mean to use the 2 arg method that applies the default rounding mode?");
+            LOGGER.warn("RoundingMode arg was null. Did you mean to use the 2 arg method that applies the default rounding mode?");
             return null;
         }
 
@@ -495,7 +495,7 @@ public class SigFigMathUtil {
      */
     public static BigDecimal sigFigDivide(BigDecimal numerator, BigDecimal denominator) {
         if (numerator == null || denominator == null) {
-            LOGGER.info("BigDecimal was null. Can not determine precision."); // divisor that is 0 will throw the arithmetic exception
+            LOGGER.warn("BigDecimal was null. Can not determine precision."); // divisor that is 0 will throw the arithmetic exception
             return null;
         }
         BigDecimal quotient = sigFigDivide(numerator, denominator, DEFAULT_ROUNDING_RULE);
@@ -513,11 +513,11 @@ public class SigFigMathUtil {
      */
     public static BigDecimal sigFigDivideByExact(BigDecimal numerator, BigDecimal exactDenominator, CustomRoundingRule rm) {
         if (numerator == null || exactDenominator == null) {
-            LOGGER.info("BigDecimal was null. Can not determine precision."); // divisor that is 0 will throw the arithmetic exception
+            LOGGER.warn("BigDecimal was null. Can not determine precision."); // divisor that is 0 will throw the arithmetic exception
             return null;
         }
         if (rm == null) {
-            LOGGER.info("RoundingMode arg was null. Did you mean to use the 2 arg method that applies the default rounding mode?");
+            LOGGER.warn("RoundingMode arg was null. Did you mean to use the 2 arg method that applies the default rounding mode?");
             return null;
         }
 
@@ -537,7 +537,7 @@ public class SigFigMathUtil {
      */
     public static BigDecimal sigFigDivideByExact(BigDecimal numerator, BigDecimal exactDenominator) {
         if (numerator == null || exactDenominator == null) {
-            LOGGER.info("BigDecimal was null. Can not determine precision."); // divisor that is 0 will throw the arithmetic exception
+            LOGGER.warn("BigDecimal was null. Can not determine precision."); // divisor that is 0 will throw the arithmetic exception
             return null;
         }
         BigDecimal quotient = sigFigDivideByExact(numerator, exactDenominator, DEFAULT_ROUNDING_RULE);

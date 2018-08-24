@@ -80,7 +80,9 @@
 			if (true) {
 				medians = "/medians"
 			}
-			$.post("/statistics/calculate"+medians, $('#statsForm').serialize())
+			// TODO figure out why a leading '/' was ok for the jar packaging
+			var url = "statistics/calculate"+medians
+			$.post(url, $('#statsForm').serialize())
 			.done(function(resp) {
 				var reCommas = new RegExp(',', 'g');
 				$('#statsOverall').val(

@@ -47,7 +47,7 @@ public class MonthlyStatistics<S extends Value, Q> extends StatisticsCalculator<
 		PERCENTILES.put(name, percentile);
 	}
 
-	private final transient Logger logger = LoggerFactory.getLogger(getClass());
+	private static final Logger LOGGER = LoggerFactory.getLogger(MonthlyStatistics.class);
 
 	/**
 	 * This qualifier could be something like mediation type in water levels.
@@ -115,14 +115,14 @@ public class MonthlyStatistics<S extends Value, Q> extends StatisticsCalculator<
 		
 		for(int m=1; m<=12; m++) {
 			String month = ""+m;
-			logger.debug("MONTH="+m);
-			logger.debug("SBVC="+sortedByValue.size());
+			LOGGER.trace("MONTH="+m);
+			LOGGER.trace("SBVC="+sortedByValue.size());
 			List<S> monthSamples = filterValuesByGivenMonth(sortedByValue, month);
-			logger.debug("MSC="+monthSamples.size());
+			LOGGER.trace("MSC="+monthSamples.size());
 			String monthCount = ""+monthSamples.size();
 			Map<String, List<S>> sortSamplesByYear = sortSamplesByYear(monthSamples);
 			List<S> normalizeMutlipleYearlyValues = medianMonthlyValues(monthSamples,  sortFunctionByQualifier());
-			logger.debug("NMYVC="+normalizeMutlipleYearlyValues.size());
+			LOGGER.trace("NMYVC="+normalizeMutlipleYearlyValues.size());
 			
 			if ( doesThisMonthQualifyForStats(normalizeMutlipleYearlyValues) ) {
 				Map<String,String> monthStats = generatePercentiles(normalizeMutlipleYearlyValues, PERCENTILES);

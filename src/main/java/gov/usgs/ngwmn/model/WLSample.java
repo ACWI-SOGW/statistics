@@ -28,7 +28,7 @@ import gov.usgs.ngwmn.logic.WaterlevelMediator;
 import gov.usgs.ngwmn.logic.WaterlevelMediator.ValidationException;
 
 public class WLSample extends Value {
-	private static final Logger logger = LoggerFactory.getLogger(WLSample.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(WLSample.class);
 	public static final Comparator<Value> DEPTH_BELOW_SURFACE_COMPARATOR = SORT_VALUE_DESCENDING;
 	public static final Comparator<Value> DEPTH_ABOVE_DATUM_COMPARATOR = SORT_VALUE_ASCENDING;
 	
@@ -109,7 +109,7 @@ public class WLSample extends Value {
 		// fetch out the time series list and prepare to parse to ORM POJO
 		NodeList elements    = document.getElementsByTagName("wml2:TimeValuePair");
 			samples              = new ArrayList<>(elements.getLength());
-		logger.trace( "xml rows  " + elements.getLength() );
+		LOGGER.trace( "xml rows  " + elements.getLength() );
 		
 		// transform each all rows
 		for (int e=0; e<elements.getLength(); e++) {
