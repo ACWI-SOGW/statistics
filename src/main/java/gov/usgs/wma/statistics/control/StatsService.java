@@ -23,6 +23,8 @@ import gov.usgs.ngwmn.logic.WaterLevelStatisticsControllerHelper;
 import gov.usgs.ngwmn.model.Specifier;
 import gov.usgs.ngwmn.model.WLSample;
 import gov.usgs.wma.statistics.model.Value;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 
 @RestController
 @CrossOrigin(origins = "*") // no credentials by default
@@ -32,11 +34,20 @@ public class StatsService {
 	private static final ResponseEntity<String> _404_ = new ResponseEntity<String>(HttpStatus.NOT_FOUND);
 	
 	
+	@ApiOperation(
+			value = "Calculate Statistics Service",
+			notes = "${StatsService.service.notes}")
 	@PostMapping(value = "/statistics/calculate",
 			produces = "application/json; charset=utf-8",
 			consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE
 			)
-	public ResponseEntity<String> service(@RequestParam Map<String, String> body) {
+	public ResponseEntity<String> service(
+			@ApiParam(
+					value  = "${StatsService.service.body}",
+					example= "${StatsService.service.example}" 
+				)
+			@RequestParam 
+			Map<String, String> body) {
 		
 		try {
 			List<WLSample> samples = parseData(body);
@@ -52,11 +63,14 @@ public class StatsService {
 		}
 	}
 	
+	@ApiOperation(
+			value = "Statistics Service",
+			notes = "${StatsService.medians.notes}")
 	@PostMapping(value = "/statistics/calculate/medians",
 			produces = "application/json; charset=utf-8",
 			consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE
 			)
-	public ResponseEntity<String> mediansService(@RequestParam Map<String, String> body) {
+	public ResponseEntity<String> medians(@RequestParam Map<String, String> body) {
 		
 		try {
 			List<WLSample> samples = parseData(body);
@@ -124,36 +138,36 @@ public class StatsService {
 	}
 
 	
-	@PostMapping(value="/statistics/calculate/internal", produces="text/html;charset=UTF-8")
-//	consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE
-	public String waterLevelStatsDataValuesUsed(
-			@PathVariable("agency") String agencyCd,
-			@PathVariable("site") String siteNo,
-			@RequestParam(value="month", required=false) String month,
-			@RequestParam(value="median",required=false) String median,
-			@RequestParam Map<String, String> body,
-			Model model
-	) {
-		boolean useMedians = StringUtils.isNotBlank(median);
-		
-		List<WLSample> samples = parseData(body);
-		Specifier spec = new Specifier();
-		
-		WaterLevelStatisticsControllerHelper stats = new WaterLevelStatisticsControllerHelper();
-		samples = stats.processSamplesUsedToCalculateStats(spec, samples, month, useMedians);
-		
-		model.addAttribute("samples",samples);
-		model.addAttribute("agencyCd", agencyCd);
-		model.addAttribute("siteNo", siteNo);
-
-		if (StringUtils.isNotBlank(month)) {
-			model.addAttribute("month", "month="+month);
-		}
-		if (useMedians) {
-			model.addAttribute("median", "median values presented");
-		}
-		return "waterlevel/data";
-	}
+//	@PostMapping(value="/statistics/calculate/internal", produces="text/html;charset=UTF-8")
+////	consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE
+//	public String waterLevelStatsDataValuesUsed(
+//			@PathVariable("agency") String agencyCd,
+//			@PathVariable("site") String siteNo,
+//			@RequestParam(value="month", required=false) String month,
+//			@RequestParam(value="median",required=false) String median,
+//			@RequestParam Map<String, String> body,
+//			Model model
+//	) {
+//		boolean useMedians = StringUtils.isNotBlank(median);
+//		
+//		List<WLSample> samples = parseData(body);
+//		Specifier spec = new Specifier();
+//		
+//		WaterLevelStatisticsControllerHelper stats = new WaterLevelStatisticsControllerHelper();
+//		samples = stats.processSamplesUsedToCalculateStats(spec, samples, month, useMedians);
+//		
+//		model.addAttribute("samples",samples);
+//		model.addAttribute("agencyCd", agencyCd);
+//		model.addAttribute("siteNo", siteNo);
+//
+//		if (StringUtils.isNotBlank(month)) {
+//			model.addAttribute("month", "month="+month);
+//		}
+//		if (useMedians) {
+//			model.addAttribute("median", "median values presented");
+//		}
+//		return "waterlevel/data";
+//	}
 	
 
 }

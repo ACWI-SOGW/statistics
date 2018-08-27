@@ -7,14 +7,12 @@ import org.springframework.boot.web.servlet.support.SpringBootServletInitializer
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import jdk.nashorn.internal.runtime.regexp.joni.Regex;
 import springfox.documentation.builders.PathSelectors;
 import springfox.documentation.builders.RequestHandlerSelectors;
 import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spring.web.plugins.Docket;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
-import static springfox.documentation.builders.PathSelectors.*;
 
 @SpringBootApplication(scanBasePackages = "gov.usgs.wma.statistics.control")
 @Configuration
@@ -46,8 +44,7 @@ public class Application extends SpringBootServletInitializer {
 //					typeResolver.resolve(ProjectCountJson.class))
 			.select()
 			.paths(PathSelectors.any())
-//			.paths(regex("/calculate.*"))
-			.apis(RequestHandlerSelectors.basePackage("gov.usgs"))
+			.apis(RequestHandlerSelectors.basePackage("gov.usgs.wma.statistics.control"))
 			.build();
 		return docket;
 	}
