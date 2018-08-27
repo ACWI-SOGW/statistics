@@ -22,6 +22,7 @@ import gov.usgs.ngwmn.logic.WaterLevelStatistics;
 import gov.usgs.ngwmn.logic.WaterLevelStatisticsControllerHelper;
 import gov.usgs.ngwmn.model.Specifier;
 import gov.usgs.ngwmn.model.WLSample;
+import gov.usgs.wma.statistics.app.SwaggerConfig;
 import gov.usgs.wma.statistics.model.Value;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -36,21 +37,24 @@ public class StatsService {
 	
 	@ApiOperation(
 			value = "Calculate Statistics Service",
-			notes = "${StatsService.service.notes}")
+			notes = SwaggerConfig.StatsService_SERVICE_NOTES
+			
+		)
 	@PostMapping(value = "/statistics/calculate",
-			produces = "application/json; charset=utf-8",
+			produces = MediaType.APPLICATION_JSON_UTF8_VALUE,
 			consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE
-			)
+		)
 	public ResponseEntity<String> service(
 			@ApiParam(
-					value  = "${StatsService.service.body}",
-					example= "${StatsService.service.example}" 
+					value  = SwaggerConfig.StatsService_SERVICE_DATA,
+					example= SwaggerConfig.StatsService_SERVICE_EXAMPLE,
+					required = true
 				)
 			@RequestParam 
 			Map<String, String> body) {
 		
 		try {
-			List<WLSample> samples = parseData(body);
+			List<WLSample> samples = parseData(body.get("data"));
 			
 			// A random identifier for the service unless we parameterize the date set ID.
 			Specifier spec = new Specifier();
@@ -65,15 +69,18 @@ public class StatsService {
 	
 	@ApiOperation(
 			value = "Statistics Service",
-			notes = "${StatsService.medians.notes}")
+			notes = SwaggerConfig.StatsService_MEDIANS_NOTES)
 	@PostMapping(value = "/statistics/calculate/medians",
-			produces = "application/json; charset=utf-8",
+			produces = MediaType.APPLICATION_JSON_UTF8_VALUE,
 			consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE
 			)
-	public ResponseEntity<String> medians(@RequestParam Map<String, String> body) {
+	public ResponseEntity<String> medians(
+			@RequestParam 
+			@ApiParam(allowMultiple = true)
+			String data) {
 		
 		try {
-			List<WLSample> samples = parseData(body);
+			List<WLSample> samples = parseData(data);
 			
 			// A random identifier for the service unless we parameterize the date set ID.
 			Specifier spec = new Specifier();
@@ -102,10 +109,9 @@ public class StatsService {
 	}
 
 	
-	public List<WLSample> parseData(Map<String, String> body) {
-		String payload = body.get("data");
+	public List<WLSample> parseData(String data) {
 		
-		String[] rows = payload.split("\r?\n");
+		String[] rows = data.split("\r?\n");
 		List<WLSample> samples = new ArrayList<>(rows.length);
 		
 		for (String row : rows) {

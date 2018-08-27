@@ -25,10 +25,7 @@ public class StatsServiceTest {
 
 		String values = "1999/01/01,1.00";
 		
-		Map<String, String> data = new HashMap<>();
-		data.put("data", values);
-		
-		List<WLSample> parsed = stats.parseData(data);
+		List<WLSample> parsed = stats.parseData(values);
 		
 		assertEquals(1, parsed.size());
 		assertEquals("1999/01/01", parsed.get(0).time);
@@ -41,10 +38,7 @@ public class StatsServiceTest {
 
 		String values = "1999/01/01,1.00\n1999/01/02,2.00";
 		
-		Map<String, String> data = new HashMap<>();
-		data.put("data", values);
-		
-		List<WLSample> parsed = stats.parseData(data);
+		List<WLSample> parsed = stats.parseData(values);
 		
 		assertEquals(2, parsed.size());
 		assertEquals("1999/01/02", parsed.get(1).time);
@@ -57,10 +51,7 @@ public class StatsServiceTest {
 
 		String values = "1999/01/01,1.00\r\n1999/01/02,2.00";
 		
-		Map<String, String> data = new HashMap<>();
-		data.put("data", values);
-		
-		List<WLSample> parsed = stats.parseData(data);
+		List<WLSample> parsed = stats.parseData(values);
 		
 		assertEquals(2, parsed.size());
 		assertEquals("1999/01/02", parsed.get(1).time);
@@ -73,10 +64,7 @@ public class StatsServiceTest {
 
 		String values = " 1999/01/01 , 1.00 \n\t1999/01/02\t,\t2.00\t";
 		
-		Map<String, String> data = new HashMap<>();
-		data.put("data", values);
-		
-		List<WLSample> parsed = stats.parseData(data);
+		List<WLSample> parsed = stats.parseData(values);
 		
 		assertEquals(2, parsed.size());
 		assertEquals("1999/01/02", parsed.get(1).time);
@@ -89,10 +77,7 @@ public class StatsServiceTest {
 
 		String values = "1999/01/01,1.00 \n \n 1999/01/02,2.00";
 		
-		Map<String, String> data = new HashMap<>();
-		data.put("data", values);
-		
-		List<WLSample> parsed = stats.parseData(data);
+		List<WLSample> parsed = stats.parseData(values);
 		
 		assertEquals(2, parsed.size());
 		assertEquals("1999/01/02", parsed.get(1).time);
@@ -105,11 +90,8 @@ public class StatsServiceTest {
 
 		String values = ",1.00\n1999/01/02,2.00";
 		
-		Map<String, String> data = new HashMap<>();
-		data.put("data", values);
-		
 		try {
-			stats.parseData(data);
+			stats.parseData(values);
 		} catch (RuntimeException e) {
 			assertTrue(e.getMessage().startsWith("The date must be valid"));
 		}
@@ -121,11 +103,8 @@ public class StatsServiceTest {
 
 		String values = "199/01/01,1.00\n1999/01/02,2.00";
 		
-		Map<String, String> data = new HashMap<>();
-		data.put("data", values);
-		
 		try {
-			stats.parseData(data);
+			stats.parseData(values);
 		} catch (RuntimeException e) {
 			assertTrue(e.getMessage().endsWith("199/01/01"));
 		}
@@ -137,11 +116,8 @@ public class StatsServiceTest {
 
 		String values = "1999/01/01,1a.00\n1999/01/02,2.00";
 		
-		Map<String, String> data = new HashMap<>();
-		data.put("data", values);
-		
 		try {
-			stats.parseData(data);
+			stats.parseData(values);
 		} catch (RuntimeException e) {
 			assertTrue(e.getMessage().endsWith("1a.00"));
 		}
