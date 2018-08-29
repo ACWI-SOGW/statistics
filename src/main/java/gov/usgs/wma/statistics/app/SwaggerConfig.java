@@ -44,7 +44,7 @@ public class SwaggerConfig {
 //					typeResolver.resolve(ProjectCountJson.class))
 			.select()
 			.paths(PathSelectors.any())
-			.apis(RequestHandlerSelectors.basePackage("gov.usgs.wma.statistics.control"))
+			.apis(RequestHandlerSelectors.basePackage("gov.usgs.wma.statistics"))
 			.build();
 		return docket;
 	}
