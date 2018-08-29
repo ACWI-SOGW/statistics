@@ -27,6 +27,8 @@ import gov.usgs.ngwmn.logic.WaterLevelStatisticsControllerHelper;
 import gov.usgs.ngwmn.model.Specifier;
 import gov.usgs.ngwmn.model.WLSample;
 import gov.usgs.wma.statistics.app.SwaggerConfig;
+import gov.usgs.wma.statistics.app.SwaggerParameterBuilder;
+import gov.usgs.wma.statistics.app.TimeSeriesData;
 import gov.usgs.wma.statistics.model.Value;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiModel;
@@ -37,16 +39,18 @@ import io.swagger.annotations.ApiParam;
 @RestController
 @RequestMapping("/statistics")
 @CrossOrigin(origins = "*") // no credentials by default
+//@Api("StatisticsService")
 public class StatsService {
 	private static Logger LOGGER = org.slf4j.LoggerFactory.getLogger(StatsService.class);
 
 	private static final ResponseEntity<String> _404_ = new ResponseEntity<String>(HttpStatus.NOT_FOUND);
 	
 	
+//	@TimeSeriesData
 	@ApiOperation(
 			value = "Calculate Statistics Service",
-			notes = SwaggerConfig.StatsService_SERVICE_NOTES
-			
+			notes = SwaggerConfig.StatsService_CALCULATE_NOTES
+//			tags = "TagThis"
 		)
 	@PostMapping(value = "/calculate",
 			produces = MediaType.APPLICATION_JSON_UTF8_VALUE,
@@ -54,15 +58,15 @@ public class StatsService {
 		)
 	public ResponseEntity<String> service(
 			@ApiParam(
-					value  = SwaggerConfig.StatsService_SERVICE_DATA,
-					example= SwaggerConfig.StatsService_SERVICE_EXAMPLE,
+					value  = SwaggerConfig.StatsService_CALCULATE_DATA,
+					example= SwaggerConfig.StatsService_EXAMPLE_RAW,
 					required = true
 				)
-			@RequestParam 
-			Map<String, String> body) {
+			@RequestParam
+			String data) {
 		
 		try {
-			List<WLSample> samples = parseData(body.get("data"));
+			List<WLSample> samples = parseData(data);
 			
 			// A random identifier for the service unless we parameterize the date set ID.
 			Specifier spec = new Specifier();
@@ -75,15 +79,23 @@ public class StatsService {
 		}
 	}
 	
+//	@TimeSeriesData
 	@ApiOperation(
-			value = "Statistics Service",
+			value = "Statistics Medians Service",
 			notes = SwaggerConfig.StatsService_MEDIANS_NOTES
 		)
 	@PostMapping(
 			value = "/calculate/medians",
 			produces = MediaType.APPLICATION_JSON_UTF8_VALUE
 		)
-	public ResponseEntity<String> medians(@RequestParam String[] data) {
+	public ResponseEntity<String> medians(
+			@ApiParam(
+					value  = SwaggerConfig.StatsService_CALCULATE_DATA,
+					example= SwaggerConfig.StatsService_EXAMPLE_RAW,
+					required = true
+				)
+			@RequestParam 
+			String data) {
 		
 		try {
 			List<WLSample> samples = parseData(data);
