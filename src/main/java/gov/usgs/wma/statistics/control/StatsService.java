@@ -13,10 +13,14 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import gov.usgs.ngwmn.logic.WaterLevelStatistics;
 import gov.usgs.ngwmn.logic.WaterLevelStatisticsControllerHelper;
@@ -24,10 +28,14 @@ import gov.usgs.ngwmn.model.Specifier;
 import gov.usgs.ngwmn.model.WLSample;
 import gov.usgs.wma.statistics.app.SwaggerConfig;
 import gov.usgs.wma.statistics.model.Value;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 
 @RestController
+@RequestMapping("/statistics")
 @CrossOrigin(origins = "*") // no credentials by default
 public class StatsService {
 	private static Logger LOGGER = org.slf4j.LoggerFactory.getLogger(StatsService.class);
@@ -40,7 +48,7 @@ public class StatsService {
 			notes = SwaggerConfig.StatsService_SERVICE_NOTES
 			
 		)
-	@PostMapping(value = "/statistics/calculate",
+	@PostMapping(value = "/calculate",
 			produces = MediaType.APPLICATION_JSON_UTF8_VALUE,
 			consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE
 		)
@@ -69,15 +77,13 @@ public class StatsService {
 	
 	@ApiOperation(
 			value = "Statistics Service",
-			notes = SwaggerConfig.StatsService_MEDIANS_NOTES)
-	@PostMapping(value = "/statistics/calculate/medians",
-			produces = MediaType.APPLICATION_JSON_UTF8_VALUE,
-			consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE
-			)
-	public ResponseEntity<String> medians(
-			@RequestParam 
-			@ApiParam(allowMultiple = true)
-			String data) {
+			notes = SwaggerConfig.StatsService_MEDIANS_NOTES
+		)
+	@PostMapping(
+			value = "/calculate/medians",
+			produces = MediaType.APPLICATION_JSON_UTF8_VALUE
+		)
+	public ResponseEntity<String> medians(@RequestParam String[] data) {
 		
 		try {
 			List<WLSample> samples = parseData(data);
@@ -109,20 +115,27 @@ public class StatsService {
 	}
 
 	
-	public List<WLSample> parseData(String data) {
-		
+	public List<WLSample> parseData(String data){
 		String[] rows = data.split("\r?\n");
-		List<WLSample> samples = new ArrayList<>(rows.length);
+		return parseData(rows);
+	}
+	public List<WLSample> parseData(String[] data) {
 		
-		for (String row : rows) {
+		List<WLSample> samples = new ArrayList<>(data.length);
+		
+		for (String row : data) {
 			row = row.trim();
-			if ( 0 == row.length() ) {
-				continue;
+			if ( 0 == row.length() || row.charAt(0) == '#') {
+				continue; // skip empty and comment rows
 			}
 			
 			String[] cols = row.split(",");
-			if (cols.length != 2) {
-				throw new RuntimeException("All rows must have two values: date,value. ");
+			if (cols.length == 0) {
+				continue; // skip empty rows
+			}
+			
+			if (cols.length < 2 || cols.length > 3) {
+				throw new RuntimeException("All rows must have two values and optional provisional code: date,value,P. ");
 			}
 			
 			String time = cols[0].trim();
@@ -134,6 +147,10 @@ public class StatsService {
 				BigDecimal value = new BigDecimal(cols[1].trim());
 				
 				WLSample sample = new WLSample(time, value, "ft", value, "", true, "", value);
+				
+				if (cols.length == 3) {
+					sample.setProvsional(true);
+				}
 				samples.add(sample);
 			} catch (NumberFormatException e) {
 				throw new RuntimeException("The water value must be valid. " + cols[1]);
@@ -143,6 +160,27 @@ public class StatsService {
 		return samples;
 	}
 
+	@ApiOperation("TEST Service")
+	@GetMapping(
+			value = "/test/{value}", 
+			produces = MediaType.APPLICATION_JSON_UTF8_VALUE,
+			consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE
+		)
+	public TestModel test(@PathVariable("value") String testValue) {
+		
+		return new TestModel(testValue);
+	}
+	
+	@ApiModel(description="Test Descr",  value="JsonTest")
+	static class TestModel {
+		@ApiModelProperty(name="value1", notes="Value notes asdf", example = "someValue")
+		@JsonProperty("value")
+		String testValue;
+		
+		public TestModel(String value) {
+			testValue = value;
+		}
+	}
 	
 //	@PostMapping(value="/statistics/calculate/internal", produces="text/html;charset=UTF-8")
 ////	consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE
