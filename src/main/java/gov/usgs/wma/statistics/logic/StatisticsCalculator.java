@@ -40,7 +40,7 @@ public class StatisticsCalculator<S extends Value> {
 	
 	public static final String SAMPLE_COUNT  = "SAMPLE_COUNT";
 	
-	public static final BigDecimal MEDIAN_PERCENTIAL = new BigDecimal("0.500000000");
+	public static final BigDecimal MEDIAN_PERCENTILE = new BigDecimal("0.500000000");
 	//protected static final BigDecimal HUNDRED = new BigDecimal("100");
 	protected static final BigDecimal TWELVE  = new BigDecimal("12");
 	// Calendar returns millis for days and after a diff we need the number of days
@@ -299,7 +299,7 @@ public class StatisticsCalculator<S extends Value> {
 	@SuppressWarnings("unchecked")
 	protected S makeMedian(List<S> samples) {
 		// years median in the this month
-		BigDecimal median = valueOfPercentile(samples, MEDIAN_PERCENTIAL, Value::valueOf);
+		BigDecimal median = valueOfPercentile(samples, MEDIAN_PERCENTILE, Value::valueOf);
 		S base = samples.get( (int)(samples.size()/2) );
 		Value medianSample = new Value(base.time, median);
 		return (S)medianSample;

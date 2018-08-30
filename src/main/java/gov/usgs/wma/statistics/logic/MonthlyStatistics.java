@@ -34,7 +34,7 @@ public class MonthlyStatistics<S extends Value, Q> extends StatisticsCalculator<
 		// these are exact percentiles and should not limit measured precision
 		addPercentile(P10, "0.100000000");
 		addPercentile(P25, "0.250000000");
-		addPercentile(P50, MEDIAN_PERCENTIAL);
+		addPercentile(P50, MEDIAN_PERCENTILE);
 		addPercentile(P75, "0.750000000");
 		addPercentile(P90, "0.900000000");
 	}

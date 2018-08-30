@@ -78,8 +78,11 @@ public class WaterLevelStatistics extends StatisticsCalculator<WLSample> {
 	private static final Logger LOGGER = LoggerFactory.getLogger(WaterLevelStatistics.class);
 	
 	public static enum MediationType {
-		BelowLand, 
-		AboveDatum;
+		NONE,
+		BelowLand,
+		AboveDatum,
+		ASCENDING,
+		DESCENDING;
 	}
 	
 	private MediationType mediation;
@@ -286,7 +289,7 @@ public class WaterLevelStatistics extends StatisticsCalculator<WLSample> {
 	protected WLSample makeMedian(List<WLSample> samples) {
 		// years median in the this month
 		BigDecimal medianValue = super.makeMedian(samples).value;
-		BigDecimal medianAbove = valueOfPercentile(samples, MEDIAN_PERCENTIAL, WLSample::valueOfAboveDatum);
+		BigDecimal medianAbove = valueOfPercentile(samples, MEDIAN_PERCENTILE, WLSample::valueOfAboveDatum);
 		WLSample base = samples.get( (int)(samples.size()/2) );
 		WLSample medianSample = new WLSample(medianValue, medianAbove, base);
 		return medianSample;
