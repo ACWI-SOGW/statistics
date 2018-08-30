@@ -4,9 +4,7 @@ import static gov.usgs.ngwmn.logic.WaterLevelStatistics.*;
 import static org.junit.Assert.*;
 
 import java.math.BigDecimal;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -14,7 +12,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 
 import gov.usgs.ngwmn.model.WLSample;
-import gov.usgs.wma.statistics.control.StatsService;
 
 public class StatsServiceTest {
 	private static final Logger LOGGER = LoggerFactory.getLogger(StatsServiceTest.class);

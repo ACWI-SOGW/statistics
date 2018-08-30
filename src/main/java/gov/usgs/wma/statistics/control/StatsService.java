@@ -4,23 +4,17 @@ package gov.usgs.wma.statistics.control;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
-import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
-import com.fasterxml.jackson.annotation.JsonProperty;
 
 import gov.usgs.ngwmn.logic.WaterLevelStatistics;
 import gov.usgs.ngwmn.logic.WaterLevelStatisticsControllerHelper;
@@ -31,8 +25,6 @@ import gov.usgs.wma.statistics.app.SwaggerParameterBuilder;
 import gov.usgs.wma.statistics.app.TimeSeriesData;
 import gov.usgs.wma.statistics.model.Value;
 import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 
@@ -114,6 +106,7 @@ public class StatsService {
 		}
 	}
 
+	// TOSO DELETE
 	public static String toJSONish(List<? extends Value> samples) {
 		StringBuilder json = new StringBuilder("\"");
 		for (Value sample : samples) {
