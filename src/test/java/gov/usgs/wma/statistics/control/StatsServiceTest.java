@@ -23,9 +23,9 @@ public class StatsServiceTest {
 	public void test_parseData_oneFineDatum() {
 		StatsService stats = new StatsService();
 
-		String values = "1999/01/01,1.00";
+		String data = "1999/01/01,1.00";
 		
-		List<WLSample> parsed = stats.parseData(values);
+		List<WLSample> parsed = stats.parseData(data);
 		
 		assertEquals(1, parsed.size());
 		assertEquals("1999/01/01", parsed.get(0).time);
@@ -36,9 +36,9 @@ public class StatsServiceTest {
 	public void test_parseData_twoFineData() {
 		StatsService stats = new StatsService();
 
-		String values = "1999/01/01,1.00\n1999/01/02,2.00";
+		String data = "1999/01/01,1.00\n1999/01/02,2.00";
 		
-		List<WLSample> parsed = stats.parseData(values);
+		List<WLSample> parsed = stats.parseData(data);
 		
 		assertEquals(2, parsed.size());
 		assertEquals("1999/01/02", parsed.get(1).time);
@@ -49,9 +49,9 @@ public class StatsServiceTest {
 	public void test_parseData_twoWindowsData() {
 		StatsService stats = new StatsService();
 
-		String values = "1999/01/01,1.00\r\n1999/01/02,2.00";
+		String data = "1999/01/01,1.00\r\n1999/01/02,2.00";
 		
-		List<WLSample> parsed = stats.parseData(values);
+		List<WLSample> parsed = stats.parseData(data);
 		
 		assertEquals(2, parsed.size());
 		assertEquals("1999/01/02", parsed.get(1).time);
@@ -62,9 +62,9 @@ public class StatsServiceTest {
 	public void test_parseData_twoWhitespaceData() {
 		StatsService stats = new StatsService();
 
-		String values = " 1999/01/01 , 1.00 \n\t1999/01/02\t,\t2.00\t";
+		String data = " 1999/01/01 , 1.00 \n\t1999/01/02\t,\t2.00\t";
 		
-		List<WLSample> parsed = stats.parseData(values);
+		List<WLSample> parsed = stats.parseData(data);
 		
 		assertEquals(2, parsed.size());
 		assertEquals("1999/01/02", parsed.get(1).time);
@@ -75,9 +75,9 @@ public class StatsServiceTest {
 	public void test_parseData_twoMissingRowData() {
 		StatsService stats = new StatsService();
 
-		String values = "1999/01/01,1.00 \n \n 1999/01/02,2.00";
+		String data = "1999/01/01,1.00 \n \n 1999/01/02,2.00";
 		
-		List<WLSample> parsed = stats.parseData(values);
+		List<WLSample> parsed = stats.parseData(data);
 		
 		assertEquals(2, parsed.size());
 		assertEquals("1999/01/02", parsed.get(1).time);
@@ -88,10 +88,10 @@ public class StatsServiceTest {
 	public void test_parseData_twoMissingDateData() {
 		StatsService stats = new StatsService();
 
-		String values = ",1.00\n1999/01/02,2.00";
+		String data = ",1.00\n1999/01/02,2.00";
 		
 		try {
-			stats.parseData(values);
+			stats.parseData(data);
 		} catch (RuntimeException e) {
 			assertTrue(e.getMessage().startsWith("The date must be valid"));
 		}
@@ -101,10 +101,10 @@ public class StatsServiceTest {
 	public void test_parseData_twoBadDateData() {
 		StatsService stats = new StatsService();
 
-		String values = "199/01/01,1.00\n1999/01/02,2.00";
+		String data = "199/01/01,1.00\n1999/01/02,2.00";
 		
 		try {
-			stats.parseData(values);
+			stats.parseData(data);
 		} catch (RuntimeException e) {
 			assertTrue(e.getMessage().endsWith("199/01/01"));
 		}
@@ -114,10 +114,10 @@ public class StatsServiceTest {
 	public void test_parseData_twoBadValueData() {
 		StatsService stats = new StatsService();
 
-		String values = "1999/01/01,1a.00\n1999/01/02,2.00";
+		String data = "1999/01/01,1a.00\n1999/01/02,2.00";
 		
 		try {
-			stats.parseData(values);
+			stats.parseData(data);
 		} catch (RuntimeException e) {
 			assertTrue(e.getMessage().endsWith("1a.00"));
 		}
@@ -127,10 +127,7 @@ public class StatsServiceTest {
 	public void test_service_twoFineData() {
 		StatsService stats = new StatsService();
 
-		String values = "1999/01/01,1.00\n1999/01/02,2.00";
-		
-		Map<String, String> data = new HashMap<>();
-		data.put("data", values);
+		String data = "1999/01/01,1.00\n1999/01/02,2.00";
 		
 		ResponseEntity<String> resp = stats.service(data);
 		
@@ -148,7 +145,7 @@ public class StatsServiceTest {
 	public void test_doesThisMonthQualifyForStats_hasTenYearsData() throws Exception {
 		StatsService stats = new StatsService();
 
-		String values =
+		String data =
 				"2005-06-10T04:15:00-05:00, 1.0\n"+
 				"2006-06-10T04:15:00-05:00, 2.0\n"+
 				"2007-06-10T04:15:00-05:00, 1.0\n"+
@@ -163,9 +160,6 @@ public class StatsServiceTest {
 				"2016-06-10T04:15:00-05:00, 1.0\n"+
 				"2017-06-10T04:15:00-05:00, 1.0\n"+
 				"2018-06-10T04:15:00-05:00, 1.0\n";
-		
-		Map<String, String> data = new HashMap<>();
-		data.put("data", values);
 		
 		ResponseEntity<String> resp = stats.service(data);
 		LOGGER.trace(resp.getBody());
