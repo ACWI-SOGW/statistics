@@ -50,7 +50,6 @@ public class StatsService {
 	@ApiOperation(
 			value = "Calculate Statistics Service",
 			notes = SwaggerConfig.StatsService_CALCULATE_NOTES
-//			tags = "TagThis"
 		)
 	@PostMapping(value = "/calculate",
 			produces = MediaType.APPLICATION_JSON_UTF8_VALUE,
@@ -172,28 +171,6 @@ public class StatsService {
 		return samples;
 	}
 
-	@ApiOperation("TEST Service")
-	@GetMapping(
-			value = "/test/{value}", 
-			produces = MediaType.APPLICATION_JSON_UTF8_VALUE,
-			consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE
-		)
-	public TestModel test(@PathVariable("value") String testValue) {
-		
-		return new TestModel(testValue);
-	}
-	
-	@ApiModel(description="Test Descr",  value="JsonTest")
-	static class TestModel {
-		@ApiModelProperty(name="value1", notes="Value notes asdf", example = "someValue")
-		@JsonProperty("value")
-		String testValue;
-		
-		public TestModel(String value) {
-			testValue = value;
-		}
-	}
-	
 //	@PostMapping(value="/statistics/calculate/internal", produces="text/html;charset=UTF-8")
 ////	consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE
 //	public String waterLevelStatsDataValuesUsed(
