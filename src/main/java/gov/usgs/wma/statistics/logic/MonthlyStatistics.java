@@ -25,7 +25,7 @@ public class MonthlyStatistics<S extends Value> extends StatisticsCalculator<S> 
 	}
 	
 	public String percentileBasedOnMonthlyData(S value, List<S> samplesByDate) {
-		String month = monthUTC(value.time);
+		String month = Value.monthUTC(value.time);
 		List<S> monthlySamples = filterValuesByGivenMonth(samplesByDate, month);
 		S latestValue = monthlySamples.get( monthlySamples.size()-1 );
 		sortValueByQualifier(monthlySamples);
@@ -60,7 +60,7 @@ public class MonthlyStatistics<S extends Value> extends StatisticsCalculator<S> 
 					return false;
 				}
 				String paddedMonth =  ((month.length()==1) ?"0" :"")+month;
-				return monthUTC(value.time).equals(paddedMonth);
+				return Value.monthUTC(value.time).equals(paddedMonth);
 			}
 		};
 		List<S> monthSamples = samples.stream().filter(monthly).collect(Collectors.toList());
@@ -118,12 +118,12 @@ public class MonthlyStatistics<S extends Value> extends StatisticsCalculator<S> 
 
 		while (samples.size() > 0) {
 			// calculate a year's median
-			final String year = yearUTC(samples.get(0).time);
+			final String year = Value.yearUTC(samples.get(0).time);
 			// using predicate because spring 3.x includes cglib that cannot compile lambdas
 			Predicate<S> yearly = new Predicate<S>() {
 				@Override
 				public boolean test(S sample) {
-					return year.equals( yearUTC(sample.time) );
+					return year.equals( Value.yearUTC(sample.time) );
 				}
 			};
 			List<S> yearSamples = samples.stream().filter(yearly).collect(Collectors.toList());

@@ -318,13 +318,6 @@ public class StatisticsCalculator<S extends Value> {
 		return yearSamples;
 	}
 	
-	public static String monthUTC(String utc) {
-		return utc.substring(5,7);
-	}
-	public static String yearUTC(String utc) {
-		return utc.substring(0,4);
-	}
-	
 	public static BigDecimal yearDiff(String maxDate, String minDate) {
 		BigDecimal diff = new BigDecimal(yearUTC(maxDate))
 				.subtract( new BigDecimal(yearUTC(minDate)) )

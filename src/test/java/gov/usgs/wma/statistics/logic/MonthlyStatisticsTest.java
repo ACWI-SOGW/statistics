@@ -726,7 +726,7 @@ public class MonthlyStatisticsTest {
 
 		Map<String,Integer>yearCounts = new HashMap<>();
 		for (Value sample : monthSamples) {
-			String year = StatisticsCalculator.yearUTC(sample.time);
+			String year = Value.yearUTC(sample.time);
 			Integer count = yearCounts.get(year);
 			if (count == null) {
 				count = 0;
@@ -772,10 +772,10 @@ public class MonthlyStatisticsTest {
 		Value sample2003 = null;
 
 		for (Value sample : normalizeMutlipleYearlyValues) {
-			if (StatisticsCalculator.yearUTC(sample.time).equals("1968")) {
+			if (Value.yearUTC(sample.time).equals("1968")) {
 				sample1968 = sample;
 			}
-			if (StatisticsCalculator.yearUTC(sample.time).equals("2003")) {
+			if (Value.yearUTC(sample.time).equals("2003")) {
 				sample2003 = sample;
 			}
 		}

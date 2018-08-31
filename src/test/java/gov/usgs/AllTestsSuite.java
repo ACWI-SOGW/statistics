@@ -10,6 +10,7 @@ import gov.usgs.wma.statistics.logic.OverallStatisticsTest;
 import gov.usgs.wma.statistics.logic.SigFigMathUtilTest;
 import gov.usgs.wma.statistics.logic.StatisticsCalculatorTest;
 import gov.usgs.wma.statistics.model.JsonDataBuilderTest;
+import gov.usgs.wma.statistics.model.ValueTest;
 
 @RunWith(Suite.class)
 
@@ -20,6 +21,7 @@ import gov.usgs.wma.statistics.model.JsonDataBuilderTest;
 	   MonthlyStatisticsTest.class,
 	   WaterLevelStatisticsTest.class,
 	   JsonDataBuilderTest.class,
+	   ValueTest.class,
 	   StatsServiceTest.class
 	})
 

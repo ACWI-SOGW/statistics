@@ -7,7 +7,6 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -223,44 +222,6 @@ public class StatisticsCalculatorTest {
 		stats.removeNulls(samples, "well id");
 		assertEquals("null instance should be removed", 2, samples.size());
 	}
-
-	@Test
-	public void test_today__ensure_that_the_today_method_returns_the_current_month_and_year() throws Exception {
-		String today = StatisticsCalculator.today();
-		Date date = new Date();
-
-		// the Date.getYear() returns a previous century truncated value (88 rather than 1988)
-		// and it returns 116 for 2016; hence the deprecation and addition of 1900 for a proper year number
-		@SuppressWarnings("deprecation")
-		String year = ""+(date.getYear()+1900); // see Calendar.get(Calendar.YEAR)
-		assertEquals(year, StatisticsCalculator.yearUTC(today) );
-
-		// months are zero based in Date and humans use one based - i.e. January return zero but we want 1.
-		// further more, for testing we want a double digit month zero padded. There are many ways (and most better)
-		// than this to get such a value but it is a quick way to get what is needed without the complication of Calendar.
-		@SuppressWarnings("deprecation")
-		String month = ""+(date.getMonth()+1); // see Calendar.get(Calendar.MONTH)
-		month = (month.length() == 1 ?"0" :"") + month;
-		assertEquals(month, StatisticsCalculator.monthUTC(today) );
-	}
-
-	@Test
-	public void test_month_year_extract_from_UTC() throws Exception {
-		String dateUTC = "2000-12-23...";
-
-		String year = dateUTC.substring(0, 4);
-		assertEquals("2000", year);
-
-		String month = dateUTC.substring(5, 7);
-		assertEquals("12", month);
-
-		year = StatisticsCalculator.yearUTC(dateUTC);
-		assertEquals("2000", year);
-
-		month = StatisticsCalculator.monthUTC(dateUTC);
-		assertEquals("12", month);
-	}
-
 
 	@Test
 	public void test_overallStats_OrderSamples_3() throws Exception {
