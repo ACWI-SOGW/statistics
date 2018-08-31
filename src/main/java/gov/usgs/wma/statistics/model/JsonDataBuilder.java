@@ -177,9 +177,17 @@ public class JsonDataBuilder {
 	public JsonData build() {
 		collect();
 		buildIntermediateValues();
+		avoidNulls();
 		return jsonData;
 	}
 	
+	protected void avoidNulls() {
+		if (jsonData.overall == null) {
+			jsonData.overall = new JsonOverall("", 0, "", "", "", "", "", "", "", "", MediationType.NONE);
+		}
+		// TODO fill in other nulls
+	}
+
 	public JsonDataBuilder collect() {
 		if ( values.isEmpty() ) {
 			return this;

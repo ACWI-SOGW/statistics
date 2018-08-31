@@ -252,21 +252,9 @@ public class JsonDataBuilderTest {
 	
 	@Test
 	public void test_build() {		
-		final Boolean[] collectCalled = new Boolean[] {Boolean.FALSE};
-		
-		data = new JsonDataBuilder() {
-			@Override
-			public JsonDataBuilder collect() {
-				collectCalled[0] = true;
-				return this;
-			}
-		};
-		data.values.remove(MEDIATION); // remove default mediation for this test.
-
 		JsonData json = data.build();
 		assertNotNull(json);
-		
-		assertFalse("no need to call collect on build if no new data", collectCalled[0]);
+		assertEquals("", json.getOverall().dateMax);
 	}
 	
 	@Test
