@@ -1,6 +1,5 @@
 package gov.usgs.wma.statistics.logic;
 
-import static gov.usgs.wma.statistics.logic.MonthlyStatistics.*;
 import static gov.usgs.wma.statistics.logic.SigFigMathUtil.*;
 import static org.junit.Assert.*;
 
@@ -23,6 +22,7 @@ import org.slf4j.LoggerFactory;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import gov.usgs.ngwmn.logic.WaterLevelStatistics.MediationType;
+import gov.usgs.wma.statistics.model.JsonDataBuilder;
 import gov.usgs.wma.statistics.model.Value;
 
 
@@ -30,9 +30,19 @@ import gov.usgs.wma.statistics.model.Value;
 
 public class StatisticsCalculatorTest {
 	private static final Logger LOGGER = LoggerFactory.getLogger(StatisticsCalculatorTest.class);
-
+	
+	public static final String P10 = "P10";
+	public static final String P25 = "P25";
+	public static final String P50 = "P50";
+	public static final String P75 = "P75";
+	public static final String P90 = "P90";
+	
+	static final Map<String, BigDecimal> PERCENTILES = new JsonDataBuilder().buildPercentiles();
+	
 	StatisticsCalculator<Value> stats;
-	MonthlyStatistics<Value, MediationType> monthlyStats;
+	
+	MonthlyStatistics<Value> monthlyStats;
+	
 
 	private Value createSample(String time, String value) {
 		BigDecimal val = null;
@@ -87,7 +97,9 @@ public class StatisticsCalculatorTest {
 	@Before
 	public void setup() {
 		stats = new StatisticsCalculator<Value>();
-		monthlyStats = new MonthlyStatistics<Value, MediationType>(MediationType.AboveDatum);
+		JsonDataBuilder builder = new JsonDataBuilder();
+		builder.mediation(MediationType.AboveDatum);
+		monthlyStats = new MonthlyStatistics<Value>(builder);
 	}
 
 
@@ -531,7 +543,7 @@ public class StatisticsCalculatorTest {
 		samples.add( createSample("2015-12-10T04:15:00-05:00", "95.1682") );
 		List<Value> sorted = new LinkedList<>(samples);
 		StatisticsCalculator.sortByValueOrderAscending(sorted);
-		Map<String,String> percentiles = stats.generatePercentiles(sorted, PERCENTILES);
+		JsonDataBuilder percentiles = stats.generatePercentiles(sorted, PERCENTILES);
 		// as you might expect the values are low for low percentile and high for high percentile because measured above a datum
 		assertEquals("Expect P10 to be ", "95.0705", percentiles.get(P10));
 		assertEquals("Expect P25 to be ", "95.1098", percentiles.get(P25));
@@ -556,7 +568,7 @@ public class StatisticsCalculatorTest {
 		samples.add( createSample("2015-12-10T04:15:00-05:00", "95.1682") );
 		List<Value> sorted = new LinkedList<>(samples);
 		StatisticsCalculator.sortByValueOrderDescending(sorted); // <--------  sorting DESCENDING instead of Ascending
-		Map<String,String> percentiles = stats.generatePercentiles(sorted, PERCENTILES);
+		JsonDataBuilder percentiles = stats.generatePercentiles(sorted, PERCENTILES);
 		// NOTICE: the values are low for high percentile and high for low percentile because measured below surface
 		assertEquals("Expect P10 to be ", "95.1981", percentiles.get(P10));
 		assertEquals("Expect P25 to be ", "95.1896", percentiles.get(P25));

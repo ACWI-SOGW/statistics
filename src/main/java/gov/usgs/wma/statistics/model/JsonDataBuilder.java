@@ -1,8 +1,11 @@
 package gov.usgs.wma.statistics.model;
 
+import static gov.usgs.wma.statistics.model.Value.*;
+
 import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -50,9 +53,10 @@ public class JsonDataBuilder {
 	 */
 	Map<String, String> values = new HashMap<>();
 	
-	MediationType mediation;
+	MediationType mediation = MediationType.NONE;
 
 	StringBuilder intermediateValues = new StringBuilder();
+	boolean includeIntermediateValues = false;
 	
 	JsonData jsonData;
 	
@@ -60,7 +64,10 @@ public class JsonDataBuilder {
 		// default percentiles
 		percentiles.addAll(Arrays.asList(P10,P25,P50,P75,P90));
 		this.jsonData = new JsonData();
-		mediation(MediationType.NONE);
+	}
+	
+	public String get(String name) {
+		return values.get(name);
 	}
 	
 	public JsonDataBuilder latestPercentile(String percentile) {
@@ -75,8 +82,10 @@ public class JsonDataBuilder {
 	
 	public JsonDataBuilder mediation(MediationType mediation) {
 		this.mediation = mediation;
-		this.values.put(MEDIATION, mediation.toString());
 		return this;
+	}
+	public MediationType mediation() {
+		return mediation;
 	}
 
 	public JsonDataBuilder median(String value) {
@@ -104,8 +113,8 @@ public class JsonDataBuilder {
 		return this;
 	}
 
-	public JsonDataBuilder recordYears(int value) {
-		values.put(RECORD_YEARS, ""+value);
+	public JsonDataBuilder recordYears(String value) {
+		values.put(RECORD_YEARS, value);
 		return this;
 	}
 	
@@ -115,7 +124,6 @@ public class JsonDataBuilder {
 	}
 	
 	public JsonDataBuilder month(String value) {
-		values.remove(MEDIATION); // remove default overall mediation
 		try {
 			int intValue = Integer.parseInt(value);
 			if (intValue < 1 || intValue > 12) {
@@ -167,15 +175,17 @@ public class JsonDataBuilder {
 	}
 
 	public JsonData build() {
-		if ( ! values.isEmpty() ) {
-			collect();
-		}
+		collect();
 		buildIntermediateValues();
 		return jsonData;
 	}
 	
 	public JsonDataBuilder collect() {
-		int recordYears = Integer.parseInt( values.remove(RECORD_YEARS) );
+		if ( values.isEmpty() ) {
+			return this;
+		}
+
+		String recordYears = values.remove(RECORD_YEARS);
 		int sampleCount = Integer.parseInt( values.remove(SAMPLE_COUNT) );
 
 		if (isOverall()) {
@@ -188,14 +198,16 @@ public class JsonDataBuilder {
 		return this;
 	}
 
-	private void buildMonthly(int recordYears, int sampleCount) {
+	private void buildMonthly(String recordYears, int sampleCount) {
 		String month    = values.remove(MONTH);
 		
 		JsonMonthly monthly = new JsonMonthly(recordYears, sampleCount, values);
 		jsonData.monthly.put(month, monthly);
 	}
 
-	private JsonDataBuilder buildOverall(int recordYears, int sampleCount) {
+	private JsonDataBuilder buildOverall(String recordYears, int sampleCount) {
+		this.values.put(CALC_DATE, DATE_FORMAT_FULL.format(new Date()));
+		this.values.put(MEDIATION, mediation.toString());
 		
 		jsonData.overall = new JsonOverall(recordYears, sampleCount,
 				values.get(LATEST_PCTILE), values.get(LATEST_VALUE), 
@@ -216,7 +228,19 @@ public class JsonDataBuilder {
 		return values.containsKey(MONTH);
 	}
 	
+	public void setIncludeIntermediateValues(Boolean includeIntermediateValues) {
+		this.includeIntermediateValues = includeIntermediateValues;
+	}
+	
+	public boolean isIncludeIntermediateValues() {
+		return includeIntermediateValues;
+	}
+	
 	public JsonDataBuilder intermediateValue(Value sample) {
+		if ( ! isIncludeIntermediateValues()) {
+			return this;
+		}
+		
 		StringBuilder json = intermediateValues; // local alias
 		
 		if (json.length() == 0) {
@@ -229,6 +253,10 @@ public class JsonDataBuilder {
 	}
 	
 	public JsonDataBuilder intermediateValues(List<? extends Value> samples) {
+		if ( ! isIncludeIntermediateValues()) {
+			return this;
+		}
+		
 		for (Value sample : samples) {
 			intermediateValue(sample);
 		}
@@ -238,10 +266,13 @@ public class JsonDataBuilder {
 	
 	public JsonDataBuilder buildIntermediateValues() {
 		jsonData.medians = "";
-		if (intermediateValues.length() > 0) {
-			intermediateValues.append("\"");
-			jsonData.medians = intermediateValues.toString();
-			LOGGER.trace(intermediateValues.toString());
+		
+		if ( isIncludeIntermediateValues() ) {
+			if (intermediateValues.length() > 0) {
+				intermediateValues.append("\"");
+				jsonData.medians = intermediateValues.toString();
+				LOGGER.trace(intermediateValues.toString());
+			}
 		}
 		return this;
 	}

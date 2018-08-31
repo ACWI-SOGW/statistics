@@ -26,9 +26,9 @@ public class JsonMonthly extends JsonStats {
 	 * measured value.
 	 */
 	@JsonProperty("PERCETILES")
-	final Map<String, String> percentiles;
+	public final Map<String, String> percentiles;
 
-	public JsonMonthly(int recordYears, int sampleCount, Map<String, String> percentiles) {
+	public JsonMonthly(String recordYears, int sampleCount, Map<String, String> percentiles) {
 		super(recordYears, sampleCount);
 		this.percentiles = ImmutableMap.copyOf(percentiles);
 	}

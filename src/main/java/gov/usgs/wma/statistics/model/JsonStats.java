@@ -9,11 +9,11 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  */
 public abstract class JsonStats {
 	@JsonProperty("RECORD_YEARS")
-	final int recordYears;
+	public final String recordYears;
 	@JsonProperty("SAMPLE_COUNT")
-	final int sampleCount;
+	public final int sampleCount;
 	
-	public JsonStats(int recordYears, int sampleCount) {
+	public JsonStats(String recordYears, int sampleCount) {
 		this.recordYears = recordYears;
 		this.sampleCount = sampleCount;
 	}

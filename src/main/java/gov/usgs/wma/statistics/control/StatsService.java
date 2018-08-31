@@ -10,21 +10,20 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import gov.usgs.ngwmn.logic.WaterLevelStatistics;
-import gov.usgs.ngwmn.logic.WaterLevelStatisticsControllerHelper;
 import gov.usgs.ngwmn.model.Specifier;
 import gov.usgs.ngwmn.model.WLSample;
 import gov.usgs.wma.statistics.app.SwaggerConfig;
-import gov.usgs.wma.statistics.app.SwaggerParameterBuilder;
-import gov.usgs.wma.statistics.app.TimeSeriesData;
-import gov.usgs.wma.statistics.model.Value;
-import io.swagger.annotations.Api;
+import gov.usgs.wma.statistics.model.JsonData;
+import gov.usgs.wma.statistics.model.JsonDataBuilder;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 
@@ -62,9 +61,9 @@ public class StatsService {
 			// A random identifier for the service unless we parameterize the date set ID.
 			Specifier spec = new Specifier();
 			
-			String json = new WaterLevelStatistics().calculate(spec, samples);
+			JsonData json = new WaterLevelStatistics(new JsonDataBuilder()).calculate(spec, samples);
 			
-			return ResponseEntity.ok(json);
+			return ResponseEntity.ok( toJSON(json) );
 		} catch (Exception e) {
 			return ResponseEntity.ok("{'status':400,'message':'"+e.getMessage()+"'");
 		}
@@ -94,28 +93,26 @@ public class StatsService {
 			// A random identifier for the service unless we parameterize the date set ID.
 			Specifier spec = new Specifier();
 			
-			List<WLSample> medians = new WaterLevelStatisticsControllerHelper().processSamplesUsedToCalculateStats(spec, samples, "13", true);
-			String jsonMedians = toJSONish(medians);
-			String json = new WaterLevelStatistics().calculate(spec, samples);
-
-			json = json.substring(0,json.length()-1) + ", \"medians\":" + jsonMedians + "}";
+			JsonDataBuilder stats = new JsonDataBuilder();
+			stats.setIncludeIntermediateValues(true);
+			JsonData json = new WaterLevelStatistics(stats).calculate(spec, samples);
 			
-			return ResponseEntity.ok(json);
+			return ResponseEntity.ok( toJSON(json) );
 		} catch (Exception e) {
 			return ResponseEntity.ok("{'status':400,'message':'"+e.getMessage()+"'");
 		}
 	}
 
-	// TOSO DELETE
-	public static String toJSONish(List<? extends Value> samples) {
-		StringBuilder json = new StringBuilder("\"");
-		for (Value sample : samples) {
-			json.append(sample.time).append(", ");
-			json.append(sample.value).append("\\n");
+	public static String toJSON(JsonData stats) {
+		String json = "";
+		try {
+			json = new ObjectMapper().writeValueAsString(stats);
+		} catch (JsonProcessingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
-		json.append("\"");
-		LOGGER.debug(json.toString());
-		return json.toString();
+		
+		return json;
 	}
 
 	
@@ -163,37 +160,5 @@ public class StatsService {
 		
 		return samples;
 	}
-
-//	@PostMapping(value="/statistics/calculate/internal", produces="text/html;charset=UTF-8")
-////	consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE
-//	public String waterLevelStatsDataValuesUsed(
-//			@PathVariable("agency") String agencyCd,
-//			@PathVariable("site") String siteNo,
-//			@RequestParam(value="month", required=false) String month,
-//			@RequestParam(value="median",required=false) String median,
-//			@RequestParam Map<String, String> body,
-//			Model model
-//	) {
-//		boolean useMedians = StringUtils.isNotBlank(median);
-//		
-//		List<WLSample> samples = parseData(body);
-//		Specifier spec = new Specifier();
-//		
-//		WaterLevelStatisticsControllerHelper stats = new WaterLevelStatisticsControllerHelper();
-//		samples = stats.processSamplesUsedToCalculateStats(spec, samples, month, useMedians);
-//		
-//		model.addAttribute("samples",samples);
-//		model.addAttribute("agencyCd", agencyCd);
-//		model.addAttribute("siteNo", siteNo);
-//
-//		if (StringUtils.isNotBlank(month)) {
-//			model.addAttribute("month", "month="+month);
-//		}
-//		if (useMedians) {
-//			model.addAttribute("median", "median values presented");
-//		}
-//		return "waterlevel/data";
-//	}
-	
 
 }

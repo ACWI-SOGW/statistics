@@ -22,10 +22,9 @@ import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
-import gov.usgs.ngwmn.model.Elevation;
-import gov.usgs.wma.statistics.model.Value;
 import gov.usgs.ngwmn.logic.WaterlevelMediator;
 import gov.usgs.ngwmn.logic.WaterlevelMediator.ValidationException;
+import gov.usgs.wma.statistics.model.Value;
 
 public class WLSample extends Value {
 	private static final Logger LOGGER = LoggerFactory.getLogger(WLSample.class);

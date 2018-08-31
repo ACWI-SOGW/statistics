@@ -25,6 +25,8 @@ import org.slf4j.LoggerFactory;
 
 import gov.usgs.ngwmn.logic.WaterLevelStatistics;
 import gov.usgs.ngwmn.model.Specifier;
+import gov.usgs.wma.statistics.model.JsonData;
+import gov.usgs.wma.statistics.model.JsonDataBuilder;
 import gov.usgs.wma.statistics.model.Value;
 
 /**
@@ -38,25 +40,21 @@ import gov.usgs.wma.statistics.model.Value;
 public class StatisticsCalculator<S extends Value> {
 	private static final Logger LOGGER = LoggerFactory.getLogger(StatisticsCalculator.class);
 	
-	public static final String SAMPLE_COUNT  = "SAMPLE_COUNT";
-	
 	public static final BigDecimal MEDIAN_PERCENTILE = new BigDecimal("0.500000000");
 	//protected static final BigDecimal HUNDRED = new BigDecimal("100");
 	protected static final BigDecimal TWELVE  = new BigDecimal("12");
 	// Calendar returns millis for days and after a diff we need the number of days
 	protected static final long MILLISECONDS_PER_DAY = 1000 * 60 * 60 * 24;// ms * sec * min * hr == ms/day
 
+	protected final JsonDataBuilder stats;
 	
-
-	/**
-	 * Calculates statistics for a specifier where data must be fetched from the database.
-	 * 
-	 * @param spec the specifier only checks the agency and site. It ignores the data type.
-	 * @throws Exception Thrown if there is an issue fetching data from the database.
-	 */
-	public String calculate(Specifier spec) throws Exception {
-		return "";
+	public StatisticsCalculator() {
+		stats = new JsonDataBuilder();
 	}
+	public StatisticsCalculator(JsonDataBuilder stats) {
+		this.stats = stats;
+	}
+	
 	
 	/**
 	 * Calculates statistics for a specifier where data must be supplied as an XML string reader.
@@ -69,8 +67,8 @@ public class StatisticsCalculator<S extends Value> {
 	 * @param reader the {@link Reader} supplying XML data samples.
 	 * @throws Exception Thrown if there is an issue parsing data from the XML reader.
 	 */
-	public String calculate(Specifier spec, Reader xmlData) throws Exception {
-		return "";
+	public JsonData calculate(Specifier spec, Reader xmlData) throws Exception {
+		return new JsonData();
 	}
 	
 	/**
@@ -80,8 +78,8 @@ public class StatisticsCalculator<S extends Value> {
 	 * @param samples list of DAO samples. For example, {@link Value} for {@link WaterLevelStatistics}.
 	 * @throws Exception Thrown if there is an issue calculating statisics
 	 */
-	public String calculate(Specifier spec, List<S> samples)  {
-		return "";
+	public JsonData calculate(Specifier spec, List<S> samples)  {
+		return new JsonData();
 	}
 	
 	
@@ -195,13 +193,13 @@ public class StatisticsCalculator<S extends Value> {
 	 * @param samples for a given sample set in order 
 	 * @return map of 10th 25th 50th 75th and 90th percentiles for the given list
 	 */
-	protected Map<String,String> generatePercentiles(List<S> samples, Map<String, BigDecimal> percentiles) {
-		Map<String,String> generatedPercentiles = new HashMap<>();
+	protected JsonDataBuilder generatePercentiles(List<S> samples, Map<String, BigDecimal> percentiles) {
 		for(String percentile : percentiles.keySet()) {
 			BigDecimal pct = percentiles.get(percentile);
-			generatedPercentiles.put(percentile, valueOfPercentile(samples, pct, Value::valueOf).toString());
+			BigDecimal pctValue = valueOfPercentile(samples, pct, Value::valueOf);
+			stats.putPercentile(percentile, pctValue.toString());
 		}
-		return generatedPercentiles;
+		return stats;
 	}
 	
 	

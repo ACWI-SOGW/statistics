@@ -16,4 +16,14 @@ public class JsonData {
 	Map<String, JsonMonthly> monthly = new HashMap<>();
 	@JsonProperty
 	String medians;
+	
+	public JsonOverall getOverall() {
+		return overall;
+	}
+	public Map<String, JsonMonthly> getMonthly() {
+		return monthly;
+	}
+	public String getMedians() {
+		return medians;
+	}
 }

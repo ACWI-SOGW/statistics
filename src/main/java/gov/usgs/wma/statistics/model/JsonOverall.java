@@ -7,26 +7,26 @@ import gov.usgs.ngwmn.logic.WaterLevelStatistics.MediationType;
 public class JsonOverall extends JsonStats {
 
 	@JsonProperty("LATEST_PCTILE")
-	String latestPercentile;
+	public final String latestPercentile;
 	@JsonProperty("LATEST_VALUE")
-	String latestValue;
+	public final String latestValue;
 	@JsonProperty("MAX_VALUE")
-	String valueMax;
+	public final String valueMax;
 	@JsonProperty("MEDIAN")
-	String valueMedian; // AKA P50
+	public final String valueMedian; // AKA P50
 	@JsonProperty("MIN_VALUE")
-	String valueMin;
+	public final String valueMin;
 	@JsonProperty("CALC_DATE")
-	String dateCalc; // the date the statistics where generated.
+	public final String dateCalc; // the date the statistics where generated.
 	@JsonProperty("MAX_DATE")
-	String dateMax;
+	public final String dateMax;
 	@JsonProperty("MIN_DATE")
-	String dateMin;
+	public final String dateMin;
 	
 	@JsonProperty("MEDIATION")
 	MediationType mediation;
 
-	public JsonOverall(int recordYears, int sampleCount, String latestPercentile, String latestValue, String valueMax,
+	public JsonOverall(String recordYears, int sampleCount, String latestPercentile, String latestValue, String valueMax,
 			String valueMedian, String valueMin, String dateCalc, String dateMax, String dateMin,
 			MediationType mediation) {
 		super(recordYears, sampleCount);

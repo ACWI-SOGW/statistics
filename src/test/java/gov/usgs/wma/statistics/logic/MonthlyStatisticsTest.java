@@ -1,8 +1,6 @@
 package gov.usgs.wma.statistics.logic;
 
-import static gov.usgs.wma.statistics.logic.MonthlyStatistics.*;
-import static gov.usgs.wma.statistics.logic.OverallStatistics.*;
-//import static gov.usgs.wma.statistics.logic.StatisticsCalculator.*;
+import static gov.usgs.wma.statistics.model.JsonDataBuilder.*;
 import static org.junit.Assert.*;
 
 import java.math.BigDecimal;
@@ -13,17 +11,35 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import gov.usgs.ngwmn.logic.WaterLevelStatistics.MediationType;
+import gov.usgs.wma.statistics.model.JsonDataBuilder;
+import gov.usgs.wma.statistics.model.JsonMonthly;
 import gov.usgs.wma.statistics.model.Value;
 
 public class MonthlyStatisticsTest {
 	private static final Logger LOGGER = LoggerFactory.getLogger(MonthlyStatisticsTest.class);
+
+	public static final String P10 = "P10";
+	public static final String P25 = "P25";
+	public static final String P50 = "P50";
+	public static final String P75 = "P75";
+	public static final String P90 = "P90";
 	
-	MonthlyStatistics<Value, MediationType> stats = new MonthlyStatistics<>(MediationType.BelowLand);
+	JsonDataBuilder builder;
+	MonthlyStatistics<Value> stats;
+	
+	@Before
+	public void setup() {
+		builder = new JsonDataBuilder();
+		builder.mediation(MediationType.BelowLand);
+		stats = new MonthlyStatistics<>(builder);
+	}
+	
 
 	private Value createSample(String time, String value) {
 		BigDecimal val = null;
@@ -157,8 +173,9 @@ public class MonthlyStatisticsTest {
 		List<Value> sorted = new LinkedList<>(samples);
 		StatisticsCalculator.sortByValueOrderAscending(sorted);
 
+		builder.mediation(MediationType.AboveDatum);
 		// we are not testing this method so mock it to return what we need
-		MonthlyStatistics<Value, MediationType> mockstats = new MonthlyStatistics<Value, MediationType>(MediationType.AboveDatum) {
+		MonthlyStatistics<Value> mockstats = new MonthlyStatistics<Value>(builder) {
 //			protected boolean doesThisMonthQualifyForStats(List<Value> monthSamples) {
 //				return monthSamples.size()>0;
 //			}
@@ -168,15 +185,21 @@ public class MonthlyStatisticsTest {
 			}
 		};
 
-		Map<String, Map<String, String>> monthly = mockstats.monthlyStats(sorted); // MediationType.AboveDatum
+		boolean isCalc = mockstats.monthlyStats(sorted);
+		assertTrue(isCalc);
+		
+		Map<String, JsonMonthly> monthly = builder.build().getMonthly(); // MediationType.AboveDatum
+		JsonMonthly jsonMonthly = monthly.get("1");
+
+		assertEquals("Expect sample count to be ", samples.size(), jsonMonthly.sampleCount);
+		assertEquals("Expect record years to be 3 and not 10 because of unique year count.", "3", jsonMonthly.recordYears);
+
+		Map<String, String> percentiles = jsonMonthly.percentiles;
 
 		assertEquals("Expect 1 month median", 1, monthly.size());
-		assertEquals("Expect max median to be", "95.1579", monthly.get("1").get(P50_MAX));
-		assertEquals("Expect mid median to be", "94.1579", monthly.get("1").get(P50));
-		assertEquals("Expect min median to be", "93.1579", monthly.get("1").get(P50_MIN));
-		assertEquals("Expect sample count to be ", ""+samples.size(), monthly.get("1").get(StatisticsCalculator.SAMPLE_COUNT));
-
-		assertEquals("Expect record years to be 3 and not 10 because of unique year count.", "3", monthly.get("1").get(RECORD_YEARS));
+		assertEquals("Expect max median to be", "95.1579", percentiles.get(P50_MAX));
+		assertEquals("Expect mid median to be", "94.1579", percentiles.get(P50));
+		assertEquals("Expect min median to be", "93.1579", percentiles.get(P50_MIN));
 	}
 
 	
@@ -227,8 +250,9 @@ public class MonthlyStatisticsTest {
 
 		List<Value> sorted = new LinkedList<>(samples);
 
+		builder.mediation(MediationType.AboveDatum);
 		// we are not testing this method so mock it to return what we need
-		MonthlyStatistics<Value, MediationType> mockstats = new MonthlyStatistics<Value, MediationType>(MediationType.AboveDatum) {
+		MonthlyStatistics<Value> mockstats = new MonthlyStatistics<Value>(builder) {
 			@Override
 			public List<Value> medianMonthlyValues(List<Value> monthSamples,
 					Function<List<Value>, List<Value>> sortBy) {
@@ -238,22 +262,26 @@ public class MonthlyStatisticsTest {
 		};
 
 		StatisticsCalculator.sortByValueOrderAscending(sorted);
-		Map<String, Map<String, String>> monthly = mockstats.monthlyStats(sorted); // MediationType.AboveDatum
+		boolean isCalc = mockstats.monthlyStats(sorted);
+		assertTrue(isCalc);
+		
+		Map<String, JsonMonthly> monthly = builder.build().getMonthly(); // MediationType.AboveDatum
 
 		assertEquals("Expect all 6 monthly stats for general monthly stats", 6, monthly.size());
-		assertEquals("Expect May median to be", "95.1579", monthly.get("5").get(P50));
-		assertEquals("Expect Apr median to be", "94.1579", monthly.get("4").get(P50));
-		assertEquals("Expect Mar median to be", "93.1579", monthly.get("3").get(P50));
+		assertEquals("Expect May median to be", "95.1579", monthly.get("5").percentiles.get(P50));
+		assertEquals("Expect Apr median to be", "94.1579", monthly.get("4").percentiles.get(P50));
+		assertEquals("Expect Mar median to be", "93.1579", monthly.get("3").percentiles.get(P50));
 
-		assertEquals("Expect sample count to be ", "12", monthly.get("5").get(StatisticsCalculator.SAMPLE_COUNT));
-		assertEquals("Expect sample count to be ", "12", monthly.get("4").get(StatisticsCalculator.SAMPLE_COUNT));
-		assertEquals("Expect sample count to be ", "12", monthly.get("3").get(StatisticsCalculator.SAMPLE_COUNT));
+		assertEquals("Expect sample count to be ", 12, monthly.get("5").sampleCount);
+		assertEquals("Expect sample count to be ", 12, monthly.get("4").sampleCount);
+		assertEquals("Expect sample count to be ", 12, monthly.get("3").sampleCount);
 
-		assertEquals("Expect record years to be 11 because there are 11 unique years in the given data even though there are 12 data entries and not a difference of 10 because we count the months.", "11", monthly.get("5").get(RECORD_YEARS));
-		assertEquals("Expect record years to be 11 because there are 11 unique years in the given data even though there are 12 data entries and not a difference of 10 because we count the months.", "11", monthly.get("4").get(RECORD_YEARS));
-		assertEquals("Expect record years to be 11 because there are 11 unique years in the given data even though there are 12 data entries and not a difference of 10 because we count the months.", "11", monthly.get("3").get(RECORD_YEARS));
+		assertEquals("Expect record years to be 11 because there are 11 unique years in the given data even though there are 12 data entries and not a difference of 10 because we count the months.", "11", monthly.get("5").recordYears);
+		assertEquals("Expect record years to be 11 because there are 11 unique years in the given data even though there are 12 data entries and not a difference of 10 because we count the months.", "11", monthly.get("4").recordYears);
+		assertEquals("Expect record years to be 11 because there are 11 unique years in the given data even though there are 12 data entries and not a difference of 10 because we count the months.", "11", monthly.get("3").recordYears);
 	}
 
+	
 	@Test
 	public void test_generateLatestPercentileBasedOnMonthlyData() throws Exception {
 		List<Value> samples = new LinkedList<>();
@@ -315,9 +343,11 @@ public class MonthlyStatisticsTest {
 		
 		List<Value> monthSamples = new ArrayList<Value>(valueOrder);
 		StatisticsCalculator.sortByDateOrder(monthSamples);
-//		stats.overallStats(monthSamples, valueOrder, MediationType.AboveDatum);
 
-		Map<String, String> stat = stats.monthlyStats(monthSamples).get("3"); // MediationType.AboveDatum
+		boolean isCalc = stats.monthlyStats(monthSamples);
+		assertTrue(isCalc);
+		
+		Map<String, String> stat = builder.build().getMonthly().get("3").percentiles; // MediationType.AboveDatum
 
 		assertNotNull(stat);
 		assertEquals("4.12",stat.get(P50_MIN));
@@ -337,9 +367,11 @@ public class MonthlyStatisticsTest {
 		fillMarchData(valueOrder);
 		List<Value> monthSamples = new ArrayList<Value>(valueOrder);
 		StatisticsCalculator.sortByDateOrder(monthSamples);
-//		stats.overallStats(monthSamples, valueOrder, MediationType.AboveDatum);
 
-		Map<String, String> stat = stats.monthlyStats(monthSamples).get("3"); //MediationType.AboveDatum
+		boolean isCalc = stats.monthlyStats(monthSamples);
+		assertTrue(isCalc);
+		
+		Map<String, String> stat = builder.build().getMonthly().get("3").percentiles; // MediationType.AboveDatum
 
 //		assertNotNull(stat);
 		assertEquals("4.12", stat.get(P50_MIN));
@@ -756,7 +788,10 @@ public class MonthlyStatisticsTest {
 		assertEquals("9.6", sample2003.value.toString());
 		assertEquals("2.7"/*0"*/, sample1968.value.toString());
 
-		Map<String, Map<String, String>> april = stats.monthlyStats(monthSamples);
+		boolean isCalc = stats.monthlyStats(monthSamples);
+		assertTrue(isCalc);
+		
+		Map<String, String> april = builder.build().getMonthly().get("4").percentiles; // MediationType.AboveDatum
 
 		LOGGER.trace(april.toString());
 

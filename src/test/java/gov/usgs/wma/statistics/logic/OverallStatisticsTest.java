@@ -1,6 +1,6 @@
 package gov.usgs.wma.statistics.logic;
 
-import static gov.usgs.wma.statistics.logic.OverallStatistics.*;
+import static gov.usgs.wma.statistics.model.JsonDataBuilder.*;
 import static gov.usgs.wma.statistics.model.Value.*;
 import static org.junit.Assert.*;
 
@@ -9,15 +9,24 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
+import org.junit.Before;
 import org.junit.Test;
 
+import gov.usgs.wma.statistics.model.JsonData;
+import gov.usgs.wma.statistics.model.JsonDataBuilder;
 import gov.usgs.wma.statistics.model.Value;
 
 public class OverallStatisticsTest {
-	OverallStatistics<Value> stats = new OverallStatistics<>();
+	JsonDataBuilder builder = new JsonDataBuilder();
+	OverallStatistics<Value> stats = new OverallStatistics<>(builder);
 
+	@Before
+	public void setup() {
+		builder = new JsonDataBuilder();
+		stats = new OverallStatistics<>(builder);
+	}
+	
 	private Value createSample(String time, String value) {
 		BigDecimal val = null;
 		if (null != value) {
@@ -30,14 +39,14 @@ public class OverallStatisticsTest {
 	@Test
 	public void test_overallStats_empty() {
 		List<Value> empty = new LinkedList<>();
-		Map<String, String> stat = stats.overallStats(empty, empty);
-		assertEquals(0, stat.size());
+		stats.overallStats(empty, empty);
+		assertEquals(null, builder.get(LATEST_PCTILE));
 	}
 	
 	@Test
 	public void test_overallStats_null() {
-		Map<String, String> stat = stats.overallStats(null, null);
-		assertEquals(0, stat.size());
+		stats.overallStats(null, null);
+		assertEquals(null, builder.get(LATEST_PCTILE));
 	}
 	
 	
@@ -48,13 +57,12 @@ public class OverallStatisticsTest {
 		List<Value> monthSamples = new ArrayList<Value>(valueOrder);
 		StatisticsCalculator.sortByDateOrder(monthSamples);
 
-
-		Map<String, String> stat = stats.findMinMaxDatesAndDateRange(monthSamples, valueOrder);
+		stats.findMinMaxDatesAndDateRange(monthSamples, valueOrder);
 		
-		assertEquals("11.0", stat.get(RECORD_YEARS));
-		assertEquals("2006-03-01", stat.get(MIN_DATE));
-		assertEquals("2017-03-01", stat.get(MAX_DATE));
-		assertEquals("9.17", stat.get(LATEST_VALUE));
+		assertEquals("2006-03-01", builder.get(MIN_DATE));
+		assertEquals("2017-03-01", builder.get(MAX_DATE));
+		assertEquals("9.17", builder.get(LATEST_VALUE));
+		assertEquals("11.0", builder.get(RECORD_YEARS));
 	}
 	
 	@Test
@@ -65,23 +73,23 @@ public class OverallStatisticsTest {
 		List<Value> monthSamples = new ArrayList<Value>(valueOrder);
 		StatisticsCalculator.sortByDateOrder(monthSamples);
 
-		Map<String, String> stat = stats.overallStats(monthSamples, valueOrder);
+		stats.overallStats(monthSamples, valueOrder);
 		
-		assertEquals("11.0", stat.get(RECORD_YEARS));
-		assertEquals("2006-03-01", stat.get(MIN_DATE));
-		assertEquals("2017-03-01", stat.get(MAX_DATE));
-		assertEquals("9.17", stat.get(LATEST_VALUE));
+		assertEquals("2006-03-01", builder.get(MIN_DATE));
+		assertEquals("2017-03-01", builder.get(MAX_DATE));
+		assertEquals("9.17", builder.get(LATEST_VALUE));
 		
-		assertEquals("N", stat.get(IS_RANKED)); // default not ranked status
 		// value range
-		assertEquals("1.39", stat.get(MIN_VALUE));
-		assertEquals("9.44", stat.get(MAX_VALUE));
+		assertEquals("1.39", builder.get(MIN_VALUE));
+		assertEquals("9.44", builder.get(MAX_VALUE));
 		// number of samples
-		assertEquals("332", stat.get(SAMPLE_COUNT));
+		assertEquals("332", builder.get(SAMPLE_COUNT));
+		assertEquals("11.0", builder.get(RECORD_YEARS));
 		// percentile statistics
-		assertEquals("7.98", stat.get(MEDIAN));
+		assertEquals("7.98", builder.get(MEDIAN));
 		
-		assertEquals(DATE_FORMAT_FULL.format(new Date()), stat.get(CALC_DATE));
+		JsonData data = builder.build();
+		assertEquals(DATE_FORMAT_FULL.format(new Date()), data.getOverall().dateCalc);
 	}
 
 	protected void fillMarchData(List<Value> monthSamples) {

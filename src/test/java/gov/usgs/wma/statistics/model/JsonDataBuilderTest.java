@@ -14,7 +14,7 @@ import org.junit.Test;
 
 import gov.usgs.ngwmn.logic.WaterLevelStatistics.MediationType;
 
-public class JasonDataBuilderTest {
+public class JsonDataBuilderTest {
 	
 	final String VALUE_1    = "12.34";
 	final String VALUE_2    = "43.21";
@@ -24,7 +24,7 @@ public class JasonDataBuilderTest {
 	final String PERCENT_2  = "42";
 	final String MONTH_1    = "01";
 	final String MONTH_2    = "02";
-	final int    YEARS      = 24;
+	final String YEARS      = "24";
 	final int    COUNT      = 42;
 	final Value  SAMPLE_1   = new Value(DATE_UTC_1, VALUE_1);
 	final Value  SAMPLE_2   = new Value(DATE_UTC_2, VALUE_2);
@@ -112,13 +112,13 @@ public class JasonDataBuilderTest {
 	@Test
 	public void test_mediation() {
 		assertEquals(MediationType.NONE, data.mediation);
-		assertEquals(MediationType.NONE.toString(), data.values.get(MEDIATION));
+		assertEquals(null, data.values.get(MEDIATION));
 		
 		data.mediation(MediationType.AboveDatum);
 		
 		assertEquals(MediationType.AboveDatum, data.mediation);
-		assertEquals(MediationType.AboveDatum.toString(), data.values.get(MEDIATION));
-	}
+		assertEquals(null, data.values.get(MEDIATION));
+}
 	
 	@Test
 	public void test_minP50() {
@@ -310,6 +310,7 @@ public class JasonDataBuilderTest {
 	@Test
 	public void test_intermediateValue() {
 		assertEquals(0, data.intermediateValues.length());
+		data.setIncludeIntermediateValues(true);
 		data.intermediateValue(SAMPLE_1);
 		
 		assertTrue(data.intermediateValues.toString().contains(DATE_UTC_1));
@@ -324,6 +325,7 @@ public class JasonDataBuilderTest {
 	@Test
 	public void test_buildIntermediateValues() {
 		assertEquals(0, data.intermediateValues.length());
+		data.setIncludeIntermediateValues(true);
 		data.intermediateValue(SAMPLE_1);
 		data.intermediateValue(SAMPLE_2);
 		

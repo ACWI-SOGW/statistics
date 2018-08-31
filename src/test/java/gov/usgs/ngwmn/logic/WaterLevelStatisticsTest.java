@@ -1,7 +1,6 @@
 package gov.usgs.ngwmn.logic;
 
-import static gov.usgs.wma.statistics.logic.MonthlyStatistics.*;
-import static gov.usgs.wma.statistics.logic.OverallStatistics.*;
+import static gov.usgs.wma.statistics.model.JsonDataBuilder.*;
 import static org.junit.Assert.*;
 
 import java.math.BigDecimal;
@@ -24,13 +23,24 @@ import gov.usgs.ngwmn.model.PCode;
 import gov.usgs.ngwmn.model.Specifier;
 import gov.usgs.ngwmn.model.WLSample;
 import gov.usgs.wma.statistics.logic.StatisticsCalculator;
+import gov.usgs.wma.statistics.model.JsonData;
+import gov.usgs.wma.statistics.model.JsonDataBuilder;
+import gov.usgs.wma.statistics.model.JsonMonthly;
+import gov.usgs.wma.statistics.model.JsonOverall;
 import gov.usgs.wma.statistics.model.Value;
 
 
 public class WaterLevelStatisticsTest {
 
+	public static final String P10 = "P10";
+	public static final String P25 = "P25";
+	public static final String P50 = "P50";
+	public static final String P75 = "P75";
+	public static final String P90 = "P90";
+
 	WaterLevelStatistics stats = null;
 	Specifier spec = new Specifier();
+	private JsonDataBuilder builder;
 
 	private WLSample createSample(String time, String value) {
 		BigDecimal val = null;
@@ -87,7 +97,8 @@ public class WaterLevelStatisticsTest {
 
 	@Before
 	public void setup() {
-		stats = new WaterLevelStatistics();
+		builder = new JsonDataBuilder();
+		stats = new WaterLevelStatistics(builder);
 		spec = new Specifier("USGS", "Testing");
 
 	}
@@ -166,11 +177,12 @@ public class WaterLevelStatisticsTest {
 		monthSamples.add(createSample("2005-06-10T04:15:00-05:00", "1.0"));
 		monthSamples.add(createSample("2015-06-10T04:15:00-05:00", "2.0"));
 
-		boolean qualifies = new WLMonthlyStats(MediationType.AboveDatum)
+		builder.mediation(MediationType.AboveDatum);
+		boolean qualifies = new WLMonthlyStats(builder)
 				.doesThisMonthQualifyForStats(monthSamples);
 		assertFalse("A month must have 10 unique years of data not just a 10 yr date range.", qualifies);
 
-		qualifies = new WLMonthlyStats(MediationType.AboveDatum)
+		qualifies = new WLMonthlyStats(builder)
 				.doesThisMonthQualifyForStats(new ArrayList<>(2));
 		assertFalse("A month with zero should not cause trouble either.", qualifies);
 	}
@@ -188,7 +200,8 @@ public class WaterLevelStatisticsTest {
 		monthSamples.add(createSample("2005-06-10T04:15:00-05:00", "1.0"));
 		monthSamples.add(createSample("2015-06-10T04:15:00-05:00", "2.0"));
 
-		boolean qualifies = new WLMonthlyStats(MediationType.AboveDatum)
+		builder.mediation(MediationType.AboveDatum);
+		boolean qualifies = new WLMonthlyStats(builder)
 				.doesThisMonthQualifyForStats(monthSamples);
 		assertFalse("A month must have 10 unique years of data not just a 10 yr date range.", qualifies);
 	}
@@ -206,7 +219,8 @@ public class WaterLevelStatisticsTest {
 		monthSamples.add(createSample("2013-06-10T04:15:00-05:00", "1.0"));
 		monthSamples.add(createSample("2014-06-10T04:15:00-05:00", "2.0"));
 
-		boolean qualifies = new WLMonthlyStats(MediationType.AboveDatum)
+		builder.mediation(MediationType.AboveDatum);
+		boolean qualifies = new WLMonthlyStats(builder)
 				.doesThisMonthQualifyForStats(monthSamples);
 		assertTrue("A month with 10 unique years of data is valid.", qualifies);
 	}
@@ -225,7 +239,8 @@ public class WaterLevelStatisticsTest {
 		monthSamples.add(createSample("2014-06-10T04:15:00-05:00", "2.0"));
 		monthSamples.add(createSample("2015-06-10T04:15:00-05:00", "2.0"));
 
-		boolean qualifies = new WLMonthlyStats(MediationType.AboveDatum)
+		builder.mediation(MediationType.AboveDatum);
+		boolean qualifies = new WLMonthlyStats(builder)
 				.doesThisMonthQualifyForStats(monthSamples);
 		assertTrue("A month with 10 unique years of data is valid.", qualifies);
 	}
@@ -233,9 +248,10 @@ public class WaterLevelStatisticsTest {
 	@Test
 	public void test_overallStats_0() throws Exception {
 		List<WLSample> samples = new ArrayList<>(0);
-		Map<String,String> overall = stats.overallStats(samples, samples);
-		assertEquals("Expect empty stats for no rows", 0, overall.size());
+		stats.overallStats(samples, samples);
+		assertEquals("Expect empty stats for no stats", "0", builder.build().getOverall().recordYears);
 	}
+	
 	@Test
 	public void test_overallStats_min_max_1() throws Exception {
 		WLSample first = createSample("2005-06-10T04:15:00-05:00", "1.0");
@@ -243,15 +259,16 @@ public class WaterLevelStatisticsTest {
 		samples.add(first);
 		stats.setMediation(MediationType.AboveDatum);
 
-		Map<String,String> overall = stats.overallStats(samples, samples);
-		assertEquals("Expect max to be first.time", first.time, overall.get(MAX_DATE));
-		assertEquals("Expect min to be first.time", first.time, overall.get(MIN_DATE));
-		assertEquals("Expect max to be first.value", first.value.toString(), overall.get(MAX_VALUE));
-		assertEquals("Expect min to be first.value", first.value.toString(), overall.get(MIN_VALUE));
-		assertEquals("Expect latest to be first.value", first.value.toString(), overall.get(LATEST_VALUE));
-		assertEquals("Expect IS_RANKED to be 'N'", "N", overall.get(IS_RANKED));
+		stats.overallStats(samples, samples);
+		JsonOverall overall = builder.build().getOverall();
+		
+		assertEquals("Expect max to be first.time", first.time, overall.dateMax);
+		assertEquals("Expect min to be first.time", first.time, overall.dateMin);
+		assertEquals("Expect max to be first.value", first.value.toString(), overall.valueMax);
+		assertEquals("Expect min to be first.value", first.value.toString(), overall.valueMin);
+		assertEquals("Expect latest to be first.value", first.value.toString(), overall.latestValue);
 
-		assertEquals("Expect record_years to be zero for one record", "0.0", overall.get(RECORD_YEARS));
+		assertEquals("Expect record_years to be zero for one record", "0.0", overall.recordYears);
 	}
 	@Test
 	public void test_overallStats_min_max_2() throws Exception {
@@ -264,13 +281,15 @@ public class WaterLevelStatisticsTest {
 		StatisticsCalculator.sortByValueOrderAscending(sorted);
 
 		stats.setMediation(MediationType.AboveDatum);
-		Map<String,String> overall = stats.overallStats(samples, sorted);
-		assertEquals("Expect max to be max.time", max.time, overall.get(MAX_DATE));
-		assertEquals("Expect min to be min.time", min.time, overall.get(MIN_DATE));
-		assertEquals("Expect max to be max.value", max.value.toString(), overall.get(MAX_VALUE));
-		assertEquals("Expect min to be min.value", min.value.toString(), overall.get(MIN_VALUE));
+		stats.overallStats(samples, sorted);
+		JsonOverall overall = builder.build().getOverall();
+		
+		assertEquals("Expect max to be max.time", max.time, overall.dateMax);
+		assertEquals("Expect min to be min.time", min.time, overall.dateMin);
+		assertEquals("Expect max to be max.value", max.value.toString(), overall.valueMax);
+		assertEquals("Expect min to be min.value", min.value.toString(), overall.valueMin);
 
-		assertEquals("Expect record_years to be ten years", "10.0", overall.get(RECORD_YEARS));
+		assertEquals("Expect record_years to be ten years", "10.0", overall.recordYears);
 	}
 	@Test
 	public void test_overallStats_min_max_2_rev() throws Exception {
@@ -283,13 +302,15 @@ public class WaterLevelStatisticsTest {
 		StatisticsCalculator.sortByValueOrderAscending(sorted);
 
 		stats.setMediation(MediationType.AboveDatum);
-		Map<String,String> overall = stats.overallStats(samples, sorted);
-		assertEquals("Expect max to be max.time", max.time, overall.get(MAX_DATE));
-		assertEquals("Expect min to be min.time", min.time, overall.get(MIN_DATE));
-		assertEquals("Expect max to be max.value", max.value.toString(), overall.get(MAX_VALUE));
-		assertEquals("Expect min to be min.value", min.value.toString(), overall.get(MIN_VALUE));
+		stats.overallStats(samples, sorted);
+		JsonOverall overall = builder.build().getOverall();
+		
+		assertEquals("Expect max to be max.time", max.time, overall.dateMax);
+		assertEquals("Expect min to be min.time", min.time, overall.dateMin);
+		assertEquals("Expect max to be max.value", max.value.toString(), overall.valueMax);
+		assertEquals("Expect min to be min.value", min.value.toString(), overall.valueMin);
 
-		assertEquals("Expect record_years to be ten and 1/2 years", "10.5", overall.get(RECORD_YEARS));
+		assertEquals("Expect record_years to be ten and 1/2 years", "10.5", overall.recordYears);
 	}
 	@Test
 	public void test_overallStats_min_max_3() throws Exception {
@@ -304,13 +325,15 @@ public class WaterLevelStatisticsTest {
 		StatisticsCalculator.sortByValueOrderAscending(sorted);
 
 		stats.setMediation(MediationType.AboveDatum);
-		Map<String,String> overall = stats.overallStats(samples, sorted);
-		assertEquals("Expect max to be max.time", max.time, overall.get(MAX_DATE));
-		assertEquals("Expect min to be min.time", min.time, overall.get(MIN_DATE));
-		assertEquals("Expect max to be max.value", max.value.toString(), overall.get(MAX_VALUE));
-		assertEquals("Expect min to be min.value", min.value.toString(), overall.get(MIN_VALUE));
+		stats.overallStats(samples, sorted);
+		JsonOverall overall = builder.build().getOverall();
+		
+		assertEquals("Expect max to be max.time", max.time, overall.dateMax);
+		assertEquals("Expect min to be min.time", min.time, overall.dateMin);
+		assertEquals("Expect max to be max.value", max.value.toString(), overall.valueMax);
+		assertEquals("Expect min to be min.value", min.value.toString(), overall.valueMin);
 
-		assertEquals("Expect record_years to be 9 and 1/2 years", "9.5", overall.get(RECORD_YEARS));
+		assertEquals("Expect record_years to be 9 and 1/2 years", "9.5", overall.recordYears);
 	}
 	@Test
 	public void test_overallStats_count_median_3() throws Exception {
@@ -325,9 +348,11 @@ public class WaterLevelStatisticsTest {
 		StatisticsCalculator.sortByValueOrderAscending(sorted);
 
 		stats.setMediation(MediationType.AboveDatum);
-		Map<String,String> overall = stats.overallStats(samples, sorted);
-		assertEquals("Expect count to be 3", "3", overall.get(StatisticsCalculator.SAMPLE_COUNT));
-		assertEquals("Expect median to be mid.value", mid.value.toString(), overall.get(MEDIAN));
+		stats.overallStats(samples, sorted);
+		JsonOverall overall = builder.build().getOverall();
+		
+		assertEquals("Expect count to be 3", 3, overall.sampleCount);
+		assertEquals("Expect median to be mid.value", mid.value.toString(), overall.valueMedian);
 	}
 
 
@@ -469,25 +494,24 @@ public class WaterLevelStatisticsTest {
 		samples.add( explicitRemoved );  // should be REMOVED because provisional
 		samples.add( recentProvisional );// should be retained only for latest value because provisional most recent
 
-		String json = stats.calculate(spec, samples);
-
-		Map<String, String> overall = extractOverall(json);
-		Map<String, Map<String, String>> monthly = extractMonthly(json);
+		JsonData json = stats.calculate(spec, samples);
+		JsonOverall overall = json.getOverall();
+		Map<String, JsonMonthly> monthly = json.getMonthly();
 
 		assertNotNull("overall should not be null", overall);
 		assertNotNull("monthly should not be null", monthly);
 
-		assertEquals("Expect MIN_VALUE to be ", "1.0",      overall.get(MIN_VALUE));
-		assertEquals("Expect MAX_VALUE to be ", "1.0",      overall.get(MAX_VALUE));
-		assertEquals("Expect MEDIAN to be ", "1.0",         overall.get(MEDIAN));
-		assertEquals("Expect LATEST_VALUE to be ", "100.0", overall.get(LATEST_VALUE));
-		assertEquals("Expect LATEST_PCTILE to be ", "1",    overall.get(LATEST_PCTILE));
+		assertEquals("Expect MIN_VALUE to be ", "1.0",      overall.valueMin);
+		assertEquals("Expect MAX_VALUE to be ", "1.0",      overall.valueMax);
+		assertEquals("Expect MEDIAN to be ", "1.0",         overall.valueMedian);
+		assertEquals("Expect LATEST_VALUE to be ", "100.0", overall.latestValue);
+		assertEquals("Expect LATEST_PCTILE to be ", "1",    overall.latestPercentile);
 
-		assertEquals("Expect all percentile to be ", "1.0",    monthly.get("5").get(P10));
-		assertEquals("Expect all percentile to be ", "1.0",    monthly.get("5").get(P25));
-		assertEquals("Expect all percentile to be ", "1.0",    monthly.get("5").get(P50));
-		assertEquals("Expect all percentile to be ", "1.0",    monthly.get("5").get(P75));
-		assertEquals("Expect all percentile to be ", "1.0",    monthly.get("5").get(P90));
+		assertEquals("Expect all percentile to be ", "1.0",    monthly.get("5").percentiles.get(P10));
+		assertEquals("Expect all percentile to be ", "1.0",    monthly.get("5").percentiles.get(P25));
+		assertEquals("Expect all percentile to be ", "1.0",    monthly.get("5").percentiles.get(P50));
+		assertEquals("Expect all percentile to be ", "1.0",    monthly.get("5").percentiles.get(P75));
+		assertEquals("Expect all percentile to be ", "1.0",    monthly.get("5").percentiles.get(P90));
 	}
 
 
@@ -514,25 +538,24 @@ public class WaterLevelStatisticsTest {
 		samples.add( explicitRemoved );  // should be REMOVED because provisional
 		samples.add( recent );
 
-		String json = stats.calculate(spec, samples);
-
-		Map<String, String> overall = extractOverall(json);
-		Map<String, Map<String, String>> monthly = extractMonthly(json);
+		JsonData json = stats.calculate(spec, samples);
+		JsonOverall overall = json.getOverall();
+		Map<String, JsonMonthly> monthly = json.getMonthly();
 
 		assertNotNull("overall should not be null", overall);
 		assertNotNull("monthly should not be null", monthly);
 
-		assertEquals("Expect MIN_VALUE to be ", "100.0",     overall.get(MIN_VALUE));
-		assertEquals("Expect MAX_VALUE to be ",   "1.0",     overall.get(MAX_VALUE));
-		assertEquals("Expect MEDIAN to be ",      "1.0",     overall.get(MEDIAN));
-		assertEquals("Expect LATEST_VALUE to be ", "100.0",  overall.get(LATEST_VALUE));
-		assertEquals("Expect LATEST_PCTILE to be ", "0",     overall.get(LATEST_PCTILE));
+		assertEquals("Expect MIN_VALUE to be ", "100.0",     overall.valueMin);
+		assertEquals("Expect MAX_VALUE to be ",   "1.0",     overall.valueMax);
+		assertEquals("Expect MEDIAN to be ",      "1.0",     overall.valueMedian);
+		assertEquals("Expect LATEST_VALUE to be ", "100.0",  overall.latestValue);
+		assertEquals("Expect LATEST_PCTILE to be ", "0",     overall.latestPercentile);
 
-		assertEquals("Expect percentile to be 80.2", "80.2", monthly.get("5").get(P10));
-		assertEquals("Expect most percentile to be ", "1.0", monthly.get("5").get(P25));
-		assertEquals("Expect most percentile to be ", "1.0", monthly.get("5").get(P50));
-		assertEquals("Expect most percentile to be ", "1.0", monthly.get("5").get(P75));
-		assertEquals("Expect most percentile to be ", "1.0", monthly.get("5").get(P90));
+		assertEquals("Expect percentile to be 80.2", "80.2", monthly.get("5").percentiles.get(P10));
+		assertEquals("Expect most percentile to be ", "1.0", monthly.get("5").percentiles.get(P25));
+		assertEquals("Expect most percentile to be ", "1.0", monthly.get("5").percentiles.get(P50));
+		assertEquals("Expect most percentile to be ", "1.0", monthly.get("5").percentiles.get(P75));
+		assertEquals("Expect most percentile to be ", "1.0", monthly.get("5").percentiles.get(P90));
 	}
 
 
@@ -647,13 +670,13 @@ public class WaterLevelStatisticsTest {
 
 		int expected = monthSamples.size();
 
-		Map<String, String> stat = stats.overallStatistics.findMinMaxDatesAndDateRange(monthSamples, valueOrder);
+		stats.overallStatistics.findMinMaxDatesAndDateRange(monthSamples, valueOrder);
 
 		int actual = monthSamples.size();
 		assertEquals("should REMOVE most recent provisional value here", expected, actual+1);
 		assertFalse(monthSamples.contains(provisional));
 		assertFalse(valueOrder.contains(provisional));
-		assertEquals("most recent should be the provisional", provisional.value.toString(), stat.get(LATEST_VALUE));
+		assertEquals("most recent should be the provisional", provisional.value.toString(), builder.get(LATEST_VALUE));
 	}
 	@Test
 	public void testMostRecentProvistional_overallStats() {
@@ -666,14 +689,14 @@ public class WaterLevelStatisticsTest {
 		StatisticsCalculator.sortByDateOrder(monthSamples);
 
 		stats.setMediation(MediationType.AboveDatum);
-		Map<String, String> stat = stats.overallStats(monthSamples, valueOrder);
+		stats.overallStats(monthSamples, valueOrder);
 
-		assertEquals(provisional.value.toString(),stat.get(LATEST_VALUE));
+		assertEquals(provisional.value.toString(), builder.get(LATEST_VALUE));
 		assertFalse(monthSamples.contains(provisional));
 		assertFalse(valueOrder.contains(provisional));
 
-		assertEquals("7.98",stat.get(MEDIAN));
-		assertEquals("0.745",stat.get(LATEST_PCTILE));
+		assertEquals("7.98", builder.get(MEDIAN));
+		assertEquals("0.745", builder.get(LATEST_PCTILE));
 	}
 	@Test
 	public void testMostRecentProvistionalNONE_overallStats() {
@@ -685,14 +708,14 @@ public class WaterLevelStatisticsTest {
 		StatisticsCalculator.sortByDateOrder(monthSamples);
 
 		stats.setMediation(MediationType.AboveDatum);
-		Map<String, String> stat = stats.overallStats(monthSamples, valueOrder);
+		stats.overallStats(monthSamples, valueOrder);
 
-		assertEquals(notProvisional.value.toString(),stat.get(LATEST_VALUE));
+		assertEquals(notProvisional.value.toString(), builder.get(LATEST_VALUE));
 		assertTrue(monthSamples.contains(notProvisional));
 		assertTrue(valueOrder.contains(notProvisional));
 
-		assertEquals("7.98",stat.get(MEDIAN));
-		assertEquals("1",stat.get(LATEST_PCTILE));
+		assertEquals("7.98", builder.get(MEDIAN));
+		assertEquals("1", builder.get(LATEST_PCTILE));
 	}
 	@Test
 	public void testMostRecentProvistionalData_notRemoved() {
@@ -1092,8 +1115,9 @@ public class WaterLevelStatisticsTest {
 
 		List<WLSample> sorted = new LinkedList<>(samples);
 
+		builder.mediation(MediationType.AboveDatum);
 		// we are not testing this method so mock it to return what we need
-		WLMonthlyStats mockstats = new WLMonthlyStats(MediationType.AboveDatum) {
+		WLMonthlyStats mockstats = new WLMonthlyStats(builder) {
 			@Override
 			public List<WLSample> medianMonthlyValues(List<WLSample> monthSamples,
 					Function<List<WLSample>, List<WLSample>> sortBy) {
@@ -1103,20 +1127,21 @@ public class WaterLevelStatisticsTest {
 		};
 
 		StatisticsCalculator.sortByValueOrderAscending(sorted);
-		Map<String, Map<String, String>> monthly = mockstats.monthlyStats(sorted); // MediationType.AboveDatum
+		mockstats.monthlyStats(sorted); // MediationType.AboveDatum
+		Map<String, JsonMonthly> monthly = builder.build().getMonthly();
 
 		assertEquals("Expect only 3 monthly stats - the other three do not have ten yrs data", 3, monthly.size());
-		assertEquals("Expect May median to be", "95.1579", monthly.get("5").get(P50));
-		assertEquals("Expect Apr median to be", "94.1579", monthly.get("4").get(P50));
-		assertEquals("Expect Mar median to be", "93.1579", monthly.get("3").get(P50));
+		assertEquals("Expect May median to be", "95.1579", monthly.get("5").percentiles.get(P50));
+		assertEquals("Expect Apr median to be", "94.1579", monthly.get("4").percentiles.get(P50));
+		assertEquals("Expect Mar median to be", "93.1579", monthly.get("3").percentiles.get(P50));
 
-		assertEquals("Expect sample count to be ", "12", monthly.get("5").get(StatisticsCalculator.SAMPLE_COUNT));
-		assertEquals("Expect sample count to be ", "12", monthly.get("4").get(StatisticsCalculator.SAMPLE_COUNT));
-		assertEquals("Expect sample count to be ", "12", monthly.get("3").get(StatisticsCalculator.SAMPLE_COUNT));
+		assertEquals("Expect sample count to be ", 12, monthly.get("5").sampleCount);
+		assertEquals("Expect sample count to be ", 12, monthly.get("4").sampleCount);
+		assertEquals("Expect sample count to be ", 12, monthly.get("3").sampleCount);
 
-		assertEquals("Expect record years to be 11 because there are 11 unique years in the given data even though there are 12 data entries and not a difference of 10 because we count the months.", "11", monthly.get("5").get(RECORD_YEARS));
-		assertEquals("Expect record years to be 11 because there are 11 unique years in the given data even though there are 12 data entries and not a difference of 10 because we count the months.", "11", monthly.get("4").get(RECORD_YEARS));
-		assertEquals("Expect record years to be 11 because there are 11 unique years in the given data even though there are 12 data entries and not a difference of 10 because we count the months.", "11", monthly.get("3").get(RECORD_YEARS));
+		assertEquals("Expect record years to be 11 because there are 11 unique years in the given data even though there are 12 data entries and not a difference of 10 because we count the months.", "11", monthly.get("5").recordYears);
+		assertEquals("Expect record years to be 11 because there are 11 unique years in the given data even though there are 12 data entries and not a difference of 10 because we count the months.", "11", monthly.get("4").recordYears);
+		assertEquals("Expect record years to be 11 because there are 11 unique years in the given data even though there are 12 data entries and not a difference of 10 because we count the months.", "11", monthly.get("3").recordYears);
 	}
 	
 }
