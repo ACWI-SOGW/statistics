@@ -25,6 +25,7 @@ public class WaterLevelStatistics extends StatisticsCalculator<WLSample> {
 	
 	public WaterLevelStatistics(JsonDataBuilder stats) {
 		super(stats);
+		monthlyStats = new WLMonthlyStats(stats);
 	}
 	
 	protected static class WLMonthlyStats extends MonthlyStatistics<WLSample> {
@@ -90,20 +91,19 @@ public class WaterLevelStatistics extends StatisticsCalculator<WLSample> {
 	
 	public void setMediation(MediationType mediation) {
 		this.stats.mediation(mediation);
-		monthlyStats = new WLMonthlyStats(stats);
 	}
 	
 	
-	@Override
-	public List<WLSample> conditioning(Specifier spec, List<WLSample> samples) {
-		super.conditioning(spec, samples);
-		
-		MediationType mediation = findMostPrevalentMediation(spec, samples);
-		setMediation(mediation);
-		
-		List<WLSample> samplesByDate = useMostPrevalentPCodeMediatedValue(spec, samples, mediation); 
-		return samplesByDate;
-	}
+//	@Override
+//	public List<WLSample> conditioning(Specifier spec, List<WLSample> samples) {
+//		super.conditioning(spec, samples);
+//		
+//		MediationType mediation = findMostPrevalentMediation(spec, samples);
+//		setMediation(mediation);
+//		
+//		List<WLSample> samplesByDate = useMostPrevalentPCodeMediatedValue(spec, samples, stats.mediation()); 
+//		return samplesByDate;
+//	}
 	@Override
 	protected void removeProvisional(List<WLSample> samplesByDate, String dataSetId) {
 		removeProvisionalButNotMostRecent(samplesByDate, dataSetId);

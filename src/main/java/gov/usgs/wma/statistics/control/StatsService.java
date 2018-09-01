@@ -19,6 +19,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import gov.usgs.ngwmn.logic.WaterLevelStatistics;
+import gov.usgs.ngwmn.logic.WaterLevelStatistics.MediationType;
 import gov.usgs.ngwmn.model.Specifier;
 import gov.usgs.ngwmn.model.WLSample;
 import gov.usgs.wma.statistics.app.SwaggerConfig;
@@ -46,22 +47,35 @@ public class StatsService {
 			produces = MediaType.APPLICATION_JSON_UTF8_VALUE,
 			consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE
 		)
-	public ResponseEntity<String> service(
+	public ResponseEntity<String> calculate(
 			@ApiParam(
 					value  = SwaggerConfig.StatsService_CALCULATE_DATA,
 					example= SwaggerConfig.StatsService_EXAMPLE_RAW,
 					required = true
 				)
 			@RequestParam
-			String data) {
+			String data,
+			@ApiParam(
+					value="mediation",
+					defaultValue="NONE",
+					required=false,
+					allowMultiple=false,
+					allowableValues="AboveDatum,BelowLand,NONE,ASCENDING,DESCENDING",
+					allowEmptyValue=true
+					)
+			@RequestParam(defaultValue="NONE")
+			String mediate) {
 		
 		try {
 			List<WLSample> samples = parseData(data);
+			MediationType mediation = MediationType.valueOf(mediate);
+			JsonDataBuilder builder = new JsonDataBuilder();
+			builder.mediation(mediation);
 			
 			// A random identifier for the service unless we parameterize the date set ID.
 			Specifier spec = new Specifier();
 			
-			JsonData json = new WaterLevelStatistics(new JsonDataBuilder()).calculate(spec, samples);
+			JsonData json = new WaterLevelStatistics(builder).calculate(spec, samples);
 			
 			return ResponseEntity.ok( toJSON(json) );
 		} catch (Exception e) {
@@ -85,17 +99,29 @@ public class StatsService {
 					required = true
 				)
 			@RequestParam 
-			String data) {
+			String data,
+			@ApiParam(
+					value="mediation",
+					defaultValue="NONE",
+					required=false,
+					allowMultiple=false,
+					allowableValues="AboveDatum,BelowLand,NONE,ASCENDING,DESCENDING",
+					allowEmptyValue=true
+					)
+			@RequestParam(defaultValue="NONE")
+			String mediate) {
 		
 		try {
 			List<WLSample> samples = parseData(data);
+			MediationType mediation = MediationType.valueOf(mediate);
+			JsonDataBuilder builder = new JsonDataBuilder();
+			builder.mediation(mediation);
+			builder.setIncludeIntermediateValues(true);
 			
 			// A random identifier for the service unless we parameterize the date set ID.
 			Specifier spec = new Specifier();
 			
-			JsonDataBuilder stats = new JsonDataBuilder();
-			stats.setIncludeIntermediateValues(true);
-			JsonData json = new WaterLevelStatistics(stats).calculate(spec, samples);
+			JsonData json = new WaterLevelStatistics(builder).calculate(spec, samples);
 			
 			return ResponseEntity.ok( toJSON(json) );
 		} catch (Exception e) {

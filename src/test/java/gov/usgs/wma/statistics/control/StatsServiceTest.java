@@ -126,7 +126,7 @@ public class StatsServiceTest {
 
 		String data = "1999/01/01,1.00\n1999/01/02,2.00";
 		
-		ResponseEntity<String> resp = stats.service(data);
+		ResponseEntity<String> resp = stats.calculate(data, MediationType.NONE.toString());
 		
 		assertEquals(200, resp.getStatusCode().value());
 		assertTrue( resp.toString().contains("200 OK") );
@@ -158,7 +158,7 @@ public class StatsServiceTest {
 				"2017-06-10T04:15:00-05:00, 1.0\n"+
 				"2018-06-10T04:15:00-05:00, 1.0\n";
 		
-		ResponseEntity<String> resp = stats.service(data);
+		ResponseEntity<String> resp = stats.calculate(data, MediationType.NONE.toString());
 		LOGGER.trace(resp.getBody());
 		
 		assertEquals(200, resp.getStatusCode().value());
