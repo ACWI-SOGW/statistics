@@ -44,6 +44,8 @@ public class JsonDataBuilder {
 	
 	public static final String MONTH         = "MONTH";
 	
+	public static final String QUOTE         = "\"";
+	
 	/**
 	 * The list of percentiles to calculate.
 	 */
@@ -249,13 +251,7 @@ public class JsonDataBuilder {
 			return this;
 		}
 		
-		StringBuilder json = intermediateValues; // local alias
-		
-		if (json.length() == 0) {
-			json.append("\"");
-		}
-		json.append(sample.time).append(", ");
-		json.append(sample.value).append("\\n");
+		intermediateValues.append(sample.toCSV()).append("\\n");
 		
 		return this;
 	}
@@ -275,12 +271,9 @@ public class JsonDataBuilder {
 	public JsonDataBuilder buildIntermediateValues() {
 		jsonData.medians = "";
 		
-		if ( isIncludeIntermediateValues() ) {
-			if (intermediateValues.length() > 0) {
-				intermediateValues.append("\"");
-				jsonData.medians = intermediateValues.toString();
-				LOGGER.trace(intermediateValues.toString());
-			}
+		if ( isIncludeIntermediateValues() && intermediateValues.length() > 0) {
+			jsonData.medians = QUOTE + intermediateValues.toString() + QUOTE;
+			LOGGER.trace(intermediateValues.toString());
 		}
 		return this;
 	}

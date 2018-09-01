@@ -322,17 +322,18 @@ public class JsonDataBuilderTest {
 		assertTrue(data.intermediateValues.toString().contains(DATE_UTC_2));
 		assertTrue(data.intermediateValues.toString().contains(VALUE_2));
 
-		assertEquals('\"', data.intermediateValues.charAt(0));
 		int last = data.intermediateValues.length()-1;
 		assertEquals('n', data.intermediateValues.charAt(last));
 		
 		data.buildIntermediateValues();
-		
-		last = data.intermediateValues.length()-1;
-		assertEquals('"', data.intermediateValues.charAt(last));
-		
+
+		assertEquals('\"', data.jsonData.medians.charAt(0));
 		last = data.jsonData.medians.length()-1;
 		assertEquals('"', data.jsonData.medians.charAt(last));
+		
+		String expect = data.intermediateValues.toString();
+		String actual = data.jsonData.medians.replaceAll(QUOTE, "");
+		assertEquals(expect, actual);
 	}
 	
 	@Test
