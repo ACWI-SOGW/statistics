@@ -246,6 +246,10 @@ public class JsonDataBuilder {
 		return includeIntermediateValues;
 	}
 	
+	public String getIntermediateValues() {
+		return intermediateValues.toString();
+	}
+	
 	public JsonDataBuilder intermediateValue(Value sample) {
 		if ( ! isIncludeIntermediateValues()) {
 			return this;

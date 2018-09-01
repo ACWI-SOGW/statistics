@@ -1,7 +1,5 @@
 package gov.usgs.wma.statistics.logic;
 
-//import static gov.usgs.wma.statistics.model.Value.*;
-
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -134,7 +132,6 @@ public class MonthlyStatistics<S extends Value> extends StatisticsCalculator<S> 
 		}
 		// this cast works
 		sortValueByQualifier((List<S>)monthYearlyMedians);
-		stats.intermediateValues(monthYearlyMedians);
 		return monthYearlyMedians;
 	}
 	
@@ -155,6 +152,7 @@ public class MonthlyStatistics<S extends Value> extends StatisticsCalculator<S> 
 			}
 		}
 		normalizedSamples = sortBy.apply(normalizedSamples);
+		stats.intermediateValues(normalizedSamples);
 		
 		return normalizedSamples;
 	}

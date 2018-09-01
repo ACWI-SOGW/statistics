@@ -123,12 +123,15 @@ public class MonthlyStatisticsTest {
 		samples.add( createSample("2013-01-10T04:15:00-05:00", "93.1682") );
 		List<Value> sorted = new LinkedList<>(samples);
 		StatisticsCalculator.sortByValueOrderAscending(sorted);
+		builder.setIncludeIntermediateValues(true);
 		List<Value> yearly = stats.generateMonthYearlyPercentiles(sorted); // MediationType.AboveDatum
 
 		assertEquals("Expect 3 medians", 3, yearly.size());
 		assertEquals("Expect large median to be",  "95.1579", yearly.get(2).value.toString());
 		assertEquals("Expect middle median to be", "94.1579", yearly.get(1).value.toString());
 		assertEquals("Expect least median to be",  "93.1579", yearly.get(0).value.toString());
+		
+		assertEquals("generateMonthYearlyPercentiles should not added to intermediateValues.", 0, builder.getIntermediateValues().length());
 	}
 
 	@Test
@@ -254,8 +257,7 @@ public class MonthlyStatisticsTest {
 		// we are not testing this method so mock it to return what we need
 		MonthlyStatistics<Value> mockstats = new MonthlyStatistics<Value>(builder) {
 			@Override
-			public List<Value> medianMonthlyValues(List<Value> monthSamples,
-					Function<List<Value>, List<Value>> sortBy) {
+			public List<Value> medianMonthlyValues(List<Value> monthSamples, Function<List<Value>, List<Value>> sortBy) {
 				// do not modify, testing the months. This prevents normalization to test aggregations
 				return monthSamples;
 			}
@@ -757,7 +759,9 @@ public class MonthlyStatisticsTest {
 		// then check that averages removes them and that the new values are correct
 
 		int preCount = monthSamples.size();
+		builder.setIncludeIntermediateValues(true);
 		List<Value> normalizeMutlipleYearlyValues = stats.medianMonthlyValues(monthSamples, stats.sortFunctionByQualifier());
+		assertTrue("medianMonthlyValues should added to intermediateValues.", builder.getIntermediateValues().length() > 0);
 
 		assertEquals("normalize should have removed two values, one from each of two years", preCount-2, normalizeMutlipleYearlyValues.size());
 
