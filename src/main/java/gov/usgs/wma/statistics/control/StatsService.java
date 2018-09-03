@@ -57,14 +57,15 @@ public class StatsService {
 			@RequestParam
 			String data,
 			@ApiParam(
-					value="mediation",
-					defaultValue="NONE",
+					name="mediation",
+					value=SwaggerConfig.StatsService_CALCULATE_MEDIATION,
+					defaultValue="BelowLand",
 					required=false,
 					allowMultiple=false,
 					allowableValues="AboveDatum,BelowLand,NONE,ASCENDING,DESCENDING",
 					allowEmptyValue=true
 					)
-			@RequestParam(defaultValue="NONE")
+			@RequestParam(defaultValue="BelowLand")
 			String mediate,
 			@ApiParam(
 					defaultValue="false",
