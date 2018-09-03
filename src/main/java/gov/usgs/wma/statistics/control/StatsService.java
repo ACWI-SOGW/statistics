@@ -68,6 +68,7 @@ public class StatsService {
 			@RequestParam(defaultValue="BelowLand")
 			String mediate,
 			@ApiParam(
+					value=SwaggerConfig.StatsService_CALCULATE_MEDIANS,
 					defaultValue="false",
 					required=false,
 					allowMultiple=false,
