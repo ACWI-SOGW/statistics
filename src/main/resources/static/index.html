@@ -15,6 +15,11 @@
 		
 		<form id='statsForm'> <!-- action="/statistics/calculate" method="POST"> -->
 			<span>Input data:</span> <span style="color:#AAA;">Reload browser to recover sample data.</span><br>
+            <input type="radio" name="medians" value="true" checked="true">True
+            <input type="radio" name="medians" value="false">False
+            <input type="radio" name="mediation" value="AboveDatum">Above Datum
+            <input type="radio" name="mediation" value="BelowLand" checked="true">Below Land
+            <br>
 			<textarea rows="15" cols="50" name="data" id="data" alt="foo">
 2005-06-10T04:15:00-05:00, 1.000
 2006-06-10T04:15:00-05:00, 22.000
@@ -76,12 +81,8 @@
   	<script>
   	
 		$('#calc').click(function(){
-			var medians = ""
-			if (true) {
-				medians = "/medians"
-			}
 			// TODO figure out why a leading '/' was ok for the jar packaging
-			var url = "statistics/calculate"+medians
+			var url = "statistics/calculate"
 			$.post(url, $('#statsForm').serialize())
 			.done(function(resp) {
 				var reCommas = new RegExp(',', 'g');
@@ -110,7 +111,11 @@
 
 					var height = $("#data").css("height")
 					$("#medians")
-						.val(resp.medians)
+						.val(resp.medians
+	                         .replace('"','')
+                             .replace('"','')
+                             .split("\\n").join("\r\n")
+						    )
 						.css("height", height)
 					
 					var height = $("#mediansDiv").css("height")
