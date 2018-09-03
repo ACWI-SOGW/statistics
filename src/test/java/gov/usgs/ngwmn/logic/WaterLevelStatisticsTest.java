@@ -538,6 +538,8 @@ public class WaterLevelStatisticsTest {
 		samples.add( explicitRemoved );  // should be REMOVED because provisional
 		samples.add( recent );
 
+		builder.mediation(MediationType.BelowLand);
+		
 		JsonData json = stats.calculate(spec, samples);
 		JsonOverall overall = json.getOverall();
 		Map<String, JsonMonthly> monthly = json.getMonthly();

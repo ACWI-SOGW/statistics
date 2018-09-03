@@ -36,9 +36,10 @@ public class StatsService {
 	private static Logger LOGGER = org.slf4j.LoggerFactory.getLogger(StatsService.class);
 
 	private static final ResponseEntity<String> _404_ = new ResponseEntity<String>(HttpStatus.NOT_FOUND);
+
+	private static final String INCLUDE_MEDIANS = "true";
 	
 	
-//	@TimeSeriesData
 	@ApiOperation(
 			value = "Calculate Statistics Service",
 			notes = SwaggerConfig.StatsService_CALCULATE_NOTES
@@ -64,13 +65,23 @@ public class StatsService {
 					allowEmptyValue=true
 					)
 			@RequestParam(defaultValue="NONE")
-			String mediate) {
+			String mediate,
+			@ApiParam(
+					defaultValue="false",
+					required=false,
+					allowMultiple=false,
+					allowableValues="true,false",
+					allowEmptyValue=true
+					)
+			@RequestParam(defaultValue="false")
+			String medians) {
 		
 		try {
 			List<WLSample> samples = parseData(data);
 			MediationType mediation = MediationType.valueOf(mediate);
 			JsonDataBuilder builder = new JsonDataBuilder();
 			builder.mediation(mediation);
+			builder.setIncludeIntermediateValues(INCLUDE_MEDIANS.equals(medians));
 			
 			// A random identifier for the service unless we parameterize the date set ID.
 			Specifier spec = new Specifier();
@@ -83,51 +94,6 @@ public class StatsService {
 		}
 	}
 	
-//	@TimeSeriesData
-	@ApiOperation(
-			value = "Statistics Medians Service",
-			notes = SwaggerConfig.StatsService_MEDIANS_NOTES
-		)
-	@PostMapping(
-			value = "/calculate/medians",
-			produces = MediaType.APPLICATION_JSON_UTF8_VALUE
-		)
-	public ResponseEntity<String> medians(
-			@ApiParam(
-					value  = SwaggerConfig.StatsService_CALCULATE_DATA,
-					example= SwaggerConfig.StatsService_EXAMPLE_RAW,
-					required = true
-				)
-			@RequestParam 
-			String data,
-			@ApiParam(
-					value="mediation",
-					defaultValue="NONE",
-					required=false,
-					allowMultiple=false,
-					allowableValues="AboveDatum,BelowLand,NONE,ASCENDING,DESCENDING",
-					allowEmptyValue=true
-					)
-			@RequestParam(defaultValue="NONE")
-			String mediate) {
-		
-		try {
-			List<WLSample> samples = parseData(data);
-			MediationType mediation = MediationType.valueOf(mediate);
-			JsonDataBuilder builder = new JsonDataBuilder();
-			builder.mediation(mediation);
-			builder.setIncludeIntermediateValues(true);
-			
-			// A random identifier for the service unless we parameterize the date set ID.
-			Specifier spec = new Specifier();
-			
-			JsonData json = new WaterLevelStatistics(builder).calculate(spec, samples);
-			
-			return ResponseEntity.ok( toJSON(json) );
-		} catch (Exception e) {
-			return ResponseEntity.ok("{'status':400,'message':'"+e.getMessage()+"'");
-		}
-	}
 
 	public static String toJSON(JsonData stats) {
 		String json = "";
