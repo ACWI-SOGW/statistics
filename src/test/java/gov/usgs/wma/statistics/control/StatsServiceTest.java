@@ -163,9 +163,13 @@ public class StatsServiceTest {
 		
 		assertEquals(200, resp.getStatusCode().value());
 		assertTrue( resp.toString().contains("200 OK") );
-		assertFalse( resp.getBody().contains(MONTHLY_WARNING) );
 		
-		// checking for no hiddend 300, 400, or 500 status
+		String errors = resp.getBody().toString();
+		int errIndex = errors.indexOf("errors");
+		errors = errors.substring(errIndex);
+		assertFalse( errors.contains(MONTHLY_WARNING) );
+		
+		// checking for no hidden 300, 400, or 500 status
 		assertFalse( resp.getBody().contains("'status':3") );
 		assertFalse( resp.getBody().contains("'status':4") );
 		assertFalse( resp.getBody().contains("'status':5") );

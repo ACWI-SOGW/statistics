@@ -180,6 +180,7 @@ public class JsonDataBuilder {
 		collect();
 		buildIntermediateValues();
 		avoidNulls();
+		buildErrors();
 		return jsonData;
 	}
 	
@@ -187,7 +188,7 @@ public class JsonDataBuilder {
 		if (jsonData.overall == null) {
 			jsonData.overall = new JsonOverall("", 0, "", "", "", "", "", "", "", "", MediationType.NONE);
 		}
-		// TODO fill in other nulls
+		// TODO fill in other nulls ?
 	}
 
 	public JsonDataBuilder collect() {
@@ -214,6 +215,10 @@ public class JsonDataBuilder {
 		JsonMonthly monthly = new JsonMonthly(recordYears, sampleCount, values);
 		jsonData.monthly.put(month, monthly);
 	}
+	
+	public boolean hasMonthly() {
+		return jsonData.hasMonthly();
+	}
 
 	private JsonDataBuilder buildOverall(String recordYears, int sampleCount) {
 		this.values.put(CALC_DATE, DATE_FORMAT_FULL.format(new Date()));
@@ -238,8 +243,9 @@ public class JsonDataBuilder {
 		return values.containsKey(MONTH);
 	}
 	
-	public void setIncludeIntermediateValues(Boolean includeIntermediateValues) {
+	public JsonDataBuilder setIncludeIntermediateValues(Boolean includeIntermediateValues) {
 		this.includeIntermediateValues = includeIntermediateValues;
+		return this;
 	}
 	
 	public boolean isIncludeIntermediateValues() {
@@ -282,4 +288,28 @@ public class JsonDataBuilder {
 		return this;
 	}
 
+	public JsonDataBuilder error(String msg) {
+		jsonData.addError(msg);
+		return this;
+	}
+	public JsonDataBuilder errors(List<String> msgs) {
+		jsonData.addAllErrors(msgs);
+		return this;
+	}
+	public boolean isOk() {
+		return jsonData.isOk();
+	}
+	public boolean hasErrors() {
+		return jsonData.hasErrors();
+	}
+	
+	public void buildErrors() {
+		// if NO errors then do nothing
+		if (isOk()) {
+			return;
+		}
+		// if any errors clear the monthly stats
+		// TODO this is my guess as to what we want
+		jsonData.monthly.clear();
+	}
 }

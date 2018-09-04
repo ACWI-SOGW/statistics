@@ -145,7 +145,6 @@ public class WaterLevelStatistics extends StatisticsCalculator<WLSample> {
 		monthlyStats.sortValueByQualifier(sortedByValue);
 		
 		overallStats(samplesByDate, sortedByValue);
-		boolean hasMonthly = false;
 		
 		if ( isNotBlank( stats.get(RECORD_YEARS) ) ) {
 			BigDecimal years = new BigDecimal( stats.get(RECORD_YEARS) );
@@ -155,7 +154,7 @@ public class WaterLevelStatistics extends StatisticsCalculator<WLSample> {
 			try {
 				if ( doesThisSiteQualifyForMonthlyStats(years, recent, today) ) {
 					stats.collect();
-					hasMonthly = monthlyStats.monthlyStats(sortedByValue);
+					monthlyStats.monthlyStats(sortedByValue);
 				}
 			} catch (Exception e) {
 				// if anything goes wrong here we still want the overall
@@ -165,11 +164,10 @@ public class WaterLevelStatistics extends StatisticsCalculator<WLSample> {
 			LOGGER.warn("Record Years is null for {}:{}, by passing monthly stats.", spec.getAgencyCd(), spec.getSiteNo());
 		}
 		
-		if ( ! hasMonthly ) {
-			stats.month("1");
-			stats.sampleCount(0);
-			stats.recordYears(MONTHLY_WARNING);
-		}		
+		if ( ! stats.hasMonthly() ) {
+			stats.error(MONTHLY_WARNING);
+		}
+		
 		return stats.build();
 	}
 	
