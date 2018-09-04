@@ -1,20 +1,15 @@
 package gov.usgs.ngwmn.logic;
 
-import static gov.usgs.wma.statistics.logic.OverallStatistics.*;
+import static gov.usgs.wma.statistics.model.JsonDataBuilder.*;
 import static org.apache.commons.lang.StringUtils.*;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.function.Function;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import gov.usgs.ngwmn.model.DepthDatum;
 import gov.usgs.ngwmn.model.PCode;
@@ -23,16 +18,25 @@ import gov.usgs.ngwmn.model.WLSample;
 import gov.usgs.wma.statistics.logic.MonthlyStatistics;
 import gov.usgs.wma.statistics.logic.OverallStatistics;
 import gov.usgs.wma.statistics.logic.StatisticsCalculator;
+import gov.usgs.wma.statistics.model.JsonData;
+import gov.usgs.wma.statistics.model.JsonDataBuilder;
 
 public class WaterLevelStatistics extends StatisticsCalculator<WLSample> {
 	
-	protected static class WLMonthlyStats extends MonthlyStatistics<WLSample, WaterLevelStatistics.MediationType> {
-		public WLMonthlyStats(MediationType qualifier) {
-			super(qualifier);
+	public WaterLevelStatistics(JsonDataBuilder stats) {
+		super(stats);
+	}
+	
+	protected static class WLMonthlyStats extends MonthlyStatistics<WLSample> {
+		public WLMonthlyStats(JsonDataBuilder stats) {
+			super(stats);
 		}
 		@Override
 		public void sortValueByQualifier(List<WLSample> samples) {
-			if (qualifier == MediationType.BelowLand) {
+			if (stats.mediation() == MediationType.NONE) {
+				return;
+			}
+			if (stats.mediation() == MediationType.BelowLand || stats.mediation() == MediationType.DESCENDING) {
 				sortByValueOrderDescending(samples);
 			} else {
 				sortByValueOrderAscending(samples);
@@ -42,7 +46,7 @@ public class WaterLevelStatistics extends StatisticsCalculator<WLSample> {
 		public Function<List<WLSample>, List<WLSample>> sortFunctionByQualifier() {
 			Function<List<WLSample>, List<WLSample>> sortBy = StatisticsCalculator::sortByValueOrderAscending;
 			
-			if (qualifier == MediationType.BelowLand) {
+			if (stats.mediation() == MediationType.BelowLand || stats.mediation() == MediationType.DESCENDING) {
 				sortBy = StatisticsCalculator::sortByValueOrderDescending;
 			}
 			return sortBy;
@@ -56,16 +60,15 @@ public class WaterLevelStatistics extends StatisticsCalculator<WLSample> {
 	};
 	
 	
-	OverallStatistics<WLSample> overallStatistics = new OverallStatistics<WLSample>() {
+	OverallStatistics<WLSample> overallStatistics = new OverallStatistics<WLSample>(stats) {
 		@Override
-		public Map<String,String> findMinMaxDatesAndDateRange(List<WLSample> samples, List<WLSample> sortedByValue) {
-			Map<String,String>  stats = super.findMinMaxDatesAndDateRange(samples, sortedByValue);
+		public void findMinMaxDatesAndDateRange(List<WLSample> samples, List<WLSample> sortedByValue) {
+			super.findMinMaxDatesAndDateRange(samples, sortedByValue);
 			removeMostRecentProvisional(samples, sortedByValue);
-			return stats;
 		}
 	};
 	
-	MonthlyStatistics<WLSample, MediationType> monthlyStats;
+	MonthlyStatistics<WLSample> monthlyStats;
 	
 	/**
 	 * This is the agreed upon days window for a recent value. It is computed from
@@ -78,14 +81,16 @@ public class WaterLevelStatistics extends StatisticsCalculator<WLSample> {
 	private static final Logger LOGGER = LoggerFactory.getLogger(WaterLevelStatistics.class);
 	
 	public static enum MediationType {
-		BelowLand, 
-		AboveDatum;
+		NONE,
+		BelowLand,
+		AboveDatum,
+		ASCENDING,
+		DESCENDING;
 	}
 	
-	private MediationType mediation;
 	public void setMediation(MediationType mediation) {
-		this.mediation = mediation;
-		monthlyStats = new WLMonthlyStats(mediation);
+		this.stats.mediation(mediation);
+		monthlyStats = new WLMonthlyStats(stats);
 	}
 	
 	
@@ -132,25 +137,25 @@ public class WaterLevelStatistics extends StatisticsCalculator<WLSample> {
 	// TODO business rule for any one value error? continue without value or error entire statistics calculation?
 
 	@Override
-	public String calculate(Specifier spec, List<WLSample> samples) {
+	public JsonData calculate(Specifier spec, List<WLSample> samples) {
 		LOGGER.trace("Executing WaterLevel Stats calculations.");
 		
 		List<WLSample> samplesByDate = conditioning(spec, samples);
 		List<WLSample> sortedByValue  = new ArrayList<>(samplesByDate);
 		monthlyStats.sortValueByQualifier(sortedByValue);
 		
-		Map<String, String> overall = overallStats(samplesByDate, sortedByValue);
-		Map<String, Map<String, String>> monthly = null; // Could use empty collection rather than null?
+		overallStats(samplesByDate, sortedByValue);
+		boolean hasMonthly = false;
 		
-		if ( isNotBlank( overall.get(RECORD_YEARS) ) ) {
-			BigDecimal years = new BigDecimal( overall.get(RECORD_YEARS) );
-			String recent = overall.get(MAX_DATE);
+		if ( isNotBlank( stats.get(RECORD_YEARS) ) ) {
+			BigDecimal years = new BigDecimal( stats.get(RECORD_YEARS) );
+			String recent = stats.get(MAX_DATE);
 			String today = today();
 			
 			try {
 				if ( doesThisSiteQualifyForMonthlyStats(years, recent, today) ) {
-					overall.put(IS_RANKED, "Y");
-					monthly = monthlyStats.monthlyStats(sortedByValue);
+					stats.collect();
+					hasMonthly = monthlyStats.monthlyStats(sortedByValue);
 				}
 			} catch (Exception e) {
 				// if anything goes wrong here we still want the overall
@@ -159,43 +164,27 @@ public class WaterLevelStatistics extends StatisticsCalculator<WLSample> {
 		} else {
 			LOGGER.warn("Record Years is null for {}:{}, by passing monthly stats.", spec.getAgencyCd(), spec.getSiteNo());
 		}
-		Map<String, Object> stats = new HashMap<>();
-		stats.put("overall", overall);
 		
-		if (monthly == null) {
-			stats.put("monthly", MONTHLY_WARNING);
-		} else {
-			stats.put("monthly", monthly);
-		}
-		
-		String json = toJSON(stats);
-		LOGGER.debug(json);
-		return json;
+		if ( ! hasMonthly ) {
+			stats.month("1");
+			stats.sampleCount(0);
+			stats.recordYears(MONTHLY_WARNING);
+		}		
+		return stats.build();
 	}
 	
-	public static String toJSON(Map<String, Object> stats) {
-		String json = "";
-		try {
-			json = new ObjectMapper().writeValueAsString(stats);
-		} catch (JsonProcessingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
-		return json;
-	}
 
-	protected Map<String,String> overallStats(List<WLSample> samples, List<WLSample> sortedByValue) {
-		Map<String,String> stats = overallStatistics.overallStats(samples, sortedByValue);
-		if (stats.size() == 0) {
-			return stats;
+	protected void overallStats(List<WLSample> samples, List<WLSample> sortedByValue) {
+		overallStatistics.overallStats(samples, sortedByValue);
+		if (samples == null || samples.size() == 0) {
+			stats.recordYears("0");
+			stats.sampleCount(0);
+			stats.collect();
+			return;
 		}
 		
 		String latestPercentile = monthlyStats.percentileBasedOnMonthlyData(samples.get(samples.size()-1), samples);
-		stats.put(LATEST_PCTILE, latestPercentile);
-		
-		stats.put(MEDIATION, mediation.toString());
-		return stats;
+		stats.latestPercentile(latestPercentile);
 	}
 	
 
@@ -286,7 +275,7 @@ public class WaterLevelStatistics extends StatisticsCalculator<WLSample> {
 	protected WLSample makeMedian(List<WLSample> samples) {
 		// years median in the this month
 		BigDecimal medianValue = super.makeMedian(samples).value;
-		BigDecimal medianAbove = valueOfPercentile(samples, MEDIAN_PERCENTIAL, WLSample::valueOfAboveDatum);
+		BigDecimal medianAbove = valueOfPercentile(samples, MEDIAN_PERCENTILE, WLSample::valueOfAboveDatum);
 		WLSample base = samples.get( (int)(samples.size()/2) );
 		WLSample medianSample = new WLSample(medianValue, medianAbove, base);
 		return medianSample;

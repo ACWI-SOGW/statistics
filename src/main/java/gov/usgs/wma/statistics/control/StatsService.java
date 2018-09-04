@@ -4,132 +4,139 @@ package gov.usgs.wma.statistics.control;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
-import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import gov.usgs.ngwmn.logic.WaterLevelStatistics;
-import gov.usgs.ngwmn.logic.WaterLevelStatisticsControllerHelper;
 import gov.usgs.ngwmn.model.Specifier;
 import gov.usgs.ngwmn.model.WLSample;
-import gov.usgs.wma.statistics.model.Value;
+import gov.usgs.wma.statistics.app.SwaggerConfig;
+import gov.usgs.wma.statistics.model.JsonData;
+import gov.usgs.wma.statistics.model.JsonDataBuilder;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 
 @RestController
+@RequestMapping("/statistics")
 @CrossOrigin(origins = "*") // no credentials by default
+//@Api("StatisticsService")
 public class StatsService {
 	private static Logger LOGGER = org.slf4j.LoggerFactory.getLogger(StatsService.class);
 
 	private static final ResponseEntity<String> _404_ = new ResponseEntity<String>(HttpStatus.NOT_FOUND);
 	
-	/**
-	 * Example call: curl -X GET --header 'Accept: application/json' "http://localhost:8766/qualifiers/lookup/q"
-	 * Example call: curl -X GET --header 'Accept: application/json' "http://localhost:8766/qualifiers/lookup/Eqp"
-	 * Example call: curl -X GET --header 'Accept: application/json' "http://localhost:8766/qualifiers/lookup/Equipment"
-	 * 
-	 * @param agencyCd
-	 * @param siteNo
-	 * @return The JSON containing the statistics calculations.<br>
-	 * 	This is an example output of a sample site:<br>
-	 */
-	@RequestMapping(value = "/statistics/calculate/agencyCd/siteNo",
-			method   = RequestMethod.GET,
-			produces = "application/json; charset=utf-8")
-	public ResponseEntity<String> service(@PathVariable("qualifierCode") String agencyCd, @PathVariable("qualifierCode") String siteNo) {
-		
-		if ( StringUtils.isBlank(agencyCd) || StringUtils.isBlank(siteNo) ) {
-			return _404_;
-		}
-		
-		String json = "placeholder";
-//		json = new JsonResponseBuilder().build(codes);
-		
-		
-		return ResponseEntity.ok(json);
-	}
 	
-	@PostMapping(value = "/statistics/calculate",
-			produces = "application/json; charset=utf-8",
+//	@TimeSeriesData
+	@ApiOperation(
+			value = "Calculate Statistics Service",
+			notes = SwaggerConfig.StatsService_CALCULATE_NOTES
+		)
+	@PostMapping(value = "/calculate",
+			produces = MediaType.APPLICATION_JSON_UTF8_VALUE,
 			consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE
-			)
-	public ResponseEntity<String> service(@RequestParam Map<String, String> body) {
+		)
+	public ResponseEntity<String> service(
+			@ApiParam(
+					value  = SwaggerConfig.StatsService_CALCULATE_DATA,
+					example= SwaggerConfig.StatsService_EXAMPLE_RAW,
+					required = true
+				)
+			@RequestParam
+			String data) {
 		
 		try {
-			List<WLSample> samples = parseData(body);
+			List<WLSample> samples = parseData(data);
 			
 			// A random identifier for the service unless we parameterize the date set ID.
 			Specifier spec = new Specifier();
 			
-			String json = new WaterLevelStatistics().calculate(spec, samples);
+			JsonData json = new WaterLevelStatistics(new JsonDataBuilder()).calculate(spec, samples);
 			
-			return ResponseEntity.ok(json);
+			return ResponseEntity.ok( toJSON(json) );
 		} catch (Exception e) {
 			return ResponseEntity.ok("{'status':400,'message':'"+e.getMessage()+"'");
 		}
 	}
 	
-	@PostMapping(value = "/statistics/calculate/medians",
-			produces = "application/json; charset=utf-8",
-			consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE
-			)
-	public ResponseEntity<String> mediansService(@RequestParam Map<String, String> body) {
+//	@TimeSeriesData
+	@ApiOperation(
+			value = "Statistics Medians Service",
+			notes = SwaggerConfig.StatsService_MEDIANS_NOTES
+		)
+	@PostMapping(
+			value = "/calculate/medians",
+			produces = MediaType.APPLICATION_JSON_UTF8_VALUE
+		)
+	public ResponseEntity<String> medians(
+			@ApiParam(
+					value  = SwaggerConfig.StatsService_CALCULATE_DATA,
+					example= SwaggerConfig.StatsService_EXAMPLE_RAW,
+					required = true
+				)
+			@RequestParam 
+			String data) {
 		
 		try {
-			List<WLSample> samples = parseData(body);
+			List<WLSample> samples = parseData(data);
 			
 			// A random identifier for the service unless we parameterize the date set ID.
 			Specifier spec = new Specifier();
 			
-			List<WLSample> medians = new WaterLevelStatisticsControllerHelper().processSamplesUsedToCalculateStats(spec, samples, "13", true);
-			String jsonMedians = toJSONish(medians);
-			String json = new WaterLevelStatistics().calculate(spec, samples);
-
-			json = json.substring(0,json.length()-1) + ", \"medians\":" + jsonMedians + "}";
+			JsonDataBuilder stats = new JsonDataBuilder();
+			stats.setIncludeIntermediateValues(true);
+			JsonData json = new WaterLevelStatistics(stats).calculate(spec, samples);
 			
-			return ResponseEntity.ok(json);
+			return ResponseEntity.ok( toJSON(json) );
 		} catch (Exception e) {
 			return ResponseEntity.ok("{'status':400,'message':'"+e.getMessage()+"'");
 		}
 	}
 
-	public static String toJSONish(List<? extends Value> samples) {
-		StringBuilder json = new StringBuilder("\"");
-		for (Value sample : samples) {
-			json.append(sample.time).append(", ");
-			json.append(sample.value).append("\\n");
+	public static String toJSON(JsonData stats) {
+		String json = "";
+		try {
+			json = new ObjectMapper().writeValueAsString(stats);
+		} catch (JsonProcessingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
-		json.append("\"");
-		LOGGER.debug(json.toString());
-		return json.toString();
+		
+		return json;
 	}
 
 	
-	public List<WLSample> parseData(Map<String, String> body) {
-		String payload = body.get("data");
+	public List<WLSample> parseData(String data){
+		String[] rows = data.split("\r?\n");
+		return parseData(rows);
+	}
+	public List<WLSample> parseData(String[] data) {
 		
-		String[] rows = payload.split("\r?\n");
-		List<WLSample> samples = new ArrayList<>(rows.length);
+		List<WLSample> samples = new ArrayList<>(data.length);
 		
-		for (String row : rows) {
+		for (String row : data) {
 			row = row.trim();
-			if ( 0 == row.length() ) {
-				continue;
+			if ( 0 == row.length() || row.charAt(0) == '#') {
+				continue; // skip empty and comment rows
 			}
 			
 			String[] cols = row.split(",");
-			if (cols.length != 2) {
-				throw new RuntimeException("All rows must have two values: date,value. ");
+			if (cols.length == 0) {
+				continue; // skip empty rows
+			}
+			
+			if (cols.length < 2 || cols.length > 3) {
+				throw new RuntimeException("All rows must have two values and optional provisional code: date,value,P. ");
 			}
 			
 			String time = cols[0].trim();
@@ -141,6 +148,10 @@ public class StatsService {
 				BigDecimal value = new BigDecimal(cols[1].trim());
 				
 				WLSample sample = new WLSample(time, value, "ft", value, "", true, "", value);
+				
+				if (cols.length == 3) {
+					sample.setProvsional(true);
+				}
 				samples.add(sample);
 			} catch (NumberFormatException e) {
 				throw new RuntimeException("The water value must be valid. " + cols[1]);
@@ -149,38 +160,5 @@ public class StatsService {
 		
 		return samples;
 	}
-
-	
-	@RequestMapping(value="/statistics/calculate/internal", produces="text/html;charset=UTF-8")
-//	consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE
-	public String waterLevelStatsDataValuesUsed(
-			@PathVariable("agency") String agencyCd,
-			@PathVariable("site") String siteNo,
-			@RequestParam(value="month", required=false) String month,
-			@RequestParam(value="median",required=false) String median,
-			@RequestParam Map<String, String> body,
-			Model model
-	) {
-		boolean useMedians = StringUtils.isNotBlank(median);
-		
-		List<WLSample> samples = parseData(body);
-		Specifier spec = new Specifier();
-		
-		WaterLevelStatisticsControllerHelper stats = new WaterLevelStatisticsControllerHelper();
-		samples = stats.processSamplesUsedToCalculateStats(spec, samples, month, useMedians);
-		
-		model.addAttribute("samples",samples);
-		model.addAttribute("agencyCd", agencyCd);
-		model.addAttribute("siteNo", siteNo);
-
-		if (StringUtils.isNotBlank(month)) {
-			model.addAttribute("month", "month="+month);
-		}
-		if (useMedians) {
-			model.addAttribute("median", "median values presented");
-		}
-		return "waterlevel/data";
-	}
-	
 
 }

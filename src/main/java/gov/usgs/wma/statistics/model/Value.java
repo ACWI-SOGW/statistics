@@ -8,7 +8,6 @@ import java.util.Comparator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import gov.usgs.wma.statistics.logic.StatisticsCalculator;
 
 
 public class Value {
@@ -65,7 +64,7 @@ public class Value {
 		this.provisional = provisional;
 	}
 	public Value(Value base) {
-		this(base.time, base.value, base.provisional);
+		this(base.time, base.value, base.isProvisional());
 	}
 
 	public static BigDecimal valueOf(Value value) {
@@ -103,7 +102,14 @@ public class Value {
 		}
 		return 0;
 	}
-		
+	
+	/**
+	 * 
+	 * @param value the string encoded BigDecimal value to be checked
+	 * @param record the row number of the record
+	 * @param mySiteId the provider:site ID for the checked value
+	 * @return
+	 */
 	public static boolean checkBadValue(String value, int record, String mySiteId) {
 		if (value == null) {
 			LOGGER.warn("Water Level Error - value:null record:{} site:{}", record, mySiteId);
@@ -145,16 +151,23 @@ public class Value {
 		}
 		return false;
 	}
+
+	public static String monthUTC(String utc) {
+		return utc.substring(5,7);
+	}
+	public static String yearUTC(String utc) {
+		return utc.substring(0,4);
+	}
 	
 
 	public String getTime() {
 		return time;
 	}
 	public String getMonth() {
-		return StatisticsCalculator.monthUTC(time);
+		return monthUTC(time);
 	}
 	public String getYear() {
-		return StatisticsCalculator.yearUTC(time);
+		return yearUTC(time);
 	}
 	public BigDecimal getValue() {
 		return value;
@@ -189,8 +202,19 @@ public class Value {
 	public String toString() {
 		StringBuilder toString = new StringBuilder();
 		toString.append("Time:").append(time).append("\n")
-			.append("value:").append(isUnknown() ? UNKNOWN_VALUE : value).append("\n");
+			.append("value:").append(isUnknown() ? UNKNOWN_VALUE : value).append("\n")
+			.append( (isProvisional() ?"is:"+PROVISIONAL_CODE :"") );
 		return toString.toString();
 	}
 	
+	public String toCSV() {
+		return toCharacterSeparatedValue(",");
+	}
+	public String toCharacterSeparatedValue(String separator) {
+		StringBuilder toString = new StringBuilder();
+		toString.append(time).append(separator)
+			.append(isUnknown() ? UNKNOWN_VALUE : value).append(separator)
+			.append( (isProvisional() ?PROVISIONAL_CODE :"") );
+		return toString.toString();
+	}
 }

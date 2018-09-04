@@ -1,6 +1,5 @@
 package gov.usgs.wma.statistics.logic;
 
-import static gov.usgs.wma.statistics.logic.MonthlyStatistics.*;
 import static gov.usgs.wma.statistics.logic.SigFigMathUtil.*;
 import static org.junit.Assert.*;
 
@@ -8,7 +7,6 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -23,6 +21,7 @@ import org.slf4j.LoggerFactory;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import gov.usgs.ngwmn.logic.WaterLevelStatistics.MediationType;
+import gov.usgs.wma.statistics.model.JsonDataBuilder;
 import gov.usgs.wma.statistics.model.Value;
 
 
@@ -30,9 +29,19 @@ import gov.usgs.wma.statistics.model.Value;
 
 public class StatisticsCalculatorTest {
 	private static final Logger LOGGER = LoggerFactory.getLogger(StatisticsCalculatorTest.class);
-
+	
+	public static final String P10 = "P10";
+	public static final String P25 = "P25";
+	public static final String P50 = "P50";
+	public static final String P75 = "P75";
+	public static final String P90 = "P90";
+	
+	static final Map<String, BigDecimal> PERCENTILES = new JsonDataBuilder().buildPercentiles();
+	
 	StatisticsCalculator<Value> stats;
-	MonthlyStatistics<Value, MediationType> monthlyStats;
+	
+	MonthlyStatistics<Value> monthlyStats;
+	
 
 	private Value createSample(String time, String value) {
 		BigDecimal val = null;
@@ -87,7 +96,9 @@ public class StatisticsCalculatorTest {
 	@Before
 	public void setup() {
 		stats = new StatisticsCalculator<Value>();
-		monthlyStats = new MonthlyStatistics<Value, MediationType>(MediationType.AboveDatum);
+		JsonDataBuilder builder = new JsonDataBuilder();
+		builder.mediation(MediationType.AboveDatum);
+		monthlyStats = new MonthlyStatistics<Value>(builder);
 	}
 
 
@@ -211,44 +222,6 @@ public class StatisticsCalculatorTest {
 		stats.removeNulls(samples, "well id");
 		assertEquals("null instance should be removed", 2, samples.size());
 	}
-
-	@Test
-	public void test_today__ensure_that_the_today_method_returns_the_current_month_and_year() throws Exception {
-		String today = StatisticsCalculator.today();
-		Date date = new Date();
-
-		// the Date.getYear() returns a previous century truncated value (88 rather than 1988)
-		// and it returns 116 for 2016; hence the deprecation and addition of 1900 for a proper year number
-		@SuppressWarnings("deprecation")
-		String year = ""+(date.getYear()+1900); // see Calendar.get(Calendar.YEAR)
-		assertEquals(year, StatisticsCalculator.yearUTC(today) );
-
-		// months are zero based in Date and humans use one based - i.e. January return zero but we want 1.
-		// further more, for testing we want a double digit month zero padded. There are many ways (and most better)
-		// than this to get such a value but it is a quick way to get what is needed without the complication of Calendar.
-		@SuppressWarnings("deprecation")
-		String month = ""+(date.getMonth()+1); // see Calendar.get(Calendar.MONTH)
-		month = (month.length() == 1 ?"0" :"") + month;
-		assertEquals(month, StatisticsCalculator.monthUTC(today) );
-	}
-
-	@Test
-	public void test_month_year_extract_from_UTC() throws Exception {
-		String dateUTC = "2000-12-23...";
-
-		String year = dateUTC.substring(0, 4);
-		assertEquals("2000", year);
-
-		String month = dateUTC.substring(5, 7);
-		assertEquals("12", month);
-
-		year = StatisticsCalculator.yearUTC(dateUTC);
-		assertEquals("2000", year);
-
-		month = StatisticsCalculator.monthUTC(dateUTC);
-		assertEquals("12", month);
-	}
-
 
 	@Test
 	public void test_overallStats_OrderSamples_3() throws Exception {
@@ -531,7 +504,7 @@ public class StatisticsCalculatorTest {
 		samples.add( createSample("2015-12-10T04:15:00-05:00", "95.1682") );
 		List<Value> sorted = new LinkedList<>(samples);
 		StatisticsCalculator.sortByValueOrderAscending(sorted);
-		Map<String,String> percentiles = stats.generatePercentiles(sorted, PERCENTILES);
+		JsonDataBuilder percentiles = stats.generatePercentiles(sorted, PERCENTILES);
 		// as you might expect the values are low for low percentile and high for high percentile because measured above a datum
 		assertEquals("Expect P10 to be ", "95.0705", percentiles.get(P10));
 		assertEquals("Expect P25 to be ", "95.1098", percentiles.get(P25));
@@ -556,7 +529,7 @@ public class StatisticsCalculatorTest {
 		samples.add( createSample("2015-12-10T04:15:00-05:00", "95.1682") );
 		List<Value> sorted = new LinkedList<>(samples);
 		StatisticsCalculator.sortByValueOrderDescending(sorted); // <--------  sorting DESCENDING instead of Ascending
-		Map<String,String> percentiles = stats.generatePercentiles(sorted, PERCENTILES);
+		JsonDataBuilder percentiles = stats.generatePercentiles(sorted, PERCENTILES);
 		// NOTICE: the values are low for high percentile and high for low percentile because measured below surface
 		assertEquals("Expect P10 to be ", "95.1981", percentiles.get(P10));
 		assertEquals("Expect P25 to be ", "95.1896", percentiles.get(P25));

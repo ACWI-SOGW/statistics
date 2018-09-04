@@ -1,0 +1,195 @@
+swagger: "2.0"
+info:
+  description: "This is a data statistics service."
+  version: "0.1.0"
+  title: "USGS Water Statistics"
+  termsOfService: "https://www.usgs.gov/information-policies-and-instructions"
+  contact:
+    email: "tbd@usgs.gov"
+  license:
+    name: "Placeholder Public Domain"
+    url: "https://en.wikipedia.org/wiki/Public_domain"
+host: "cida.usgs.gov"
+basePath: "/v2"
+tags:
+- name: "statistics"
+  description: "Everything about your Pets"
+  externalDocs:
+    description: "Find out more"
+    url: "cida.usgs.gov/ngmwn/statisitics/about"
+schemes:
+- "https"
+paths:
+  /calculate:
+    post:
+      tags:
+      - "calculate"
+      summary: "calculate time series statistics"
+      description: ""
+      operationId: "calculate"
+      consumes:
+      - "text/csv"
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "CSV Time Series Data"
+        required: true
+        schema:
+          $ref: "#/definitions/TimeSeries"
+      responses:
+        default:
+          description: "Time Series Statistics"
+          schema:
+            $ref: "#/definitions/statistics"
+        405:
+          description: "Invalid input"
+  /calculate/medians:
+    post:
+      tags:
+      - "calculate"
+      summary: "Creates Time Series Statistics"
+      description: ""
+      operationId: ""
+      produces:
+      - "text/csv"
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "List of Time Series Data"
+        required: true
+        schema:
+          type: "string"
+          items:
+            $ref: "#/definitions/TimeSeries"
+      responses:
+        default:
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/medians"
+
+securityDefinitions:
+
+definitions:
+  TimeSeries:
+    type: "string"
+    description: "Comma Separated Time, Value, Aging"
+    example: "2007-05-10T04:15:00-05:00, 10.00\\n 2008-05-10T04:15:00-05:00, 9, P\\n"
+    
+  statistics:
+    type: "object"
+    properties:
+      monthly:
+        type: "array"
+        items:
+          $ref: '#/definitions/monthly'
+        description: "Actually, it is an 'object' that looks like an array that swagger cannot articualte. Each integer entry is the month number. January is month number 1 and December is month number 12. There will be entries only for the months that there was data to calculate statistics. If this object is empty then overall.IS_RANKED will be 'N'"
+      overall:
+        $ref: '#/definitions/overall'
+      
+  monthly:
+    type: "object"
+
+    properties:
+      P10:
+        type: "string"
+        format: "#.#"
+        description: "The 10th Percential of the Month"
+      P25:
+        type: "string"
+        format: "#.#"
+        description: "The 25th Percential of the Month"
+      P50:
+        type: "string"
+        format: "#.#"
+        description: "The 50th Percential of the Month"
+      P75:
+        type: "string"
+        format: "#.#"
+        description: "The 75th Percential of the Month"
+      P90:
+        type: "string"
+        format: "#.#"
+        description: "The 90th Percential of the Month"
+      P50_MIN:
+        type: "string"
+        format: "#.#"
+        description: "The minimum 50th Percential of the Month"
+      P50_MAX:
+        type: "string"
+        format: "#.#"
+        description: "The maximum 50th Percential of the Month"
+
+  overall:
+    type: "object"
+
+    properties:
+      CALC_DATE:
+        type: "string"
+        format: "UTC Date"
+        description: "The timestamp of calculation."
+      MIN_DATE:
+        type: "string"
+        format: "UTC Date"
+        description: "The date of the first sample."
+      MAX_DATE:
+        type: "string"
+        format: "UTC Date"
+        description: "The date of the most recent sample, that of the LATEST_VALUE."
+      RECORD_YEARS:
+        type: "string"
+        format: "#"
+        description: "The number of year of data or the period of record in years."
+      LATEST_PCTILE:
+        type: "string"
+        format: "#.#"
+        description: "The percential for the most recent value."
+      LATEST_VALUE:
+        type: "string"
+        format: "#.#"
+        description: "The most recent measurement."
+      MIN_VALUE:
+        type: "string"
+        format: "#.#"
+        description: "The sample representing the lowest water level or deepest too water surface from land."
+      MAX_VALUE:
+        type: "string"
+        format: "#.#"
+        description: "The sample representing the highest water level or shallowest too water surface from land."
+      MEDIAN:
+        type: "string"
+        format: "#.#"
+        description: "The 50th Percential of all data."
+      MEDIATION:
+        type: "string"
+        enum: 
+        - AboveDatum
+        - BelowLand
+        description: "Idecates if groundwater measurements were made from top-down or bottom-up. Where top is land surface with a given elevation and bottom is sealevel on a given date."
+      IS_RANKED:
+        type: "string"
+        format: "Y/N"
+        default: "N"
+        description: "Set to 'Y' when data qualifies for at least one Monthly statistics."
+
+  medians:
+    type: "object"
+    properties:
+      medians:
+        type: "string"
+        format: "UTC, Value\\n..."
+        description: "A string CSV list of date:value pairs."
+      monthly:
+        type: "array"
+        items:
+          $ref: '#/definitions/monthly'
+        description: "See statistics model for details."
+      overall:
+        $ref: '#/definitions/overall'
+
+externalDocs:
+  description: "Find out more about Statistics"
+  url: "http://nist.gov"

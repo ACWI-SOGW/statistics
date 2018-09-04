@@ -4,9 +4,7 @@ import static gov.usgs.ngwmn.logic.WaterLevelStatistics.*;
 import static org.junit.Assert.*;
 
 import java.math.BigDecimal;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -14,7 +12,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 
 import gov.usgs.ngwmn.model.WLSample;
-import gov.usgs.wma.statistics.control.StatsService;
 
 public class StatsServiceTest {
 	private static final Logger LOGGER = LoggerFactory.getLogger(StatsServiceTest.class);
@@ -23,10 +20,7 @@ public class StatsServiceTest {
 	public void test_parseData_oneFineDatum() {
 		StatsService stats = new StatsService();
 
-		String values = "1999/01/01,1.00";
-		
-		Map<String, String> data = new HashMap<>();
-		data.put("data", values);
+		String data = "1999/01/01,1.00";
 		
 		List<WLSample> parsed = stats.parseData(data);
 		
@@ -39,10 +33,7 @@ public class StatsServiceTest {
 	public void test_parseData_twoFineData() {
 		StatsService stats = new StatsService();
 
-		String values = "1999/01/01,1.00\n1999/01/02,2.00";
-		
-		Map<String, String> data = new HashMap<>();
-		data.put("data", values);
+		String data = "1999/01/01,1.00\n1999/01/02,2.00";
 		
 		List<WLSample> parsed = stats.parseData(data);
 		
@@ -55,10 +46,7 @@ public class StatsServiceTest {
 	public void test_parseData_twoWindowsData() {
 		StatsService stats = new StatsService();
 
-		String values = "1999/01/01,1.00\r\n1999/01/02,2.00";
-		
-		Map<String, String> data = new HashMap<>();
-		data.put("data", values);
+		String data = "1999/01/01,1.00\r\n1999/01/02,2.00";
 		
 		List<WLSample> parsed = stats.parseData(data);
 		
@@ -71,10 +59,7 @@ public class StatsServiceTest {
 	public void test_parseData_twoWhitespaceData() {
 		StatsService stats = new StatsService();
 
-		String values = " 1999/01/01 , 1.00 \n\t1999/01/02\t,\t2.00\t";
-		
-		Map<String, String> data = new HashMap<>();
-		data.put("data", values);
+		String data = " 1999/01/01 , 1.00 \n\t1999/01/02\t,\t2.00\t";
 		
 		List<WLSample> parsed = stats.parseData(data);
 		
@@ -87,10 +72,7 @@ public class StatsServiceTest {
 	public void test_parseData_twoMissingRowData() {
 		StatsService stats = new StatsService();
 
-		String values = "1999/01/01,1.00 \n \n 1999/01/02,2.00";
-		
-		Map<String, String> data = new HashMap<>();
-		data.put("data", values);
+		String data = "1999/01/01,1.00 \n \n 1999/01/02,2.00";
 		
 		List<WLSample> parsed = stats.parseData(data);
 		
@@ -103,10 +85,7 @@ public class StatsServiceTest {
 	public void test_parseData_twoMissingDateData() {
 		StatsService stats = new StatsService();
 
-		String values = ",1.00\n1999/01/02,2.00";
-		
-		Map<String, String> data = new HashMap<>();
-		data.put("data", values);
+		String data = ",1.00\n1999/01/02,2.00";
 		
 		try {
 			stats.parseData(data);
@@ -119,10 +98,7 @@ public class StatsServiceTest {
 	public void test_parseData_twoBadDateData() {
 		StatsService stats = new StatsService();
 
-		String values = "199/01/01,1.00\n1999/01/02,2.00";
-		
-		Map<String, String> data = new HashMap<>();
-		data.put("data", values);
+		String data = "199/01/01,1.00\n1999/01/02,2.00";
 		
 		try {
 			stats.parseData(data);
@@ -135,10 +111,7 @@ public class StatsServiceTest {
 	public void test_parseData_twoBadValueData() {
 		StatsService stats = new StatsService();
 
-		String values = "1999/01/01,1a.00\n1999/01/02,2.00";
-		
-		Map<String, String> data = new HashMap<>();
-		data.put("data", values);
+		String data = "1999/01/01,1a.00\n1999/01/02,2.00";
 		
 		try {
 			stats.parseData(data);
@@ -151,10 +124,7 @@ public class StatsServiceTest {
 	public void test_service_twoFineData() {
 		StatsService stats = new StatsService();
 
-		String values = "1999/01/01,1.00\n1999/01/02,2.00";
-		
-		Map<String, String> data = new HashMap<>();
-		data.put("data", values);
+		String data = "1999/01/01,1.00\n1999/01/02,2.00";
 		
 		ResponseEntity<String> resp = stats.service(data);
 		
@@ -172,7 +142,7 @@ public class StatsServiceTest {
 	public void test_doesThisMonthQualifyForStats_hasTenYearsData() throws Exception {
 		StatsService stats = new StatsService();
 
-		String values =
+		String data =
 				"2005-06-10T04:15:00-05:00, 1.0\n"+
 				"2006-06-10T04:15:00-05:00, 2.0\n"+
 				"2007-06-10T04:15:00-05:00, 1.0\n"+
@@ -187,9 +157,6 @@ public class StatsServiceTest {
 				"2016-06-10T04:15:00-05:00, 1.0\n"+
 				"2017-06-10T04:15:00-05:00, 1.0\n"+
 				"2018-06-10T04:15:00-05:00, 1.0\n";
-		
-		Map<String, String> data = new HashMap<>();
-		data.put("data", values);
 		
 		ResponseEntity<String> resp = stats.service(data);
 		LOGGER.trace(resp.getBody());
