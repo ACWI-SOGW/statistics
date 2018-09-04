@@ -50,18 +50,14 @@ public class MonthlyStatistics<S extends Value> extends StatisticsCalculator<S> 
 	
 	
 	public List<S> filterValuesByGivenMonth(List<S> samples, final String month) {
-		// using predicate because spring 3.x includes cglib that cannot compile lambdas
-		Predicate<S> monthly = new Predicate<S>() {
-			@Override
-			public boolean test(S value) {
+		List<S> monthSamples = samples.stream().filter(
+			value -> {
 				if (value == null || month == null) {
 					return false;
 				}
 				String paddedMonth =  ((month.length()==1) ?"0" :"")+month;
 				return Value.monthUTC(value.time).equals(paddedMonth);
-			}
-		};
-		List<S> monthSamples = samples.stream().filter(monthly).collect(Collectors.toList());
+			}).collect(Collectors.toList());
 		return monthSamples;
 	}
 

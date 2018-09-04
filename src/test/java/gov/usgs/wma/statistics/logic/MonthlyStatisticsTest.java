@@ -826,4 +826,41 @@ public class MonthlyStatisticsTest {
 		monthSamples.add( createSample("1964-04-02T12:00:00", "1.7") );
 		monthSamples.add( createSample("1965-04-05T12:00:00", "1.7") );
 	}
+	
+	@Test
+	public void test_monlthlyValues_nullProtection() {
+		List<Value> samples = new LinkedList<>();
+		fillAprilData(samples);
+		String month = null;
+		List<Value> actual = stats.filterValuesByGivenMonth(samples, month);
+		assertEquals(0, actual.size());
+		
+		samples = new LinkedList<>();
+		samples.add(null);
+		month = "01";
+		actual = stats.filterValuesByGivenMonth(samples, month);
+		assertEquals(0, actual.size());
+	}
+	
+	@Test
+	public void test_monthlyStats_nullAndEmptyProtection() {
+		List<Value> samples = new LinkedList<>();
+		boolean actual = stats.monthlyStats(samples);
+		assertFalse(actual);
+
+		samples = null;
+		actual = stats.monthlyStats(samples);
+		assertFalse(actual);
+	}
+
+	@Test
+	public void test_doesThisMonthQualifyForStats() {
+		List<Value> samples = new LinkedList<>();
+		boolean actual = stats.doesThisMonthQualifyForStats(samples);
+		assertFalse(actual);
+
+		samples = null;
+		actual = stats.doesThisMonthQualifyForStats(samples);
+		assertFalse(actual);
+	}
 }
