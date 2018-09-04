@@ -133,22 +133,6 @@ public class StatisticsCalculatorTest {
 		BigDecimal yrs = StatisticsCalculator.yearDiff("2011-01-01", "2000-01-01");
 		assertEquals("11.0", yrs.toString());
 	}
-	// I used this much more complex method to ensure the above was working.
-	// The below is more accurate than necessary.
-//	try {
-//		Date begin = YEAR_MONTH_DAY.parse( fixMissingMonthAndDay(minDate) );
-//		Date end   = YEAR_MONTH_DAY.parse( fixMissingMonthAndDay(maxDate) );
-//		ReadableInterval duration = new Interval(begin.getTime(), end.getTime());
-//		double yrs = Weeks.weeksIn(duration).getWeeks()/52.0;
-//		MathContext mc = new MathContext(4);
-//		if (yrs > 10) {
-//			mc = new MathContext(5);
-//		}
-//		return new BigDecimal(yrs, mc);
-//	} catch(ParseException e) {
-//		return BigDecimal.ZERO;
-//	}
-
 
 	@Test
 	public void test_daysDiff_1day() throws Exception {
@@ -548,7 +532,6 @@ public class StatisticsCalculatorTest {
 		try {
 			calculations = new ObjectMapper().readValue(json, Map.class);
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return calculations;
@@ -940,12 +923,12 @@ public class StatisticsCalculatorTest {
 		monthSamples.add( createSample("1964-07-02T12:00:00", "1.7") );
 		monthSamples.add( createSample("1963-07-03T12:00:00", "1.6") );
 		monthSamples.add( createSample("1962-07-20T12:00:00", "1.0") );
-/*  these two entries
+/*  these two entries that I wish to keep in this comment block
 		monthSamples.add( createSample("1966-07-27T12:00:00", "2.2") );
 		monthSamples.add( createSample("1966-07-01T12:00:00", "2.0") );
 	get normalized to this (by median or mean using 50 percentile of the list)
 		monthSamples.add( createSample("1966-07-01T12:00:00", "2.1") );
-	even so thes only have an impact on the answer because the count it reduced by one
+	even so these only have an impact on the answer because the count it reduced by one
 */
 	}
 
@@ -1168,7 +1151,6 @@ public class StatisticsCalculatorTest {
 	
 	@Test
 	public void test_percentileOfValue_nullAndEmptyProtection() {
-		//(List<T> samples, T sample, int precision, Function<T, BigDecimal> valueOf) {
 		Value value = null;
 		List<Value> values = new LinkedList<>();
 		values.add( createSample("1963-12-02T12:00:00", "1.3") );
@@ -1223,7 +1205,6 @@ public class StatisticsCalculatorTest {
 
 	@Test
 	public void test_valueOfPercentile_nullAndEmptyProtection() {
-	//(List<S> samples, BigDecimal percentileAsFraction, int precision,Function<S, BigDecimal> valueOf) {
 		BigDecimal percentile = BigDecimal.ONE;
 		List<Value> values = new LinkedList<>();
 		values.add( createSample("1963-12-02T12:00:00", "1.3") );

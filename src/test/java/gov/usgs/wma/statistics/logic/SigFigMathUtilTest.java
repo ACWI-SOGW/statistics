@@ -23,6 +23,7 @@ import gov.usgs.wma.statistics.logic.SigFigMathUtil.JavaDefaultRoundingRule;
 /**
  *
  * @author smlarson
+ * @author duselman
  */
 public class SigFigMathUtilTest {
 

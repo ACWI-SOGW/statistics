@@ -365,7 +365,6 @@ public class WaterLevelStatisticsTest {
 		try {
 			calculations = new ObjectMapper().readValue(json, Map.class);
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return calculations;
@@ -487,7 +486,7 @@ public class WaterLevelStatisticsTest {
 		samples.add( createSample("2012-05-10T04:15:00-05:00", "1.0") );
 
 		WLSample explicitRetained = createSample("2013-05-11T04:15:00-05:00", "1.0", false);
-		WLSample explicitRemoved  = createSample("2014-05-12T04:15:00-05:00", "1.0", true);  // this one does not count because it is provisional
+		WLSample explicitRemoved  = createSample("2014-05-12T04:15:00-05:00", "1.0", true);   // this one does not count because it is provisional
 		WLSample recentProvisional= createSample("2018-05-13T04:15:00-05:00", "100.0", true); // this one only counts for latest value
 
 		samples.add( explicitRetained ); // should be retained because not provisional

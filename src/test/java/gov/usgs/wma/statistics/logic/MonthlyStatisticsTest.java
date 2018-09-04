@@ -179,10 +179,6 @@ public class MonthlyStatisticsTest {
 		builder.mediation(MediationType.AboveDatum);
 		// we are not testing this method so mock it to return what we need
 		MonthlyStatistics<Value> mockstats = new MonthlyStatistics<Value>(builder) {
-//			protected boolean doesThisMonthQualifyForStats(List<Value> monthSamples) {
-//				return monthSamples.size()>0;
-//			}
-			@Override
 			public List<Value> medianMonthlyValues(List<Value> monthSamples, Function<List<Value>, List<Value>> sortBy) {
 				return monthSamples;
 			}
@@ -326,7 +322,6 @@ public class MonthlyStatisticsTest {
 		samples.add( createSample("2003-03-21T04:15:00-05:00", "93.1682") );
 
 		StatisticsCalculator.sortByDateOrder(samples);
-//		String date = "2015-04-10";
 		String latestPct = stats.percentileBasedOnMonthlyData(pctSample, samples); // MediationType.AboveDatum
 		assertTrue("The latest percetile for the date given should be based on the month it is in "
 				+ "and all data for the given month is 94.???? so the latest in that month should be 100% (percentile) "
@@ -375,7 +370,7 @@ public class MonthlyStatisticsTest {
 		
 		Map<String, String> stat = builder.build().getMonthly().get("3").percentiles; // MediationType.AboveDatum
 
-//		assertNotNull(stat);
+		assertNotNull(stat);
 		assertEquals("4.12", stat.get(P50_MIN));
 		assertEquals("4.60", stat.get(P10));
 		assertEquals("6.5",  stat.get(P25));
