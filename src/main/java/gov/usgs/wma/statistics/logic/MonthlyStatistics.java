@@ -71,6 +71,8 @@ public class MonthlyStatistics<S extends Value> extends StatisticsCalculator<S> 
 	 * @return a map of monthly maps of percentile data
 	 */
 	public boolean monthlyStats(List<S> sortedByValue) {
+		LOGGER.trace("entered");
+		
 		boolean monthlyCalculated = false;
 		if (sortedByValue == null || sortedByValue.size() == 0) {
 			return monthlyCalculated;
@@ -98,6 +100,7 @@ public class MonthlyStatistics<S extends Value> extends StatisticsCalculator<S> 
 			}
 		}
 		
+		LOGGER.trace("exited");
 		return monthlyCalculated;
 	}
 	

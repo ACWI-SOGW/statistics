@@ -59,27 +59,28 @@ public class StatsService {
 			@ApiParam(
 					name="mediation",
 					value=SwaggerConfig.StatsService_CALCULATE_MEDIATION,
-					defaultValue="BelowLand",
-					required=false,
-					allowMultiple=false,
-					allowableValues="AboveDatum,BelowLand,NONE,ASCENDING,DESCENDING",
+					defaultValue=SwaggerConfig.StatsService_MEDIATION_DEFAULT,
+					allowableValues=SwaggerConfig.StatsService_MEDIATION_VALUES,
 					allowEmptyValue=true
 					)
 			@RequestParam(defaultValue="BelowLand")
 			String mediate,
 			@ApiParam(
 					value=SwaggerConfig.StatsService_CALCULATE_MEDIANS,
-					defaultValue="false",
-					required=false,
-					allowMultiple=false,
-					allowableValues="true,false",
+					defaultValue=SwaggerConfig.StatsService_MEDIANS_DEFAULT,
+					allowableValues=SwaggerConfig.BOOLEAN_VALUES,
 					allowEmptyValue=true
 					)
 			@RequestParam(defaultValue="false")
 			String medians) {
 		
 		try {
+			LOGGER.trace("entered");
+			
+			// parse the CSV data
 			List<WLSample> samples = parseData(data);
+			
+			// parse the mediation string and setup the builder
 			MediationType mediation = MediationType.valueOf(mediate);
 			JsonDataBuilder builder = new JsonDataBuilder();
 			builder.mediation(mediation);
@@ -90,13 +91,15 @@ public class StatsService {
 			
 			JsonData json = new WaterLevelStatistics(builder).calculate(spec, samples);
 			
+			LOGGER.trace("exited: good");
 			return ResponseEntity.ok( toJSON(json) );
 		} catch (Exception e) {
+			LOGGER.trace("exited: b");
 			return ResponseEntity.ok("{'status':400,'message':'"+e.getMessage()+"'");
 		}
 	}
 	
-
+	// TODO this is probably not necessary with Spring Boot. Try to remove and return the POJO object.
 	public static String toJSON(JsonData stats) {
 		String json = "";
 		try {
@@ -109,7 +112,7 @@ public class StatsService {
 		return json;
 	}
 
-	
+	// TODO should this be here, in a csv util class/lib, or someplace else.
 	public List<WLSample> parseData(String data){
 		String[] rows = data.split("\r?\n");
 		return parseData(rows);
