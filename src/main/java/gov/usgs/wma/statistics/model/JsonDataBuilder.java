@@ -1,6 +1,7 @@
 package gov.usgs.wma.statistics.model;
 
 import static gov.usgs.wma.statistics.model.Value.*;
+//import static org.assertj.core.api.Assertions.*;
 
 import java.math.BigDecimal;
 import java.util.Arrays;
@@ -168,7 +169,7 @@ public class JsonDataBuilder {
 		Map<String, BigDecimal> percentileValues = new HashMap<>();
 		for (String percentile : this.percentiles) {
 			String key = "P" + percentile;
-			String value = "0." + percentile + "0000000";
+			String value = "0." + percentile.replace(".", "") + "0000000";
 			
 			// these are exact percentiles and should not limit measured precision
 			percentileValues.put(key, new BigDecimal(value));

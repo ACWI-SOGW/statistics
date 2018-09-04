@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 
 import gov.usgs.ngwmn.model.WLSample;
+import gov.usgs.wma.statistics.app.SwaggerConfig;
 
 public class StatsServiceTest {
 	private static final Logger LOGGER = LoggerFactory.getLogger(StatsServiceTest.class);
@@ -126,7 +127,7 @@ public class StatsServiceTest {
 
 		String data = "1999/01/01,1.00\n1999/01/02,2.00";
 		
-		ResponseEntity<String> resp = stats.calculate(data, MediationType.NONE.toString(), "false");
+		ResponseEntity<String> resp = stats.calculate(data, MediationType.NONE.toString(), SwaggerConfig.BOOLEAN_FALSE, SwaggerConfig.StatsService_PERCENTILES_DEFAULT);
 		
 		assertEquals(200, resp.getStatusCode().value());
 		assertTrue( resp.toString().contains("200 OK") );
@@ -158,7 +159,7 @@ public class StatsServiceTest {
 				"2017-06-10T04:15:00-05:00, 1.0\n"+
 				"2018-06-10T04:15:00-05:00, 1.0\n";
 		
-		ResponseEntity<String> resp = stats.calculate(data, MediationType.NONE.toString(), "false");
+		ResponseEntity<String> resp = stats.calculate(data, MediationType.NONE.toString(), SwaggerConfig.BOOLEAN_FALSE, SwaggerConfig.StatsService_PERCENTILES_DEFAULT);
 		LOGGER.trace(resp.getBody());
 		
 		assertEquals(200, resp.getStatusCode().value());

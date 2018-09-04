@@ -72,7 +72,14 @@ public class StatsService {
 					allowEmptyValue=true
 					)
 			@RequestParam(defaultValue="false")
-			String medians) {
+			String medians,
+			@ApiParam(
+					value=SwaggerConfig.StatsService_CALCULATE_PERCENTILES,
+					defaultValue=SwaggerConfig.StatsService_PERCENTILES_DEFAULT,
+					allowEmptyValue=true
+					)
+			@RequestParam(defaultValue=SwaggerConfig.StatsService_PERCENTILES_DEFAULT)
+			String percentiles) {
 		
 		try {
 			LOGGER.trace("entered");
@@ -83,8 +90,11 @@ public class StatsService {
 			// parse the mediation string and setup the builder
 			MediationType mediation = MediationType.valueOf(mediate);
 			JsonDataBuilder builder = new JsonDataBuilder();
-			builder.mediation(mediation);
-			builder.setIncludeIntermediateValues(INCLUDE_MEDIANS.equals(medians));
+			builder.mediation(mediation)
+				.setIncludeIntermediateValues(INCLUDE_MEDIANS.equals(medians)); // parse medians param
+			if ( ! SwaggerConfig.StatsService_PERCENTILES_DEFAULT.equals(percentiles) ) {
+				builder.addPercentiles(percentiles.split(",")); // parse custom percentiles
+			}
 			
 			// A random identifier for the service unless we parameterize the date set ID.
 			Specifier spec = new Specifier();
