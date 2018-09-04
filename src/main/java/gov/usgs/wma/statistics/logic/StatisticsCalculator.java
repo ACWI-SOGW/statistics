@@ -100,7 +100,7 @@ public class StatisticsCalculator<S extends Value> {
 	public static <T> BigDecimal percentileOfValue(List<T> samples, T sample, int precision,
 			Function<T, BigDecimal> valueOf) {
 		// protection - TODO is this the behavior we want? - returning 0
-		if (sample==null || samples==null || samples.size()==0 || valueOf.apply(sample)==null ) {
+		if (sample==null || samples==null || samples.size()==0 || valueOf == null || valueOf.apply(sample)==null ) {
 			return BigDecimal.ZERO;
 		}
 		BigDecimal sampleValue = valueOf.apply(sample);
@@ -128,6 +128,9 @@ public class StatisticsCalculator<S extends Value> {
 		return pct;
 	}
 	public static <T> BigDecimal percentileOfValue(List<T> samples, T sample, Function<T, BigDecimal> valueOf) {
+		if (sample == null || valueOf == null) {
+			return BigDecimal.ZERO;
+		}
 		BigDecimal sampleValue = valueOf.apply(sample);
 		return percentileOfValue(samples, sample, sampleValue.precision(), valueOf);
 	}
@@ -240,7 +243,7 @@ public class StatisticsCalculator<S extends Value> {
 		
 		for (int s=0; s<samples.size(); s++) {
 			S sample = samples.get(s);
-			if ( sample != null && sample.isProvisional()) {
+			if ( sample == null || sample.isProvisional()) {
 				provisionalSamples.add(sample);
 			}
 		}

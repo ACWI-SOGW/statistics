@@ -93,7 +93,8 @@ public class WaterLevelStatistics extends StatisticsCalculator<WLSample> {
 		this.builder.mediation(mediation);
 	}
 	
-	
+// TODO This conditioning must be done prior to calling the service
+// TODO I would like to keep it here until we have NGWMN calling the service
 //	@Override
 //	public List<WLSample> conditioning(Specifier spec, List<WLSample> samples) {
 //		super.conditioning(spec, samples);
