@@ -34,10 +34,10 @@ public class WaterLevelStatistics extends StatisticsCalculator<WLSample> {
 		}
 		@Override
 		public void sortValueByQualifier(List<WLSample> samples) {
-			if (stats.mediation() == MediationType.NONE) {
+			if (builder.mediation() == MediationType.NONE) {
 				return;
 			}
-			if (stats.mediation() == MediationType.BelowLand || stats.mediation() == MediationType.DESCENDING) {
+			if (builder.mediation() == MediationType.BelowLand || builder.mediation() == MediationType.DESCENDING) {
 				sortByValueOrderDescending(samples);
 			} else {
 				sortByValueOrderAscending(samples);
@@ -47,7 +47,7 @@ public class WaterLevelStatistics extends StatisticsCalculator<WLSample> {
 		public Function<List<WLSample>, List<WLSample>> sortFunctionByQualifier() {
 			Function<List<WLSample>, List<WLSample>> sortBy = StatisticsCalculator::sortByValueOrderAscending;
 			
-			if (stats.mediation() == MediationType.BelowLand || stats.mediation() == MediationType.DESCENDING) {
+			if (builder.mediation() == MediationType.BelowLand || builder.mediation() == MediationType.DESCENDING) {
 				sortBy = StatisticsCalculator::sortByValueOrderDescending;
 			}
 			return sortBy;
@@ -61,7 +61,7 @@ public class WaterLevelStatistics extends StatisticsCalculator<WLSample> {
 	};
 	
 	
-	OverallStatistics<WLSample> overallStatistics = new OverallStatistics<WLSample>(stats) {
+	OverallStatistics<WLSample> overallStatistics = new OverallStatistics<WLSample>(builder) {
 		@Override
 		public void findMinMaxDatesAndDateRange(List<WLSample> samples, List<WLSample> sortedByValue) {
 			super.findMinMaxDatesAndDateRange(samples, sortedByValue);
@@ -90,7 +90,7 @@ public class WaterLevelStatistics extends StatisticsCalculator<WLSample> {
 	}
 	
 	public void setMediation(MediationType mediation) {
-		this.stats.mediation(mediation);
+		this.builder.mediation(mediation);
 	}
 	
 	
@@ -146,14 +146,14 @@ public class WaterLevelStatistics extends StatisticsCalculator<WLSample> {
 		
 		overallStats(samplesByDate, sortedByValue);
 		
-		if ( isNotBlank( stats.get(RECORD_YEARS) ) ) {
-			BigDecimal years = new BigDecimal( stats.get(RECORD_YEARS) );
-			String recent = stats.get(MAX_DATE);
+		if ( isNotBlank( builder.get(RECORD_YEARS) ) ) {
+			BigDecimal years = new BigDecimal( builder.get(RECORD_YEARS) );
+			String recent = builder.get(MAX_DATE);
 			String today = today();
 			
 			try {
 				if ( doesThisSiteQualifyForMonthlyStats(years, recent, today) ) {
-					stats.collect();
+					builder.collect();
 					monthlyStats.monthlyStats(sortedByValue);
 				}
 			} catch (Exception e) {
@@ -164,25 +164,25 @@ public class WaterLevelStatistics extends StatisticsCalculator<WLSample> {
 			LOGGER.warn("Record Years is null for {}:{}, by passing monthly stats.", spec.getAgencyCd(), spec.getSiteNo());
 		}
 		
-		if ( ! stats.hasMonthly() ) {
-			stats.error(MONTHLY_WARNING);
+		if ( ! builder.hasMonthly() ) {
+			builder.error(MONTHLY_WARNING);
 		}
 		
-		return stats.build();
+		return builder.build();
 	}
 	
 
 	protected void overallStats(List<WLSample> samples, List<WLSample> sortedByValue) {
 		overallStatistics.overallStats(samples, sortedByValue);
 		if (samples == null || samples.size() == 0) {
-			stats.recordYears("0");
-			stats.sampleCount(0);
-			stats.collect();
+			builder.recordYears("0");
+			builder.sampleCount(0);
+			builder.collect();
 			return;
 		}
 		
 		String latestPercentile = monthlyStats.percentileBasedOnMonthlyData(samples.get(samples.size()-1), samples);
-		stats.latestPercentile(latestPercentile);
+		builder.latestPercentile(latestPercentile);
 	}
 	
 

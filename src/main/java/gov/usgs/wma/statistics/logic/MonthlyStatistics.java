@@ -86,17 +86,17 @@ public class MonthlyStatistics<S extends Value> extends StatisticsCalculator<S> 
 			
 			if ( doesThisMonthQualifyForStats(normalizeMutlipleYearlyValues) ) {
 				monthlyCalculated = true;
-				generatePercentiles(normalizeMutlipleYearlyValues, stats.buildPercentiles());
-				stats.month(month);
+				generatePercentiles(normalizeMutlipleYearlyValues, builder.buildPercentiles());
+				builder.month(month);
 				
 				List<Value> monthYearlyMedians = generateMonthYearlyPercentiles(normalizeMutlipleYearlyValues);
 				
-				stats.minP50(monthYearlyMedians.get(0).value.toString());
-				stats.maxP50(monthYearlyMedians.get( monthYearlyMedians.size()-1 ).value.toString());
-				stats.sampleCount(monthSamples.size());
+				builder.minP50(monthYearlyMedians.get(0).value.toString());
+				builder.maxP50(monthYearlyMedians.get( monthYearlyMedians.size()-1 ).value.toString());
+				builder.sampleCount(monthSamples.size());
 
-				stats.recordYears(""+sortSamplesByYear.keySet().size());
-				stats.collect();
+				builder.recordYears(""+sortSamplesByYear.keySet().size());
+				builder.collect();
 			}
 		}
 		
@@ -155,7 +155,7 @@ public class MonthlyStatistics<S extends Value> extends StatisticsCalculator<S> 
 			}
 		}
 		normalizedSamples = sortBy.apply(normalizedSamples);
-		stats.intermediateValues(normalizedSamples);
+		builder.intermediateValues(normalizedSamples);
 		
 		return normalizedSamples;
 	}

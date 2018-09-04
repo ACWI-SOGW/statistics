@@ -46,13 +46,13 @@ public class StatisticsCalculator<S extends Value> {
 	// Calendar returns millis for days and after a diff we need the number of days
 	protected static final long MILLISECONDS_PER_DAY = 1000 * 60 * 60 * 24;// ms * sec * min * hr == ms/day
 
-	protected final JsonDataBuilder stats;
+	protected final JsonDataBuilder builder;
 	
 	public StatisticsCalculator() {
-		stats = new JsonDataBuilder();
+		builder = new JsonDataBuilder();
 	}
 	public StatisticsCalculator(JsonDataBuilder stats) {
-		this.stats = stats;
+		this.builder = stats;
 	}
 	
 	
@@ -197,9 +197,9 @@ public class StatisticsCalculator<S extends Value> {
 		for(String percentile : percentiles.keySet()) {
 			BigDecimal pct = percentiles.get(percentile);
 			BigDecimal pctValue = valueOfPercentile(samples, pct, Value::valueOf);
-			stats.putPercentile(percentile, pctValue.toString());
+			builder.putPercentile(percentile, pctValue.toString());
 		}
-		return stats;
+		return builder;
 	}
 	
 	
