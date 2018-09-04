@@ -91,9 +91,9 @@ public class StatsService {
 			MediationType mediation = MediationType.valueOf(mediate);
 			JsonDataBuilder builder = new JsonDataBuilder();
 			builder.mediation(mediation)
-				.setIncludeIntermediateValues(INCLUDE_MEDIANS.equals(medians)); // parse medians param
+				.includeIntermediateValues(INCLUDE_MEDIANS.equals(medians)); // parse medians param
 			if ( ! SwaggerConfig.StatsService_PERCENTILES_DEFAULT.equals(percentiles) ) {
-				builder.addPercentiles(percentiles.split(",")); // parse custom percentiles
+				builder.percentiles(percentiles.split(",")); // parse custom percentiles
 			}
 			
 			// A random identifier for the service unless we parameterize the date set ID.

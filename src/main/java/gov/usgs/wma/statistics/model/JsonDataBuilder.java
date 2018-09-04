@@ -158,7 +158,7 @@ public class JsonDataBuilder {
 		return this;
 	}
 	
-	public JsonDataBuilder addPercentiles(String ... percentiles) {
+	public JsonDataBuilder percentiles(String ... percentiles) {
 		for (String percentile : percentiles) {
 			this.percentiles.add(percentile);
 		}
@@ -244,7 +244,7 @@ public class JsonDataBuilder {
 		return values.containsKey(MONTH);
 	}
 	
-	public JsonDataBuilder setIncludeIntermediateValues(Boolean includeIntermediateValues) {
+	public JsonDataBuilder includeIntermediateValues(Boolean includeIntermediateValues) {
 		this.includeIntermediateValues = includeIntermediateValues;
 		return this;
 	}

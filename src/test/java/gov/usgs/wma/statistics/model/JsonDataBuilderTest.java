@@ -183,7 +183,7 @@ public class JsonDataBuilderTest {
 		assertTrue(data.percentiles.contains(P10));
 		assertFalse(data.percentiles.contains(PERCENT_1));
 		assertFalse(data.percentiles.contains(PERCENT_2));
-		data.addPercentiles(PERCENT_1, PERCENT_2);
+		data.percentiles(PERCENT_1, PERCENT_2);
 		assertTrue(data.percentiles.contains(P10));
 		assertTrue(data.percentiles.contains(PERCENT_1));
 		assertTrue(data.percentiles.contains(PERCENT_2));
@@ -193,7 +193,7 @@ public class JsonDataBuilderTest {
 	public void test_addPercentiles_duplicate() {
 		assertTrue(data.percentiles.contains(P10));
 		int sizeBefore = data.percentiles.size();
-		data.addPercentiles(P10);
+		data.percentiles(P10);
 		int sizeAfter = data.percentiles.size();
 		assertTrue(data.percentiles.contains(P10));
 
@@ -298,7 +298,7 @@ public class JsonDataBuilderTest {
 	@Test
 	public void test_intermediateValue() {
 		assertEquals(0, data.intermediateValues.length());
-		data.setIncludeIntermediateValues(true);
+		data.includeIntermediateValues(true);
 		data.intermediateValue(SAMPLE_1);
 		
 		assertTrue(data.intermediateValues.toString().contains(DATE_UTC_1));
@@ -313,7 +313,7 @@ public class JsonDataBuilderTest {
 	@Test
 	public void test_buildIntermediateValues() {
 		assertEquals(0, data.intermediateValues.length());
-		data.setIncludeIntermediateValues(true);
+		data.includeIntermediateValues(true);
 		data.intermediateValue(SAMPLE_1);
 		data.intermediateValue(SAMPLE_2);
 		

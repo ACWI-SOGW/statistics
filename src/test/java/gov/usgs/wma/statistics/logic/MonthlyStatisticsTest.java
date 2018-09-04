@@ -123,7 +123,7 @@ public class MonthlyStatisticsTest {
 		samples.add( createSample("2013-01-10T04:15:00-05:00", "93.1682") );
 		List<Value> sorted = new LinkedList<>(samples);
 		StatisticsCalculator.sortByValueOrderAscending(sorted);
-		builder.setIncludeIntermediateValues(true);
+		builder.includeIntermediateValues(true);
 		List<Value> yearly = stats.generateMonthYearlyPercentiles(sorted); // MediationType.AboveDatum
 
 		assertEquals("Expect 3 medians", 3, yearly.size());
@@ -759,7 +759,7 @@ public class MonthlyStatisticsTest {
 		// then check that averages removes them and that the new values are correct
 
 		int preCount = monthSamples.size();
-		builder.setIncludeIntermediateValues(true);
+		builder.includeIntermediateValues(true);
 		List<Value> normalizeMutlipleYearlyValues = stats.medianMonthlyValues(monthSamples, stats.sortFunctionByQualifier());
 		assertTrue("medianMonthlyValues should added to intermediateValues.", builder.getIntermediateValues().length() > 0);
 
