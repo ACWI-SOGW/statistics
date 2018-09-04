@@ -48,7 +48,7 @@ public class StatsService {
 			produces = MediaType.APPLICATION_JSON_UTF8_VALUE,
 			consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE
 		)
-	public ResponseEntity<String> calculate(
+	public JsonData calculate(
 			@ApiParam(
 					value  = SwaggerConfig.StatsService_CALCULATE_DATA,
 					example= SwaggerConfig.StatsService_EXAMPLE_RAW,
@@ -102,25 +102,13 @@ public class StatsService {
 			JsonData json = new WaterLevelStatistics(builder).calculate(spec, samples);
 			
 			LOGGER.trace("exited: good");
-			return ResponseEntity.ok( toJSON(json) );
+			return json;
 		} catch (Exception e) {
 			LOGGER.trace("exited: b");
-			return ResponseEntity.ok("{'status':400,'message':'"+e.getMessage()+"'");
+			return null;
 		}
 	}
 	
-	// TODO this is probably not necessary with Spring Boot. Try to remove and return the POJO object.
-	public static String toJSON(JsonData stats) {
-		String json = "";
-		try {
-			json = new ObjectMapper().writeValueAsString(stats);
-		} catch (JsonProcessingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
-		return json;
-	}
 
 	// TODO should this be here, in a csv util class/lib, or someplace else.
 	public List<WLSample> parseData(String data){

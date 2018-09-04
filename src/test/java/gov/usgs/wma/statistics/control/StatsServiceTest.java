@@ -12,9 +12,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import gov.usgs.ngwmn.logic.WaterLevelStatistics.MediationType;
 import gov.usgs.ngwmn.model.WLSample;
 import gov.usgs.wma.statistics.app.SwaggerConfig;
+import gov.usgs.wma.statistics.model.JsonData;
 import gov.usgs.wma.statistics.model.Value;
 
 public class StatsServiceTest {
@@ -163,19 +166,20 @@ public class StatsServiceTest {
 
 	
 	@Test
-	public void test_service_twoFineData() {
+	public void test_service_twoFineData() throws Exception {
 		String data = "1999/01/01,1.00\n1999/01/02,2.00";
 		
-		ResponseEntity<String> resp = stats.calculate(data, MediationType.NONE.toString(), SwaggerConfig.BOOLEAN_FALSE, SwaggerConfig.StatsService_PERCENTILES_DEFAULT);
+		JsonData pojo = stats.calculate(data, MediationType.NONE.toString(), SwaggerConfig.BOOLEAN_FALSE, SwaggerConfig.StatsService_PERCENTILES_DEFAULT);
 		
-		assertEquals(200, resp.getStatusCode().value());
-		assertTrue( resp.toString().contains("200 OK") );
-		assertTrue( resp.getBody().contains(MONTHLY_WARNING) );
+		assertFalse( pojo.isOk() );
+		assertTrue( pojo.hasErrors() );
 		
-		// checking for no hiddend 300, 400, or 500 status
-		assertFalse( resp.getBody().contains("'status':3") );
-		assertFalse( resp.getBody().contains("'status':4") );
-		assertFalse( resp.getBody().contains("'status':5") );
+		
+		String json = new ObjectMapper().writeValueAsString(pojo);
+
+		int errIndex = json.indexOf("errors");
+		String errors = json.substring(errIndex);
+		assertTrue( errors.contains(MONTHLY_WARNING) );
 	}
 	
 	@Test
@@ -196,20 +200,16 @@ public class StatsServiceTest {
 				"2017-06-10T04:15:00-05:00, 1.0\n"+
 				"2018-06-10T04:15:00-05:00, 1.0\n";
 		
-		ResponseEntity<String> resp = stats.calculate(data, MediationType.NONE.toString(), SwaggerConfig.BOOLEAN_FALSE, SwaggerConfig.StatsService_PERCENTILES_DEFAULT);
-		LOGGER.trace(resp.getBody());
+		JsonData pojo = stats.calculate(data, MediationType.NONE.toString(), SwaggerConfig.BOOLEAN_FALSE, SwaggerConfig.StatsService_PERCENTILES_DEFAULT);
+		assertTrue( pojo.isOk() );
+		assertFalse( pojo.hasErrors() );
 		
-		assertEquals(200, resp.getStatusCode().value());
-		assertTrue( resp.toString().contains("200 OK") );
+		String json = new ObjectMapper().writeValueAsString(pojo);
+		LOGGER.trace(json);
 		
-		String errors = resp.getBody().toString();
-		int errIndex = errors.indexOf("errors");
-		errors = errors.substring(errIndex);
+		int errIndex = json.indexOf("errors");
+		String errors = json.substring(errIndex);
 		assertFalse( errors.contains(MONTHLY_WARNING) );
-		
-		// checking for no hidden 300, 400, or 500 status
-		assertFalse( resp.getBody().contains("'status':3") );
-		assertFalse( resp.getBody().contains("'status':4") );
-		assertFalse( resp.getBody().contains("'status':5") );
 	}
 }
+
