@@ -138,10 +138,6 @@ public class StatsService {
 			}
 			
 			String[] cols = row.split(",");
-			if (cols.length == 0) {
-				continue; // skip empty rows
-			}
-			
 			if (cols.length < 2 || cols.length > 3) {
 				throw new RuntimeException("All rows must have two values and optional provisional code: date,value,P. ");
 			}

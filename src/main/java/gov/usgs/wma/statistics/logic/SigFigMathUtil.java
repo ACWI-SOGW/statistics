@@ -24,6 +24,7 @@ import org.slf4j.LoggerFactory;
  * matter.
  *
  * @author smlarson
+ * @author duselman
  */
 public class SigFigMathUtil {
 
@@ -132,9 +133,7 @@ public class SigFigMathUtil {
         BigDecimal finalAnswer = null;
         BigDecimal leastScale = getLeastScale(bdList);
 
-        if (leastScale != null) {
-            finalAnswer = result.setScale(leastScale.scale(), rm.valueRule(result));
-        }
+        finalAnswer = result.setScale(leastScale.scale(), rm.valueRule(result));
         return finalAnswer;
     }
 
@@ -244,9 +243,7 @@ public class SigFigMathUtil {
             }
             BigDecimal leastScale = getLeastScale(bdList);
 
-            if (leastScale != null) {
-                finalAnswer = result.setScale(leastScale.scale(), rm.valueRule(result));
-            }
+            finalAnswer = result.setScale(leastScale.scale(), rm.valueRule(result));
         } else {
             LOGGER.warn("The first BigDecimal in the list was found to be null. Returning null.");
             return null;
@@ -333,7 +330,7 @@ public class SigFigMathUtil {
      * the mantissa. In the event of a tie, it will return the last one in the
      * list or null if any args passed in are null.
      */
-    private static BigDecimal getLeastScale(List<BigDecimal> bdList) {
+    protected static BigDecimal getLeastScale(List<BigDecimal> bdList) {
 
         if (bdList == null || bdList.isEmpty()) {
             LOGGER.warn("Missing BigDecimal list or list was empty. Can not determine scale.");
@@ -361,7 +358,7 @@ public class SigFigMathUtil {
      * @return BigDecimal that is found to have the least precision or null if
      * any args passed in are null.
      */
-    private static BigDecimal getLeastPrecise(BigDecimal bd1, BigDecimal bd2) {
+    protected static BigDecimal getLeastPrecise(BigDecimal bd1, BigDecimal bd2) {
 
         if (bd1 == null || bd2 == null) {
             LOGGER.warn("Missing BigDecimal for comparison. Can not determine precision.");
@@ -392,10 +389,8 @@ public class SigFigMathUtil {
         BigDecimal leastPreciseBD = getLeastPrecise(multiplicand, multiplier);
         BigDecimal product = null;
 
-        if (leastPreciseBD != null) {
-            MathContext mc = new MathContext(leastPreciseBD.precision(), rm.productRule(multiplicand, multiplier));
-            product = multiplicand.multiply(multiplier, mc);
-        }
+        MathContext mc = new MathContext(leastPreciseBD.precision(), rm.productRule(multiplicand, multiplier));
+        product = multiplicand.multiply(multiplier, mc);
         return product;
     }
     /**
@@ -478,10 +473,8 @@ public class SigFigMathUtil {
         BigDecimal quotient = null;
         BigDecimal leastPreciseBD = getLeastPrecise(numerator, denominator);
 
-        if (leastPreciseBD != null) {
-            MathContext mc = new MathContext(leastPreciseBD.precision(), rm.productRule(numerator, denominator));
-            quotient = numerator.divide(denominator, mc);
-        }
+        MathContext mc = new MathContext(leastPreciseBD.precision(), rm.productRule(numerator, denominator));
+        quotient = numerator.divide(denominator, mc);
         return quotient;
     }
 

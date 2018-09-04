@@ -83,10 +83,11 @@ public class SwaggerConfig {
 	@Bean
 	public Docket qwPortalServicesApi() {
 		Docket docket = new Docket(DocumentationType.SWAGGER_2)
-//			.protocols(new HashSet<>(Arrays.asList("https")))
-//			.useDefaultResponseMessages(false)
-//			.host(configurationService.getSwaggerDisplayHost())
-//			.pathProvider(pathProvider())
+			.useDefaultResponseMessages(false)
+			// TODO are we going to have a public host exposure
+			//.host(SwaggerDisplayHost)
+			// TODO do we need to block http?
+			//.protocols(new HashSet<>(Arrays.asList("https")))
 			.additionalModels(typeResolver.resolve(JsonData.class))
 			.select()
 			.paths(PathSelectors.any())

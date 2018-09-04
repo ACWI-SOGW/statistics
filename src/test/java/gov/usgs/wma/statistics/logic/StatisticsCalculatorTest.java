@@ -1126,5 +1126,38 @@ public class StatisticsCalculatorTest {
 		return isExpected;
 	}
 
+	@Test
+	public void test_fixMissingMonthDay_year() {
+		String actual = StatisticsCalculator.fixMissingMonthAndDay("2222");
+		assertEquals("2222-06-30", actual);
+	}
+	
+	@Test
+	public void test_fixMissingMonthDay_month() {
+		String actual = StatisticsCalculator.fixMissingMonthAndDay("2111-11");
+		assertEquals("2111-11-15", actual);
+	}
+	
+	@Test
+	public void test_fixMissingMonthDay_empty() {
+		String actual = StatisticsCalculator.fixMissingMonthAndDay("");
+		assertEquals("", actual);
+	}
+	
+	@Test
+	public void test_fixMissingMonthDay_null() {
+		String actual = StatisticsCalculator.fixMissingMonthAndDay(null);
+		assertEquals("", actual);
+	}
+	
+	@Test
+	public void test_fixMissingMonthDay_badYear() {
+		String actual = StatisticsCalculator.fixMissingMonthAndDay("123");
+		assertEquals("", actual);
+	}
+	
+	@Test(expected=IllegalArgumentException.class)
+	public void test_daysDiff_badNumber() {
+		StatisticsCalculator.daysDiff("asdfsdf", "32asa");
+	}
 }
-

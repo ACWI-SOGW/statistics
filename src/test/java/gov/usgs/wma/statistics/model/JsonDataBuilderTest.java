@@ -201,11 +201,11 @@ public class JsonDataBuilderTest {
 	}
 
 	@Test
-	public void test_buikdPercentiles() {
+	public void test_buildPercentiles() {
 		Map<String, BigDecimal> pct = data.buildPercentiles();
 		
 		assertEquals(data.percentiles.size(), pct.size());
-		assertEquals("0.100000000", pct.get("P10").toString());
+		assertEquals("0.1000000000", pct.get("P10").toString());
 	}
 	
 	@Test
@@ -279,8 +279,6 @@ public class JsonDataBuilderTest {
 		data.maxValue(VALUE_2);
 		data.median(VALUE_1);
 		data.mediation(MediationType.AboveDatum);
-//		test_collect_overall();
-//		test_collect_monthly();
 		
 		JsonData json = data.build();
 		assertNotNull(json);
@@ -354,5 +352,52 @@ public class JsonDataBuilderTest {
 		String collection = data.jsonData.medians;
 
 		assertEquals(individuals, collection);
+	}
+
+	@Test
+	public void test_adding_error() {
+		assertFalse(data.hasErrors());
+		assertTrue(data.isOk());
+		data.error("Error 1");
+		assertTrue(data.hasErrors());
+		assertFalse(data.isOk());
+		
+		assertEquals(1, data.jsonData.errors.size());
+	}
+	
+	@Test
+	public void test_adding_errors() {
+		assertFalse(data.hasErrors());
+		assertTrue(data.isOk());
+		
+		List<String> errors = new LinkedList<>();
+		errors.add("Error 1");
+		errors.add("Error 2");
+		
+		int expect = data.jsonData.errors.size() + 2;
+		data.errors(errors);
+		
+		assertTrue(data.hasErrors());
+		assertFalse(data.isOk());
+		
+		assertEquals(expect, data.jsonData.errors.size());
+	}
+	
+
+	@Test
+	public void test_errors_clear_monthly() {
+		data.month("1");
+		data.sampleCount(0);
+		data.collect();
+		assertEquals(1, data.jsonData.monthly.size());
+		
+		assertFalse(data.hasErrors());
+		assertTrue(data.isOk());
+		data.error("Error 1");
+		assertTrue(data.hasErrors());
+		assertFalse(data.isOk());
+		
+		data.buildErrors();
+		assertEquals(0, data.jsonData.monthly.size());
 	}
 }

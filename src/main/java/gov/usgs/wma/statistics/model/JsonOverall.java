@@ -4,6 +4,24 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import gov.usgs.ngwmn.logic.WaterLevelStatistics.MediationType;
 
+/**
+ * the JSON will look something like this
+ * {
+ *	"LATEST_PCTILE": "0.31250"
+ *	"LATEST_VALUE": "11.000",
+ *	"MAX_VALUE": "1.000",
+ *	"MEDIAN": "1.500",
+ *	"MIN_VALUE": "43.000",
+ *	"CALC_DATE": "2018-08-29",
+ *	"MAX_DATE": "2018-06-10T04:15:00-05:00",
+ *	"MIN_DATE": "2005-06-10T04:15:00-05:00",
+ *	"MEDIATION": "BelowLand"
+ * }
+ * 
+ * @author duselman
+ *
+ */
+
 public class JsonOverall extends JsonStats {
 
 	@JsonProperty("LATEST_PCTILE")
@@ -44,13 +62,3 @@ public class JsonOverall extends JsonStats {
 	
 }
 
-/*
-"CALC_DATE": "2018-08-29",
-"LATEST_PCTILE": "0.31250"
-"LATEST_VALUE": "11.000",
-"MAX_VALUE": "1.000",
-"MEDIAN": "1.500",
-"MIN_VALUE": "43.000",
-"MAX_DATE": "2018-06-10T04:15:00-05:00",
-"MIN_DATE": "2005-06-10T04:15:00-05:00",
-*/

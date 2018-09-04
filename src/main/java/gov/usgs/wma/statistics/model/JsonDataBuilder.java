@@ -169,10 +169,9 @@ public class JsonDataBuilder {
 		Map<String, BigDecimal> percentileValues = new HashMap<>();
 		for (String percentile : this.percentiles) {
 			String key = "P" + percentile;
-			String value = "0." + percentile.replace(".", "") + "0000000";
-			
-			// these are exact percentiles and should not limit measured precision
-			percentileValues.put(key, new BigDecimal(value));
+			// these are "exact" percentiles and should not limit measured precision
+			BigDecimal value = new BigDecimal(percentile).divide(new BigDecimal("100")).setScale(10);
+			percentileValues.put(key, value);
 		}
 		return percentileValues;
 	}

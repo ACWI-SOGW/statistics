@@ -5,6 +5,7 @@ import static org.junit.Assert.*;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 import org.junit.After;
@@ -95,6 +96,10 @@ public class SigFigMathUtilTest {
 
         BigDecimal nullRmResult = SigFigMathUtil.sigFigAdd(bdList, null);
         assertNull(nullRmResult);
+        nullRmResult = SigFigMathUtil.sigFigAdd(null, RM_UP);
+        assertNull(nullRmResult);
+        nullRmResult = SigFigMathUtil.sigFigAdd(new LinkedList<>(), RM_UP);
+        assertNull(nullRmResult);
     }
     
     @Test
@@ -129,7 +134,10 @@ public class SigFigMathUtilTest {
 
         BigDecimal nullRmResult = SigFigMathUtil.sigFigSubtract(bdList, null);
         assertNull(nullRmResult);
-
+        nullRmResult = SigFigMathUtil.sigFigSubtract(null, RM_UP);
+        assertNull(nullRmResult);
+        nullRmResult = SigFigMathUtil.sigFigSubtract(new LinkedList<>(), RM_UP);
+        assertNull(nullRmResult);
     }
 
     /**
@@ -498,4 +506,117 @@ public class SigFigMathUtilTest {
 		assertEquals("0.5", val);
 	}
     
+	
+	@Test
+	public void test_sigFigAdd_nullEntry() {
+		List<BigDecimal> bdlist = new LinkedList<>();
+		bdlist.add(BigDecimal.ONE);
+		bdlist.add(null);
+		
+		BigDecimal actual = SigFigMathUtil.sigFigAdd(bdlist, SigFigMathUtil.DEFAULT_ROUNDING_RULE);
+		assertNull(actual);
+	}
+
+	@Test
+	public void test_sigFigSubtract_nullEntry() {
+		List<BigDecimal> bdlist = new LinkedList<>();
+		bdlist.add(BigDecimal.ONE);
+		bdlist.add(null);
+		
+		BigDecimal actual = SigFigMathUtil.sigFigSubtract(bdlist, SigFigMathUtil.DEFAULT_ROUNDING_RULE);
+		assertNull(actual);
+	}
+	@Test
+	public void test_sigFigSubtract_nullFirstEntry() {
+		List<BigDecimal> bdlist = new LinkedList<>();
+		bdlist.add(null);
+		bdlist.add(BigDecimal.ONE);
+		
+		BigDecimal actual = SigFigMathUtil.sigFigSubtract(bdlist, SigFigMathUtil.DEFAULT_ROUNDING_RULE);
+		assertNull(actual);
+	}
+	
+	
+	@Test
+	public void test_getLeastScale_null() {
+		BigDecimal actual = SigFigMathUtil.getLeastScale(null);
+		assertNull(actual);
+		
+		actual = SigFigMathUtil.getLeastScale(new LinkedList<>());
+		assertNull(actual);
+	}
+	
+	@Test
+	public void test_getLeastPrecise_null() {
+		BigDecimal actual = SigFigMathUtil.getLeastPrecise(null, BigDecimal.ONE);
+		assertNull(actual);
+		
+		actual = SigFigMathUtil.getLeastPrecise(BigDecimal.ONE, null);
+		assertNull(actual);
+	}
+	
+	@Test
+	public void test_sigFigDivideByExact_null() {
+		BigDecimal actual = SigFigMathUtil.sigFigDivideByExact(null, BigDecimal.ONE);
+		assertNull(actual);
+		
+		actual = SigFigMathUtil.sigFigDivideByExact(BigDecimal.ONE, null);
+		assertNull(actual);
+	}
+	
+	@Test
+	public void test_sigFigMultiplyByExact_null() {
+		BigDecimal actual = SigFigMathUtil.sigFigMultiplyByExact(null, BigDecimal.ONE);
+		assertNull(actual);
+		
+		actual = SigFigMathUtil.sigFigMultiplyByExact(BigDecimal.ONE, null);
+		assertNull(actual);
+	}	
+    
+	@Test
+	public void test_sigFigDivideByExact_withRoundngRule_null() {
+		BigDecimal actual = SigFigMathUtil.sigFigDivideByExact(null, BigDecimal.ONE, SigFigMathUtil.DEFAULT_ROUNDING_RULE);
+		assertNull(actual);
+		
+		actual = SigFigMathUtil.sigFigDivideByExact(BigDecimal.ONE, null, SigFigMathUtil.DEFAULT_ROUNDING_RULE);
+		assertNull(actual);
+		
+		actual = SigFigMathUtil.sigFigDivideByExact(BigDecimal.ONE, BigDecimal.ONE, null);
+		assertNull(actual);
+	}
+	
+	@Test
+	public void test_sigFigMultiplyByExact_withRoundngRule_null() {
+		BigDecimal actual = SigFigMathUtil.sigFigMultiplyByExact(null, BigDecimal.ONE, SigFigMathUtil.DEFAULT_ROUNDING_RULE);
+		assertNull(actual);
+		
+		actual = SigFigMathUtil.sigFigMultiplyByExact(BigDecimal.ONE, null, SigFigMathUtil.DEFAULT_ROUNDING_RULE);
+		assertNull(actual);
+		
+		actual = SigFigMathUtil.sigFigMultiplyByExact(BigDecimal.ONE, BigDecimal.ONE, null);
+		assertNull(actual);
+	}
+
+	
+	@Test
+	public void test_MathmaticsPositiveInfinityRoundingRule() {
+		SigFigMathUtil.MathmaticsPositiveInfinityRoundingRule rule = new SigFigMathUtil.MathmaticsPositiveInfinityRoundingRule();
+		
+		RoundingMode rmPositive = rule.valueRule(new BigDecimal("1"));
+		assertEquals("Round up to positive infinity for positive numbers.", RoundingMode.HALF_UP, rmPositive);
+		
+		RoundingMode rmNegative = rule.valueRule(new BigDecimal("-1"));
+		assertEquals("Round down toward zero for negative numbers.", RoundingMode.HALF_DOWN, rmNegative);
+		
+		rmPositive = rule.productRule(new BigDecimal("-1"), new BigDecimal("-1"));
+		assertEquals("Round up to positive infinity for positive numbers.", RoundingMode.HALF_UP, rmPositive);
+		rmPositive = rule.productRule(new BigDecimal("1"), new BigDecimal("1"));
+		assertEquals("Round up to positive infinity for positive numbers.", RoundingMode.HALF_UP, rmPositive);
+		
+		rmNegative = rule.productRule(new BigDecimal("-1"),new BigDecimal("1"));
+		assertEquals("Round down toward zero for negative numbers.", RoundingMode.HALF_DOWN, rmNegative);
+		rmNegative = rule.productRule(new BigDecimal("1"),new BigDecimal("-1"));
+		assertEquals("Round down toward zero for negative numbers.", RoundingMode.HALF_DOWN, rmNegative);
+	}
+	
 }
