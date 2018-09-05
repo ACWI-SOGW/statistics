@@ -183,7 +183,7 @@ public class JsonDataBuilderTest {
 		assertTrue(data.percentiles.contains(P10));
 		assertFalse(data.percentiles.contains(PERCENT_1));
 		assertFalse(data.percentiles.contains(PERCENT_2));
-		data.addPercentiles(PERCENT_1, PERCENT_2);
+		data.percentiles(PERCENT_1, PERCENT_2);
 		assertTrue(data.percentiles.contains(P10));
 		assertTrue(data.percentiles.contains(PERCENT_1));
 		assertTrue(data.percentiles.contains(PERCENT_2));
@@ -193,7 +193,7 @@ public class JsonDataBuilderTest {
 	public void test_addPercentiles_duplicate() {
 		assertTrue(data.percentiles.contains(P10));
 		int sizeBefore = data.percentiles.size();
-		data.addPercentiles(P10);
+		data.percentiles(P10);
 		int sizeAfter = data.percentiles.size();
 		assertTrue(data.percentiles.contains(P10));
 
@@ -201,11 +201,11 @@ public class JsonDataBuilderTest {
 	}
 
 	@Test
-	public void test_buikdPercentiles() {
+	public void test_buildPercentiles() {
 		Map<String, BigDecimal> pct = data.buildPercentiles();
 		
 		assertEquals(data.percentiles.size(), pct.size());
-		assertEquals("0.100000000", pct.get("P10").toString());
+		assertEquals("0.1000000000", pct.get("P10").toString());
 	}
 	
 	@Test
@@ -279,8 +279,6 @@ public class JsonDataBuilderTest {
 		data.maxValue(VALUE_2);
 		data.median(VALUE_1);
 		data.mediation(MediationType.AboveDatum);
-//		test_collect_overall();
-//		test_collect_monthly();
 		
 		JsonData json = data.build();
 		assertNotNull(json);
@@ -298,7 +296,7 @@ public class JsonDataBuilderTest {
 	@Test
 	public void test_intermediateValue() {
 		assertEquals(0, data.intermediateValues.length());
-		data.setIncludeIntermediateValues(true);
+		data.includeIntermediateValues(true);
 		data.intermediateValue(SAMPLE_1);
 		
 		assertTrue(data.intermediateValues.toString().contains(DATE_UTC_1));
@@ -313,7 +311,7 @@ public class JsonDataBuilderTest {
 	@Test
 	public void test_buildIntermediateValues() {
 		assertEquals(0, data.intermediateValues.length());
-		data.setIncludeIntermediateValues(true);
+		data.includeIntermediateValues(true);
 		data.intermediateValue(SAMPLE_1);
 		data.intermediateValue(SAMPLE_2);
 		
@@ -322,17 +320,18 @@ public class JsonDataBuilderTest {
 		assertTrue(data.intermediateValues.toString().contains(DATE_UTC_2));
 		assertTrue(data.intermediateValues.toString().contains(VALUE_2));
 
-		assertEquals('\"', data.intermediateValues.charAt(0));
 		int last = data.intermediateValues.length()-1;
 		assertEquals('n', data.intermediateValues.charAt(last));
 		
 		data.buildIntermediateValues();
-		
-		last = data.intermediateValues.length()-1;
-		assertEquals('"', data.intermediateValues.charAt(last));
-		
+
+		assertEquals('\"', data.jsonData.medians.charAt(0));
 		last = data.jsonData.medians.length()-1;
 		assertEquals('"', data.jsonData.medians.charAt(last));
+		
+		String expect = data.intermediateValues.toString();
+		String actual = data.jsonData.medians.replaceAll(QUOTE, "");
+		assertEquals(expect, actual);
 	}
 	
 	@Test
@@ -353,5 +352,52 @@ public class JsonDataBuilderTest {
 		String collection = data.jsonData.medians;
 
 		assertEquals(individuals, collection);
+	}
+
+	@Test
+	public void test_adding_error() {
+		assertFalse(data.hasErrors());
+		assertTrue(data.isOk());
+		data.error("Error 1");
+		assertTrue(data.hasErrors());
+		assertFalse(data.isOk());
+		
+		assertEquals(1, data.jsonData.errors.size());
+	}
+	
+	@Test
+	public void test_adding_errors() {
+		assertFalse(data.hasErrors());
+		assertTrue(data.isOk());
+		
+		List<String> errors = new LinkedList<>();
+		errors.add("Error 1");
+		errors.add("Error 2");
+		
+		int expect = data.jsonData.errors.size() + 2;
+		data.errors(errors);
+		
+		assertTrue(data.hasErrors());
+		assertFalse(data.isOk());
+		
+		assertEquals(expect, data.jsonData.errors.size());
+	}
+	
+
+	@Test
+	public void test_errors_clear_monthly() {
+		data.month("1");
+		data.sampleCount(0);
+		data.collect();
+		assertEquals(1, data.jsonData.monthly.size());
+		
+		assertFalse(data.hasErrors());
+		assertTrue(data.isOk());
+		data.error("Error 1");
+		assertTrue(data.hasErrors());
+		assertFalse(data.isOk());
+		
+		data.buildErrors();
+		assertEquals(0, data.jsonData.monthly.size());
 	}
 }

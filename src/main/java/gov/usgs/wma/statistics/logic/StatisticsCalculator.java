@@ -46,13 +46,13 @@ public class StatisticsCalculator<S extends Value> {
 	// Calendar returns millis for days and after a diff we need the number of days
 	protected static final long MILLISECONDS_PER_DAY = 1000 * 60 * 60 * 24;// ms * sec * min * hr == ms/day
 
-	protected final JsonDataBuilder stats;
+	protected final JsonDataBuilder builder;
 	
 	public StatisticsCalculator() {
-		stats = new JsonDataBuilder();
+		builder = new JsonDataBuilder();
 	}
 	public StatisticsCalculator(JsonDataBuilder stats) {
-		this.stats = stats;
+		this.builder = stats;
 	}
 	
 	
@@ -100,7 +100,7 @@ public class StatisticsCalculator<S extends Value> {
 	public static <T> BigDecimal percentileOfValue(List<T> samples, T sample, int precision,
 			Function<T, BigDecimal> valueOf) {
 		// protection - TODO is this the behavior we want? - returning 0
-		if (sample==null || samples==null || samples.size()==0 || valueOf.apply(sample)==null ) {
+		if (sample==null || samples==null || samples.size()==0 || valueOf == null || valueOf.apply(sample)==null ) {
 			return BigDecimal.ZERO;
 		}
 		BigDecimal sampleValue = valueOf.apply(sample);
@@ -128,6 +128,9 @@ public class StatisticsCalculator<S extends Value> {
 		return pct;
 	}
 	public static <T> BigDecimal percentileOfValue(List<T> samples, T sample, Function<T, BigDecimal> valueOf) {
+		if (sample == null || valueOf == null) {
+			return BigDecimal.ZERO;
+		}
 		BigDecimal sampleValue = valueOf.apply(sample);
 		return percentileOfValue(samples, sample, sampleValue.precision(), valueOf);
 	}
@@ -197,9 +200,9 @@ public class StatisticsCalculator<S extends Value> {
 		for(String percentile : percentiles.keySet()) {
 			BigDecimal pct = percentiles.get(percentile);
 			BigDecimal pctValue = valueOfPercentile(samples, pct, Value::valueOf);
-			stats.putPercentile(percentile, pctValue.toString());
+			builder.putPercentile(percentile, pctValue.toString());
 		}
-		return stats;
+		return builder;
 	}
 	
 	
@@ -240,7 +243,7 @@ public class StatisticsCalculator<S extends Value> {
 		
 		for (int s=0; s<samples.size(); s++) {
 			S sample = samples.get(s);
-			if ( sample != null && sample.isProvisional()) {
+			if ( sample == null || sample.isProvisional()) {
 				provisionalSamples.add(sample);
 			}
 		}

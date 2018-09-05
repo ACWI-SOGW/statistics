@@ -11,6 +11,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 
 import org.junit.Before;
 import org.junit.Ignore;
@@ -132,22 +133,6 @@ public class StatisticsCalculatorTest {
 		BigDecimal yrs = StatisticsCalculator.yearDiff("2011-01-01", "2000-01-01");
 		assertEquals("11.0", yrs.toString());
 	}
-	// I used this much more complex method to ensure the above was working.
-	// The below is more accurate than necessary.
-//	try {
-//		Date begin = YEAR_MONTH_DAY.parse( fixMissingMonthAndDay(minDate) );
-//		Date end   = YEAR_MONTH_DAY.parse( fixMissingMonthAndDay(maxDate) );
-//		ReadableInterval duration = new Interval(begin.getTime(), end.getTime());
-//		double yrs = Weeks.weeksIn(duration).getWeeks()/52.0;
-//		MathContext mc = new MathContext(4);
-//		if (yrs > 10) {
-//			mc = new MathContext(5);
-//		}
-//		return new BigDecimal(yrs, mc);
-//	} catch(ParseException e) {
-//		return BigDecimal.ZERO;
-//	}
-
 
 	@Test
 	public void test_daysDiff_1day() throws Exception {
@@ -547,7 +532,6 @@ public class StatisticsCalculatorTest {
 		try {
 			calculations = new ObjectMapper().readValue(json, Map.class);
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return calculations;
@@ -576,21 +560,25 @@ public class StatisticsCalculatorTest {
 		Value explicitRetained = createSample("2015-05-11T04:15:00-05:00", "95.1567", false);
 		Value explicitRemoved  = createSample("2015-05-12T04:15:00-05:00", "95.1937", true);
 		Value recentRemoved    = createSample("2015-05-13T04:15:00-05:00", "95.1959", true);
+		Value nullRemoved      = null;
 
 		List<Value> samples = new LinkedList<>();
-		samples.add( defaultRetained );  // should be retained because of default false
-		samples.add( explicitRetained ); // should be retained because not provisional
+		samples.add( defaultRetained );    // should be retained because of default false
+		samples.add( explicitRetained );  // should be retained because not provisional
 		samples.add( explicitRemoved );  // should be REMOVED because provisional
-		samples.add( recentRemoved );   // should be retained because most recent
+		samples.add( nullRemoved );     // should be REMOVED because NULL
+		samples.add( recentRemoved );  // should be retained because most recent
 
+		assertTrue( samples.contains(nullRemoved) ); // just checking that the null is really added
 		stats.removeProvisional(samples,"testing");
 
+		assertFalse("nulls should be removed as well as provisional", samples.contains(nullRemoved) );
 		assertTrue("should be retained because of default false", samples.contains(defaultRetained));
 		assertTrue("should be retained because not provisional",  samples.contains(explicitRetained));
 		assertFalse("should be REMOVED because provisional",      samples.contains(explicitRemoved));
-		assertFalse("should be retained because most recent",      samples.contains(recentRemoved));
+		assertFalse("should be retained because most recent",     samples.contains(recentRemoved));
 	}
-
+	
 
 	@Test
 	public void test_monthlyYearCount_low() throws Exception {
@@ -935,12 +923,12 @@ public class StatisticsCalculatorTest {
 		monthSamples.add( createSample("1964-07-02T12:00:00", "1.7") );
 		monthSamples.add( createSample("1963-07-03T12:00:00", "1.6") );
 		monthSamples.add( createSample("1962-07-20T12:00:00", "1.0") );
-/*  these two entries
+/*  these two entries that I wish to keep in this comment block
 		monthSamples.add( createSample("1966-07-27T12:00:00", "2.2") );
 		monthSamples.add( createSample("1966-07-01T12:00:00", "2.0") );
 	get normalized to this (by median or mean using 50 percentile of the list)
 		monthSamples.add( createSample("1966-07-01T12:00:00", "2.1") );
-	even so thes only have an impact on the answer because the count it reduced by one
+	even so these only have an impact on the answer because the count it reduced by one
 */
 	}
 
@@ -1126,5 +1114,138 @@ public class StatisticsCalculatorTest {
 		return isExpected;
 	}
 
-}
+	@Test
+	public void test_fixMissingMonthDay_year() {
+		String actual = StatisticsCalculator.fixMissingMonthAndDay("2222");
+		assertEquals("2222-06-30", actual);
+	}
+	
+	@Test
+	public void test_fixMissingMonthDay_month() {
+		String actual = StatisticsCalculator.fixMissingMonthAndDay("2111-11");
+		assertEquals("2111-11-15", actual);
+	}
+	
+	@Test
+	public void test_fixMissingMonthDay_empty() {
+		String actual = StatisticsCalculator.fixMissingMonthAndDay("");
+		assertEquals("", actual);
+	}
+	
+	@Test
+	public void test_fixMissingMonthDay_null() {
+		String actual = StatisticsCalculator.fixMissingMonthAndDay(null);
+		assertEquals("", actual);
+	}
+	
+	@Test
+	public void test_fixMissingMonthDay_badYear() {
+		String actual = StatisticsCalculator.fixMissingMonthAndDay("123");
+		assertEquals("", actual);
+	}
+	
+	@Test(expected=IllegalArgumentException.class)
+	public void test_daysDiff_badNumber() {
+		StatisticsCalculator.daysDiff("asdfsdf", "32asa");
+	}
+	
+	@Test
+	public void test_percentileOfValue_nullAndEmptyProtection() {
+		Value value = null;
+		List<Value> values = new LinkedList<>();
+		values.add( createSample("1963-12-02T12:00:00", "1.3") );
+		BigDecimal actual = StatisticsCalculator.percentileOfValue(values, value, Value::valueOf);
+		assertEquals(BigDecimal.ZERO, actual);
 
+		value = null;
+		values = new LinkedList<>();
+		values.add( createSample("1963-12-02T12:00:00", "1.3") );
+		actual = StatisticsCalculator.percentileOfValue(values, value, 10, Value::valueOf);
+		assertEquals(BigDecimal.ZERO, actual);
+		
+		value = createSample("1963-12-02T12:00:00", "1.3") ;
+		values = new LinkedList<>();
+		actual = StatisticsCalculator.percentileOfValue(values, value, 10, Value::valueOf);
+		assertEquals(BigDecimal.ZERO, actual);
+		
+		value = createSample("1963-12-02T12:00:00", "1.3") ;
+		values = null;
+		actual = StatisticsCalculator.percentileOfValue(values, value, 10, Value::valueOf);
+		assertEquals(BigDecimal.ZERO, actual);
+		
+		value = createSample("1963-12-02T12:00:00", "1.3") ;
+		values = null;
+		actual = StatisticsCalculator.percentileOfValue(values, value, Value::valueOf);
+		assertEquals(BigDecimal.ZERO, actual);
+		
+		value = createSample("1963-12-02T12:00:00", "1.3") ;
+		values = new LinkedList<>();
+		values.add( createSample("1963-12-02T12:00:00", "1.3") );
+		actual = StatisticsCalculator.percentileOfValue(values, value, null);
+		assertEquals(BigDecimal.ZERO, actual);
+		
+		value = createSample("1963-12-02T12:00:00", "1.3") ;
+		values = new LinkedList<>();
+		values.add( createSample("1963-12-02T12:00:00", "1.3") );
+		actual = StatisticsCalculator.percentileOfValue(values, value, 10, null);
+		assertEquals(BigDecimal.ZERO, actual);
+		
+		value = createSample("1963-12-02T12:00:00", "1.3") ;
+		values = new LinkedList<>();
+		values.add( createSample("1963-12-02T12:00:00", "1.3") );
+		Function<Value, BigDecimal> valueOf = new Function<Value, BigDecimal>() {
+			@Override
+			public BigDecimal apply(Value t) {
+				return null; // TESTING THIS
+			}
+		};
+		actual = StatisticsCalculator.percentileOfValue(values, value, 10, valueOf);
+		assertEquals(BigDecimal.ZERO, actual);
+	}
+
+	@Test
+	public void test_valueOfPercentile_nullAndEmptyProtection() {
+		BigDecimal percentile = BigDecimal.ONE;
+		List<Value> values = new LinkedList<>();
+		values.add( createSample("1963-12-02T12:00:00", "1.3") );
+		BigDecimal actual = new StatisticsCalculator<Value>().valueOfPercentile(values, percentile, 10, Value::valueOf);
+		assertEquals(values.get(0).value, actual);
+		
+		percentile = null;
+		values = new LinkedList<>();
+		values.add( createSample("1963-12-02T12:00:00", "1.3") );
+		actual = new StatisticsCalculator<Value>().valueOfPercentile(values, percentile, 10, Value::valueOf);
+		assertEquals(BigDecimal.ZERO, actual);
+
+		percentile = BigDecimal.ONE;
+		values = null;
+		actual = new StatisticsCalculator<Value>().valueOfPercentile(values, percentile, 10, Value::valueOf);
+		assertEquals(BigDecimal.ZERO, actual);
+
+		percentile = BigDecimal.ONE;
+		values = new LinkedList<>();
+		actual = new StatisticsCalculator<Value>().valueOfPercentile(values, percentile, 10, Value::valueOf);
+		assertEquals(BigDecimal.ZERO, actual);
+
+		percentile = new BigDecimal("-0.1");
+		values = new LinkedList<>();
+		values.add( createSample("1963-12-02T12:00:00", "1.3") );
+		actual = new StatisticsCalculator<Value>().valueOfPercentile(values, percentile, 10, Value::valueOf);
+		assertEquals(BigDecimal.ZERO, actual);
+
+		percentile = new BigDecimal("1.1");
+		values = new LinkedList<>();
+		values.add( createSample("1963-12-02T12:00:00", "1.3") );
+		actual = new StatisticsCalculator<Value>().valueOfPercentile(values, percentile, 10, Value::valueOf);
+		assertEquals(BigDecimal.ZERO, actual);
+	}
+	
+	@Test
+	public void test_uniqueYears_nullProtection() {
+		int actual = new StatisticsCalculator<Value>().uniqueYears(null);
+		assertEquals(0, actual);
+		
+		actual = new StatisticsCalculator<Value>().uniqueYears(new LinkedList<>());
+		assertEquals(0, actual);
+	}
+}

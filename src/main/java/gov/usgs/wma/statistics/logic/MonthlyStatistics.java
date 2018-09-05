@@ -1,7 +1,5 @@
 package gov.usgs.wma.statistics.logic;
 
-//import static gov.usgs.wma.statistics.model.Value.*;
-
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -52,18 +50,14 @@ public class MonthlyStatistics<S extends Value> extends StatisticsCalculator<S> 
 	
 	
 	public List<S> filterValuesByGivenMonth(List<S> samples, final String month) {
-		// using predicate because spring 3.x includes cglib that cannot compile lambdas
-		Predicate<S> monthly = new Predicate<S>() {
-			@Override
-			public boolean test(S value) {
+		List<S> monthSamples = samples.stream().filter(
+			value -> {
 				if (value == null || month == null) {
 					return false;
 				}
 				String paddedMonth =  ((month.length()==1) ?"0" :"")+month;
 				return Value.monthUTC(value.time).equals(paddedMonth);
-			}
-		};
-		List<S> monthSamples = samples.stream().filter(monthly).collect(Collectors.toList());
+			}).collect(Collectors.toList());
 		return monthSamples;
 	}
 
@@ -73,6 +67,8 @@ public class MonthlyStatistics<S extends Value> extends StatisticsCalculator<S> 
 	 * @return a map of monthly maps of percentile data
 	 */
 	public boolean monthlyStats(List<S> sortedByValue) {
+		LOGGER.trace("entered");
+		
 		boolean monthlyCalculated = false;
 		if (sortedByValue == null || sortedByValue.size() == 0) {
 			return monthlyCalculated;
@@ -86,20 +82,21 @@ public class MonthlyStatistics<S extends Value> extends StatisticsCalculator<S> 
 			
 			if ( doesThisMonthQualifyForStats(normalizeMutlipleYearlyValues) ) {
 				monthlyCalculated = true;
-				generatePercentiles(normalizeMutlipleYearlyValues, stats.buildPercentiles());
-				stats.month(month);
+				generatePercentiles(normalizeMutlipleYearlyValues, builder.buildPercentiles());
+				builder.month(month);
 				
 				List<Value> monthYearlyMedians = generateMonthYearlyPercentiles(normalizeMutlipleYearlyValues);
 				
-				stats.minP50(monthYearlyMedians.get(0).value.toString());
-				stats.maxP50(monthYearlyMedians.get( monthYearlyMedians.size()-1 ).value.toString());
-				stats.sampleCount(monthSamples.size());
+				builder.minP50(monthYearlyMedians.get(0).value.toString());
+				builder.maxP50(monthYearlyMedians.get( monthYearlyMedians.size()-1 ).value.toString());
+				builder.sampleCount(monthSamples.size());
 
-				stats.recordYears(""+sortSamplesByYear.keySet().size());
-				stats.collect();
+				builder.recordYears(""+sortSamplesByYear.keySet().size());
+				builder.collect();
 			}
 		}
 		
+		LOGGER.trace("exited");
 		return monthlyCalculated;
 	}
 	
@@ -134,7 +131,6 @@ public class MonthlyStatistics<S extends Value> extends StatisticsCalculator<S> 
 		}
 		// this cast works
 		sortValueByQualifier((List<S>)monthYearlyMedians);
-		stats.intermediateValues(monthYearlyMedians);
 		return monthYearlyMedians;
 	}
 	
@@ -155,6 +151,7 @@ public class MonthlyStatistics<S extends Value> extends StatisticsCalculator<S> 
 			}
 		}
 		normalizedSamples = sortBy.apply(normalizedSamples);
+		builder.intermediateValues(normalizedSamples);
 		
 		return normalizedSamples;
 	}

@@ -6,20 +6,32 @@ import static org.junit.Assert.*;
 import java.math.BigDecimal;
 import java.util.List;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import gov.usgs.ngwmn.logic.WaterLevelStatistics.MediationType;
 import gov.usgs.ngwmn.model.WLSample;
+import gov.usgs.wma.statistics.app.SwaggerConfig;
+import gov.usgs.wma.statistics.model.JsonData;
+import gov.usgs.wma.statistics.model.Value;
 
 public class StatsServiceTest {
 	private static final Logger LOGGER = LoggerFactory.getLogger(StatsServiceTest.class);
-			
+
+	StatsService stats = new StatsService();
+
+	@Before
+	public void setup() {
+		stats = new StatsService();
+	}
+	
 	@Test
 	public void test_parseData_oneFineDatum() {
-		StatsService stats = new StatsService();
-
 		String data = "1999/01/01,1.00";
 		
 		List<WLSample> parsed = stats.parseData(data);
@@ -31,8 +43,6 @@ public class StatsServiceTest {
 
 	@Test
 	public void test_parseData_twoFineData() {
-		StatsService stats = new StatsService();
-
 		String data = "1999/01/01,1.00\n1999/01/02,2.00";
 		
 		List<WLSample> parsed = stats.parseData(data);
@@ -57,8 +67,6 @@ public class StatsServiceTest {
 
 	@Test
 	public void test_parseData_twoWhitespaceData() {
-		StatsService stats = new StatsService();
-
 		String data = " 1999/01/01 , 1.00 \n\t1999/01/02\t,\t2.00\t";
 		
 		List<WLSample> parsed = stats.parseData(data);
@@ -70,8 +78,6 @@ public class StatsServiceTest {
 
 	@Test
 	public void test_parseData_twoMissingRowData() {
-		StatsService stats = new StatsService();
-
 		String data = "1999/01/01,1.00 \n \n 1999/01/02,2.00";
 		
 		List<WLSample> parsed = stats.parseData(data);
@@ -83,8 +89,6 @@ public class StatsServiceTest {
 	
 	@Test()
 	public void test_parseData_twoMissingDateData() {
-		StatsService stats = new StatsService();
-
 		String data = ",1.00\n1999/01/02,2.00";
 		
 		try {
@@ -96,8 +100,6 @@ public class StatsServiceTest {
 	
 	@Test()
 	public void test_parseData_twoBadDateData() {
-		StatsService stats = new StatsService();
-
 		String data = "199/01/01,1.00\n1999/01/02,2.00";
 		
 		try {
@@ -109,8 +111,6 @@ public class StatsServiceTest {
 	
 	@Test()
 	public void test_parseData_twoBadValueData() {
-		StatsService stats = new StatsService();
-
 		String data = "1999/01/01,1a.00\n1999/01/02,2.00";
 		
 		try {
@@ -119,29 +119,71 @@ public class StatsServiceTest {
 			assertTrue(e.getMessage().endsWith("1a.00"));
 		}
 	}
+
+	@Test
+	public void test_parseData_empty() {
+		String data = "";
+		List<WLSample> parsed = stats.parseData(data);
+		assertEquals(0, parsed.size());
+	}
+
+	@Test
+	public void test_parseData_comment() {
+		String data = "1999/01/01,1.00\r\n#1999/01/02,2.00";
+		List<WLSample> parsed = stats.parseData(data);
+		assertEquals(1, parsed.size());
+	}
+	
+	@Test(expected=RuntimeException.class)
+	public void test_parseData_tooFewColumns() {
+		// the second data row has no commas
+		String data = "1999/01/01,1.00\r\n1999/01/022.00";
+		stats.parseData(data);
+	}
+	
+	@Test(expected=RuntimeException.class)
+	public void test_parseData_tooManyColumns() {
+		// the second data row has no commas
+		String data = "1999/01/01,1.00\r\n1999/01/0,22.00,a,a";
+		stats.parseData(data);
+	}
+		
+	@Test()
+	public void test_parseData_provisional() {
+		// the second data row has no commas
+		String data = "1999/01/01,1.00,P";
+		Value value = stats.parseData(data).get(0);
+		assertTrue(value.isProvisional());
+	}
+
+	@Test
+	public void test_parseData_blankRow() {
+		String data = "1999/01/01,1.00\r\n\r\n1999/01/02,2.00";
+		List<WLSample> parsed = stats.parseData(data);
+		assertEquals(2, parsed.size());
+	}
+	
+
 	
 	@Test
-	public void test_service_twoFineData() {
-		StatsService stats = new StatsService();
-
+	public void test_service_twoFineData() throws Exception {
 		String data = "1999/01/01,1.00\n1999/01/02,2.00";
 		
-		ResponseEntity<String> resp = stats.service(data);
+		JsonData pojo = stats.calculate(data, MediationType.NONE.toString(), SwaggerConfig.BOOLEAN_FALSE, SwaggerConfig.StatsService_PERCENTILES_DEFAULT);
 		
-		assertEquals(200, resp.getStatusCode().value());
-		assertTrue( resp.toString().contains("200 OK") );
-		assertTrue( resp.getBody().contains(MONTHLY_WARNING) );
+		assertFalse( pojo.isOk() );
+		assertTrue( pojo.hasErrors() );
 		
-		// checking for no hiddend 300, 400, or 500 status
-		assertFalse( resp.getBody().contains("'status':3") );
-		assertFalse( resp.getBody().contains("'status':4") );
-		assertFalse( resp.getBody().contains("'status':5") );
+		
+		String json = new ObjectMapper().writeValueAsString(pojo);
+
+		int errIndex = json.indexOf("errors");
+		String errors = json.substring(errIndex);
+		assertTrue( errors.contains(MONTHLY_WARNING) );
 	}
 	
 	@Test
 	public void test_doesThisMonthQualifyForStats_hasTenYearsData() throws Exception {
-		StatsService stats = new StatsService();
-
 		String data =
 				"2005-06-10T04:15:00-05:00, 1.0\n"+
 				"2006-06-10T04:15:00-05:00, 2.0\n"+
@@ -158,17 +200,16 @@ public class StatsServiceTest {
 				"2017-06-10T04:15:00-05:00, 1.0\n"+
 				"2018-06-10T04:15:00-05:00, 1.0\n";
 		
-		ResponseEntity<String> resp = stats.service(data);
-		LOGGER.trace(resp.getBody());
+		JsonData pojo = stats.calculate(data, MediationType.NONE.toString(), SwaggerConfig.BOOLEAN_FALSE, SwaggerConfig.StatsService_PERCENTILES_DEFAULT);
+		assertTrue( pojo.isOk() );
+		assertFalse( pojo.hasErrors() );
 		
-		assertEquals(200, resp.getStatusCode().value());
-		assertTrue( resp.toString().contains("200 OK") );
-		assertFalse( resp.getBody().contains(MONTHLY_WARNING) );
+		String json = new ObjectMapper().writeValueAsString(pojo);
+		LOGGER.trace(json);
 		
-		// checking for no hiddend 300, 400, or 500 status
-		assertFalse( resp.getBody().contains("'status':3") );
-		assertFalse( resp.getBody().contains("'status':4") );
-		assertFalse( resp.getBody().contains("'status':5") );
-
+		int errIndex = json.indexOf("errors");
+		String errors = json.substring(errIndex);
+		assertFalse( errors.contains(MONTHLY_WARNING) );
 	}
 }
+

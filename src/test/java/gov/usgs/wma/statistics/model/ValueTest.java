@@ -295,18 +295,20 @@ public class ValueTest {
 		boolean actual = Value.checkBadTime(bad, 5, "test:N/A");
 		assertTrue("True means the time is bad", actual);
 	}
-//	@Test
-//	public void test_checkTime_month() {
-//		String bad = "2005-13-10T04:15:00-05:00";
-//		boolean actual = Value.checkBadTime(bad, 5, "test:N/A");
-//		assertTrue("No 13th month", actual);
-//	}
-//	@Test
-//	public void test_checkTime_day() {
-//		String bad = "2005-02-30T04:15:00-05:00";
-//		boolean actual = Value.checkBadTime(bad, 5, "test:N/A");
-//		assertTrue("Feb has < 30 days", actual);
-//	}
+	@Test
+	// TODO when and if we implement date value validation then this would have to be updated
+	public void test_checkTime_month() {
+		String bad = "2005-13-10T04:15:00-05:00";
+		boolean actual = Value.checkBadTime(bad, 5, "test:N/A");
+		assertFalse("No 13th month, this should be marked bad but it only checks format", actual);
+	}
+	@Test
+	// TODO when and if we implement date value validation then this would have to be updated
+	public void test_checkTime_day() {
+		String bad = "2005-02-30T04:15:00-05:00";
+		boolean actual = Value.checkBadTime(bad, 5, "test:N/A");
+		assertFalse("Feb has < 30 days, this should be marked bad but it only checks format", actual);
+	}
 	@Test
 	public void test_checkTime_yearOnly() {
 		String ok = "2005";

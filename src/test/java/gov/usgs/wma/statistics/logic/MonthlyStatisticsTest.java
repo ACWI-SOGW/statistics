@@ -123,12 +123,15 @@ public class MonthlyStatisticsTest {
 		samples.add( createSample("2013-01-10T04:15:00-05:00", "93.1682") );
 		List<Value> sorted = new LinkedList<>(samples);
 		StatisticsCalculator.sortByValueOrderAscending(sorted);
+		builder.includeIntermediateValues(true);
 		List<Value> yearly = stats.generateMonthYearlyPercentiles(sorted); // MediationType.AboveDatum
 
 		assertEquals("Expect 3 medians", 3, yearly.size());
 		assertEquals("Expect large median to be",  "95.1579", yearly.get(2).value.toString());
 		assertEquals("Expect middle median to be", "94.1579", yearly.get(1).value.toString());
 		assertEquals("Expect least median to be",  "93.1579", yearly.get(0).value.toString());
+		
+		assertEquals("generateMonthYearlyPercentiles should not added to intermediateValues.", 0, builder.getIntermediateValues().length());
 	}
 
 	@Test
@@ -176,10 +179,6 @@ public class MonthlyStatisticsTest {
 		builder.mediation(MediationType.AboveDatum);
 		// we are not testing this method so mock it to return what we need
 		MonthlyStatistics<Value> mockstats = new MonthlyStatistics<Value>(builder) {
-//			protected boolean doesThisMonthQualifyForStats(List<Value> monthSamples) {
-//				return monthSamples.size()>0;
-//			}
-			@Override
 			public List<Value> medianMonthlyValues(List<Value> monthSamples, Function<List<Value>, List<Value>> sortBy) {
 				return monthSamples;
 			}
@@ -254,8 +253,7 @@ public class MonthlyStatisticsTest {
 		// we are not testing this method so mock it to return what we need
 		MonthlyStatistics<Value> mockstats = new MonthlyStatistics<Value>(builder) {
 			@Override
-			public List<Value> medianMonthlyValues(List<Value> monthSamples,
-					Function<List<Value>, List<Value>> sortBy) {
+			public List<Value> medianMonthlyValues(List<Value> monthSamples, Function<List<Value>, List<Value>> sortBy) {
 				// do not modify, testing the months. This prevents normalization to test aggregations
 				return monthSamples;
 			}
@@ -324,7 +322,6 @@ public class MonthlyStatisticsTest {
 		samples.add( createSample("2003-03-21T04:15:00-05:00", "93.1682") );
 
 		StatisticsCalculator.sortByDateOrder(samples);
-//		String date = "2015-04-10";
 		String latestPct = stats.percentileBasedOnMonthlyData(pctSample, samples); // MediationType.AboveDatum
 		assertTrue("The latest percetile for the date given should be based on the month it is in "
 				+ "and all data for the given month is 94.???? so the latest in that month should be 100% (percentile) "
@@ -373,7 +370,7 @@ public class MonthlyStatisticsTest {
 		
 		Map<String, String> stat = builder.build().getMonthly().get("3").percentiles; // MediationType.AboveDatum
 
-//		assertNotNull(stat);
+		assertNotNull(stat);
 		assertEquals("4.12", stat.get(P50_MIN));
 		assertEquals("4.60", stat.get(P10));
 		assertEquals("6.5",  stat.get(P25));
@@ -757,7 +754,9 @@ public class MonthlyStatisticsTest {
 		// then check that averages removes them and that the new values are correct
 
 		int preCount = monthSamples.size();
+		builder.includeIntermediateValues(true);
 		List<Value> normalizeMutlipleYearlyValues = stats.medianMonthlyValues(monthSamples, stats.sortFunctionByQualifier());
+		assertTrue("medianMonthlyValues should added to intermediateValues.", builder.getIntermediateValues().length() > 0);
 
 		assertEquals("normalize should have removed two values, one from each of two years", preCount-2, normalizeMutlipleYearlyValues.size());
 
@@ -821,5 +820,42 @@ public class MonthlyStatisticsTest {
 		monthSamples.add( createSample("1966-04-07T12:00:00", "1.8") );
 		monthSamples.add( createSample("1964-04-02T12:00:00", "1.7") );
 		monthSamples.add( createSample("1965-04-05T12:00:00", "1.7") );
+	}
+	
+	@Test
+	public void test_monlthlyValues_nullProtection() {
+		List<Value> samples = new LinkedList<>();
+		fillAprilData(samples);
+		String month = null;
+		List<Value> actual = stats.filterValuesByGivenMonth(samples, month);
+		assertEquals(0, actual.size());
+		
+		samples = new LinkedList<>();
+		samples.add(null);
+		month = "01";
+		actual = stats.filterValuesByGivenMonth(samples, month);
+		assertEquals(0, actual.size());
+	}
+	
+	@Test
+	public void test_monthlyStats_nullAndEmptyProtection() {
+		List<Value> samples = new LinkedList<>();
+		boolean actual = stats.monthlyStats(samples);
+		assertFalse(actual);
+
+		samples = null;
+		actual = stats.monthlyStats(samples);
+		assertFalse(actual);
+	}
+
+	@Test
+	public void test_doesThisMonthQualifyForStats() {
+		List<Value> samples = new LinkedList<>();
+		boolean actual = stats.doesThisMonthQualifyForStats(samples);
+		assertFalse(actual);
+
+		samples = null;
+		actual = stats.doesThisMonthQualifyForStats(samples);
+		assertFalse(actual);
 	}
 }

@@ -30,15 +30,15 @@ public class OverallStatistics <S extends Value> extends StatisticsCalculator<S>
 		S maxValue = sortedByValue.get(sortedByValue.size()-1);
 
 		// value range
-		stats.minValue(minValue.value.toString());
-		stats.maxValue(maxValue.value.toString());
+		builder.minValue(minValue.value.toString());
+		builder.maxValue(maxValue.value.toString());
 		// number of samples
-		stats.sampleCount(samples.size());
+		builder.sampleCount(samples.size());
 		// percentile statistics
 		S medianValue = makeMedian(sortedByValue);
-		stats.median(medianValue.value.toString());
+		builder.median(medianValue.value.toString());
 				
-		return stats;
+		return builder;
 	}
 
 	public void findMinMaxDatesAndDateRange(List<S> samples, List<S> sortedByValue) {
@@ -47,12 +47,12 @@ public class OverallStatistics <S extends Value> extends StatisticsCalculator<S>
 		S minDate =samples.get(0);
 		S maxDate =samples.get(samples.size()-1);
 		
-		stats.latestValue(maxDate.value.toString());
+		builder.latestValue(maxDate.value.toString());
 		// date range
-		stats.minDate(minDate.time);
-		stats.maxDate(maxDate.time);
+		builder.minDate(minDate.time);
+		builder.maxDate(maxDate.time);
 		// years of data
-		stats.recordYears( yearDiff(maxDate.time, minDate.time).toString() );
+		builder.recordYears( yearDiff(maxDate.time, minDate.time).toString() );
 	}
 
 }

@@ -1,6 +1,7 @@
 package gov.usgs.wma.statistics.model;
 
 import static gov.usgs.wma.statistics.model.Value.*;
+//import static org.assertj.core.api.Assertions.*;
 
 import java.math.BigDecimal;
 import java.util.Arrays;
@@ -43,6 +44,8 @@ public class JsonDataBuilder {
 	public static final String P90           = "90";
 	
 	public static final String MONTH         = "MONTH";
+	
+	public static final String QUOTE         = "\"";
 	
 	/**
 	 * The list of percentiles to calculate.
@@ -155,7 +158,7 @@ public class JsonDataBuilder {
 		return this;
 	}
 	
-	public JsonDataBuilder addPercentiles(String ... percentiles) {
+	public JsonDataBuilder percentiles(String ... percentiles) {
 		for (String percentile : percentiles) {
 			this.percentiles.add(percentile);
 		}
@@ -166,10 +169,9 @@ public class JsonDataBuilder {
 		Map<String, BigDecimal> percentileValues = new HashMap<>();
 		for (String percentile : this.percentiles) {
 			String key = "P" + percentile;
-			String value = "0." + percentile + "0000000";
-			
-			// these are exact percentiles and should not limit measured precision
-			percentileValues.put(key, new BigDecimal(value));
+			// these are "exact" percentiles and should not limit measured precision
+			BigDecimal value = new BigDecimal(percentile).divide(new BigDecimal("100")).setScale(10);
+			percentileValues.put(key, value);
 		}
 		return percentileValues;
 	}
@@ -178,6 +180,7 @@ public class JsonDataBuilder {
 		collect();
 		buildIntermediateValues();
 		avoidNulls();
+		buildErrors();
 		return jsonData;
 	}
 	
@@ -185,7 +188,7 @@ public class JsonDataBuilder {
 		if (jsonData.overall == null) {
 			jsonData.overall = new JsonOverall("", 0, "", "", "", "", "", "", "", "", MediationType.NONE);
 		}
-		// TODO fill in other nulls
+		// TODO fill in other nulls ?
 	}
 
 	public JsonDataBuilder collect() {
@@ -212,6 +215,10 @@ public class JsonDataBuilder {
 		JsonMonthly monthly = new JsonMonthly(recordYears, sampleCount, values);
 		jsonData.monthly.put(month, monthly);
 	}
+	
+	public boolean hasMonthly() {
+		return jsonData.hasMonthly();
+	}
 
 	private JsonDataBuilder buildOverall(String recordYears, int sampleCount) {
 		this.values.put(CALC_DATE, DATE_FORMAT_FULL.format(new Date()));
@@ -236,12 +243,17 @@ public class JsonDataBuilder {
 		return values.containsKey(MONTH);
 	}
 	
-	public void setIncludeIntermediateValues(Boolean includeIntermediateValues) {
+	public JsonDataBuilder includeIntermediateValues(Boolean includeIntermediateValues) {
 		this.includeIntermediateValues = includeIntermediateValues;
+		return this;
 	}
 	
 	public boolean isIncludeIntermediateValues() {
 		return includeIntermediateValues;
+	}
+	
+	public String getIntermediateValues() {
+		return intermediateValues.toString();
 	}
 	
 	public JsonDataBuilder intermediateValue(Value sample) {
@@ -249,13 +261,7 @@ public class JsonDataBuilder {
 			return this;
 		}
 		
-		StringBuilder json = intermediateValues; // local alias
-		
-		if (json.length() == 0) {
-			json.append("\"");
-		}
-		json.append(sample.time).append(", ");
-		json.append(sample.value).append("\\n");
+		intermediateValues.append(sample.toCSV()).append("\\n");
 		
 		return this;
 	}
@@ -275,14 +281,35 @@ public class JsonDataBuilder {
 	public JsonDataBuilder buildIntermediateValues() {
 		jsonData.medians = "";
 		
-		if ( isIncludeIntermediateValues() ) {
-			if (intermediateValues.length() > 0) {
-				intermediateValues.append("\"");
-				jsonData.medians = intermediateValues.toString();
-				LOGGER.trace(intermediateValues.toString());
-			}
+		if ( isIncludeIntermediateValues() && intermediateValues.length() > 0) {
+			jsonData.medians = QUOTE + intermediateValues.toString() + QUOTE;
+			LOGGER.trace(intermediateValues.toString());
 		}
 		return this;
 	}
 
+	public JsonDataBuilder error(String msg) {
+		jsonData.addError(msg);
+		return this;
+	}
+	public JsonDataBuilder errors(List<String> msgs) {
+		jsonData.addAllErrors(msgs);
+		return this;
+	}
+	public boolean isOk() {
+		return jsonData.isOk();
+	}
+	public boolean hasErrors() {
+		return jsonData.hasErrors();
+	}
+	
+	public void buildErrors() {
+		// if NO errors then do nothing
+		if (isOk()) {
+			return;
+		}
+		// if any errors clear the monthly stats
+		// TODO this is my guess as to what we want
+		jsonData.monthly.clear();
+	}
 }

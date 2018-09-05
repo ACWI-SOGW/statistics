@@ -25,6 +25,7 @@ public class WaterLevelStatistics extends StatisticsCalculator<WLSample> {
 	
 	public WaterLevelStatistics(JsonDataBuilder stats) {
 		super(stats);
+		monthlyStats = new WLMonthlyStats(stats);
 	}
 	
 	protected static class WLMonthlyStats extends MonthlyStatistics<WLSample> {
@@ -33,10 +34,10 @@ public class WaterLevelStatistics extends StatisticsCalculator<WLSample> {
 		}
 		@Override
 		public void sortValueByQualifier(List<WLSample> samples) {
-			if (stats.mediation() == MediationType.NONE) {
+			if (builder.mediation() == MediationType.NONE) {
 				return;
 			}
-			if (stats.mediation() == MediationType.BelowLand || stats.mediation() == MediationType.DESCENDING) {
+			if (builder.mediation() == MediationType.BelowLand || builder.mediation() == MediationType.DESCENDING) {
 				sortByValueOrderDescending(samples);
 			} else {
 				sortByValueOrderAscending(samples);
@@ -46,7 +47,7 @@ public class WaterLevelStatistics extends StatisticsCalculator<WLSample> {
 		public Function<List<WLSample>, List<WLSample>> sortFunctionByQualifier() {
 			Function<List<WLSample>, List<WLSample>> sortBy = StatisticsCalculator::sortByValueOrderAscending;
 			
-			if (stats.mediation() == MediationType.BelowLand || stats.mediation() == MediationType.DESCENDING) {
+			if (builder.mediation() == MediationType.BelowLand || builder.mediation() == MediationType.DESCENDING) {
 				sortBy = StatisticsCalculator::sortByValueOrderDescending;
 			}
 			return sortBy;
@@ -60,7 +61,7 @@ public class WaterLevelStatistics extends StatisticsCalculator<WLSample> {
 	};
 	
 	
-	OverallStatistics<WLSample> overallStatistics = new OverallStatistics<WLSample>(stats) {
+	OverallStatistics<WLSample> overallStatistics = new OverallStatistics<WLSample>(builder) {
 		@Override
 		public void findMinMaxDatesAndDateRange(List<WLSample> samples, List<WLSample> sortedByValue) {
 			super.findMinMaxDatesAndDateRange(samples, sortedByValue);
@@ -89,21 +90,21 @@ public class WaterLevelStatistics extends StatisticsCalculator<WLSample> {
 	}
 	
 	public void setMediation(MediationType mediation) {
-		this.stats.mediation(mediation);
-		monthlyStats = new WLMonthlyStats(stats);
+		this.builder.mediation(mediation);
 	}
 	
-	
-	@Override
-	public List<WLSample> conditioning(Specifier spec, List<WLSample> samples) {
-		super.conditioning(spec, samples);
-		
-		MediationType mediation = findMostPrevalentMediation(spec, samples);
-		setMediation(mediation);
-		
-		List<WLSample> samplesByDate = useMostPrevalentPCodeMediatedValue(spec, samples, mediation); 
-		return samplesByDate;
-	}
+// TODO This conditioning must be done prior to calling the service
+// TODO I would like to keep it here until we have NGWMN calling the service
+//	@Override
+//	public List<WLSample> conditioning(Specifier spec, List<WLSample> samples) {
+//		super.conditioning(spec, samples);
+//		
+//		MediationType mediation = findMostPrevalentMediation(spec, samples);
+//		setMediation(mediation);
+//		
+//		List<WLSample> samplesByDate = useMostPrevalentPCodeMediatedValue(spec, samples, stats.mediation()); 
+//		return samplesByDate;
+//	}
 	@Override
 	protected void removeProvisional(List<WLSample> samplesByDate, String dataSetId) {
 		removeProvisionalButNotMostRecent(samplesByDate, dataSetId);
@@ -145,17 +146,16 @@ public class WaterLevelStatistics extends StatisticsCalculator<WLSample> {
 		monthlyStats.sortValueByQualifier(sortedByValue);
 		
 		overallStats(samplesByDate, sortedByValue);
-		boolean hasMonthly = false;
 		
-		if ( isNotBlank( stats.get(RECORD_YEARS) ) ) {
-			BigDecimal years = new BigDecimal( stats.get(RECORD_YEARS) );
-			String recent = stats.get(MAX_DATE);
+		if ( isNotBlank( builder.get(RECORD_YEARS) ) ) {
+			BigDecimal years = new BigDecimal( builder.get(RECORD_YEARS) );
+			String recent = builder.get(MAX_DATE);
 			String today = today();
 			
 			try {
 				if ( doesThisSiteQualifyForMonthlyStats(years, recent, today) ) {
-					stats.collect();
-					hasMonthly = monthlyStats.monthlyStats(sortedByValue);
+					builder.collect();
+					monthlyStats.monthlyStats(sortedByValue);
 				}
 			} catch (Exception e) {
 				// if anything goes wrong here we still want the overall
@@ -165,26 +165,25 @@ public class WaterLevelStatistics extends StatisticsCalculator<WLSample> {
 			LOGGER.warn("Record Years is null for {}:{}, by passing monthly stats.", spec.getAgencyCd(), spec.getSiteNo());
 		}
 		
-		if ( ! hasMonthly ) {
-			stats.month("1");
-			stats.sampleCount(0);
-			stats.recordYears(MONTHLY_WARNING);
-		}		
-		return stats.build();
+		if ( ! builder.hasMonthly() ) {
+			builder.error(MONTHLY_WARNING);
+		}
+		
+		return builder.build();
 	}
 	
 
 	protected void overallStats(List<WLSample> samples, List<WLSample> sortedByValue) {
 		overallStatistics.overallStats(samples, sortedByValue);
 		if (samples == null || samples.size() == 0) {
-			stats.recordYears("0");
-			stats.sampleCount(0);
-			stats.collect();
+			builder.recordYears("0");
+			builder.sampleCount(0);
+			builder.collect();
 			return;
 		}
 		
 		String latestPercentile = monthlyStats.percentileBasedOnMonthlyData(samples.get(samples.size()-1), samples);
-		stats.latestPercentile(latestPercentile);
+		builder.latestPercentile(latestPercentile);
 	}
 	
 
