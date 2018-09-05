@@ -15,7 +15,7 @@ pipeline {
     }
 
     stages {
-        stage('Rest Repo') {
+        stage('Reset Repo') {
             // it is not clear that the repo is a clean checkout
             steps {
                 // remove potentially old release files if exist
@@ -25,7 +25,7 @@ pipeline {
                 sh 'git reset --hard'
             }
         }
-        stage('Build/Test') {
+        stage('Build Test') {
             steps {
                 sh 'mvn clean package test'
             }
