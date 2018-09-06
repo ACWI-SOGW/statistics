@@ -15,9 +15,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import gov.usgs.ngwmn.logic.WaterLevelStatistics;
 import gov.usgs.ngwmn.logic.WaterLevelStatistics.MediationType;
 import gov.usgs.ngwmn.model.Specifier;
@@ -63,8 +60,11 @@ public class StatsService {
 					allowableValues=SwaggerConfig.StatsService_MEDIATION_VALUES,
 					allowEmptyValue=true
 					)
-			@RequestParam(defaultValue="BelowLand")
-			String mediate,
+			@RequestParam(
+					name="mediation",
+					defaultValue="BelowLand"
+					)
+			String mediation,
 			@ApiParam(
 					value=SwaggerConfig.StatsService_CALCULATE_MEDIANS,
 					defaultValue=SwaggerConfig.StatsService_MEDIANS_DEFAULT,
@@ -88,9 +88,9 @@ public class StatsService {
 			List<WLSample> samples = parseData(data);
 			
 			// parse the mediation string and setup the builder
-			MediationType mediation = MediationType.valueOf(mediate);
+			MediationType mediationType = MediationType.valueOf(mediation);
 			JsonDataBuilder builder = new JsonDataBuilder();
-			builder.mediation(mediation)
+			builder.mediation(mediationType)
 				.includeIntermediateValues(INCLUDE_MEDIANS.equals(medians)); // parse medians param
 			if ( ! SwaggerConfig.StatsService_PERCENTILES_DEFAULT.equals(percentiles) ) {
 				builder.percentiles(percentiles.split(",")); // parse custom percentiles
