@@ -23,6 +23,7 @@ pipeline {
                 // rest the git state
                 sh 'git checkout -f master'
                 sh 'git reset --hard'
+                sh 'git pull origin master'
             }
         }
         stage('Build Test') {
