@@ -321,7 +321,7 @@ public class JsonDataBuilderTest {
 		assertTrue(data.intermediateValues.toString().contains(VALUE_2));
 
 		int last = data.intermediateValues.length()-1;
-		assertEquals('n', data.intermediateValues.charAt(last));
+		assertEquals('\n', data.intermediateValues.charAt(last));
 		
 		data.buildIntermediateValues();
 
