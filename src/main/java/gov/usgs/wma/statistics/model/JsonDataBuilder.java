@@ -261,7 +261,7 @@ public class JsonDataBuilder {
 			return this;
 		}
 		
-		intermediateValues.append(sample.toCSV()).append("\\n");
+		intermediateValues.append(sample.toCSV()).append("\n");
 		
 		return this;
 	}
