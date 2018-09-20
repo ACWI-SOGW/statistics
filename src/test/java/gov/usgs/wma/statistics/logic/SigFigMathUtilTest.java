@@ -485,28 +485,7 @@ public class SigFigMathUtilTest {
         BigDecimal quotient = SigFigMathUtil.sigFigMultiplyByExact(b1, exact);
         assertEquals("3.33", quotient.toPlainString());
     }
-    
-	@Test
-	public void testBigDecimalScale() {
-		// testing if understanding of divide and rounding to the expect scale as expected
-
-		BigDecimal twelve = new BigDecimal(12);
-
-		int a = 10;
-
-		int b = 6;
-		String val = new BigDecimal(a).subtract(new BigDecimal(b))
-		.divide(twelve, 1, RoundingMode.HALF_EVEN).toString();
-
-		assertEquals("0.3", val);
-
-		b = 4;
-		val = new BigDecimal(a).subtract(new BigDecimal(b))
-		.divide(twelve, 1, RoundingMode.HALF_EVEN).toString();
-
-		assertEquals("0.5", val);
-	}
-    
+        
 	
 	@Test
 	public void test_sigFigAdd_nullEntry() {
@@ -620,4 +599,15 @@ public class SigFigMathUtilTest {
 		assertEquals("Round down toward zero for negative numbers.", RoundingMode.HALF_DOWN, rmNegative);
 	}
 	
+    
+    @Test
+    public void test_BigDecimal_1000() {
+    	BigDecimal thousand = new BigDecimal("1000");
+    	BigDecimal one = new BigDecimal("1.111");
+    	
+    	BigDecimal thousandOne = SigFigMathUtil.sigFigMultiply(thousand, one);
+    	
+    	assertEquals("This is wrong the real value should be 1000", "1111", thousandOne.toPlainString());
+    }
+
 }
