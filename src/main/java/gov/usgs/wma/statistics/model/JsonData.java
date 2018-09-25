@@ -19,6 +19,8 @@ public class JsonData {
 	@JsonProperty
 	String medians;
 	@JsonProperty
+	List<String> messages = new LinkedList<>();
+	@JsonProperty
 	List<String> errors = new LinkedList<>();
 	
 	public JsonOverall getOverall() {
@@ -33,10 +35,16 @@ public class JsonData {
 	public String getMedians() {
 		return medians;
 	}
+	public void addMessage(String msg) {
+		messages.add(msg);
+	}
+	public void addMessages(List<String> msgs) {
+		messages.addAll(msgs);
+	}
 	public void addError(String msg) {
 		errors.add(msg);
 	}
-	public void addAllErrors(List<String> msgs) {
+	public void addErrors(List<String> msgs) {
 		errors.addAll(msgs);
 	}
 	public boolean isOk() {

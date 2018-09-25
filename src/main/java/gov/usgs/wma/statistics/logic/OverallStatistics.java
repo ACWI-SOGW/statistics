@@ -7,8 +7,8 @@ import gov.usgs.wma.statistics.model.Value;
 
 public class OverallStatistics <S extends Value> extends StatisticsCalculator<S> {
 
-	public OverallStatistics(JsonDataBuilder stats) {
-		super(stats);
+	public OverallStatistics(JsonDataBuilder builder) {
+		super(builder);
 	}
 	
 	// TODO work this into the calculate model

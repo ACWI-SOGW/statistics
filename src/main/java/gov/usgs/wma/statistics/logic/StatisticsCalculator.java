@@ -8,6 +8,7 @@ import java.io.Reader;
 import java.math.BigDecimal;
 import java.math.MathContext;
 import java.math.RoundingMode;
+import java.text.DateFormatSymbols;
 import java.text.ParseException;
 import java.util.Calendar;
 import java.util.Collections;
@@ -46,13 +47,15 @@ public class StatisticsCalculator<S extends Value> {
 	// Calendar returns millis for days and after a diff we need the number of days
 	protected static final long MILLISECONDS_PER_DAY = 1000 * 60 * 60 * 24;// ms * sec * min * hr == ms/day
 
+	private static final String[] MONTH_NAMES = new DateFormatSymbols().getMonths();
+
 	protected final JsonDataBuilder builder;
 	
 	public StatisticsCalculator() {
 		builder = new JsonDataBuilder();
 	}
-	public StatisticsCalculator(JsonDataBuilder stats) {
-		this.builder = stats;
+	public StatisticsCalculator(JsonDataBuilder builder) {
+		this.builder = builder;
 	}
 	
 	
@@ -86,10 +89,46 @@ public class StatisticsCalculator<S extends Value> {
 	public List<S> conditioning(Specifier spec, List<S> samples) {
 		removeNulls(samples, spec.getAgencyCd()+":"+spec.getSiteNo());
 		removeProvisional(samples, spec.toString());
+		checkAllDates(samples);
 		return samples;
 	}
 	
 	
+	public void checkAllDates(List<S> samples) {
+
+		// java does not have stream().forEachWithIndex()
+		String today = today();
+
+		for (int i=0; i<samples.size(); i++) {
+			S sample = samples.get(i);
+			String utc = sample.time;
+			String msg;
+			if ( isBlank(utc) ) {
+				msg = String.format("Sample number %d has a missing date.", i);
+				builder.error(msg);
+			} else if ( today.compareTo(utc) == -1 ) {
+				msg = String.format("Sample number %d has date in the future: %s", i, utc);
+				builder.error(msg);
+			} else {
+				String fixed = fixMissingMonthAndDay(utc);
+				int delta = fixed.length() - utc.length();
+				if (delta <= 0) {
+					// date is fine and was not fixed
+					continue;
+				} else if (delta <= 3) {
+					msg = String.format("Sample number %d has a date missing the day of month, the 15th will be used. %s", i, utc);
+					builder.message(msg);
+					sample.time = fixed;
+				} else {
+					msg = String.format("Sample number %d has a date missing the month, 6-30 will be used. %s", i, utc);
+					builder.message(msg);
+					sample.time = fixed;
+				}
+			}
+			LOGGER.trace(msg);
+		}
+	}
+
 
 	/**
 	 * This returns the percentile of a given a sample in a sample "set"
@@ -251,7 +290,8 @@ public class StatisticsCalculator<S extends Value> {
 		
 		if (provisionalSamples.size() > 0) {
 			int count = provisionalSamples.size();
-			LOGGER.info("Removed {} provisional sample{} from '{}'", count, count==1?"":"s", mySiteId);
+			String msg = String.format("Removed %d provisional sample%s", count, count==1?"":"s");
+			builder.message(msg);
 		}
 	}
 	
@@ -270,11 +310,21 @@ public class StatisticsCalculator<S extends Value> {
 				nullSamples.add(sample);
 			}
 		}
-		samples.removeAll(nullSamples);
 		
 		if (nullSamples.size() > 0) {
-			LOGGER.warn("Removed {} samples from {}",nullSamples.size(), mySiteId);
+			String plural = nullSamples.size()==1 ?"s" :"";
+			// tried to use Java Streams but did not compile
+			String sep = "";
+			StringBuilder buff = new StringBuilder();
+			for (S sample: nullSamples) {
+				buff.append(sep).append(""+samples.indexOf(sample));
+				sep = ", ";
+			}
+			String msg = String.format("Removed %d sample%s at row%s %s", nullSamples.size(), plural, plural, buff.toString());
+			builder.message(msg);
 		}
+		
+		samples.removeAll(nullSamples);
 	}
 	
 	
@@ -336,8 +386,8 @@ public class StatisticsCalculator<S extends Value> {
 		
 		BigDecimal days  = BigDecimal.ZERO;
 		try {
-			Date begin   = DATE_FORMAT_FULL.parse( fixMissingMonthAndDay(minDate) );
-			Date end     = DATE_FORMAT_FULL.parse( fixMissingMonthAndDay(maxDate) );
+			Date begin   = DATE_FORMAT_FULL.parse(minDate);
+			Date end     = DATE_FORMAT_FULL.parse(maxDate);
 			
 			Calendar cal = Calendar.getInstance();
 
@@ -383,4 +433,18 @@ public class StatisticsCalculator<S extends Value> {
 		return "";
 	}
 	
+
+	public String sampleMonthName(S sample) {
+		String monthName = "none";
+		String monthStr = monthUTC(sample.time);
+
+		try {
+			int month = Integer.parseInt(monthStr);
+			return MONTH_NAMES[month-1];
+		} catch (Exception e) {
+			// errors will return "none"
+		}
+
+		return monthName;
+	}
 }

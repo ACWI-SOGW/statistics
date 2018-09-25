@@ -23,20 +23,17 @@ import gov.usgs.wma.statistics.model.JsonDataBuilder;
 
 public class WaterLevelStatistics extends StatisticsCalculator<WLSample> {
 	
-	public WaterLevelStatistics(JsonDataBuilder stats) {
-		super(stats);
-		monthlyStats = new WLMonthlyStats(stats);
+	public WaterLevelStatistics(JsonDataBuilder builder) {
+		super(builder);
+		monthlyStats = new WLMonthlyStats(builder);
 	}
 	
 	protected static class WLMonthlyStats extends MonthlyStatistics<WLSample> {
-		public WLMonthlyStats(JsonDataBuilder stats) {
-			super(stats);
+		public WLMonthlyStats(JsonDataBuilder builder) {
+			super(builder);
 		}
 		@Override
 		public void sortValueByQualifier(List<WLSample> samples) {
-			if (builder.mediation() == MediationType.NONE) {
-				return;
-			}
 			if (builder.mediation() == MediationType.BelowLand || builder.mediation() == MediationType.DESCENDING) {
 				sortByValueOrderDescending(samples);
 			} else {
@@ -54,8 +51,18 @@ public class WaterLevelStatistics extends StatisticsCalculator<WLSample> {
 		}
 		@Override
 		public boolean doesThisMonthQualifyForStats(List<WLSample> monthSamples) {
-			return  super.doesThisMonthQualifyForStats(monthSamples)
-					&& uniqueYears(monthSamples) >= 10;
+			int monthYears = uniqueYears(monthSamples);
+			boolean qualified = super.doesThisMonthQualifyForStats(monthSamples)
+					&& monthYears >= 10;
+
+			if ( ! qualified && monthYears>0 ) {
+				WLSample firstSample = monthSamples.get(0);
+				int missingCount = 10 - monthYears;
+				String plural = missingCount>1 ? "s" :"";
+				String monthName = sampleMonthName(firstSample);
+				builder.message(monthName +" is require "+ missingCount +" more year sample"+plural +" for monthly statistics");
+			}
+			return qualified;
 		}
 		
 	};
@@ -81,12 +88,26 @@ public class WaterLevelStatistics extends StatisticsCalculator<WLSample> {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(WaterLevelStatistics.class);
 	
+	private static String validValues;
+	
 	public static enum MediationType {
-		NONE,
 		BelowLand,
 		AboveDatum,
 		ASCENDING,
 		DESCENDING;
+
+		public static String validMediations() {
+			if (isBlank(validValues)) {
+				StringBuilder values = new StringBuilder();
+				String sep = "";
+				for (MediationType mediation : MediationType.values()) {
+					values.append(sep).append(mediation.toString());
+					sep = ", ";
+				}
+				validValues = values.toString();
+			}
+			return validValues;
+		}
 	}
 	
 	public void setMediation(MediationType mediation) {
@@ -132,6 +153,7 @@ public class WaterLevelStatistics extends StatisticsCalculator<WLSample> {
 		if (maxDate.isProvisional()) {
 			samples.remove(maxDate);
 			sortedByValue.remove(maxDate);
+			builder.message("The most recent value is provisional and will only be used for current status, not monthly perentiles.");
 		}
 	}
 	
@@ -159,14 +181,14 @@ public class WaterLevelStatistics extends StatisticsCalculator<WLSample> {
 				}
 			} catch (Exception e) {
 				// if anything goes wrong here we still want the overall
-				// TODO should we log it?
+				LOGGER.warn("Data for this ID {}:{}, had an unhandled exception. {}", spec.getAgencyCd(), spec.getSiteNo(), e);
 			}
 		} else {
 			LOGGER.warn("Record Years is null for {}:{}, by passing monthly stats.", spec.getAgencyCd(), spec.getSiteNo());
 		}
 		
 		if ( ! builder.hasMonthly() ) {
-			builder.error(MONTHLY_WARNING);
+			builder.message(MONTHLY_WARNING);
 		}
 		
 		return builder.build();

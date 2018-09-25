@@ -56,7 +56,7 @@ public class JsonDataBuilder {
 	 */
 	Map<String, String> values = new HashMap<>();
 	
-	MediationType mediation = MediationType.NONE;
+	MediationType mediation = MediationType.ASCENDING;
 
 	StringBuilder intermediateValues = new StringBuilder();
 	boolean includeIntermediateValues = false;
@@ -170,8 +170,18 @@ public class JsonDataBuilder {
 		for (String percentile : this.percentiles) {
 			String key = "P" + percentile;
 			// these are "exact" percentiles and should not limit measured precision
-			BigDecimal value = new BigDecimal(percentile).divide(new BigDecimal("100")).setScale(10);
-			percentileValues.put(key, value);
+			try {
+				BigDecimal value = new BigDecimal(percentile).divide(new BigDecimal("100")).setScale(10);
+				if (value.doubleValue()<0 || value.doubleValue()>1) {
+					String msg = String.format("Invalid percentile value, %$s", percentile);
+					throw new NumberFormatException(msg);
+				} else {
+					percentileValues.put(key, value);
+				}
+			} catch (Exception e) {
+				String msg = String.format("Invalid percentile value, %$s, must be between 0 and 100%.", percentile);
+				error(msg);
+			}
 		}
 		return percentileValues;
 	}
@@ -186,7 +196,7 @@ public class JsonDataBuilder {
 	
 	protected void avoidNulls() {
 		if (jsonData.overall == null) {
-			jsonData.overall = new JsonOverall("", 0, "", "", "", "", "", "", "", "", MediationType.NONE);
+			jsonData.overall = new JsonOverall("", 0, "", "", "", "", "", "", "", "", mediation);
 		}
 		// TODO fill in other nulls ?
 	}
@@ -288,12 +298,21 @@ public class JsonDataBuilder {
 		return this;
 	}
 
+	public JsonDataBuilder message(String msg) {
+		jsonData.addMessage(msg);
+		return this;
+	}
+	public JsonDataBuilder messages(List<String> msgs) {
+		jsonData.addMessages(msgs);
+		return this;
+	}
+	
 	public JsonDataBuilder error(String msg) {
 		jsonData.addError(msg);
 		return this;
 	}
 	public JsonDataBuilder errors(List<String> msgs) {
-		jsonData.addAllErrors(msgs);
+		jsonData.addErrors(msgs);
 		return this;
 	}
 	public boolean isOk() {

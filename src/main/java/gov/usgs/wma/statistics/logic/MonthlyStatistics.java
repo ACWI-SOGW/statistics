@@ -18,8 +18,8 @@ import gov.usgs.wma.statistics.model.Value;
 public class MonthlyStatistics<S extends Value> extends StatisticsCalculator<S> {
 	private static final Logger LOGGER = LoggerFactory.getLogger(MonthlyStatistics.class);
 
-	public MonthlyStatistics(JsonDataBuilder stats) {
-		super(stats);
+	public MonthlyStatistics(JsonDataBuilder builder) {
+		super(builder);
 	}
 	
 	public String percentileBasedOnMonthlyData(S value, List<S> samplesByDate) {
@@ -100,6 +100,11 @@ public class MonthlyStatistics<S extends Value> extends StatisticsCalculator<S> 
 		return monthlyCalculated;
 	}
 	
+	/**
+	 * The non-GWW case will be that there must be value while the GWW case will be that there must be ten years.
+	 * @param normalizeMutlipleYearlyValues
+	 * @return
+	 */
 	public boolean doesThisMonthQualifyForStats(List<S> normalizeMutlipleYearlyValues) {
 		return normalizeMutlipleYearlyValues != null && normalizeMutlipleYearlyValues.size()>0;
 	}
@@ -135,6 +140,7 @@ public class MonthlyStatistics<S extends Value> extends StatisticsCalculator<S> 
 	}
 	
 	public List<S> medianMonthlyValues(List<S> monthSamples, Function<List<S>, List<S>> sortBy) {
+		int sampleCount = monthSamples.size();
 		List<S> normalizedSamples = new LinkedList<>();
 
 		Map<String, List<S>> yearSamples = sortSamplesByYear(monthSamples);
@@ -153,6 +159,12 @@ public class MonthlyStatistics<S extends Value> extends StatisticsCalculator<S> 
 		normalizedSamples = sortBy.apply(normalizedSamples);
 		builder.intermediateValues(normalizedSamples);
 		
+		if (sampleCount > normalizedSamples.size()) {
+			S firstSample = normalizedSamples.get(0);
+			String monthName = sampleMonthName(firstSample);
+			String msg = String.format("The data contains multiple samples for %s where monthly medians were used.", monthName);
+			builder.message(msg);
+		}
 		return normalizedSamples;
 	}
 	
