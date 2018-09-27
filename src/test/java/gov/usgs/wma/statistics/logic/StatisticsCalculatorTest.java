@@ -16,18 +16,24 @@ import java.util.function.Function;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.core.env.Environment;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import gov.usgs.ngwmn.logic.WaterLevelStatistics.MediationType;
+import gov.usgs.ngwmn.model.MediationType;
+import gov.usgs.wma.statistics.app.Properties;
 import gov.usgs.wma.statistics.model.JsonDataBuilder;
 import gov.usgs.wma.statistics.model.Value;
 
 
-
-
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration //(locations = { "/applicationContext_mock.xml" })
 public class StatisticsCalculatorTest {
 	private static final Logger LOGGER = LoggerFactory.getLogger(StatisticsCalculatorTest.class);
 	
@@ -39,8 +45,10 @@ public class StatisticsCalculatorTest {
 	
 	static final Map<String, BigDecimal> PERCENTILES = new JsonDataBuilder().buildPercentiles();
 	
+	@Mock
+	Environment spring;
+	Properties env;
 	StatisticsCalculator<Value> stats;
-	
 	MonthlyStatistics<Value> monthlyStats;
 	
 
@@ -96,10 +104,10 @@ public class StatisticsCalculatorTest {
 
 	@Before
 	public void setup() {
-		stats = new StatisticsCalculator<Value>();
-		JsonDataBuilder builder = new JsonDataBuilder();
-		builder.mediation(MediationType.AboveDatum);
-		monthlyStats = new MonthlyStatistics<Value>(builder);
+		JsonDataBuilder builder = new JsonDataBuilder().mediation(MediationType.AboveDatum);
+		env = new Properties().setEnvironment(spring);
+		stats = new StatisticsCalculator<Value>(env, builder);
+		monthlyStats = new MonthlyStatistics<Value>(env, builder);
 	}
 
 
@@ -248,7 +256,7 @@ public class StatisticsCalculatorTest {
 	@Test
 	// This test shows the flexibility in using lambdas
 	public void test_percentileValue_NonWLSample() throws Exception {
-		StatisticsCalculator<OtherValue> otherStats = new StatisticsCalculator<>();
+		StatisticsCalculator<OtherValue> otherStats = new StatisticsCalculator<>(env);
 		OtherValue min = new OtherValue("1.0");
 		OtherValue max = new OtherValue("2.0");
 		List<OtherValue> samples = new LinkedList<>();
@@ -1208,44 +1216,44 @@ public class StatisticsCalculatorTest {
 		BigDecimal percentile = BigDecimal.ONE;
 		List<Value> values = new LinkedList<>();
 		values.add( createSample("1963-12-02T12:00:00", "1.3") );
-		BigDecimal actual = new StatisticsCalculator<Value>().valueOfPercentile(values, percentile, 10, Value::valueOf);
+		BigDecimal actual = stats.valueOfPercentile(values, percentile, 10, Value::valueOf);
 		assertEquals(values.get(0).value, actual);
 		
 		percentile = null;
 		values = new LinkedList<>();
 		values.add( createSample("1963-12-02T12:00:00", "1.3") );
-		actual = new StatisticsCalculator<Value>().valueOfPercentile(values, percentile, 10, Value::valueOf);
+		actual = stats.valueOfPercentile(values, percentile, 10, Value::valueOf);
 		assertEquals(BigDecimal.ZERO, actual);
 
 		percentile = BigDecimal.ONE;
 		values = null;
-		actual = new StatisticsCalculator<Value>().valueOfPercentile(values, percentile, 10, Value::valueOf);
+		actual = stats.valueOfPercentile(values, percentile, 10, Value::valueOf);
 		assertEquals(BigDecimal.ZERO, actual);
 
 		percentile = BigDecimal.ONE;
 		values = new LinkedList<>();
-		actual = new StatisticsCalculator<Value>().valueOfPercentile(values, percentile, 10, Value::valueOf);
+		actual = stats.valueOfPercentile(values, percentile, 10, Value::valueOf);
 		assertEquals(BigDecimal.ZERO, actual);
 
 		percentile = new BigDecimal("-0.1");
 		values = new LinkedList<>();
 		values.add( createSample("1963-12-02T12:00:00", "1.3") );
-		actual = new StatisticsCalculator<Value>().valueOfPercentile(values, percentile, 10, Value::valueOf);
+		actual = stats.valueOfPercentile(values, percentile, 10, Value::valueOf);
 		assertEquals(BigDecimal.ZERO, actual);
 
 		percentile = new BigDecimal("1.1");
 		values = new LinkedList<>();
 		values.add( createSample("1963-12-02T12:00:00", "1.3") );
-		actual = new StatisticsCalculator<Value>().valueOfPercentile(values, percentile, 10, Value::valueOf);
+		actual = stats.valueOfPercentile(values, percentile, 10, Value::valueOf);
 		assertEquals(BigDecimal.ZERO, actual);
 	}
 	
 	@Test
 	public void test_uniqueYears_nullProtection() {
-		int actual = new StatisticsCalculator<Value>().uniqueYears(null);
+		int actual = stats.uniqueYears(null);
 		assertEquals(0, actual);
 		
-		actual = new StatisticsCalculator<Value>().uniqueYears(new LinkedList<>());
+		actual = stats.uniqueYears(new LinkedList<>());
 		assertEquals(0, actual);
 	}
 }

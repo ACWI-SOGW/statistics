@@ -1,5 +1,6 @@
 package gov.usgs.wma.statistics.logic;
 
+import static gov.usgs.wma.statistics.app.Properties.*;
 import static gov.usgs.wma.statistics.logic.SigFigMathUtil.*;
 import static gov.usgs.wma.statistics.model.Value.*;
 import static org.apache.commons.lang.StringUtils.*;
@@ -26,6 +27,7 @@ import org.slf4j.LoggerFactory;
 
 import gov.usgs.ngwmn.logic.WaterLevelStatistics;
 import gov.usgs.ngwmn.model.Specifier;
+import gov.usgs.wma.statistics.app.Properties;
 import gov.usgs.wma.statistics.model.JsonData;
 import gov.usgs.wma.statistics.model.JsonDataBuilder;
 import gov.usgs.wma.statistics.model.Value;
@@ -50,11 +52,13 @@ public class StatisticsCalculator<S extends Value> {
 	private static final String[] MONTH_NAMES = new DateFormatSymbols().getMonths();
 
 	protected final JsonDataBuilder builder;
+	protected final Properties env;
 	
-	public StatisticsCalculator() {
-		builder = new JsonDataBuilder();
+	public StatisticsCalculator(Properties env) {
+		this(env, new JsonDataBuilder());
 	}
-	public StatisticsCalculator(JsonDataBuilder builder) {
+	public StatisticsCalculator(Properties env, JsonDataBuilder builder) {
+		this.env = env;
 		this.builder = builder;
 	}
 	
@@ -104,7 +108,7 @@ public class StatisticsCalculator<S extends Value> {
 			String utc = sample.time;
 			String msg;
 			if ( isBlank(utc) ) {
-				msg = String.format("Sample number %d has a missing date.", i);
+				msg = env.getError(ENV_INVALID_ROW_DATE_BLANK, i);
 				builder.error(msg);
 			} else if ( today.compareTo(utc) == -1 ) {
 				msg = String.format("Sample number %d has date in the future: %s", i, utc);

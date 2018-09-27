@@ -12,19 +12,31 @@ import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.springframework.core.env.Environment;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import gov.usgs.wma.statistics.app.Properties;
 import gov.usgs.wma.statistics.model.JsonData;
 import gov.usgs.wma.statistics.model.JsonDataBuilder;
 import gov.usgs.wma.statistics.model.Value;
 
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration //(locations = { "/applicationContext_mock.xml" })
 public class OverallStatisticsTest {
-	JsonDataBuilder builder = new JsonDataBuilder();
-	OverallStatistics<Value> stats = new OverallStatistics<>(builder);
+	@Mock
+	Environment spring;
+	Properties env;
+	JsonDataBuilder builder;
+	OverallStatistics<Value> stats;
 
 	@Before
 	public void setup() {
 		builder = new JsonDataBuilder();
-		stats = new OverallStatistics<>(builder);
+		env = new Properties().setEnvironment(spring);
+		stats = new OverallStatistics<>(env, builder);
 	}
 	
 	private Value createSample(String time, String value) {

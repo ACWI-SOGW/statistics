@@ -12,9 +12,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import gov.usgs.ngwmn.model.DepthDatum;
+import gov.usgs.ngwmn.model.MediationType;
 import gov.usgs.ngwmn.model.PCode;
 import gov.usgs.ngwmn.model.Specifier;
 import gov.usgs.ngwmn.model.WLSample;
+import gov.usgs.wma.statistics.app.Properties;
 import gov.usgs.wma.statistics.logic.MonthlyStatistics;
 import gov.usgs.wma.statistics.logic.OverallStatistics;
 import gov.usgs.wma.statistics.logic.StatisticsCalculator;
@@ -23,14 +25,14 @@ import gov.usgs.wma.statistics.model.JsonDataBuilder;
 
 public class WaterLevelStatistics extends StatisticsCalculator<WLSample> {
 	
-	public WaterLevelStatistics(JsonDataBuilder builder) {
-		super(builder);
-		monthlyStats = new WLMonthlyStats(builder);
+	public WaterLevelStatistics(Properties env, JsonDataBuilder builder) {
+		super(env, builder);
+		monthlyStats = new WLMonthlyStats(env, builder);
 	}
 	
 	protected static class WLMonthlyStats extends MonthlyStatistics<WLSample> {
-		public WLMonthlyStats(JsonDataBuilder builder) {
-			super(builder);
+		public WLMonthlyStats(Properties env, JsonDataBuilder builder) {
+			super(env, builder);
 		}
 		@Override
 		public void sortValueByQualifier(List<WLSample> samples) {
@@ -68,7 +70,7 @@ public class WaterLevelStatistics extends StatisticsCalculator<WLSample> {
 	};
 	
 	
-	OverallStatistics<WLSample> overallStatistics = new OverallStatistics<WLSample>(builder) {
+	OverallStatistics<WLSample> overallStatistics = new OverallStatistics<WLSample>(env, builder) {
 		@Override
 		public void findMinMaxDatesAndDateRange(List<WLSample> samples, List<WLSample> sortedByValue) {
 			super.findMinMaxDatesAndDateRange(samples, sortedByValue);
@@ -88,27 +90,6 @@ public class WaterLevelStatistics extends StatisticsCalculator<WLSample> {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(WaterLevelStatistics.class);
 	
-	private static String validValues;
-	
-	public static enum MediationType {
-		BelowLand,
-		AboveDatum,
-		ASCENDING,
-		DESCENDING;
-
-		public static String validMediations() {
-			if (isBlank(validValues)) {
-				StringBuilder values = new StringBuilder();
-				String sep = "";
-				for (MediationType mediation : MediationType.values()) {
-					values.append(sep).append(mediation.toString());
-					sep = ", ";
-				}
-				validValues = values.toString();
-			}
-			return validValues;
-		}
-	}
 	
 	public void setMediation(MediationType mediation) {
 		this.builder.mediation(mediation);

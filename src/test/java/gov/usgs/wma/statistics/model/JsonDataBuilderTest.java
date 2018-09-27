@@ -12,7 +12,7 @@ import java.util.Map;
 import org.junit.Before;
 import org.junit.Test;
 
-import gov.usgs.ngwmn.logic.WaterLevelStatistics.MediationType;
+import gov.usgs.ngwmn.model.MediationType;
 
 public class JsonDataBuilderTest {
 	

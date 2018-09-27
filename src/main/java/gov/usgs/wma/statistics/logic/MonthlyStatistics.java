@@ -12,14 +12,15 @@ import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import gov.usgs.wma.statistics.app.Properties;
 import gov.usgs.wma.statistics.model.JsonDataBuilder;
 import gov.usgs.wma.statistics.model.Value;
 
 public class MonthlyStatistics<S extends Value> extends StatisticsCalculator<S> {
 	private static final Logger LOGGER = LoggerFactory.getLogger(MonthlyStatistics.class);
 
-	public MonthlyStatistics(JsonDataBuilder builder) {
-		super(builder);
+	public MonthlyStatistics(Properties env, JsonDataBuilder builder) {
+		super(env, builder);
 	}
 	
 	public String percentileBasedOnMonthlyData(S value, List<S> samplesByDate) {

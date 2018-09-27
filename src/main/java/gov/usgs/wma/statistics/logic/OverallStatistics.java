@@ -2,13 +2,14 @@ package gov.usgs.wma.statistics.logic;
 
 import java.util.List;
 
+import gov.usgs.wma.statistics.app.Properties;
 import gov.usgs.wma.statistics.model.JsonDataBuilder;
 import gov.usgs.wma.statistics.model.Value;
 
 public class OverallStatistics <S extends Value> extends StatisticsCalculator<S> {
 
-	public OverallStatistics(JsonDataBuilder builder) {
-		super(builder);
+	public OverallStatistics(Properties env, JsonDataBuilder builder) {
+		super(env, builder);
 	}
 	
 	// TODO work this into the calculate model

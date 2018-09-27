@@ -1,7 +1,6 @@
 package gov.usgs.wma.statistics.model;
 
 import static gov.usgs.wma.statistics.model.Value.*;
-//import static org.assertj.core.api.Assertions.*;
 
 import java.math.BigDecimal;
 import java.util.Arrays;
@@ -12,10 +11,11 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Stream;
 
 import org.slf4j.Logger;
 
-import gov.usgs.ngwmn.logic.WaterLevelStatistics.MediationType;
+import gov.usgs.ngwmn.model.MediationType;
 
 
 public class JsonDataBuilder {
@@ -179,6 +179,7 @@ public class JsonDataBuilder {
 					percentileValues.put(key, value);
 				}
 			} catch (Exception e) {
+//				String msg = String.format(getMessage(MSG_INVALID_PERCENTILE), percentile);
 				String msg = String.format("Invalid percentile value, %$s, must be between 0 and 100%.", percentile);
 				error(msg);
 			}
@@ -306,6 +307,9 @@ public class JsonDataBuilder {
 		jsonData.addMessages(msgs);
 		return this;
 	}
+	public Stream<String> messages() {
+		return jsonData.messages.stream();
+	}
 	
 	public JsonDataBuilder error(String msg) {
 		jsonData.addError(msg);
@@ -314,6 +318,9 @@ public class JsonDataBuilder {
 	public JsonDataBuilder errors(List<String> msgs) {
 		jsonData.addErrors(msgs);
 		return this;
+	}
+	public Stream<String> errors() {
+		return jsonData.errors.stream();
 	}
 	public boolean isOk() {
 		return jsonData.isOk();

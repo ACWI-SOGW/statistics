@@ -8,28 +8,44 @@ import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import gov.usgs.ngwmn.logic.WaterLevelStatistics.MediationType;
+import gov.usgs.ngwmn.model.MediationType;
 import gov.usgs.ngwmn.model.WLSample;
+import gov.usgs.wma.statistics.app.Properties;
 import gov.usgs.wma.statistics.app.SwaggerConfig;
 import gov.usgs.wma.statistics.model.JsonData;
 import gov.usgs.wma.statistics.model.JsonDataBuilder;
 import gov.usgs.wma.statistics.model.Value;
 
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration //(locations = { "/applicationContext_mock.xml" })
 public class StatsServiceTest {
 	private static final Logger LOGGER = LoggerFactory.getLogger(StatsServiceTest.class);
 
+	@Autowired
+	Environment spring;
+	
 	StatsService stats;
+	Properties env;
 	JsonDataBuilder builder;
 
 	@Before
 	public void setup() {
-		stats = new StatsService();
 		builder = new JsonDataBuilder();
+		
+		stats = new StatsService();
+		env = new Properties();
+		env.setEnvironment(spring);
+		stats.env = env;
 	}
 	
 	@Test
