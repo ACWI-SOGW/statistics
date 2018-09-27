@@ -25,9 +25,9 @@ public class Properties {
 	public static final String ENV_INVALID_ROW_DATE_FUTURE  = "app.error.invalid.row.date.future";
 	
 	public static final String ENV_MESSAGE_PROVISIONAL_RULE = "app.message.provisional.rule";
-	public static final String ENV_MESSAGE_MONTLY_RULE      = "app.message.monthly.rule";
-	public static final String ENV_MESSAGE_MONTLY_DETAIL    = "app.message.monthly.detail";
-	public static final String ENV_MESSAGE_MONTLY_MEDIANS   = "app.message.monthly.medians";
+	public static final String ENV_MESSAGE_MONTHLY_RULE     = "app.message.monthly.rule";
+	public static final String ENV_MESSAGE_MONTHLY_DETAIL   = "app.message.monthly.detail";
+	public static final String ENV_MESSAGE_MONTHLY_MEDIANS  = "app.message.monthly.medians";
 	public static final String ENV_MESSAGE_DATE_FIX_DAY     = "app.message.date.fix.day";
 	public static final String ENV_MESSAGE_DATE_FIX_MONTH   = "app.message.date.fix.month";
 	public static final String ENV_MESSAGE_OMIT_NULL        = "app.message.omit.null";
@@ -44,7 +44,7 @@ public class Properties {
 	public String getMessage(String messageName, Object ... args) {
 		String msg = env.getProperty(messageName, "");
 		if (StringUtils.isBlank(msg)) {
-			LOGGER.error("%s property not found.", messageName);
+			LOGGER.error("'{}' property not found.", messageName);
 			return "";
 		}
 		return String.format( env.getProperty(messageName, ""), args);

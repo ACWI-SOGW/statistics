@@ -108,10 +108,10 @@ public class StatisticsCalculator<S extends Value> {
 			String utc = sample.time;
 			String msg;
 			if ( isBlank(utc) ) {
-				msg = env.getError(ENV_INVALID_ROW_DATE_BLANK, i);
+				msg = env.getError(ENV_INVALID_ROW_DATE_BLANK, i+1);
 				builder.error(msg);
 			} else if ( today.compareTo(utc) == -1 ) {
-				msg = env.getError(ENV_INVALID_ROW_DATE_FUTURE, i, utc);
+				msg = env.getError(ENV_INVALID_ROW_DATE_FUTURE, i+1, utc);
 				builder.error(msg);
 			} else {
 				String fixed = fixMissingMonthAndDay(utc);
@@ -120,10 +120,10 @@ public class StatisticsCalculator<S extends Value> {
 				if (delta <= 0) {
 					continue; // date is fine and was not fixed
 				} else if (delta <= 3) {
-					msg = env.getMessage(ENV_MESSAGE_DATE_FIX_DAY, i, utc);
+					msg = env.getMessage(ENV_MESSAGE_DATE_FIX_DAY, i+1, utc);
 					builder.message(msg);
 				} else {
-					msg = env.getMessage(ENV_MESSAGE_DATE_FIX_MONTH, i, utc);
+					msg = env.getMessage(ENV_MESSAGE_DATE_FIX_MONTH, i+1, utc);
 					builder.message(msg);
 				}
 			}
@@ -292,7 +292,7 @@ public class StatisticsCalculator<S extends Value> {
 		
 		if (provisionalSamples.size() > 0) {
 			int count = provisionalSamples.size();
-			String msg = String.format(ENV_MESSAGE_OMIT_PROVISIONAL, count, count==1?"":"s");
+			String msg = env.getMessage(ENV_MESSAGE_OMIT_PROVISIONAL, count, count==1?"":"s");
 			builder.message(msg);
 		}
 	}
@@ -314,12 +314,12 @@ public class StatisticsCalculator<S extends Value> {
 		}
 		
 		if (nullSamples.size() > 0) {
-			String plural = nullSamples.size()==1 ?"s" :"";
+			String plural = nullSamples.size()!=1 ?"s" :"";
 			// tried to use Java Streams but did not compile
 			String sep = "";
 			StringBuilder buff = new StringBuilder();
 			for (S sample: nullSamples) {
-				buff.append(sep).append(""+samples.indexOf(sample));
+				buff.append(sep).append(""+(samples.indexOf(sample)+1));
 				sep = ", ";
 			}
 			String msg = env.getMessage(ENV_MESSAGE_OMIT_NULL, nullSamples.size(), plural, plural, buff.toString());

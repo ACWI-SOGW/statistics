@@ -25,12 +25,14 @@ import gov.usgs.wma.statistics.model.JsonData;
 import gov.usgs.wma.statistics.model.JsonDataBuilder;
 
 public class WaterLevelStatistics extends StatisticsCalculator<WLSample> {
-	
-	public WaterLevelStatistics(Properties env, JsonDataBuilder builder) {
-		super(env, builder);
-		monthlyStats = new WLMonthlyStats(env, builder);
-	}
-	
+	private static final Logger LOGGER = LoggerFactory.getLogger(WaterLevelStatistics.class);
+	/**
+	 * This is the agreed upon days window for a recent value. It is computed from
+	 * 1 year + 1 month + 1.5 weeks or 365 + 30 + 7 + 4 because of how samples are taken and eventually entered.
+	 */
+	protected static final BigDecimal Days406 = new BigDecimal("406");
+
+		
 	protected static class WLMonthlyStats extends MonthlyStatistics<WLSample> {
 		public WLMonthlyStats(Properties env, JsonDataBuilder builder) {
 			super(env, builder);
@@ -63,7 +65,7 @@ public class WaterLevelStatistics extends StatisticsCalculator<WLSample> {
 				int missingCount = 10 - monthYears;
 				String plural = missingCount>1 ? "s" :"";
 				String monthName = sampleMonthName(firstSample);
-				String msg = env.getMessage(ENV_MESSAGE_MONTLY_DETAIL, monthName, missingCount, plural);
+				String msg = env.getMessage(ENV_MESSAGE_MONTHLY_DETAIL, monthName, missingCount, plural);
 				builder.message(msg);
 			}
 			return qualified;
@@ -72,41 +74,33 @@ public class WaterLevelStatistics extends StatisticsCalculator<WLSample> {
 	};
 	
 	
-	OverallStatistics<WLSample> overallStatistics = new OverallStatistics<WLSample>(env, builder) {
-		@Override
-		public void findMinMaxDatesAndDateRange(List<WLSample> samples, List<WLSample> sortedByValue) {
-			super.findMinMaxDatesAndDateRange(samples, sortedByValue);
-			removeMostRecentProvisional(samples, sortedByValue);
-		}
-	};
-	
+	// Package level access for unit testing
 	MonthlyStatistics<WLSample> monthlyStats;
+	OverallStatistics<WLSample> overallStatistics; 
 	
-	/**
-	 * This is the agreed upon days window for a recent value. It is computed from
-	 * 1 year + 1 month + 1.5 weeks or 365 + 30 + 7 + 4 because of how samples are taken and eventually entered.
-	 */
-	protected static final BigDecimal Days406 = new BigDecimal("406");
-
-	private static final Logger LOGGER = LoggerFactory.getLogger(WaterLevelStatistics.class);
 	
+	public WaterLevelStatistics(Properties env, JsonDataBuilder builder) {
+		super(env, builder);
+		
+		monthlyStats = new WLMonthlyStats(env, builder);
+		
+		overallStatistics = new OverallStatistics<WLSample>(env, builder) {
+			@Override
+			public void findMinMaxDatesAndDateRange(List<WLSample> samples, List<WLSample> sortedByValue) {
+				super.findMinMaxDatesAndDateRange(samples, sortedByValue);
+				removeMostRecentProvisional(samples, sortedByValue);
+			}
+		};
+	}
 	
 	public void setMediation(MediationType mediation) {
 		this.builder.mediation(mediation);
 	}
 	
-// TODO This conditioning must be done prior to calling the service
-// TODO I would like to keep it here until we have NGWMN calling the service
-//	@Override
-//	public List<WLSample> conditioning(Specifier spec, List<WLSample> samples) {
-//		super.conditioning(spec, samples);
-//		
-//		MediationType mediation = findMostPrevalentMediation(spec, samples);
-//		setMediation(mediation);
-//		
-//		List<WLSample> samplesByDate = useMostPrevalentPCodeMediatedValue(spec, samples, stats.mediation()); 
-//		return samplesByDate;
-//	}
+	public MonthlyStatistics<WLSample> getMonthlyStats() {
+		return monthlyStats;
+	}
+	
 	@Override
 	protected void removeProvisional(List<WLSample> samplesByDate, String dataSetId) {
 		removeProvisionalButNotMostRecent(samplesByDate, dataSetId);
@@ -170,7 +164,7 @@ public class WaterLevelStatistics extends StatisticsCalculator<WLSample> {
 		}
 		
 		if ( ! builder.hasMonthly() ) {
-			String msg = env.getMessage(ENV_MESSAGE_MONTLY_RULE, Days406.intValue());
+			String msg = env.getMessage(ENV_MESSAGE_MONTHLY_RULE, Days406.intValue());
 			builder.message(msg);
 		}
 		

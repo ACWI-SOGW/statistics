@@ -165,7 +165,7 @@ public class MonthlyStatistics<S extends Value> extends StatisticsCalculator<S> 
 		if (sampleCount > normalizedSamples.size()) {
 			S firstSample = normalizedSamples.get(0);
 			String monthName = sampleMonthName(firstSample);
-			String msg = env.getMessage(ENV_MESSAGE_MONTLY_MEDIANS, monthName);
+			String msg = env.getMessage(ENV_MESSAGE_MONTHLY_MEDIANS, monthName);
 			builder.message(msg);
 		}
 		return normalizedSamples;
