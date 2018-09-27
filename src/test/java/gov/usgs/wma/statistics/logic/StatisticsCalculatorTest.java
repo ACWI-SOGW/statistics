@@ -43,7 +43,7 @@ public class StatisticsCalculatorTest {
 	public static final String P75 = "P75";
 	public static final String P90 = "P90";
 	
-	static final Map<String, BigDecimal> PERCENTILES = new JsonDataBuilder().buildPercentiles();
+	static final Map<String, BigDecimal> PERCENTILES = new JsonDataBuilder(null).buildPercentiles();
 	
 	@Mock
 	Environment spring;
@@ -104,8 +104,8 @@ public class StatisticsCalculatorTest {
 
 	@Before
 	public void setup() {
-		JsonDataBuilder builder = new JsonDataBuilder().mediation(MediationType.AboveDatum);
 		env = new Properties().setEnvironment(spring);
+		JsonDataBuilder builder = new JsonDataBuilder(env).mediation(MediationType.AboveDatum);
 		stats = new StatisticsCalculator<Value>(env, builder);
 		monthlyStats = new MonthlyStatistics<Value>(env, builder);
 	}

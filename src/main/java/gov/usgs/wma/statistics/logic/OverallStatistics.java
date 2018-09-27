@@ -21,7 +21,7 @@ public class OverallStatistics <S extends Value> extends StatisticsCalculator<S>
 	 */
 	public JsonDataBuilder overallStats(List<S> samples, List<S> sortedByValue) {
 		if (samples == null || samples.size() == 0) {
-			return new JsonDataBuilder();
+			return new JsonDataBuilder(env);
 		}
 		
 		// after this samples is sorted by date for certain

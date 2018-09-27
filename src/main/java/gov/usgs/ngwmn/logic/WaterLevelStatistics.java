@@ -1,5 +1,6 @@
 package gov.usgs.ngwmn.logic;
 
+import static gov.usgs.wma.statistics.app.Properties.*;
 import static gov.usgs.wma.statistics.model.JsonDataBuilder.*;
 import static org.apache.commons.lang.StringUtils.*;
 
@@ -85,8 +86,6 @@ public class WaterLevelStatistics extends StatisticsCalculator<WLSample> {
 	 * 1 year + 1 month + 1.5 weeks or 365 + 30 + 7 + 4 because of how samples are taken and eventually entered.
 	 */
 	protected static final BigDecimal Days406 = new BigDecimal("406");
-	public static final String MONTHLY_WARNING =  "Too few data values for monthly statistics."
-			+ " Ten years required with no gaps and most recent value within " + Days406 + " days.";
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(WaterLevelStatistics.class);
 	
@@ -169,7 +168,8 @@ public class WaterLevelStatistics extends StatisticsCalculator<WLSample> {
 		}
 		
 		if ( ! builder.hasMonthly() ) {
-			builder.message(MONTHLY_WARNING);
+			String msg = env.getMessage(ENV_MESSAGE_MONTLY_RULE, Days406.intValue());
+			builder.message(msg);
 		}
 		
 		return builder.build();

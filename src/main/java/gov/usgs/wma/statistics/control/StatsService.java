@@ -90,7 +90,7 @@ public class StatsService {
 		
 		try {
 			LOGGER.trace("entered");
-			JsonDataBuilder builder = new JsonDataBuilder();
+			JsonDataBuilder builder = new JsonDataBuilder(env);
 			
 			// parse the CSV data
 			List<WLSample> samples = parseData(data, builder);

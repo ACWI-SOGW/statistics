@@ -108,8 +108,8 @@ public class WaterLevelStatisticsTest {
 
 	@Before
 	public void setup() {
-		builder = new JsonDataBuilder();
 		env = new Properties().setEnvironment(spring);
+		builder = new JsonDataBuilder(env);
 		stats = new WaterLevelStatistics(env, builder);
 		spec = new Specifier("USGS", "Testing");
 

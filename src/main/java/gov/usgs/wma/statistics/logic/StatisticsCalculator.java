@@ -55,7 +55,7 @@ public class StatisticsCalculator<S extends Value> {
 	protected final Properties env;
 	
 	public StatisticsCalculator(Properties env) {
-		this(env, new JsonDataBuilder());
+		this(env, new JsonDataBuilder(env));
 	}
 	public StatisticsCalculator(Properties env, JsonDataBuilder builder) {
 		this.env = env;
@@ -111,7 +111,7 @@ public class StatisticsCalculator<S extends Value> {
 				msg = env.getError(ENV_INVALID_ROW_DATE_BLANK, i);
 				builder.error(msg);
 			} else if ( today.compareTo(utc) == -1 ) {
-				msg = String.format("Sample number %d has date in the future: %s", i, utc);
+				msg = env.getError(ENV_INVALID_ROW_DATE_FUTURE, i, utc);
 				builder.error(msg);
 			} else {
 				String fixed = fixMissingMonthAndDay(utc);

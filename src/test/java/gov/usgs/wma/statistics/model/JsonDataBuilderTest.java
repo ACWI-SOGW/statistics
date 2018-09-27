@@ -30,11 +30,11 @@ public class JsonDataBuilderTest {
 	final Value  SAMPLE_2   = new Value(DATE_UTC_2, VALUE_2);
 
 	
-	JsonDataBuilder data = new JsonDataBuilder();
+	JsonDataBuilder data;
 
 	@Before
 	public void setup() {
-		data = new JsonDataBuilder();
+		data = new JsonDataBuilder(null);
 	}
 	
 	@Test
@@ -261,7 +261,7 @@ public class JsonDataBuilderTest {
 	public void test_build_withCollect() {
 		final Boolean[] collectCalled = new Boolean[] {Boolean.FALSE};
 		
-		data = new JsonDataBuilder() {
+		data = new JsonDataBuilder(null) {
 			@Override
 			public JsonDataBuilder collect() {
 				collectCalled[0] = true;
@@ -342,7 +342,7 @@ public class JsonDataBuilderTest {
 
 		String individuals = data.jsonData.medians;
 		
-		data = new JsonDataBuilder();
+		data = new JsonDataBuilder(null);
 		List<Value> values = new ArrayList<>();
 		values.add(SAMPLE_1);
 		values.add(SAMPLE_2);

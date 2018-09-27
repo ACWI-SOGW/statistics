@@ -47,8 +47,7 @@ public class MonthlyStatisticsTest {
 	@Before
 	public void setup() {
 		env = new Properties().setEnvironment(spring);
-		
-		builder = new JsonDataBuilder();
+		builder = new JsonDataBuilder(env);
 		builder.mediation(MediationType.BelowLand);
 		stats = new MonthlyStatistics<>(env, builder);
 	}

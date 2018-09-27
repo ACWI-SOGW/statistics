@@ -1,5 +1,6 @@
 package gov.usgs.wma.statistics.model;
 
+import static gov.usgs.wma.statistics.app.Properties.*;
 import static gov.usgs.wma.statistics.model.Value.*;
 
 import java.math.BigDecimal;
@@ -16,6 +17,7 @@ import java.util.stream.Stream;
 import org.slf4j.Logger;
 
 import gov.usgs.ngwmn.model.MediationType;
+import gov.usgs.wma.statistics.app.Properties;
 
 
 public class JsonDataBuilder {
@@ -47,6 +49,8 @@ public class JsonDataBuilder {
 	
 	public static final String QUOTE         = "\"";
 	
+	private Properties env;
+	
 	/**
 	 * The list of percentiles to calculate.
 	 */
@@ -63,7 +67,8 @@ public class JsonDataBuilder {
 	
 	JsonData jsonData;
 	
-	public JsonDataBuilder() {
+	public JsonDataBuilder(Properties env) {
+		this.env = env;
 		// default percentiles
 		percentiles.addAll(Arrays.asList(P10,P25,P50,P75,P90));
 		this.jsonData = new JsonData();
@@ -179,8 +184,7 @@ public class JsonDataBuilder {
 					percentileValues.put(key, value);
 				}
 			} catch (Exception e) {
-//				String msg = String.format(getMessage(MSG_INVALID_PERCENTILE), percentile);
-				String msg = String.format("Invalid percentile value, %$s, must be between 0 and 100%.", percentile);
+				String msg = env.getError(ENV_INVALID_PERCENTILE, percentile);
 				error(msg);
 			}
 		}

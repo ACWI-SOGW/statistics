@@ -34,8 +34,8 @@ public class OverallStatisticsTest {
 
 	@Before
 	public void setup() {
-		builder = new JsonDataBuilder();
 		env = new Properties().setEnvironment(spring);
+		builder = new JsonDataBuilder(env);
 		stats = new OverallStatistics<>(env, builder);
 	}
 	
