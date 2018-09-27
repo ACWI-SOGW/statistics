@@ -116,17 +116,15 @@ public class StatisticsCalculator<S extends Value> {
 			} else {
 				String fixed = fixMissingMonthAndDay(utc);
 				int delta = fixed.length() - utc.length();
+				sample.time = fixed;
 				if (delta <= 0) {
-					// date is fine and was not fixed
-					continue;
+					continue; // date is fine and was not fixed
 				} else if (delta <= 3) {
-					msg = String.format("Sample number %d has a date missing the day of month, the 15th will be used. %s", i, utc);
+					msg = env.getMessage(ENV_MESSAGE_DATE_FIX_DAY, i, utc);
 					builder.message(msg);
-					sample.time = fixed;
 				} else {
-					msg = String.format("Sample number %d has a date missing the month, 6-30 will be used. %s", i, utc);
+					msg = env.getMessage(ENV_MESSAGE_DATE_FIX_MONTH, i, utc);
 					builder.message(msg);
-					sample.time = fixed;
 				}
 			}
 			LOGGER.trace(msg);
@@ -294,7 +292,7 @@ public class StatisticsCalculator<S extends Value> {
 		
 		if (provisionalSamples.size() > 0) {
 			int count = provisionalSamples.size();
-			String msg = String.format("Removed %d provisional sample%s", count, count==1?"":"s");
+			String msg = String.format(ENV_MESSAGE_OMIT_PROVISIONAL, count, count==1?"":"s");
 			builder.message(msg);
 		}
 	}
@@ -324,7 +322,7 @@ public class StatisticsCalculator<S extends Value> {
 				buff.append(sep).append(""+samples.indexOf(sample));
 				sep = ", ";
 			}
-			String msg = String.format("Removed %d sample%s at row%s %s", nullSamples.size(), plural, plural, buff.toString());
+			String msg = env.getMessage(ENV_MESSAGE_OMIT_NULL, nullSamples.size(), plural, plural, buff.toString());
 			builder.message(msg);
 		}
 		

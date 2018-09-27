@@ -1,11 +1,18 @@
 package gov.usgs.wma.statistics.app;
 
+import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 
+
 @Service
 public class Properties {
+	private static final Logger LOGGER = LoggerFactory.getLogger(Properties.class);
+	
+	
 	public static final String ENV_INVALID_MEDIATION   = "app.error.invalid.mediation";
 	public static final String ENV_INVALID_MEDIANS     = "app.error.invalid.medians";
 	public static final String ENV_INVALID_PERCENTILE  = "app.error.invalid.percetile";
@@ -17,8 +24,16 @@ public class Properties {
 	public static final String ENV_INVALID_ROW_DATE_BLANK   = "app.error.invalid.row.date.blank";
 	public static final String ENV_INVALID_ROW_DATE_FUTURE  = "app.error.invalid.row.date.future";
 	
-	public static final String ENV_MESSAGE_MONTLY_RULE = "app.message.monthly.rule";
-
+	public static final String ENV_MESSAGE_PROVISIONAL_RULE = "app.message.provisional.rule";
+	public static final String ENV_MESSAGE_MONTLY_RULE      = "app.message.monthly.rule";
+	public static final String ENV_MESSAGE_MONTLY_DETAIL    = "app.message.monthly.detail";
+	public static final String ENV_MESSAGE_MONTLY_MEDIANS   = "app.message.monthly.medians";
+	public static final String ENV_MESSAGE_DATE_FIX_DAY     = "app.message.date.fix.day";
+	public static final String ENV_MESSAGE_DATE_FIX_MONTH   = "app.message.date.fix.month";
+	public static final String ENV_MESSAGE_OMIT_NULL        = "app.message.omit.null";
+	public static final String ENV_MESSAGE_OMIT_PROVISIONAL = "app.message.omit.provisional";
+	
+	
 	@Autowired
 	Environment env;
 	public Properties setEnvironment(Environment env) {
@@ -27,6 +42,11 @@ public class Properties {
 	}
     
 	public String getMessage(String messageName, Object ... args) {
+		String msg = env.getProperty(messageName, "");
+		if (StringUtils.isBlank(msg)) {
+			LOGGER.error("%s property not found.", messageName);
+			return "";
+		}
 		return String.format( env.getProperty(messageName, ""), args);
 	}
 	public String getError(String errorName, Object ... args) {

@@ -1,5 +1,7 @@
 package gov.usgs.wma.statistics.logic;
 
+import static gov.usgs.wma.statistics.app.Properties.*;
+
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -163,7 +165,7 @@ public class MonthlyStatistics<S extends Value> extends StatisticsCalculator<S> 
 		if (sampleCount > normalizedSamples.size()) {
 			S firstSample = normalizedSamples.get(0);
 			String monthName = sampleMonthName(firstSample);
-			String msg = String.format("The data contains multiple samples for %s where monthly medians were used.", monthName);
+			String msg = env.getMessage(ENV_MESSAGE_MONTLY_MEDIANS, monthName);
 			builder.message(msg);
 		}
 		return normalizedSamples;

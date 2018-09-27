@@ -63,7 +63,8 @@ public class WaterLevelStatistics extends StatisticsCalculator<WLSample> {
 				int missingCount = 10 - monthYears;
 				String plural = missingCount>1 ? "s" :"";
 				String monthName = sampleMonthName(firstSample);
-				builder.message(monthName +" is require "+ missingCount +" more year sample"+plural +" for monthly statistics");
+				String msg = env.getMessage(ENV_MESSAGE_MONTLY_DETAIL, monthName, missingCount, plural);
+				builder.message(msg);
 			}
 			return qualified;
 		}
@@ -133,7 +134,8 @@ public class WaterLevelStatistics extends StatisticsCalculator<WLSample> {
 		if (maxDate.isProvisional()) {
 			samples.remove(maxDate);
 			sortedByValue.remove(maxDate);
-			builder.message("The most recent value is provisional and will only be used for current status, not monthly perentiles.");
+			String msg = env.getMessage(ENV_MESSAGE_PROVISIONAL_RULE);
+			builder.message(msg);
 		}
 	}
 	
