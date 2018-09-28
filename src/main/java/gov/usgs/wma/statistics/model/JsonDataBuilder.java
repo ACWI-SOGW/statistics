@@ -176,9 +176,12 @@ public class JsonDataBuilder {
 			String key = "P" + percentile;
 			// these are "exact" percentiles and should not limit measured precision
 			try {
-				BigDecimal value = new BigDecimal(percentile).divide(new BigDecimal("100")).setScale(10);
+				BigDecimal value = 
+						new BigDecimal(percentile.trim())
+						.divide(new BigDecimal("100"))
+						.setScale(10);
 				if (value.doubleValue()<0 || value.doubleValue()>1) {
-					String msg = String.format("Invalid percentile value, %$s", percentile);
+					String msg = String.format("Invalid percentile value, %s", percentile);
 					throw new NumberFormatException(msg);
 				} else {
 					percentileValues.put(key, value);

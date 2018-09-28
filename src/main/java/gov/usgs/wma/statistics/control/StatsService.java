@@ -43,6 +43,10 @@ public class StatsService {
 	
 	@Autowired
 	Properties env;
+	public StatsService setProperties(Properties env) {
+		this.env = env;
+		return this;
+	}
 	
 	@ApiOperation(
 			value = "Calculate Statistics Service",
@@ -88,9 +92,13 @@ public class StatsService {
 			@RequestParam(defaultValue=StatsService_PERCENTILES_DEFAULT)
 			String percentiles) {
 		
+		return calculate(new JsonDataBuilder(env), data, mediation, medians, percentiles);
+	}
+	// helper method for easier testing
+	public JsonData calculate(JsonDataBuilder builder, String data,
+			String mediation, String medians, String percentiles) {
 		try {
 			LOGGER.trace("entered");
-			JsonDataBuilder builder = new JsonDataBuilder(env);
 			
 			// parse the CSV data
 			List<WLSample> samples = parseData(data, builder);
@@ -121,18 +129,17 @@ public class StatsService {
 			// A random identifier for the service unless we parameterize the date set ID.
 			Specifier spec = new Specifier();
 
+			JsonData json;
 			// if there are parameter issues, then do not process statistics
 			if ( builder.hasErrors() ) {
-				JsonData json = builder.build();
-				return json;
+				json = builder.build();
+			} else {
+				json = new WaterLevelStatistics(env, builder).calculate(spec, samples);
 			}
-
-			JsonData json = new WaterLevelStatistics(env, builder).calculate(spec, samples);
-
-			LOGGER.trace("exited: good");
+			LOGGER.trace("exited");
 			return json;
 		} catch (Exception e) {
-			LOGGER.trace("exited: b");
+			LOGGER.error("exited: ", e);
 			return null;
 		}
 	}
@@ -167,6 +174,7 @@ public class StatsService {
 					continue;
 				}
 			} catch (Exception e) {
+				// this will seldom be a case
 				msg = env.getError(ENV_INVALID_ROW_FORMAT, r, row);
 				builder.error(msg);
 				continue;
@@ -194,6 +202,7 @@ public class StatsService {
 				msg = env.getError(ENV_INVALID_ROW_VALUE, r, row);
 				builder.error(msg);
 			} catch (Exception e) {
+				// this will seldom be a case
 				msg = env.getError(ENV_INVALID_ROW_OTHER, r, row);
 				builder.error(msg);
 			}

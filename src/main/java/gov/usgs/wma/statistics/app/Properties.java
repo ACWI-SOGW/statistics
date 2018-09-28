@@ -15,7 +15,7 @@ public class Properties {
 	
 	public static final String ENV_INVALID_MEDIATION   = "app.error.invalid.mediation";
 	public static final String ENV_INVALID_MEDIANS     = "app.error.invalid.medians";
-	public static final String ENV_INVALID_PERCENTILE  = "app.error.invalid.percetile";
+	public static final String ENV_INVALID_PERCENTILE  = "app.error.invalid.percentile";
 	public static final String ENV_INVALID_ROW_COLS    = "app.error.invalid.row.cols";
 	public static final String ENV_INVALID_ROW_FORMAT  = "app.error.invalid.row.format";
 	public static final String ENV_INVALID_ROW_AGING   = "app.error.invalid.row.aging";
@@ -47,7 +47,7 @@ public class Properties {
 			LOGGER.error("'{}' property not found.", messageName);
 			return "";
 		}
-		return String.format( env.getProperty(messageName, ""), args);
+		return String.format(msg, args);
 	}
 	public String getError(String errorName, Object ... args) {
 		return getMessage(errorName, args);

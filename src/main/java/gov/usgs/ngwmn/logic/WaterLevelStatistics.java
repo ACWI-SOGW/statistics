@@ -140,6 +140,9 @@ public class WaterLevelStatistics extends StatisticsCalculator<WLSample> {
 		LOGGER.trace("Executing WaterLevel Stats calculations.");
 		
 		List<WLSample> samplesByDate = conditioning(spec, samples);
+		if (builder.hasErrors()) {
+			return builder.build();
+		}
 		List<WLSample> sortedByValue  = new ArrayList<>(samplesByDate);
 		monthlyStats.sortValueByQualifier(sortedByValue);
 		

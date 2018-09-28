@@ -79,6 +79,7 @@ public class ValdiationMessagesTest {
 		samples.add( createSample("2000-01-01", "1.0") );
 		stats.calculate(new Specifier(), samples);
 		
+		assertFalse( builder.hasErrors() );
 		Optional<String> actual = fetchMessageLike(ENV_MESSAGE_MONTHLY_RULE, 10);
 		assertNotNull( actual );
 		assertTrue( actual.isPresent() );
@@ -93,6 +94,7 @@ public class ValdiationMessagesTest {
 		samples.add( createSample("2000-02-01", "1.0", true) );
 		stats.calculate(new Specifier(), samples);
 		
+		assertFalse( builder.hasErrors() );
 		Optional<String> actual = fetchMessageLike(ENV_MESSAGE_PROVISIONAL_RULE, 10);
 		assertNotNull( actual );
 		assertTrue( actual.isPresent() );
@@ -106,6 +108,7 @@ public class ValdiationMessagesTest {
 		samples.add( createSample("2000-01-01", "1.0") );
 		stats.doesThisMonthQualifyForStats(samples);
 		
+		assertFalse( builder.hasErrors() );
 		Optional<String> actual = fetchMessageLike(ENV_MESSAGE_MONTHLY_DETAIL, 10);
 		assertNotNull( actual );
 		assertTrue( actual.isPresent() );
@@ -130,6 +133,8 @@ public class ValdiationMessagesTest {
 		samples.add( createSample("2009-02-01", "1.0") );
 		stats.doesThisMonthQualifyForStats(samples);
 		
+		assertFalse( builder.hasErrors() );
+		
 		// ENV_MESSAGE_MONTHLY_DETAIL
 		List<String> actual = fetchMessages();
 		assertNotNull( actual );
@@ -147,8 +152,8 @@ public class ValdiationMessagesTest {
 		samples.add( new Value("2000-01-10", new BigDecimal("3.0")) );
 		stats.medianMonthlyValues(samples , stats.sortFunctionByQualifier());
 
+		assertFalse( builder.hasErrors() );
 		Optional<String> actual = fetchMessageLike(ENV_MESSAGE_MONTHLY_MEDIANS, 10);
-		
 		assertNotNull( actual );
 		assertTrue( actual.isPresent() );
 		assertTrue( actual.get().contains("January") );
@@ -163,8 +168,8 @@ public class ValdiationMessagesTest {
 		samples.add( new Value("2000-01-01", new BigDecimal("1.0")) );
 		stats.checkAllDates(samples);
 		
+		assertFalse( builder.hasErrors() );
 		Optional<String> actual = fetchMessageLike(ENV_MESSAGE_DATE_FIX_MONTH, 10);
-		
 		assertNotNull( actual );
 		assertTrue( actual.isPresent() );
 		assertTrue( actual.get().contains("6-30") );
@@ -180,8 +185,8 @@ public class ValdiationMessagesTest {
 		samples.add( new Value("2000-01-03", new BigDecimal("1.0")) );
 		stats.checkAllDates(samples);
 		
+		assertFalse( builder.hasErrors() );
 		Optional<String> actual = fetchMessageLike(ENV_MESSAGE_DATE_FIX_DAY, 10);
-		
 		assertNotNull( actual );
 		assertTrue( actual.isPresent() );
 		assertTrue( actual.get().contains("15") );
@@ -196,9 +201,9 @@ public class ValdiationMessagesTest {
 		samples.add( new Value("2000-01-03", new BigDecimal("1.0")) );
 		stats.removeNulls(samples, "Test ID");
 		
+		assertFalse( builder.hasErrors() );
 		// ENV_MESSAGE_OMIT_NULL
 		List<String> actual = fetchMessages();
-		
 		assertNotNull( actual );
 		assertEquals(0, actual.size());
 	}
@@ -212,8 +217,8 @@ public class ValdiationMessagesTest {
 		samples.add( new Value("2000-01-03", new BigDecimal("1.0")) );
 		stats.removeNulls(samples, "Test ID");
 		
+		assertFalse( builder.hasErrors() );
 		Optional<String> actual = fetchMessageLike(ENV_MESSAGE_OMIT_NULL, 7);
-		
 		assertNotNull( actual );
 		assertTrue( actual.isPresent() );
 		assertEquals("Removed 1 empty sample at row 2", actual.get() );
@@ -228,8 +233,8 @@ public class ValdiationMessagesTest {
 		samples.add( new Value(null, new BigDecimal("1.0")) );
 		stats.removeNulls(samples, "Test ID");
 		
+		assertFalse( builder.hasErrors() );
 		Optional<String> actual = fetchMessageLike(ENV_MESSAGE_OMIT_NULL, 7);
-		
 		assertNotNull( actual );
 		assertTrue( actual.isPresent() );
 		assertEquals( "Removed 2 empty samples at rows 2, 3", actual.get() );
@@ -243,9 +248,9 @@ public class ValdiationMessagesTest {
 		samples.add( new Value("2000-01-03", new BigDecimal("1.0")) );
 		stats.removeProvisional(samples, "Test ID");
 		
+		assertFalse( builder.hasErrors() );
 		// ENV_MESSAGE_OMIT_PROVISIONAL
 		List<String> actual = fetchMessages();
-		
 		assertNotNull( actual );
 		assertEquals(0, actual.size());
 	}
@@ -259,8 +264,8 @@ public class ValdiationMessagesTest {
 		samples.add( new Value("2000-01-03", new BigDecimal("1.0")) );
 		stats.removeProvisional(samples, "Test ID");
 		
+		assertFalse( builder.hasErrors() );
 		Optional<String> actual = fetchMessageLike(ENV_MESSAGE_OMIT_PROVISIONAL, 7);
-		
 		assertNotNull( actual );
 		assertTrue( actual.isPresent() );
 		assertEquals("Removed 1 provisional sample", actual.get() );
@@ -275,8 +280,8 @@ public class ValdiationMessagesTest {
 		samples.add( new Value("2000-01-03", new BigDecimal("1.0")) );
 		stats.removeProvisional(samples, "Test ID");
 		
+		assertFalse( builder.hasErrors() );
 		Optional<String> actual = fetchMessageLike(ENV_MESSAGE_OMIT_PROVISIONAL, 7);
-		
 		assertNotNull( actual );
 		assertTrue( actual.isPresent() );
 		assertEquals( "Removed 2 provisional samples", actual.get() );
