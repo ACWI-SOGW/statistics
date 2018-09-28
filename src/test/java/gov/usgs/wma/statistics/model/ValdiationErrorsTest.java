@@ -15,17 +15,15 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import gov.usgs.ngwmn.model.WLSample;
 import gov.usgs.wma.statistics.app.Properties;
 import gov.usgs.wma.statistics.control.StatsService;
 import gov.usgs.wma.statistics.logic.StatisticsCalculator;
-import gov.usgs.wma.statistics.model.JsonData;
-import gov.usgs.wma.statistics.model.JsonDataBuilder;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@org.springframework.test.context.TestPropertySource(locations = { "/application.properties" })
+@TestPropertySource(locations = { "/application.properties" })
 public class ValdiationErrorsTest {
 
 	private static final String SPRING_ENV_FAIL = "Spring env failure.";
@@ -55,18 +53,6 @@ public class ValdiationErrorsTest {
 	public String getText(String property) {
 		String text = spring.getProperty(property, SPRING_ENV_FAIL);
 		return isBlank(text) ?SPRING_ENV_FAIL :text;
-	}
-	private WLSample createSample(String time, String value) {
-		BigDecimal val = null;
-		if (null!=value) {
-			val = new BigDecimal(value);
-		}
-		return new WLSample(time, val, "units", val, "comment", true, "pcode", null);
-	}
-	private WLSample createSample(String time, String value, boolean provisional) {
-		WLSample sample = createSample(time, value);
-		sample.setProvsional(provisional);
-		return sample;
 	}
 	private Optional<String> fetchMessageLike(String property, int length) {
 		String message = getText(property);
@@ -159,10 +145,6 @@ public class ValdiationErrorsTest {
 	@Test
 	public void test_statService_INVALID_ROW_FORMAT() {
 //		ENV_INVALID_ROW_FORMAT will seldom be a case, I cannot thing of a means it invoke
-	}
-	@Test
-	public void test_statsService_INVALID_ROW_OTHER() {
-//		ENV_INVALID_ROW_OTHER will seldom be a case, I cannot thing of a means it invoke
 	}
 
 	@Test

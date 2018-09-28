@@ -15,6 +15,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import gov.usgs.ngwmn.logic.WaterLevelStatistics;
@@ -25,7 +26,7 @@ import gov.usgs.wma.statistics.model.JsonDataBuilder;
 import gov.usgs.wma.statistics.model.Value;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@org.springframework.test.context.TestPropertySource(locations = { "/application.properties" })
+@TestPropertySource(locations = { "/application.properties" })
 public class ValdiationMessagesTest {
 
 	private static final String SPRING_ENV_FAIL = "Spring env failure.";

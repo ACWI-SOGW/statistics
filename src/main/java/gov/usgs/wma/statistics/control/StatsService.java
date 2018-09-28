@@ -157,42 +157,39 @@ public class StatsService {
 		String msg = "";
 		
 		for (int r=0; r<data.length; r++) {
-			if (isNotBlank(msg)) {
-				LOGGER.trace(msg);
-				msg = "";
-			}
-			String row = data[r].trim();
-			if ( 0 == row.length() || row.charAt(0) == '#') {
-				continue; // skip empty and comment rows
-			}
-			String[] cols;
+			String row = "";
 			try {
-				cols = row.split(",");
+				if (isNotBlank(msg)) {
+					LOGGER.trace(msg);
+					msg = "";
+				}
+				row = data[r].trim();
+				if ( 0 == row.length() || row.charAt(0) == '#') {
+					continue; // skip empty and comment rows
+				}
+				
+				String[] cols = row.split(",");
 				if (cols.length < 2 || cols.length > 3) {
 					msg = env.getError(ENV_INVALID_ROW_COLS, r, row);
 					builder.error(msg);
 					continue;
 				}
-			} catch (Exception e) {
-				// this will seldom be a case
-				msg = env.getError(ENV_INVALID_ROW_FORMAT, r, row);
-				builder.error(msg);
-				continue;
-			}
-			
-			String time = cols[0].trim();
-			
-			try {
-				BigDecimal value = new BigDecimal(cols[1].trim());
 				
+				String time = cols[0].trim();
+				String val  = cols[1].trim();
+				
+				BigDecimal value = new BigDecimal(val);
 				WLSample sample = new WLSample(time, value, "ft", value, "", true, "", value);
 				
 				if (cols.length == 3) {
-					String code = ""+cols[2].charAt(0);
-					if (Value.PROVISIONAL_CODE.equalsIgnoreCase(code)) {
+					// Trim to remove whitespace and substring to convert full words like Provisional
+					String aging = cols[2].trim().substring(0, 1);
+					
+					if (Value.PROVISIONAL_CODE.equalsIgnoreCase(aging)) {
 						// approved is default
 						sample.setProvsional(true);
-					} else if ( ! Value.APPROVED_CODE.equalsIgnoreCase(code) ) {
+					} else if ( ! Value.APPROVED_CODE.equalsIgnoreCase(aging) ) {
+						// first checked for Provisional, then Approved; if neither then error.
 						msg = env.getError(ENV_INVALID_ROW_AGING, r, row);
 						builder.error(msg);
 					}
@@ -202,8 +199,8 @@ public class StatsService {
 				msg = env.getError(ENV_INVALID_ROW_VALUE, r, row);
 				builder.error(msg);
 			} catch (Exception e) {
-				// this will seldom be a case
-				msg = env.getError(ENV_INVALID_ROW_OTHER, r, row);
+				// this will seldom be a case, it is a catch all
+				msg = env.getError(ENV_INVALID_ROW_FORMAT, r, row);
 				builder.error(msg);
 			}
 		}
