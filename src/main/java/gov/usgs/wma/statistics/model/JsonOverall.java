@@ -2,7 +2,7 @@ package gov.usgs.wma.statistics.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import gov.usgs.ngwmn.logic.WaterLevelStatistics.MediationType;
+import gov.usgs.ngwmn.model.MediationType;
 
 /**
  * the JSON will look something like this

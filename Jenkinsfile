@@ -1,9 +1,9 @@
 pipeline {
     agent any
 
-    tools { 
-        maven 'maven_3_5_4' 
-        jdk 'jdk8' 
+    tools {
+        maven 'maven_3_5_4'
+        jdk 'jdk8'
     }
     environment {
         // requires the Pipeline Utility Steps plugin

@@ -13,14 +13,22 @@ import java.util.function.Function;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.core.env.Environment;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import gov.usgs.ngwmn.logic.WaterLevelStatistics.MediationType;
+import gov.usgs.ngwmn.model.MediationType;
+import gov.usgs.wma.statistics.app.Properties;
 import gov.usgs.wma.statistics.model.JsonDataBuilder;
 import gov.usgs.wma.statistics.model.JsonMonthly;
 import gov.usgs.wma.statistics.model.Value;
 
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration //(locations = { "/applicationContext_mock.xml" })
 public class MonthlyStatisticsTest {
 	private static final Logger LOGGER = LoggerFactory.getLogger(MonthlyStatisticsTest.class);
 
@@ -30,14 +38,18 @@ public class MonthlyStatisticsTest {
 	public static final String P75 = "P75";
 	public static final String P90 = "P90";
 	
+	@Mock
+	Environment spring;
+	Properties env;
 	JsonDataBuilder builder;
 	MonthlyStatistics<Value> stats;
 	
 	@Before
 	public void setup() {
-		builder = new JsonDataBuilder();
+		env = new Properties().setEnvironment(spring);
+		builder = new JsonDataBuilder(env);
 		builder.mediation(MediationType.BelowLand);
-		stats = new MonthlyStatistics<>(builder);
+		stats = new MonthlyStatistics<>(env, builder);
 	}
 	
 
@@ -178,7 +190,7 @@ public class MonthlyStatisticsTest {
 
 		builder.mediation(MediationType.AboveDatum);
 		// we are not testing this method so mock it to return what we need
-		MonthlyStatistics<Value> mockstats = new MonthlyStatistics<Value>(builder) {
+		MonthlyStatistics<Value> mockstats = new MonthlyStatistics<Value>(env, builder) {
 			public List<Value> medianMonthlyValues(List<Value> monthSamples, Function<List<Value>, List<Value>> sortBy) {
 				return monthSamples;
 			}
@@ -251,7 +263,7 @@ public class MonthlyStatisticsTest {
 
 		builder.mediation(MediationType.AboveDatum);
 		// we are not testing this method so mock it to return what we need
-		MonthlyStatistics<Value> mockstats = new MonthlyStatistics<Value>(builder) {
+		MonthlyStatistics<Value> mockstats = new MonthlyStatistics<Value>(env, builder) {
 			@Override
 			public List<Value> medianMonthlyValues(List<Value> monthSamples, Function<List<Value>, List<Value>> sortBy) {
 				// do not modify, testing the months. This prevents normalization to test aggregations

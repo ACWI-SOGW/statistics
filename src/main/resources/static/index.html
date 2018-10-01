@@ -121,7 +121,16 @@
 					var height = $("#mediansDiv").css("height")
 					$("#results").css("position", "relative").css("top","-"+height)
 				}
-				$('#msg').text('success')
+				if (resp.messages || resp.errors) {
+	                var reQuotes = new RegExp('"', 'g');
+					$('#msg').html(
+							(resp.messages.join("<br>") 
+					        +"<br>"+ 
+					        resp.errors.join("<br>"))
+					        .replace(reQuotes, ''))
+				} else {
+				    $('#msg').text('success')
+				}
 			})
 			.fail(function(resp){
 				$('#msg').text(resp.responseText)

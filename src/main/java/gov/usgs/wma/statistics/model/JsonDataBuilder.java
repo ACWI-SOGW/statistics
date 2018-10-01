@@ -1,7 +1,7 @@
 package gov.usgs.wma.statistics.model;
 
+import static gov.usgs.wma.statistics.app.Properties.*;
 import static gov.usgs.wma.statistics.model.Value.*;
-//import static org.assertj.core.api.Assertions.*;
 
 import java.math.BigDecimal;
 import java.util.Arrays;
@@ -12,10 +12,12 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Stream;
 
 import org.slf4j.Logger;
 
-import gov.usgs.ngwmn.logic.WaterLevelStatistics.MediationType;
+import gov.usgs.ngwmn.model.MediationType;
+import gov.usgs.wma.statistics.app.Properties;
 
 
 public class JsonDataBuilder {
@@ -47,6 +49,8 @@ public class JsonDataBuilder {
 	
 	public static final String QUOTE         = "\"";
 	
+	private Properties env;
+	
 	/**
 	 * The list of percentiles to calculate.
 	 */
@@ -56,14 +60,15 @@ public class JsonDataBuilder {
 	 */
 	Map<String, String> values = new HashMap<>();
 	
-	MediationType mediation = MediationType.NONE;
+	MediationType mediation = MediationType.ASCENDING;
 
 	StringBuilder intermediateValues = new StringBuilder();
 	boolean includeIntermediateValues = false;
 	
 	JsonData jsonData;
 	
-	public JsonDataBuilder() {
+	public JsonDataBuilder(Properties env) {
+		this.env = env;
 		// default percentiles
 		percentiles.addAll(Arrays.asList(P10,P25,P50,P75,P90));
 		this.jsonData = new JsonData();
@@ -170,8 +175,21 @@ public class JsonDataBuilder {
 		for (String percentile : this.percentiles) {
 			String key = "P" + percentile;
 			// these are "exact" percentiles and should not limit measured precision
-			BigDecimal value = new BigDecimal(percentile).divide(new BigDecimal("100")).setScale(10);
-			percentileValues.put(key, value);
+			try {
+				BigDecimal value = 
+						new BigDecimal(percentile.trim())
+						.divide(new BigDecimal("100"))
+						.setScale(10);
+				if (value.doubleValue()<0 || value.doubleValue()>1) {
+					String msg = String.format("Invalid percentile value, %s", percentile);
+					throw new NumberFormatException(msg);
+				} else {
+					percentileValues.put(key, value);
+				}
+			} catch (Exception e) {
+				String msg = env.getError(ENV_INVALID_PERCENTILE, percentile);
+				error(msg);
+			}
 		}
 		return percentileValues;
 	}
@@ -186,7 +204,7 @@ public class JsonDataBuilder {
 	
 	protected void avoidNulls() {
 		if (jsonData.overall == null) {
-			jsonData.overall = new JsonOverall("", 0, "", "", "", "", "", "", "", "", MediationType.NONE);
+			jsonData.overall = new JsonOverall("", 0, "", "", "", "", "", "", "", "", mediation);
 		}
 		// TODO fill in other nulls ?
 	}
@@ -288,13 +306,28 @@ public class JsonDataBuilder {
 		return this;
 	}
 
+	public JsonDataBuilder message(String msg) {
+		jsonData.addMessage(msg);
+		return this;
+	}
+	public JsonDataBuilder messages(List<String> msgs) {
+		jsonData.addMessages(msgs);
+		return this;
+	}
+	public Stream<String> messages() {
+		return jsonData.messages.stream();
+	}
+	
 	public JsonDataBuilder error(String msg) {
 		jsonData.addError(msg);
 		return this;
 	}
 	public JsonDataBuilder errors(List<String> msgs) {
-		jsonData.addAllErrors(msgs);
+		jsonData.addErrors(msgs);
 		return this;
+	}
+	public Stream<String> errors() {
+		return jsonData.errors.stream();
 	}
 	public boolean isOk() {
 		return jsonData.isOk();

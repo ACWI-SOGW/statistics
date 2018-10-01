@@ -2,13 +2,14 @@ package gov.usgs.wma.statistics.logic;
 
 import java.util.List;
 
+import gov.usgs.wma.statistics.app.Properties;
 import gov.usgs.wma.statistics.model.JsonDataBuilder;
 import gov.usgs.wma.statistics.model.Value;
 
 public class OverallStatistics <S extends Value> extends StatisticsCalculator<S> {
 
-	public OverallStatistics(JsonDataBuilder stats) {
-		super(stats);
+	public OverallStatistics(Properties env, JsonDataBuilder builder) {
+		super(env, builder);
 	}
 	
 	// TODO work this into the calculate model
@@ -20,7 +21,7 @@ public class OverallStatistics <S extends Value> extends StatisticsCalculator<S>
 	 */
 	public JsonDataBuilder overallStats(List<S> samples, List<S> sortedByValue) {
 		if (samples == null || samples.size() == 0) {
-			return new JsonDataBuilder();
+			return new JsonDataBuilder(env);
 		}
 		
 		// after this samples is sorted by date for certain

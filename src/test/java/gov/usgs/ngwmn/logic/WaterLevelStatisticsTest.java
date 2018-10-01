@@ -14,14 +14,20 @@ import java.util.function.Function;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.springframework.core.env.Environment;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import gov.usgs.ngwmn.logic.WaterLevelStatistics.MediationType;
 import gov.usgs.ngwmn.logic.WaterLevelStatistics.WLMonthlyStats;
+import gov.usgs.ngwmn.model.MediationType;
 import gov.usgs.ngwmn.model.PCode;
 import gov.usgs.ngwmn.model.Specifier;
 import gov.usgs.ngwmn.model.WLSample;
+import gov.usgs.wma.statistics.app.Properties;
 import gov.usgs.wma.statistics.logic.StatisticsCalculator;
 import gov.usgs.wma.statistics.model.JsonData;
 import gov.usgs.wma.statistics.model.JsonDataBuilder;
@@ -30,6 +36,8 @@ import gov.usgs.wma.statistics.model.JsonOverall;
 import gov.usgs.wma.statistics.model.Value;
 
 
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration //(locations = { "/applicationContext_mock.xml" })
 public class WaterLevelStatisticsTest {
 
 	public static final String P10 = "P10";
@@ -38,6 +46,9 @@ public class WaterLevelStatisticsTest {
 	public static final String P75 = "P75";
 	public static final String P90 = "P90";
 
+	@Mock
+	Environment spring;
+	Properties env;
 	WaterLevelStatistics stats = null;
 	Specifier spec = new Specifier();
 	private JsonDataBuilder builder;
@@ -97,8 +108,9 @@ public class WaterLevelStatisticsTest {
 
 	@Before
 	public void setup() {
-		builder = new JsonDataBuilder();
-		stats = new WaterLevelStatistics(builder);
+		env = new Properties().setEnvironment(spring);
+		builder = new JsonDataBuilder(env);
+		stats = new WaterLevelStatistics(env, builder);
 		spec = new Specifier("USGS", "Testing");
 
 	}
@@ -178,11 +190,11 @@ public class WaterLevelStatisticsTest {
 		monthSamples.add(createSample("2015-06-10T04:15:00-05:00", "2.0"));
 
 		builder.mediation(MediationType.AboveDatum);
-		boolean qualifies = new WLMonthlyStats(builder)
+		boolean qualifies = new WLMonthlyStats(env, builder)
 				.doesThisMonthQualifyForStats(monthSamples);
 		assertFalse("A month must have 10 unique years of data not just a 10 yr date range.", qualifies);
 
-		qualifies = new WLMonthlyStats(builder)
+		qualifies = new WLMonthlyStats(env, builder)
 				.doesThisMonthQualifyForStats(new ArrayList<>(2));
 		assertFalse("A month with zero should not cause trouble either.", qualifies);
 	}
@@ -201,7 +213,7 @@ public class WaterLevelStatisticsTest {
 		monthSamples.add(createSample("2015-06-10T04:15:00-05:00", "2.0"));
 
 		builder.mediation(MediationType.AboveDatum);
-		boolean qualifies = new WLMonthlyStats(builder)
+		boolean qualifies = new WLMonthlyStats(env, builder)
 				.doesThisMonthQualifyForStats(monthSamples);
 		assertFalse("A month must have 10 unique years of data not just a 10 yr date range.", qualifies);
 	}
@@ -220,7 +232,7 @@ public class WaterLevelStatisticsTest {
 		monthSamples.add(createSample("2014-06-10T04:15:00-05:00", "2.0"));
 
 		builder.mediation(MediationType.AboveDatum);
-		boolean qualifies = new WLMonthlyStats(builder)
+		boolean qualifies = new WLMonthlyStats(env, builder)
 				.doesThisMonthQualifyForStats(monthSamples);
 		assertTrue("A month with 10 unique years of data is valid.", qualifies);
 	}
@@ -240,7 +252,7 @@ public class WaterLevelStatisticsTest {
 		monthSamples.add(createSample("2015-06-10T04:15:00-05:00", "2.0"));
 
 		builder.mediation(MediationType.AboveDatum);
-		boolean qualifies = new WLMonthlyStats(builder)
+		boolean qualifies = new WLMonthlyStats(env, builder)
 				.doesThisMonthQualifyForStats(monthSamples);
 		assertTrue("A month with 10 unique years of data is valid.", qualifies);
 	}
@@ -1118,7 +1130,7 @@ public class WaterLevelStatisticsTest {
 
 		builder.mediation(MediationType.AboveDatum);
 		// we are not testing this method so mock it to return what we need
-		WLMonthlyStats mockstats = new WLMonthlyStats(builder) {
+		WLMonthlyStats mockstats = new WLMonthlyStats(env, builder) {
 			@Override
 			public List<WLSample> medianMonthlyValues(List<WLSample> monthSamples,
 					Function<List<WLSample>, List<WLSample>> sortBy) {

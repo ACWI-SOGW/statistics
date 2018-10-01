@@ -1,5 +1,6 @@
 package gov.usgs.ngwmn.logic;
 
+import static gov.usgs.wma.statistics.app.Properties.*;
 import static gov.usgs.wma.statistics.model.JsonDataBuilder.*;
 import static org.apache.commons.lang.StringUtils.*;
 
@@ -12,9 +13,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import gov.usgs.ngwmn.model.DepthDatum;
+import gov.usgs.ngwmn.model.MediationType;
 import gov.usgs.ngwmn.model.PCode;
 import gov.usgs.ngwmn.model.Specifier;
 import gov.usgs.ngwmn.model.WLSample;
+import gov.usgs.wma.statistics.app.Properties;
 import gov.usgs.wma.statistics.logic.MonthlyStatistics;
 import gov.usgs.wma.statistics.logic.OverallStatistics;
 import gov.usgs.wma.statistics.logic.StatisticsCalculator;
@@ -22,21 +25,20 @@ import gov.usgs.wma.statistics.model.JsonData;
 import gov.usgs.wma.statistics.model.JsonDataBuilder;
 
 public class WaterLevelStatistics extends StatisticsCalculator<WLSample> {
-	
-	public WaterLevelStatistics(JsonDataBuilder stats) {
-		super(stats);
-		monthlyStats = new WLMonthlyStats(stats);
-	}
-	
+	private static final Logger LOGGER = LoggerFactory.getLogger(WaterLevelStatistics.class);
+	/**
+	 * This is the agreed upon days window for a recent value. It is computed from
+	 * 1 year + 1 month + 1.5 weeks or 365 + 30 + 7 + 4 because of how samples are taken and eventually entered.
+	 */
+	protected static final BigDecimal Days406 = new BigDecimal("406");
+
+		
 	protected static class WLMonthlyStats extends MonthlyStatistics<WLSample> {
-		public WLMonthlyStats(JsonDataBuilder stats) {
-			super(stats);
+		public WLMonthlyStats(Properties env, JsonDataBuilder builder) {
+			super(env, builder);
 		}
 		@Override
 		public void sortValueByQualifier(List<WLSample> samples) {
-			if (builder.mediation() == MediationType.NONE) {
-				return;
-			}
 			if (builder.mediation() == MediationType.BelowLand || builder.mediation() == MediationType.DESCENDING) {
 				sortByValueOrderDescending(samples);
 			} else {
@@ -54,57 +56,51 @@ public class WaterLevelStatistics extends StatisticsCalculator<WLSample> {
 		}
 		@Override
 		public boolean doesThisMonthQualifyForStats(List<WLSample> monthSamples) {
-			return  super.doesThisMonthQualifyForStats(monthSamples)
-					&& uniqueYears(monthSamples) >= 10;
+			int monthYears = uniqueYears(monthSamples);
+			boolean qualified = super.doesThisMonthQualifyForStats(monthSamples)
+					&& monthYears >= 10;
+
+			if ( ! qualified && monthYears>0 ) {
+				WLSample firstSample = monthSamples.get(0);
+				int missingCount = 10 - monthYears;
+				String plural = missingCount>1 ? "s" :"";
+				String monthName = sampleMonthName(firstSample);
+				String msg = env.getMessage(ENV_MESSAGE_MONTHLY_DETAIL, monthName, missingCount, plural);
+				builder.message(msg);
+			}
+			return qualified;
 		}
 		
 	};
 	
 	
-	OverallStatistics<WLSample> overallStatistics = new OverallStatistics<WLSample>(builder) {
-		@Override
-		public void findMinMaxDatesAndDateRange(List<WLSample> samples, List<WLSample> sortedByValue) {
-			super.findMinMaxDatesAndDateRange(samples, sortedByValue);
-			removeMostRecentProvisional(samples, sortedByValue);
-		}
-	};
-	
+	// Package level access for unit testing
 	MonthlyStatistics<WLSample> monthlyStats;
+	OverallStatistics<WLSample> overallStatistics; 
 	
-	/**
-	 * This is the agreed upon days window for a recent value. It is computed from
-	 * 1 year + 1 month + 1.5 weeks or 365 + 30 + 7 + 4 because of how samples are taken and eventually entered.
-	 */
-	protected static final BigDecimal Days406 = new BigDecimal("406");
-	public static final String MONTHLY_WARNING =  "Too few data values for monthly statistics."
-			+ " Ten years required with no gaps and most recent value within " + Days406 + " days.";
-
-	private static final Logger LOGGER = LoggerFactory.getLogger(WaterLevelStatistics.class);
 	
-	public static enum MediationType {
-		NONE,
-		BelowLand,
-		AboveDatum,
-		ASCENDING,
-		DESCENDING;
+	public WaterLevelStatistics(Properties env, JsonDataBuilder builder) {
+		super(env, builder);
+		
+		monthlyStats = new WLMonthlyStats(env, builder);
+		
+		overallStatistics = new OverallStatistics<WLSample>(env, builder) {
+			@Override
+			public void findMinMaxDatesAndDateRange(List<WLSample> samples, List<WLSample> sortedByValue) {
+				super.findMinMaxDatesAndDateRange(samples, sortedByValue);
+				removeMostRecentProvisional(samples, sortedByValue);
+			}
+		};
 	}
 	
 	public void setMediation(MediationType mediation) {
 		this.builder.mediation(mediation);
 	}
 	
-// TODO This conditioning must be done prior to calling the service
-// TODO I would like to keep it here until we have NGWMN calling the service
-//	@Override
-//	public List<WLSample> conditioning(Specifier spec, List<WLSample> samples) {
-//		super.conditioning(spec, samples);
-//		
-//		MediationType mediation = findMostPrevalentMediation(spec, samples);
-//		setMediation(mediation);
-//		
-//		List<WLSample> samplesByDate = useMostPrevalentPCodeMediatedValue(spec, samples, stats.mediation()); 
-//		return samplesByDate;
-//	}
+	public MonthlyStatistics<WLSample> getMonthlyStats() {
+		return monthlyStats;
+	}
+	
 	@Override
 	protected void removeProvisional(List<WLSample> samplesByDate, String dataSetId) {
 		removeProvisionalButNotMostRecent(samplesByDate, dataSetId);
@@ -132,6 +128,8 @@ public class WaterLevelStatistics extends StatisticsCalculator<WLSample> {
 		if (maxDate.isProvisional()) {
 			samples.remove(maxDate);
 			sortedByValue.remove(maxDate);
+			String msg = env.getMessage(ENV_MESSAGE_PROVISIONAL_RULE);
+			builder.message(msg);
 		}
 	}
 	
@@ -142,6 +140,9 @@ public class WaterLevelStatistics extends StatisticsCalculator<WLSample> {
 		LOGGER.trace("Executing WaterLevel Stats calculations.");
 		
 		List<WLSample> samplesByDate = conditioning(spec, samples);
+		if (builder.hasErrors()) {
+			return builder.build();
+		}
 		List<WLSample> sortedByValue  = new ArrayList<>(samplesByDate);
 		monthlyStats.sortValueByQualifier(sortedByValue);
 		
@@ -159,14 +160,15 @@ public class WaterLevelStatistics extends StatisticsCalculator<WLSample> {
 				}
 			} catch (Exception e) {
 				// if anything goes wrong here we still want the overall
-				// TODO should we log it?
+				LOGGER.warn("Data for this ID {}:{}, had an unhandled exception. {}", spec.getAgencyCd(), spec.getSiteNo(), e);
 			}
 		} else {
 			LOGGER.warn("Record Years is null for {}:{}, by passing monthly stats.", spec.getAgencyCd(), spec.getSiteNo());
 		}
 		
 		if ( ! builder.hasMonthly() ) {
-			builder.error(MONTHLY_WARNING);
+			String msg = env.getMessage(ENV_MESSAGE_MONTHLY_RULE, Days406.intValue());
+			builder.message(msg);
 		}
 		
 		return builder.build();

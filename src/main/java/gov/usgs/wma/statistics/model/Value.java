@@ -18,6 +18,7 @@ public class Value {
 	public static final SimpleDateFormat DATE_FORMAT_YEAR  = new SimpleDateFormat("yyyy");
 
 	public static final String PROVISIONAL_CODE = "P";
+	public static final String APPROVED_CODE = "A";
 	public static final String UNKNOWN_VALUE = "unknown";
 
 	public static final Comparator<Value> SORT_VALUE_DESCENDING = new Comparator<Value>() {
@@ -38,8 +39,8 @@ public class Value {
 	};
 	
 	
-	public final String time;
-	public final BigDecimal value; // this will be depth below land surface
+	public String time;
+	public BigDecimal value; // this will be depth below land surface
 	private boolean unknown;
 	
 	private Boolean provisional; // most values are not provisional and we like the false default
