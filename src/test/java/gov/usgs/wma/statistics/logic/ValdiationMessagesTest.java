@@ -222,7 +222,7 @@ public class ValdiationMessagesTest {
 		Optional<String> actual = fetchMessageLike(ENV_MESSAGE_OMIT_NULL, 7);
 		assertNotNull( actual );
 		assertTrue( actual.isPresent() );
-		assertEquals("Removed 1 empty sample at row 2", actual.get() );
+		assertEquals("Removed 1 empty sample at row 2.", actual.get() );
 	}
 	@Test
 	public void test_StatisticsCalculator_OMIT_NULL_2() {
@@ -238,7 +238,7 @@ public class ValdiationMessagesTest {
 		Optional<String> actual = fetchMessageLike(ENV_MESSAGE_OMIT_NULL, 7);
 		assertNotNull( actual );
 		assertTrue( actual.isPresent() );
-		assertEquals( "Removed 2 empty samples at rows 2, 3", actual.get() );
+		assertEquals( "Removed 2 empty samples at rows 2, 3.", actual.get() );
 	}
 	@Test
 	public void test_StatisticsCalculator_OMIT_PROVISIONAL_0() {
@@ -269,7 +269,7 @@ public class ValdiationMessagesTest {
 		Optional<String> actual = fetchMessageLike(ENV_MESSAGE_OMIT_PROVISIONAL, 7);
 		assertNotNull( actual );
 		assertTrue( actual.isPresent() );
-		assertEquals("Removed 1 provisional sample", actual.get() );
+		assertEquals("Removed 1 provisional sample.", actual.get() );
 	}
 	@Test
 	public void test_StatisticsCalculator_OMIT_PROVISIONAL_2() {
@@ -285,6 +285,6 @@ public class ValdiationMessagesTest {
 		Optional<String> actual = fetchMessageLike(ENV_MESSAGE_OMIT_PROVISIONAL, 7);
 		assertNotNull( actual );
 		assertTrue( actual.isPresent() );
-		assertEquals( "Removed 2 provisional samples", actual.get() );
+		assertEquals( "Removed 2 provisional samples.", actual.get() );
 	}
 }

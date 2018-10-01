@@ -120,10 +120,10 @@ public class StatisticsCalculator<S extends Value> {
 				if (delta <= 0) {
 					continue; // date is fine and was not fixed
 				} else if (delta <= 3) {
-					msg = env.getMessage(ENV_MESSAGE_DATE_FIX_DAY, i+1, utc);
+					msg = env.getMessage(ENV_MESSAGE_DATE_FIX_DAY, i+1, sample.toCSV());
 					builder.message(msg);
 				} else {
-					msg = env.getMessage(ENV_MESSAGE_DATE_FIX_MONTH, i+1, utc);
+					msg = env.getMessage(ENV_MESSAGE_DATE_FIX_MONTH, i+1, sample.toCSV());
 					builder.message(msg);
 				}
 			}
