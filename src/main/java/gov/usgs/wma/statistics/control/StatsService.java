@@ -100,31 +100,10 @@ public class StatsService {
 		try {
 			LOGGER.trace("entered");
 			
-			// parse the CSV data
-			List<WLSample> samples = parseData(data, builder);
-			
-			try {
-				// parse the mediation string and setup the builder
-				MediationType mediationType = MediationType.valueOf(mediation);
-				builder.mediation(mediationType);
-			} catch (Exception e) {
-				String validMediations = MediationType.validMediations();
-				String msg = env.getError(ENV_INVALID_MEDIATION, mediation, validMediations);
-				builder.error(msg);
-			}
-			// parse medians param
-			if (isNotBlank(medians)) {
-				if ( ! (BOOLEAN_FALSE.equalsIgnoreCase(medians) || BOOLEAN_TRUE.equalsIgnoreCase(medians)) ) {
-					String msg = env.getError(ENV_INVALID_MEDIANS, medians);
-					builder.error(msg);
-				}
-			}
-			builder.includeIntermediateValues(INCLUDE_MEDIANS.equals(medians));
-			// parse custom percentiles
-			if ( ! StatsService_PERCENTILES_DEFAULT.equals(percentiles) ) {
-				builder.percentiles(percentiles.split(","));
-				builder.buildPercentiles();
-			}
+			List<WLSample> samples = validateAndParseCsvData(data, builder);
+			validateParamMediation(mediation, builder);
+			validateParamMedians(medians, builder);
+			validateParamPercentiles(percentiles, builder);
 
 			// A random identifier for the service unless we parameterize the date set ID.
 			Specifier spec = new Specifier();
@@ -143,14 +122,43 @@ public class StatsService {
 			return null;
 		}
 	}
+
+	protected void validateParamPercentiles(String percentiles, JsonDataBuilder builder) {
+		if ( ! StatsService_PERCENTILES_DEFAULT.equals(percentiles) ) {
+			builder.percentiles(percentiles.split(","));
+			builder.buildPercentiles();
+		}
+	}
+
+	protected void validateParamMediation(String mediation, JsonDataBuilder builder) {
+		try {
+			// parse the mediation string and setup the builder
+			MediationType mediationType = MediationType.valueOf(mediation);
+			builder.mediation(mediationType);
+		} catch (Exception e) {
+			String validMediations = MediationType.validMediations();
+			String msg = env.getError(ENV_INVALID_MEDIATION, mediation, validMediations);
+			builder.error(msg);
+		}
+	}
+
+	protected void validateParamMedians(String medians, JsonDataBuilder builder) {
+		if (isNotBlank(medians)) {
+			if ( ! (BOOLEAN_FALSE.equalsIgnoreCase(medians) || BOOLEAN_TRUE.equalsIgnoreCase(medians)) ) {
+				String msg = env.getError(ENV_INVALID_MEDIANS, medians);
+				builder.error(msg);
+			}
+		}
+		builder.includeIntermediateValues(INCLUDE_MEDIANS.equals(medians));
+	}
 	
 
 	// TODO should this be here, in a csv util class/lib, or someplace else.
-	public List<WLSample> parseData(String data, JsonDataBuilder builder){
+	public List<WLSample> validateAndParseCsvData(String data, JsonDataBuilder builder){
 		String[] rows = data.split("\r?\n");
-		return parseData(rows, builder);
+		return validateAndParseCsvData(rows, builder);
 	}
-	public List<WLSample> parseData(String[] data, JsonDataBuilder builder) {
+	public List<WLSample> validateAndParseCsvData(String[] data, JsonDataBuilder builder) {
 		
 		List<WLSample> samples = new ArrayList<>(data.length);
 		
