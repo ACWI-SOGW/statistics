@@ -437,7 +437,7 @@ public class StatisticsCalculator<S extends Value> {
 	}
 	
 
-	public String sampleMonthName(S sample) {
+	public String sampleMonthName(Value sample) {
 		String monthName = "none";
 		String monthStr = monthUTC(sample.time);
 
