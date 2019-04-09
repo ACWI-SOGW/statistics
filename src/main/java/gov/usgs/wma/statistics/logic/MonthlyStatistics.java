@@ -144,7 +144,6 @@ public class MonthlyStatistics<S extends Value> extends StatisticsCalculator<S> 
 	}
 	
 	public List<S> medianMonthlyValues(List<S> monthSamples, Function<List<S>, List<S>> sortBy) {
-//		monthSamples = new ArrayList<>(monthSamples); // protected copy
 		int sampleCount = monthSamples.size();
 		List<S> normalizedSamples = new LinkedList<>();
 

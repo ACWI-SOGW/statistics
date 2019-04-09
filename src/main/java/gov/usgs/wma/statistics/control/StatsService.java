@@ -37,8 +37,6 @@ import io.swagger.annotations.ApiParam;
 public class StatsService {
 	private static Logger LOGGER = org.slf4j.LoggerFactory.getLogger(StatsService.class);
 
-//	private static final ResponseEntity<String> _404_ = new ResponseEntity<String>(HttpStatus.NOT_FOUND);
-
 	private static final String INCLUDE_MEDIANS = "true";
 	
 	@Autowired
