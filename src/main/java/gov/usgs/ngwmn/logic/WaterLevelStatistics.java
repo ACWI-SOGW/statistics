@@ -184,7 +184,7 @@ public class WaterLevelStatistics extends StatisticsCalculator<WLSample> {
 			return;
 		}
 		
-		String latestPercentile = monthlyStats.percentileBasedOnMonthlyData(samples.get(samples.size()-1), samples);
+		String latestPercentile = monthlyStats.percentileBasedOnMonthlyData(samples.get(samples.size()-1), sortedByValue);
 		builder.latestPercentile(latestPercentile);
 	}
 	
