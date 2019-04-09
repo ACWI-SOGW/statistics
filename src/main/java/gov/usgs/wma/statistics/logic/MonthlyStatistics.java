@@ -80,7 +80,6 @@ public class MonthlyStatistics<S extends Value> extends StatisticsCalculator<S> 
 		for(int m=1; m<=12; m++) {
 			String month = ""+m;
 			List<S> monthSamples = filterValuesByGivenMonth(sortedByValue, month);
-			int monthCount = monthSamples.size();
 			Map<String, List<S>> sortSamplesByYear = sortSamplesByYear(monthSamples);
 			List<S> normalizeMutlipleYearlyValues = medianMonthlyValues(monthSamples,  sortFunctionByQualifier());
 			
@@ -93,7 +92,7 @@ public class MonthlyStatistics<S extends Value> extends StatisticsCalculator<S> 
 				
 				builder.minP50(monthYearlyMedians.get(0).value.toString());
 				builder.maxP50(monthYearlyMedians.get( monthYearlyMedians.size()-1 ).value.toString());
-				builder.sampleCount(monthCount);
+				builder.sampleCount(normalizeMutlipleYearlyValues.size());
 
 				builder.recordYears(""+sortSamplesByYear.keySet().size());
 				builder.collect();
