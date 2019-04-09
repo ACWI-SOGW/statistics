@@ -10,13 +10,16 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - LICENSE.md
 - PULL_REQUEST_TEMPLATE.md
 
+### Changed
+- fixed several bugs in statistics caused by typos.
+
 ## [0.2.0] - 2018-08-30?
 ### Added
-- readme
-- changelog
+- README.md
+- CHANGELOG.md
 - Jenkinsfile
-- initial commit statistics service see readme
+- initial commit statistics service see README
 
 ### Changed
-- refactored statistics class hierarchy form NGWMN
+- refactored statistics class hierarchy from NGWMN
 
