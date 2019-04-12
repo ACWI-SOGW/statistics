@@ -134,16 +134,19 @@ public class WaterLevelStatistics extends StatisticsCalculator<WLSample> {
 	}
 	
 
-	protected void overallStats(List<WLSample> samples, List<WLSample> sortedByValue) {
-		overallStatistics.overallStats(samples, sortedByValue);
-		if (samples == null || samples.size() == 0) {
+	protected void overallStats(List<WLSample> samplesByDate, List<WLSample> sortedByValue) {
+		overallStatistics.overallStats(samplesByDate, sortedByValue);
+		if (samplesByDate == null || samplesByDate.size() == 0) {
 			builder.recordYears("0");
 			builder.sampleCount(0);
 			builder.collect();
 			return;
 		}
+		WLSample latest = samplesByDate.get(samplesByDate.size()-1);
+		// TODO this might not work for any type???
+		BigDecimal pctl = percentileOfValue(sortedByValue, latest, Value::valueOf);
 		
-		String latestPercentile = monthlyStats.percentileBasedOnMonthlyData(samples.get(samples.size()-1), sortedByValue);
+		String latestPercentile = pctl.toString();
 		builder.latestPercentile(latestPercentile);
 	}
 	
