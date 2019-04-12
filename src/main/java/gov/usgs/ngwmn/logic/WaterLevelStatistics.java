@@ -7,7 +7,6 @@ import static org.apache.commons.lang.StringUtils.*;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Function;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,6 +22,7 @@ import gov.usgs.wma.statistics.logic.OverallStatistics;
 import gov.usgs.wma.statistics.logic.StatisticsCalculator;
 import gov.usgs.wma.statistics.model.JsonData;
 import gov.usgs.wma.statistics.model.JsonDataBuilder;
+import gov.usgs.wma.statistics.model.Value;
 
 public class WaterLevelStatistics extends StatisticsCalculator<WLSample> {
 	private static final Logger LOGGER = LoggerFactory.getLogger(WaterLevelStatistics.class);
@@ -35,7 +35,7 @@ public class WaterLevelStatistics extends StatisticsCalculator<WLSample> {
 
 	// Package level access for unit testing
 	MonthlyStatistics<WLSample> monthlyStats;
-	OverallStatistics<WLSample> overallStatistics; 
+	OverallStatistics<WLSample> overallStatistics;
 	
 	
 	public WaterLevelStatistics(Properties env, JsonDataBuilder builder) {
