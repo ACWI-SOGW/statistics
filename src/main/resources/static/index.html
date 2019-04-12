@@ -15,12 +15,12 @@
 		
 		<form id='statsForm'> <!-- action="/statistics/calculate" method="POST"> -->
 			<span>Input data:</span> <span style="color:#AAA;">Reload browser to recover sample data.</span><br>
-            <input type="radio" name="medians" value="true" checked="true">True
+            <input type="radio" name="medians" value="true" checked>True
             <input type="radio" name="medians" value="false">False
             <input type="radio" name="mediation" value="AboveDatum">Above Datum
-            <input type="radio" name="mediation" value="BelowLand" checked="true">Below Land
+            <input type="radio" name="mediation" value="BelowLand" checked>Below Land
             <br>
-			<textarea rows="15" cols="50" name="data" id="data" alt="foo">
+			<textarea rows="15" cols="50" name="data" id="data">
 2005-06-10T04:15:00-05:00, 1.000
 2006-06-10T04:15:00-05:00, 22.000
 2007-06-10T04:15:00-05:00, 1.000
@@ -53,7 +53,7 @@
 		</form>
 		<div id="mediansDiv" style="display:none;position: relative;top: -240px;left: 400px;">
 		    <span>Median data:</span> <span style="color:#AAA;">Press calculate to see updated values.</span><br>
-			<textarea rows="15" cols="50" name="medians" id="medians" alt="foo" ></textarea>
+			<textarea rows="15" cols="50" name="medians" id="medians"></textarea>
 		</div>
 	 <div id="results">
 			<button name="calculate" id="calc" style="margin-left:300px;">Calculate</button>
