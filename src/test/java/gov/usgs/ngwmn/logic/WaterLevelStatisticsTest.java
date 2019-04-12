@@ -22,7 +22,6 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import gov.usgs.ngwmn.logic.WaterLevelStatistics.WLMonthlyStats;
 import gov.usgs.ngwmn.model.MediationType;
 import gov.usgs.ngwmn.model.PCode;
 import gov.usgs.ngwmn.model.Specifier;
@@ -184,80 +183,6 @@ public class WaterLevelStatisticsTest {
 	}
 
 	@Test
-	public void test_doesThisMonthQualifyForStats_notEngoughData() throws Exception {
-		List<WLSample> monthSamples = new ArrayList<>(2);
-		monthSamples.add(createSample("2005-06-10T04:15:00-05:00", "1.0"));
-		monthSamples.add(createSample("2015-06-10T04:15:00-05:00", "2.0"));
-
-		builder.mediation(MediationType.AboveDatum);
-		boolean qualifies = new WLMonthlyStats(env, builder)
-				.doesThisMonthQualifyForStats(monthSamples);
-		assertFalse("A month must have 10 unique years of data not just a 10 yr date range.", qualifies);
-
-		qualifies = new WLMonthlyStats(env, builder)
-				.doesThisMonthQualifyForStats(new ArrayList<>(2));
-		assertFalse("A month with zero should not cause trouble either.", qualifies);
-	}
-	@Test
-	public void test_doesThisMonthQualifyForStats_notEngoughYears() throws Exception {
-		List<WLSample> monthSamples = new ArrayList<>(10);
-		monthSamples.add(createSample("2005-06-10T04:15:00-05:00", "1.0"));
-		monthSamples.add(createSample("2015-06-10T04:15:00-05:00", "2.0"));
-		monthSamples.add(createSample("2005-06-10T04:15:00-05:00", "1.0"));
-		monthSamples.add(createSample("2015-06-10T04:15:00-05:00", "2.0"));
-		monthSamples.add(createSample("2005-06-10T04:15:00-05:00", "1.0"));
-		monthSamples.add(createSample("2015-06-10T04:15:00-05:00", "2.0"));
-		monthSamples.add(createSample("2005-06-10T04:15:00-05:00", "1.0"));
-		monthSamples.add(createSample("2015-06-10T04:15:00-05:00", "2.0"));
-		monthSamples.add(createSample("2005-06-10T04:15:00-05:00", "1.0"));
-		monthSamples.add(createSample("2015-06-10T04:15:00-05:00", "2.0"));
-
-		builder.mediation(MediationType.AboveDatum);
-		boolean qualifies = new WLMonthlyStats(env, builder)
-				.doesThisMonthQualifyForStats(monthSamples);
-		assertFalse("A month must have 10 unique years of data not just a 10 yr date range.", qualifies);
-	}
-	@Test
-	public void test_doesThisMonthQualifyForStats_hasTenYearsData() throws Exception {
-		List<WLSample> monthSamples = new ArrayList<>(10);
-		monthSamples.add(createSample("2005-06-10T04:15:00-05:00", "1.0"));
-		monthSamples.add(createSample("2006-06-10T04:15:00-05:00", "2.0"));
-		monthSamples.add(createSample("2007-06-10T04:15:00-05:00", "1.0"));
-		monthSamples.add(createSample("2008-06-10T04:15:00-05:00", "2.0"));
-		monthSamples.add(createSample("2009-06-10T04:15:00-05:00", "1.0"));
-		monthSamples.add(createSample("2010-06-10T04:15:00-05:00", "2.0"));
-		monthSamples.add(createSample("2011-06-10T04:15:00-05:00", "1.0"));
-		monthSamples.add(createSample("2012-06-10T04:15:00-05:00", "2.0"));
-		monthSamples.add(createSample("2013-06-10T04:15:00-05:00", "1.0"));
-		monthSamples.add(createSample("2014-06-10T04:15:00-05:00", "2.0"));
-
-		builder.mediation(MediationType.AboveDatum);
-		boolean qualifies = new WLMonthlyStats(env, builder)
-				.doesThisMonthQualifyForStats(monthSamples);
-		assertTrue("A month with 10 unique years of data is valid.", qualifies);
-	}
-	@Test
-	public void test_doesThisMonthQualifyForStats_hasElevenYearsData() throws Exception {
-		List<WLSample> monthSamples = new ArrayList<>(11);
-		monthSamples.add(createSample("2005-06-10T04:15:00-05:00", "1.0"));
-		monthSamples.add(createSample("2006-06-10T04:15:00-05:00", "2.0"));
-		monthSamples.add(createSample("2007-06-10T04:15:00-05:00", "1.0"));
-		monthSamples.add(createSample("2008-06-10T04:15:00-05:00", "2.0"));
-		monthSamples.add(createSample("2009-06-10T04:15:00-05:00", "1.0"));
-		monthSamples.add(createSample("2010-06-10T04:15:00-05:00", "2.0"));
-		monthSamples.add(createSample("2011-06-10T04:15:00-05:00", "1.0"));
-		monthSamples.add(createSample("2012-06-10T04:15:00-05:00", "2.0"));
-		monthSamples.add(createSample("2013-06-10T04:15:00-05:00", "1.0"));
-		monthSamples.add(createSample("2014-06-10T04:15:00-05:00", "2.0"));
-		monthSamples.add(createSample("2015-06-10T04:15:00-05:00", "2.0"));
-
-		builder.mediation(MediationType.AboveDatum);
-		boolean qualifies = new WLMonthlyStats(env, builder)
-				.doesThisMonthQualifyForStats(monthSamples);
-		assertTrue("A month with 10 unique years of data is valid.", qualifies);
-	}
-
-	@Test
 	public void test_overallStats_0() throws Exception {
 		List<WLSample> samples = new ArrayList<>(0);
 		stats.overallStats(samples, samples);
@@ -361,13 +286,59 @@ public class WaterLevelStatisticsTest {
 
 		stats.setMediation(MediationType.AboveDatum);
 		stats.overallStats(samples, sorted);
+		
+		assertEquals(min, sorted.get(0));
+		assertEquals(mid, sorted.get(1));
+		assertEquals(max, sorted.get(2));
+		
 		JsonOverall overall = builder.build().getOverall();
 		
 		assertEquals("Expect count to be 3", 3, overall.sampleCount);
 		assertEquals("Expect median to be mid.value", mid.value.toString(), overall.valueMedian);
 	}
 
+	@Test
+	public void test_overallStats_p25_many() throws Exception {
+		WLSample min1 = createSample("2017-06-10", "1.0");
+		WLSample min2 = createSample("2018-06-10", "1.2");
+		WLSample mid1 = createSample("2019-06-10", "1.3");
+		WLSample mid  = createSample("2010-06-10", "1.5");
+		WLSample mid2 = createSample("2001-06-10", "1.7");
+		WLSample max1 = createSample("2005-06-10", "1.8");
+		WLSample max2 = createSample("2015-06-10", "1.9");
+		
+//		WLSample newest = createSample("2019-06-10", "1.5");
+		// insert the values in date order
+		List<WLSample> samples = new LinkedList<>();
+		samples.add(mid2);
+		samples.add(max1);
+		samples.add(mid);
+		samples.add(max2);
+		samples.add(min1);
+		samples.add(min2);
+		samples.add(mid1);
+		
+		List<WLSample> sorted = new LinkedList<>(samples);
+		StatisticsCalculator.sortByValueOrderAscending(sorted);
 
+		stats.setMediation(MediationType.AboveDatum);
+		stats.overallStats(samples, sorted);
+		
+		assertEquals(min1, sorted.get(0));
+		assertEquals(min2, sorted.get(1));
+		assertEquals(mid1, sorted.get(2));
+		assertEquals(mid,  sorted.get(3));
+		assertEquals(mid2, sorted.get(4));
+		assertEquals(max1, sorted.get(5));
+		assertEquals(max2, sorted.get(6));
+		
+		JsonOverall overall = builder.build().getOverall();
+		
+		assertEquals("Expect count to be 7", 7, overall.sampleCount);
+		assertEquals("Expect median to be mid.value", mid.value.toString(), overall.valueMedian);
+		assertEquals( mid1.getValue().toString(), overall.latestValue);
+		assertEquals( "0.38", overall.latestPercentile);
+	}
 
 
 	// this is a helper method to convert JSON to Maps
@@ -692,7 +663,7 @@ public class WaterLevelStatisticsTest {
 		assertEquals("most recent should be the provisional", provisional.value.toString(), builder.get(LATEST_VALUE));
 	}
 	@Test
-	public void testMostRecentProvistional_overallStats() {
+	public void testMostRecentProvistional_overallStats_AboveDatum() {
 		List<WLSample> valueOrder = new LinkedList<>();
 		WLSample provisional = createSample("2017-03-01","12.21");
 		provisional.setProvsional(true);
@@ -700,6 +671,7 @@ public class WaterLevelStatisticsTest {
 		fillMarchData(valueOrder);
 		List<WLSample> monthSamples = new ArrayList<WLSample>(valueOrder);
 		StatisticsCalculator.sortByDateOrder(monthSamples);
+		StatisticsCalculator.sortByValueOrderAscending(valueOrder);
 
 		stats.setMediation(MediationType.AboveDatum);
 		stats.overallStats(monthSamples, valueOrder);
@@ -712,13 +684,35 @@ public class WaterLevelStatisticsTest {
 		assertEquals("0.745", builder.get(LATEST_PCTILE));
 	}
 	@Test
-	public void testMostRecentProvistionalNONE_overallStats() {
+	public void testMostRecentProvistional_overallStats_BelowLand() {
+		List<WLSample> valueOrder = new LinkedList<>();
+		WLSample provisional = createSample("2017-03-01","12.21");
+		provisional.setProvsional(true);
+		valueOrder.add( provisional );
+		fillMarchData(valueOrder);
+		List<WLSample> monthSamples = new ArrayList<WLSample>(valueOrder);
+		StatisticsCalculator.sortByDateOrder(monthSamples);
+		StatisticsCalculator.sortByValueOrderDescending(valueOrder);
+
+		stats.setMediation(MediationType.BelowLand);
+		stats.overallStats(monthSamples, valueOrder);
+
+		assertEquals(provisional.value.toString(), builder.get(LATEST_VALUE));
+		assertFalse(monthSamples.contains(provisional));
+		assertFalse(valueOrder.contains(provisional));
+
+		assertEquals("7.98", builder.get(MEDIAN));
+		assertEquals("0.255", builder.get(LATEST_PCTILE));
+	}
+	@Test
+	public void testMostRecentProvistionalNONE_overallStats_AboveDatum() {
 		List<WLSample> valueOrder = new LinkedList<>();
 		WLSample notProvisional = createSample("2017-03-01","12.21");
 		valueOrder.add( notProvisional );
 		fillMarchData(valueOrder);
 		List<WLSample> monthSamples = new ArrayList<WLSample>(valueOrder);
 		StatisticsCalculator.sortByDateOrder(monthSamples);
+		StatisticsCalculator.sortByValueOrderAscending(valueOrder);
 
 		stats.setMediation(MediationType.AboveDatum);
 		stats.overallStats(monthSamples, valueOrder);
@@ -729,6 +723,26 @@ public class WaterLevelStatisticsTest {
 
 		assertEquals("7.98", builder.get(MEDIAN));
 		assertEquals("1", builder.get(LATEST_PCTILE));
+	}
+	@Test
+	public void testMostRecentProvistionalNONE_overallStats_BelowLand() {
+		List<WLSample> valueOrder = new LinkedList<>();
+		WLSample notProvisional = createSample("2017-03-01","12.21");
+		valueOrder.add( notProvisional );
+		fillMarchData(valueOrder);
+		List<WLSample> monthSamples = new ArrayList<WLSample>(valueOrder);
+		StatisticsCalculator.sortByDateOrder(monthSamples);
+		StatisticsCalculator.sortByValueOrderDescending(valueOrder);
+
+		stats.setMediation(MediationType.BelowLand);
+		stats.overallStats(monthSamples, valueOrder);
+
+		assertEquals(notProvisional.value.toString(), builder.get(LATEST_VALUE));
+		assertTrue(monthSamples.contains(notProvisional));
+		assertTrue(valueOrder.contains(notProvisional));
+
+		assertEquals("7.98", builder.get(MEDIAN));
+		assertEquals("0", builder.get(LATEST_PCTILE));
 	}
 	@Test
 	public void testMostRecentProvistionalData_notRemoved() {
@@ -1080,81 +1094,6 @@ public class WaterLevelStatisticsTest {
 		monthSamples.add( createSample("2010-03-01","2.06") );
 		monthSamples.add( createSample("2015-03-01","1.78") );
 		monthSamples.add( createSample("2010-03-01","1.39") );
-	}
-	@Test
-	public void test_monthlyStats_yearly_monthly() throws Exception {
-		List<WLSample> samples = new LinkedList<>();
-		samples.add( createSample("2000-05-10T04:15:00-05:00", "95.1772") );
-		samples.add( createSample("2001-05-10T04:15:00-05:00", "95.1567") );
-		samples.add( createSample("2002-05-10T04:15:00-05:00", "95.1937") );
-		samples.add( createSample("2003-05-10T04:15:00-05:00", "95.1959") );
-		samples.add( createSample("2004-05-10T04:15:00-05:00", "95.1442") );
-		samples.add( createSample("2005-05-10T04:15:00-05:00", "95.0610") );
-		samples.add( createSample("2006-05-10T04:15:00-05:00", "95.1591") );
-		samples.add( createSample("2007-05-10T04:15:00-05:00", "95.1195") );
-		samples.add( createSample("2008-05-10T04:15:00-05:00", "95.1065") );
-		samples.add( createSample("2009-05-10T04:15:00-05:00", "95.0925") );
-		samples.add( createSample("2010-05-10T04:15:00-05:00", "95.1990") );
-		samples.add( createSample("2010-05-10T04:15:00-05:00", "95.1682") );
-		samples.add( createSample("2000-04-10T04:15:00-05:00", "94.1772") );
-		samples.add( createSample("2001-04-10T04:15:00-05:00", "94.1567") );
-		samples.add( createSample("2002-04-10T04:15:00-05:00", "94.1937") );
-		samples.add( createSample("2003-04-10T04:15:00-05:00", "94.1959") );
-		samples.add( createSample("2004-04-10T04:15:00-05:00", "94.1442") );
-		samples.add( createSample("2005-04-10T04:15:00-05:00", "94.0610") );
-		samples.add( createSample("2006-04-10T04:15:00-05:00", "94.1591") );
-		samples.add( createSample("2007-04-10T04:15:00-05:00", "94.1195") );
-		samples.add( createSample("2008-04-10T04:15:00-05:00", "94.1065") );
-		samples.add( createSample("2009-04-10T04:15:00-05:00", "94.0925") );
-		samples.add( createSample("2010-04-10T04:15:00-05:00", "94.1990") );
-		samples.add( createSample("2010-04-10T04:15:00-05:00", "94.1682") );
-		samples.add( createSample("2000-03-10T04:15:00-05:00", "93.1772") );
-		samples.add( createSample("2001-03-10T04:15:00-05:00", "93.1567") );
-		samples.add( createSample("2002-03-10T04:15:00-05:00", "93.1937") );
-		samples.add( createSample("2003-03-10T04:15:00-05:00", "93.1959") );
-		samples.add( createSample("2004-03-10T04:15:00-05:00", "93.1442") );
-		samples.add( createSample("2005-03-10T04:15:00-05:00", "93.0610") );
-		samples.add( createSample("2006-03-10T04:15:00-05:00", "93.1591") );
-		samples.add( createSample("2007-03-10T04:15:00-05:00", "93.1195") );
-		samples.add( createSample("2008-03-10T04:15:00-05:00", "93.1065") );
-		samples.add( createSample("2009-03-10T04:15:00-05:00", "93.0925") );
-		samples.add( createSample("2010-03-10T04:15:00-05:00", "93.1990") );
-		samples.add( createSample("2010-03-10T04:15:00-05:00", "93.1682") );
-
-		// here are some extra data points in months that have a <10 year window and excluded for calculation
-		samples.add( createSample("2013-06-10T04:15:00-05:00", "93.1772") );
-		samples.add( createSample("2013-07-10T04:15:00-05:00", "93.1567") );
-		samples.add( createSample("2013-08-10T04:15:00-05:00", "93.1937") );
-
-		List<WLSample> sorted = new LinkedList<>(samples);
-
-		builder.mediation(MediationType.AboveDatum);
-		// we are not testing this method so mock it to return what we need
-		WLMonthlyStats mockstats = new WLMonthlyStats(env, builder) {
-			@Override
-			public List<WLSample> medianMonthlyValues(List<WLSample> monthSamples,
-					Function<List<WLSample>, List<WLSample>> sortBy) {
-				// do not modify, testing the months. This prevents normalization to test aggregations
-				return monthSamples;
-			}
-		};
-
-		StatisticsCalculator.sortByValueOrderAscending(sorted);
-		mockstats.monthlyStats(sorted); // MediationType.AboveDatum
-		Map<String, JsonMonthly> monthly = builder.build().getMonthly();
-
-		assertEquals("Expect only 3 monthly stats - the other three do not have ten yrs data", 3, monthly.size());
-		assertEquals("Expect May median to be", "95.1579", monthly.get("5").percentiles.get(P50));
-		assertEquals("Expect Apr median to be", "94.1579", monthly.get("4").percentiles.get(P50));
-		assertEquals("Expect Mar median to be", "93.1579", monthly.get("3").percentiles.get(P50));
-
-		assertEquals("Expect sample count to be ", 12, monthly.get("5").sampleCount);
-		assertEquals("Expect sample count to be ", 12, monthly.get("4").sampleCount);
-		assertEquals("Expect sample count to be ", 12, monthly.get("3").sampleCount);
-
-		assertEquals("Expect record years to be 11 because there are 11 unique years in the given data even though there are 12 data entries and not a difference of 10 because we count the months.", "11", monthly.get("5").recordYears);
-		assertEquals("Expect record years to be 11 because there are 11 unique years in the given data even though there are 12 data entries and not a difference of 10 because we count the months.", "11", monthly.get("4").recordYears);
-		assertEquals("Expect record years to be 11 because there are 11 unique years in the given data even though there are 12 data entries and not a difference of 10 because we count the months.", "11", monthly.get("3").recordYears);
 	}
 	
 }

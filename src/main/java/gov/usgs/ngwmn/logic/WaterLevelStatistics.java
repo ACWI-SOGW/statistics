@@ -32,48 +32,7 @@ public class WaterLevelStatistics extends StatisticsCalculator<WLSample> {
 	 */
 	protected static final BigDecimal Days406 = new BigDecimal("406");
 
-		
-	protected static class WLMonthlyStats extends MonthlyStatistics<WLSample> {
-		public WLMonthlyStats(Properties env, JsonDataBuilder builder) {
-			super(env, builder);
-		}
-		@Override
-		public void sortValueByQualifier(List<WLSample> samples) {
-			if (builder.mediation() == MediationType.BelowLand || builder.mediation() == MediationType.DESCENDING) {
-				sortByValueOrderDescending(samples);
-			} else {
-				sortByValueOrderAscending(samples);
-			}
-		}
-		@Override
-		public Function<List<WLSample>, List<WLSample>> sortFunctionByQualifier() {
-			Function<List<WLSample>, List<WLSample>> sortBy = StatisticsCalculator::sortByValueOrderAscending;
-			
-			if (builder.mediation() == MediationType.BelowLand || builder.mediation() == MediationType.DESCENDING) {
-				sortBy = StatisticsCalculator::sortByValueOrderDescending;
-			}
-			return sortBy;
-		}
-		@Override
-		public boolean doesThisMonthQualifyForStats(List<WLSample> monthSamples) {
-			int monthYears = uniqueYears(monthSamples);
-			boolean qualified = super.doesThisMonthQualifyForStats(monthSamples)
-					&& monthYears >= 10;
 
-			if ( ! qualified && monthYears>0 ) {
-				WLSample firstSample = monthSamples.get(0);
-				int missingCount = 10 - monthYears;
-				String plural = missingCount>1 ? "s" :"";
-				String monthName = sampleMonthName(firstSample);
-				String msg = env.getMessage(ENV_MESSAGE_MONTHLY_DETAIL, monthName, missingCount, plural);
-				builder.message(msg);
-			}
-			return qualified;
-		}
-		
-	};
-	
-	
 	// Package level access for unit testing
 	MonthlyStatistics<WLSample> monthlyStats;
 	OverallStatistics<WLSample> overallStatistics; 
@@ -82,7 +41,7 @@ public class WaterLevelStatistics extends StatisticsCalculator<WLSample> {
 	public WaterLevelStatistics(Properties env, JsonDataBuilder builder) {
 		super(env, builder);
 		
-		monthlyStats = new WLMonthlyStats(env, builder);
+		monthlyStats = new WaterLevelMonthlyStats(env, builder);
 		
 		overallStatistics = new OverallStatistics<WLSample>(env, builder) {
 			@Override
