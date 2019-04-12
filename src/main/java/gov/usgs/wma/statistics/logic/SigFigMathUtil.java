@@ -32,7 +32,7 @@ public class SigFigMathUtil {
     
     // July 19 2016 - changed for GWW /JL. It was HALF_EVEN for all values and must be round half up for all values.
     // July 30 2018 - Change of specification - they want the default Java behavior back.
-    //       This custom rounding rule clase allows for future rounding changes including the former custom rule from 2017.
+    // This custom rounding rule class allows for future rounding changes including the former custom rule from 2017.
     public static CustomRoundingRule DEFAULT_ROUNDING_RULE = new JavaDefaultRoundingRule(RoundingMode.HALF_UP);
     
     public static interface CustomRoundingRule {
@@ -232,7 +232,7 @@ public class SigFigMathUtil {
         BigDecimal result = bigDecimalList[0];
 
         if (result != null) {
-            for (int i = 1; i < bigDecimalList.length; i++) { //intentionally set array at 1 and not the first element
+            for (int i = 1; i < bigDecimalList.length; i++) { // intentionally set array at 1 and not the first element
                 BigDecimal bd = bigDecimalList[i];
                 if (bd != null) {
                     result = result.subtract(bigDecimalList[i]);
@@ -337,7 +337,7 @@ public class SigFigMathUtil {
             return null;
         }
         BigDecimal[] bigDecimalList = bdList.toArray(new BigDecimal[bdList.size()]);
-        int lowestScaleFound = bigDecimalList[0].scale(); //init the value
+        int lowestScaleFound = bigDecimalList[0].scale(); // init the value
         BigDecimal result = bigDecimalList[0];
 
         for (BigDecimal bd : bigDecimalList) {

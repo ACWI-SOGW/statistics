@@ -16,7 +16,7 @@ public enum PCode {
 	P62611("62611", DepthDatum.NAVD88, Unit.FEET, true, false, false, "Physical Groundwater level above NAVD 1988, feet"),
 	P62612("62612", DepthDatum.NGVD29, Unit.METERS, true, false, false, "Groundwater level above NGVD 1929, meters"),
 	P62613("62613", DepthDatum.NAVD88, Unit.METERS, true, false, false, "Physical Groundwater level above NAVD 1988, meters"),
-	//Should we note that this is distance above the datum?
+	// Should we note that this is distance above the datum?
 	P72150("72150", DepthDatum.MSL, Unit.FEET,   true, false, false, "Groundwater level relative to Mean Sea Level (MSL), feet"),
 
 	// Below Land Surface
@@ -31,9 +31,9 @@ public enum PCode {
 	private final DepthDatum datum;
 	private final String description;
 	private final Unit unit;
-	private final boolean up;	//true if positive values indicate the direction upwards from the datum.
-	private final boolean unrecognized;	//If we do not recognize the name.
-	private final boolean unspecified; //If the pcode is empty or null.
+	private final boolean up;	        // True if positive values indicate the direction upwards from the datum.
+	private final boolean unrecognized;	// If we do not recognize the name.
+	private final boolean unspecified;  // If the pcode is empty or null.
 	
 	PCode(String code, DepthDatum datum, Unit unit, boolean isUp, boolean unrecognized, boolean unspecified, String description) {
 		this.code = code;

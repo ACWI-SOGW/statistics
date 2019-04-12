@@ -157,8 +157,8 @@ public class WLSample extends Value {
 					mediatedValue = WaterlevelMediator
 						.mediateToDistanceBelowGroundLevel(value, units, pcode, null, siteElevation, elevation.datum);
 				} catch (ValidationException ve) {
-					//The WLSample only allows BigDecimal for the resulting values,
-					//so our string explanation will need to be moved to the comment.
+					// The WLSample only allows BigDecimal for the resulting values,
+					// so our string explanation will need to be moved to the comment.
 					comment+=  ((comment != null) ?": " :"") + ve.getMessage();
 				}
 				
@@ -168,13 +168,13 @@ public class WLSample extends Value {
 					valueAboveDatum = WaterlevelMediator
 						.mediateToDistanceAboveSiteDatum(value, units, pcode, null, siteElevation, elevation.datum);
 				} catch (ValidationException ve) {
-					//The WLSample only allows BigDecimal for the resulting values,
-					//so our string explanation will need to be moved to the comment.
+					// The WLSample only allows BigDecimal for the resulting values,
+					// so our string explanation will need to be moved to the comment.
 					comment+=  ((comment != null) ?": " :"") + ve.getMessage();
 				}
 				
-				//Ignore: parsing issues on this will already be logged as a comment b/c
-				//the same conversion will have failed in the mediate method above.
+				// Ignore: parsing issues on this will already be logged as a comment b/c
+				// the same conversion will have failed in the mediate method above.
 				 originalValue = WaterlevelMediator.toBigDecimal(value);
 			}
 			// THIRD, CONSTRUCT A VALID & MEDIATED INSTANCE

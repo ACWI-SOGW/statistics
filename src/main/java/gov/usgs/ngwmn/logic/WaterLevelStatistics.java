@@ -257,10 +257,10 @@ public class WaterLevelStatistics extends StatisticsCalculator<WLSample> {
 	
 
 	/**
-	 * This convenience method is suppost to be self documenting by its name. But just to be clear it
+	 * This convenience method is supposed to be self documenting by its name. But just to be clear it
 	 * ensures at least ten years of data are required and the most recent value must be within the past year
 	 * 
-	 * Not that this method could have computed all thes values by a given data set of overall data. However,
+	 * Not that this method could have computed all the values by a given data set of overall data. However,
 	 * it is easier to test the conditions if the values are given. For example, if today was determined inside
 	 * then the test could not use a given date for today.
 	 * 

@@ -16,8 +16,8 @@ public enum Unit {
 	
 	private final String name;
 	private final String abbr;
-	private final boolean unrecognized;	//Returned from get() if we do not recognize the datum name.  Not the same as null.
-	private final boolean unspecified; //If the unit is empty or null.
+	private final boolean unrecognized;	// Returned from get() if we do not recognize the datum name.  Not the same as null.
+	private final boolean unspecified;  // If the unit is empty or null.
 	
 	Unit(String name, String abbr, boolean unrecognized, boolean unspecified) {
 		this.name = name;
@@ -47,9 +47,9 @@ public enum Unit {
 			return UNSPECIFIED;
 		} else {
 		
-			//This is a temp fix for units that come through like this: "ft  ft"
-			//Since the data is cached, it is not immediately fixable
-			//TODO: Remove this once the source transformation is fixed
+			// This is a temp fix for units that come through like this: "ft  ft"
+			// Since the data is cached, it is not immediately fixable
+			// TODO: Remove this once the source transformation is fixed
 			if (name.indexOf(' ') > 0) {
 				name = name.substring(0, name.indexOf(' '));
 			}

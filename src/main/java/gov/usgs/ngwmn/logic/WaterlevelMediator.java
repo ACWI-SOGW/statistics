@@ -16,8 +16,8 @@ public class WaterlevelMediator {
 
 	private static Logger LOGGER = LoggerFactory.getLogger(WaterlevelMediator.class);
 	
-	//Conversion not possible because of missing or unrecognized data
-	public static final String NA_PREFIX = "NA";	//All NA type responses start w/ this so we can ID them
+	// Conversion not possible because of missing or unrecognized data
+	public static final String NA_PREFIX = "NA";	// All NA type responses start w/ this so we can ID them
 	public static final String NA_NO_VALUE =  NA_PREFIX + " (Value is null, empty or not a number)";
 	public static final String NA_NO_SITE_ELEVATION = NA_PREFIX + " (Site elevation is null or not a number)";
 	public static final String NA_NO_UNIT = NA_PREFIX + " (No measurement unit or unit is not recognized)";
@@ -25,7 +25,7 @@ public class WaterlevelMediator {
 	public static final String NA_NO_PCODE = NA_PREFIX + " (PCode is not recognized)";
 	public static final String NA_NO_MEASURE_DATUM = NA_PREFIX + " (Measurement datum is not recognized)";
 	
-	//Conversion not possible because of inconsistent data
+	// Conversion not possible because of inconsistent data
 	public static final String NA_PCODE_MEASURE_DATUM_MISMATCH = NA_PREFIX + " (PCode datum does not match the measurement datum)";
 	public static final String NA_SITE_PCODE_DATUM_MISMATCH = NA_PREFIX + " (Site datum does not match the PCode datum)";
 	public static final String NA_SITE_MEASURE_DATUM_MISMATCH = NA_PREFIX + " (Site datum does not match the measure datum)";
@@ -66,7 +66,7 @@ public class WaterlevelMediator {
 		
 		// There is different validation if we are dealing with a measurement
 		// that is already from the land surface (no conversion needed)
-		// vs a measurement that is wrt an external datum.
+		// vs a measurement that is above an external datum.
 		
 		BigDecimal directionalValue = negateIfConditionTrue(measure, measure.pcode.isUp());
 		
@@ -133,7 +133,7 @@ public class WaterlevelMediator {
 	 * @throws ValidationException when the units are mismatched
 	 */
 	protected static void unitValidation(Measure measure, String siteElevationStr, String siteDatumStr) throws ValidationException {
-		//Always need these values for this conversion & these consistency checks
+		// Always need these values for this conversion & these consistency checks
 		if (measure.siteDatum.isUnspecified() || measure.siteDatum.isUnrecognized()) {
 			throw new ValidationException(NA_NO_SITE_DATUM + " Site datum: " + siteDatumStr + "'");
 		}
@@ -168,7 +168,7 @@ public class WaterlevelMediator {
 	 * @throws ValidationException when the datum are mismatched
 	 */
 	protected static void datumValidation(Measure measure) throws ValidationException{
-		// TODO this effective condition does not seem to have a unit test reliant on it
+		// TODO this effective condition does not seem to have a unit test
 		if (! measure.pcode.getDatum().equals(measure.effectiveDatum)) {
 			throw new ValidationException(NA_PCODE_MEASURE_DATUM_MISMATCH + " pcode datum: '" + measure.pcode.getDatum() + "' measure datum: '" + measure.effectiveDatum + "'"); 
 		}			
@@ -261,13 +261,13 @@ public class WaterlevelMediator {
 		
 		if (measure.pcode.isUnspecified()) {
 			elevationValidation(measure, siteElevationStr, siteDatumStr);
-			//Everything looks OK - calculate the adjusted valueStr
+			// Everything looks OK - calculate the adjusted valueStr
             return SigFigMathUtil.sigFigAdd(measure.siteElevation, directionalValue);
 			
 		} else if (measure.pcode.getDatum().isLocalLandSurface()) {
 			
-			//Need to convert from measurement wrt to local land surface to the
-			//site datum.  Site datum measurements are assumed to be up from the datum.
+			// Need to convert from measurement wrt to local land surface to the
+			// site datum.  Site datum measurements are assumed to be up from the datum.
 			elevationValidation(measure, siteElevationStr, siteDatumStr);
 			datumUnitValidation(measure);
 			
@@ -276,7 +276,7 @@ public class WaterlevelMediator {
 		} else {
 			// Convert from a datum based measurement (not from land surface) to
 			// the site datum...  In theory.  In reality, we do not convert b/t
-			// datums, so we just check to ensure they are wrt to the same datum.
+			// datums, so we just check to ensure they are relative to the same datum.
 			// If they are not, return some form of NA.
 			datumUnitValidation(measure);
 			return directionalValue;
@@ -334,7 +334,7 @@ public class WaterlevelMediator {
 			this.datum = DepthDatum.get(measureDatumStr);
 			this.unit  = Unit.get(unitStr);
 
-			//Only actually required if the measure is land surface based
+			// Only actually required if the measure is land surface based
 			this.siteElevation = toBigDecimal(siteElevation);
 
 			this.siteDatum = DepthDatum.get(siteDatumStr);
