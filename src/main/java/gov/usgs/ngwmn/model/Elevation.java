@@ -18,4 +18,9 @@ public class Elevation {
 	public boolean isValid() {
 		return (value != null && datum != null && !"NA".equalsIgnoreCase(datum));
 	}
+
+	@Override
+	public String toString() {
+		return "Elevation [value=" + value + ", datum=" + datum + "]";
+	}
 }

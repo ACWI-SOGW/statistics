@@ -4,6 +4,7 @@ import static gov.usgs.wma.statistics.app.Properties.*;
 import static gov.usgs.wma.statistics.model.JsonDataBuilder.*;
 import static org.apache.commons.lang.StringUtils.*;
 
+import java.io.Reader;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
@@ -93,6 +94,11 @@ public class WaterLevelStatistics extends StatisticsCalculator<WLSample> {
 	}
 	
 	// TODO business rule for any one value error? continue without value or error entire statistics calculation?
+	@Override
+	public JsonData calculate(Specifier spec, Reader xmlData) throws Exception {
+		List<WLSample> samples = WLSample.extractSamples(xmlData, spec.getAgencyCd(), spec.getSiteNo(), spec.getElevation());
+		return calculate(spec, samples);
+	}
 
 	@Override
 	public JsonData calculate(Specifier spec, List<WLSample> samples) {
