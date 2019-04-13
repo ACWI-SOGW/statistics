@@ -30,16 +30,10 @@ public class WaterLevelXmlTest {
 	final static Reader XML_READER;
 	
 	static {
-//		String xml = "";
 		Reader xmlReader;
 		try {
-//			FileInputStream fin = new FileInputStream(XML_FILE);
-//			FileReader xmlReader = new FileReader(XML_FILE);
-//			BufferedReader br = new BufferedReader(xmlReader);
-//			xml = br.readLine();
 			xmlReader = new BufferedReader(new FileReader(XML_FILE));
 		} catch (IOException e) {
-//			xml = "";
 			xmlReader = null;
 		}
 		XML_READER = xmlReader;
