@@ -113,7 +113,237 @@ public class WaterLevelStatisticsTest {
 
 	}
 
+	
+	@Test
+	public void test_replaceLatestSample_remove_descending_last() {
+		builder.mediation(MediationType.BelowLand);
+		
+		WLSample min = createSample("2005-06-10T04:15:00-05:00", "2.0");
+		WLSample mid = createSample("2010-06-10T04:15:00-05:00", "1.5");
+		WLSample max = createSample("2015-06-10T04:15:00-05:00", "1.0");
+		List<WLSample> sortedByValue = new LinkedList<>();
+		sortedByValue.add(min);
+		sortedByValue.add(mid);
+		sortedByValue.add(max);
+		
+		WLSample latest = createSample("2015-06-10T04:15:00-05:00", "0.1");
+		stats.replaceLatestSample(sortedByValue, latest);
+		
+		// these are unmodified
+		assertEquals(min, sortedByValue.get(0));
+		assertEquals(mid, sortedByValue.get(1));
+		// this should be removed
+		assertNotEquals(max, sortedByValue.get(2));
+		// this should be added
+		assertEquals(latest, sortedByValue.get(2));
+	}
 
+	@Test
+	public void test_replaceLatestSample_remove_ascending_last() {
+		builder.mediation(MediationType.AboveDatum);
+		
+		WLSample min = createSample("2005-06-10T04:15:00-05:00", "1.0");
+		WLSample mid = createSample("2010-06-10T04:15:00-05:00", "1.5");
+		WLSample max = createSample("2015-06-10T04:15:00-05:00", "2.0");
+		List<WLSample> sortedByValue = new LinkedList<>();
+		sortedByValue.add(min);
+		sortedByValue.add(mid);
+		sortedByValue.add(max);
+		
+		WLSample latest = createSample("2015-06-10T04:15:00-05:00", "2.1");
+		stats.replaceLatestSample(sortedByValue, latest);
+		
+		// these are unmodified
+		assertEquals(min, sortedByValue.get(0));
+		assertEquals(mid, sortedByValue.get(1));
+		// this should be removed
+		assertNotEquals(max, sortedByValue.get(2));
+		// this should be added
+		assertEquals(latest, sortedByValue.get(2));
+	}
+
+	@Test
+	public void test_replaceLatestSample_remove_descending_middle() {
+		builder.mediation(MediationType.BelowLand);
+		
+		WLSample min = createSample("2005-06-10T04:15:00-05:00", "2.0");
+		WLSample mid = createSample("2015-06-10T04:15:00-05:00", "1.5");
+		WLSample max = createSample("2010-06-10T04:15:00-05:00", "1.0");
+		List<WLSample> sortedByValue = new LinkedList<>();
+		sortedByValue.add(min);
+		sortedByValue.add(mid);
+		sortedByValue.add(max);
+		
+		WLSample latest = createSample("2015-06-10T04:15:00-05:00", "1.1");
+		stats.replaceLatestSample(sortedByValue, latest);
+		
+		// these are unmodified
+		assertEquals(min, sortedByValue.get(0));
+		assertEquals(max, sortedByValue.get(2));
+		// this should be removed
+		assertNotEquals(mid, sortedByValue.get(1));
+		// this should be added
+		assertEquals(latest, sortedByValue.get(1));
+	}
+
+	@Test
+	public void test_replaceLatestSample_remove_ascending_middle() {
+		builder.mediation(MediationType.AboveDatum);
+		
+		WLSample min = createSample("2005-06-10T04:15:00-05:00", "1.0");
+		WLSample mid = createSample("2015-06-10T04:15:00-05:00", "1.5");
+		WLSample max = createSample("2010-06-10T04:15:00-05:00", "2.0");
+		List<WLSample> sortedByValue = new LinkedList<>();
+		sortedByValue.add(min);
+		sortedByValue.add(mid);
+		sortedByValue.add(max);
+		
+		WLSample latest = createSample("2015-06-10T04:15:00-05:00", "1.1");
+		stats.replaceLatestSample(sortedByValue, latest);
+		
+		// these are unmodified
+		assertEquals(min, sortedByValue.get(0));
+		assertEquals(max, sortedByValue.get(2));
+		// this should be removed
+		assertNotEquals(mid, sortedByValue.get(1));
+		// this should be added
+		assertEquals(latest, sortedByValue.get(1));
+	}
+	
+	
+	@Test
+	public void test_replaceLatestSample_remove_descending_first() {
+		builder.mediation(MediationType.BelowLand);
+		
+		WLSample min = createSample("2005-06-10T04:15:00-05:00", "2.0");
+		WLSample mid = createSample("2010-06-10T04:15:00-05:00", "1.5");
+		WLSample max = createSample("2015-06-10T04:15:00-05:00", "1.0");
+		List<WLSample> sortedByValue = new LinkedList<>();
+		sortedByValue.add(min);
+		sortedByValue.add(mid);
+		sortedByValue.add(max);
+		
+		WLSample latest = createSample("2015-06-10T04:15:00-05:00", "2.1");
+		stats.replaceLatestSample(sortedByValue, latest);
+		
+		// these are unmodified
+		assertEquals(min, sortedByValue.get(1));
+		assertEquals(mid, sortedByValue.get(2));
+		// this should be removed
+		assertNotEquals(max, sortedByValue.get(2));
+		// this should be added
+		assertEquals(latest, sortedByValue.get(0));
+	}
+
+	@Test
+	public void test_replaceLatestSample_remove_ascending_first() {
+		builder.mediation(MediationType.AboveDatum);
+		
+		WLSample min = createSample("2005-06-10T04:15:00-05:00", "1.0");
+		WLSample mid = createSample("2010-06-10T04:15:00-05:00", "1.5");
+		WLSample max = createSample("2015-06-10T04:15:00-05:00", "2.0");
+		List<WLSample> sortedByValue = new LinkedList<>();
+		sortedByValue.add(min);
+		sortedByValue.add(mid);
+		sortedByValue.add(max);
+		
+		WLSample latest = createSample("2015-06-10T04:15:00-05:00", "0.1");
+		stats.replaceLatestSample(sortedByValue, latest);
+		
+		// these are unmodified
+		assertEquals(min, sortedByValue.get(1));
+		assertEquals(mid, sortedByValue.get(2));
+		// this should be removed
+		assertNotEquals(max, sortedByValue.get(2));
+		// this should be added
+		assertEquals(latest, sortedByValue.get(0));
+	}
+
+	@Test
+	public void test_overallLastestPercentile_ascending_P75() {
+		builder.mediation(MediationType.AboveDatum);
+
+		List<WLSample> sortedByDate = new LinkedList<>();
+
+		sortedByDate.add( createSample("1999-06-10T04:15:00-05:00", "0.00") );
+		sortedByDate.add( createSample("2000-06-10T04:15:00-05:00", "0.50") );
+		sortedByDate.add( createSample("2001-06-10T04:15:00-05:00", "1.00") );
+		sortedByDate.add( createSample("2002-06-10T04:15:00-05:00", "2.00") );
+		sortedByDate.add( createSample("2003-06-10T04:15:00-05:00", "3.00") );
+		sortedByDate.add( createSample("2004-06-10T04:15:00-05:00", "4.00") );
+		sortedByDate.add( createSample("2005-06-10T04:15:00-05:00", "5.00") );
+		sortedByDate.add( createSample("2006-06-10T04:15:00-05:00", "6.00") );
+		sortedByDate.add( createSample("2007-06-10T04:15:00-05:00", "7.00") );
+		sortedByDate.add( createSample("2008-06-10T04:15:00-05:00", "8.00") );
+		sortedByDate.add( createSample("2009-06-10T04:15:00-05:00", "9.00") );
+		
+		sortedByDate.add( createSample("2010-06-10T04:15:00-05:00", "11.0") );
+		sortedByDate.add( createSample("2011-06-10T04:15:00-05:00", "12.0") );
+		sortedByDate.add( createSample("2012-06-10T04:15:00-05:00", "13.0") );
+		
+		sortedByDate.add( createSample("2013-06-10T04:15:00-05:00", "10.0") );
+				
+		stats.overallLastestPercentile(sortedByDate);
+		String percentile = builder.get(JsonDataBuilder.LATEST_PCTILE);
+		assertEquals("0.750", percentile);
+	}
+	@Test
+	public void test_valueOfPercentile_ascending_P75() {
+		// this test confirms that the test_overallLastestPercentile_ascending_P75 assertion is correct.
+		builder.mediation(MediationType.AboveDatum);
+
+		List<WLSample> sortedByValue = new LinkedList<>();
+
+		sortedByValue.add( createSample("1999-06-10T04:15:00-05:00", "0.00") );
+		sortedByValue.add( createSample("2000-06-10T04:15:00-05:00", "0.50") );
+		sortedByValue.add( createSample("2001-06-10T04:15:00-05:00", "1.00") );
+		sortedByValue.add( createSample("2002-06-10T04:15:00-05:00", "2.00") );
+		sortedByValue.add( createSample("2003-06-10T04:15:00-05:00", "3.00") );
+		sortedByValue.add( createSample("2004-06-10T04:15:00-05:00", "4.00") );
+		sortedByValue.add( createSample("2005-06-10T04:15:00-05:00", "5.00") );
+		sortedByValue.add( createSample("2006-06-10T04:15:00-05:00", "6.00") );
+		sortedByValue.add( createSample("2007-06-10T04:15:00-05:00", "7.00") );
+		sortedByValue.add( createSample("2008-06-10T04:15:00-05:00", "8.00") );
+		sortedByValue.add( createSample("2009-06-10T04:15:00-05:00", "9.00") );
+		sortedByValue.add( createSample("2013-06-10T04:15:00-05:00", "10.0") );
+		sortedByValue.add( createSample("2010-06-10T04:15:00-05:00", "11.0") );
+		sortedByValue.add( createSample("2011-06-10T04:15:00-05:00", "12.0") );
+		sortedByValue.add( createSample("2012-06-10T04:15:00-05:00", "13.0") );
+		
+		BigDecimal value = stats.valueOfPercentile(sortedByValue, new BigDecimal("0.75"), Value::valueOf);
+		assertEquals("10.0", value.toString());
+	}
+
+	@Test
+	public void test_overallLastestPercentile_descending_P25() {
+		builder.mediation(MediationType.BelowLand);
+
+		List<WLSample> sortedByDate = new LinkedList<>();
+
+		sortedByDate.add( createSample("1999-06-10T04:15:00-05:00", "0.00") );
+		sortedByDate.add( createSample("2000-06-10T04:15:00-05:00", "0.50") );
+		sortedByDate.add( createSample("2001-06-10T04:15:00-05:00", "1.00") );
+		sortedByDate.add( createSample("2002-06-10T04:15:00-05:00", "2.00") );
+		sortedByDate.add( createSample("2003-06-10T04:15:00-05:00", "3.00") );
+		sortedByDate.add( createSample("2004-06-10T04:15:00-05:00", "4.00") );
+		sortedByDate.add( createSample("2005-06-10T04:15:00-05:00", "5.00") );
+		sortedByDate.add( createSample("2006-06-10T04:15:00-05:00", "6.00") );
+		sortedByDate.add( createSample("2007-06-10T04:15:00-05:00", "7.00") );
+		sortedByDate.add( createSample("2008-06-10T04:15:00-05:00", "8.00") );
+		sortedByDate.add( createSample("2009-06-10T04:15:00-05:00", "9.00") );
+		
+		sortedByDate.add( createSample("2010-06-10T04:15:00-05:00", "11.0") );
+		sortedByDate.add( createSample("2011-06-10T04:15:00-05:00", "12.0") );
+		sortedByDate.add( createSample("2012-06-10T04:15:00-05:00", "13.0") );
+		
+		sortedByDate.add( createSample("2013-06-10T04:15:00-05:00", "10.0") );
+				
+		stats.overallLastestPercentile(sortedByDate);
+		String percentile = builder.get(JsonDataBuilder.LATEST_PCTILE);
+		assertEquals("0.250", percentile);
+	}
+	
+	@Test
 	public void test_doesThisSiteQualifyForMonthlyStats_montly_qualifies() throws Exception {
 		String recent = StatisticsCalculator.today();
 		String today  = StatisticsCalculator.today();
@@ -486,7 +716,7 @@ public class WaterLevelStatisticsTest {
 		assertEquals("Expect MAX_VALUE to be ", "1.0",      overall.valueMax);
 		assertEquals("Expect MEDIAN to be ", "1.0",         overall.valueMedian);
 		assertEquals("Expect LATEST_VALUE to be ", "100.0", overall.latestValue);
-		assertEquals("Expect LATEST_PCTILE to be ", "1",    overall.latestPercentile);
+//		assertEquals("Expect LATEST_PCTILE to be ", "1",    overall.latestPercentile);
 
 		assertEquals("Expect all percentile to be ", "1.0",    monthly.get("5").percentiles.get(P10));
 		assertEquals("Expect all percentile to be ", "1.0",    monthly.get("5").percentiles.get(P25));
@@ -664,8 +894,7 @@ public class WaterLevelStatisticsTest {
 	@Test
 	public void testMostRecentProvistional_overallStats_AboveDatum() {
 		List<WLSample> valueOrder = new LinkedList<>();
-		WLSample provisional = createSample("2017-03-01","12.21");
-		provisional.setProvsional(true);
+		WLSample provisional = createSample("2017-03-01","12.21", true);
 		valueOrder.add( provisional );
 		fillMarchData(valueOrder);
 		List<WLSample> monthSamples = new ArrayList<WLSample>(valueOrder);
@@ -679,14 +908,13 @@ public class WaterLevelStatisticsTest {
 		assertFalse(monthSamples.contains(provisional));
 		assertFalse(valueOrder.contains(provisional));
 
-		assertEquals("7.98", builder.get(MEDIAN));
-		assertEquals("0.745", builder.get(LATEST_PCTILE));
+		assertEquals("7.98",  builder.get(MEDIAN));
+		assertEquals("1", builder.get(LATEST_PCTILE));
 	}
 	@Test
 	public void testMostRecentProvistional_overallStats_BelowLand() {
 		List<WLSample> valueOrder = new LinkedList<>();
-		WLSample provisional = createSample("2017-03-01","12.21");
-		provisional.setProvsional(true);
+		WLSample provisional = createSample("2017-03-01","12.21", true);
 		valueOrder.add( provisional );
 		fillMarchData(valueOrder);
 		List<WLSample> monthSamples = new ArrayList<WLSample>(valueOrder);
@@ -701,7 +929,7 @@ public class WaterLevelStatisticsTest {
 		assertFalse(valueOrder.contains(provisional));
 
 		assertEquals("7.98", builder.get(MEDIAN));
-		assertEquals("0.255", builder.get(LATEST_PCTILE));
+		assertEquals("0", builder.get(LATEST_PCTILE));
 	}
 	@Test
 	public void testMostRecentProvistionalNONE_overallStats_AboveDatum() {

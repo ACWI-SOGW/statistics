@@ -7,7 +7,9 @@ import static org.apache.commons.lang.StringUtils.*;
 import java.io.Reader;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -105,9 +107,13 @@ public class WaterLevelStatistics extends StatisticsCalculator<WLSample> {
 		LOGGER.trace("Executing WaterLevel Stats calculations.");
 		
 		List<WLSample> samplesByDate = conditioning(spec, samples);
+
 		if (builder.hasErrors()) {
 			return builder.build();
 		}
+		MediationType mediation = findMostPrevalentMediation(spec, samplesByDate);
+		builder.mediation(mediation);
+		
 		List<WLSample> sortedByValue  = new ArrayList<>(samplesByDate);
 		monthlyStats.sortValueByQualifier(sortedByValue);
 		
@@ -138,22 +144,67 @@ public class WaterLevelStatistics extends StatisticsCalculator<WLSample> {
 		
 		return builder.build();
 	}
-	
 
+
+	protected void overallLastestPercentile(List<WLSample> samplesByDate) {
+		// get the latest (most recent) sample
+		int last = samplesByDate.size()-1;
+		WLSample latestSample = samplesByDate.get(last);
+		// get the sample for the same month as the latest sample
+		String month = Value.padMonth(Value.monthUTC(latestSample.time));
+		List<WLSample> monthSamples = monthlyStats.filterValuesByGivenMonth(samplesByDate, month);
+		// get the medians for each year-month
+		List<WLSample> normalizeMutlipleYearlyValues = 
+				monthlyStats.medianMonthlyValues(monthSamples,  monthlyStats.sortFunctionByQualifier());
+		// the most recent must now be added into the collection and replace of the year-month it represents
+		replaceLatestSample(normalizeMutlipleYearlyValues, latestSample);
+		// get the percentile of the latest sample
+		BigDecimal latestPercentile = percentileOfValue(normalizeMutlipleYearlyValues, latestSample, Value::valueOf);
+		builder.latestPercentile(latestPercentile.toString());
+	}
+
+	protected void replaceLatestSample(List<WLSample> normalizeMutlipleYearlyValues, WLSample latestSample) {
+		if (normalizeMutlipleYearlyValues.contains(latestSample)) {
+			return; // if it happens to be in there leave it be
+		}
+		// initial conditions and values
+		int        compareToDir  = MediationType.BelowLand.equal(builder.mediation()) ?1 :-1;
+		int        elements      = normalizeMutlipleYearlyValues.size();
+		String     latestYrMonth = latestSample.getTime().substring(0, 7);
+		BigDecimal latestValue   = latestSample.getValue();
+		boolean    isInserting   = true;
+		boolean    isRemoving    = true;
+		// search for the removing current month and the inserting location for latest sample
+		for (int s=0; s<elements && (isRemoving || isInserting); s++) {
+			String yearMonth = ((Value)normalizeMutlipleYearlyValues.get(s)).getTime().substring(0, 7);
+			BigDecimal value = ((Value)normalizeMutlipleYearlyValues.get(s)).getValue();
+			// the data is already sorted, if we exceed the value in the comapreTo direction then insert
+			if (isInserting && latestValue.compareTo(value) == compareToDir) {
+				normalizeMutlipleYearlyValues.add(s, latestSample);
+				elements++; s++;
+				isInserting = false;
+			}
+			// if year-month of the latest sample is found then remove it
+			if (yearMonth.equals(latestYrMonth)) {
+				normalizeMutlipleYearlyValues.remove(s);
+				elements--; s--;
+				isRemoving = false;
+			}
+		}
+		if (isInserting) {
+			normalizeMutlipleYearlyValues.add(latestSample);
+		}
+	}	
 	protected void overallStats(List<WLSample> samplesByDate, List<WLSample> sortedByValue) {
-		overallStatistics.overallStats(samplesByDate, sortedByValue);
 		if (samplesByDate == null || samplesByDate.size() == 0) {
 			builder.recordYears("0");
 			builder.sampleCount(0);
 			builder.collect();
 			return;
 		}
-		WLSample latest = samplesByDate.get(samplesByDate.size()-1);
-		// TODO this might not work for any type???
-		BigDecimal pctl = percentileOfValue(sortedByValue, latest, Value::valueOf);
+		overallLastestPercentile(samplesByDate);
+		overallStatistics.overallStats(samplesByDate, sortedByValue);
 		
-		String latestPercentile = pctl.toString();
-		builder.latestPercentile(latestPercentile);
 	}
 	
 
@@ -216,7 +267,7 @@ public class WaterLevelStatistics extends StatisticsCalculator<WLSample> {
 		if (mediation == MediationType.AboveDatum) {
 			mostPrevalent = new ArrayList<>(samples.size());
 			for (WLSample sample : samples) {
-				mostPrevalent.add(new WLSample(sample.time, sample.valueAboveDatum, sample.units, sample.originalValue, sample.comment, sample.up, sample.pcode, sample.valueAboveDatum));
+				mostPrevalent.add(new WLSample(sample.getTime(), sample.valueAboveDatum, sample.units, sample.originalValue, sample.comment, sample.up, sample.pcode, sample.valueAboveDatum));
 			}
 		}
 		
