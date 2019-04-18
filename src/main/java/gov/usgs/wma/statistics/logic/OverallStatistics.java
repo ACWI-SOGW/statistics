@@ -15,17 +15,17 @@ public class OverallStatistics <S extends Value> extends StatisticsCalculator<S>
 	// TODO work this into the calculate model
 	/**
 	 * This calculates the overall series statistics: min, max, count, first, last, years, and percentile of the most recent
-	 * @param samples time series data in temporal order
+	 * @param samplesByDate time series data in temporal order
 	 * @param sortedByValue  time series data in value order
 	 * @return computed statistics map
 	 */
-	public JsonDataBuilder overallStats(List<S> samples, List<S> sortedByValue) {
-		if (samples == null || samples.size() == 0) {
+	public JsonDataBuilder overallStats(List<S> samplesByDate, List<S> sortedByValue) {
+		if (samplesByDate == null || samplesByDate.size() == 0) {
 			return new JsonDataBuilder(env);
 		}
 		
 		// after this samples is sorted by date for certain
-		findMinMaxDatesAndDateRange(samples,sortedByValue); 
+		findMinMaxDatesAndDateRange(samplesByDate,sortedByValue); 
 		
 		S minValue = sortedByValue.get(0);
 		S maxValue = sortedByValue.get(sortedByValue.size()-1);
@@ -34,7 +34,7 @@ public class OverallStatistics <S extends Value> extends StatisticsCalculator<S>
 		builder.minValue(minValue.value.toString());
 		builder.maxValue(maxValue.value.toString());
 		// number of samples
-		builder.sampleCount(samples.size());
+		builder.sampleCount(samplesByDate.size());
 		// percentile statistics
 		S medianValue = makeMedian(sortedByValue);
 		builder.median(medianValue.value.toString());
