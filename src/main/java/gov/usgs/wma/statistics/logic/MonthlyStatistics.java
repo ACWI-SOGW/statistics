@@ -53,13 +53,13 @@ public class MonthlyStatistics<S extends Value> extends StatisticsCalculator<S> 
 	
 	
 	public List<S> filterValuesByGivenMonth(List<S> samples, final String month) {
-		final String paddedMonth =  month==null ?null :((month.length()==1) ?"0" :"")+month;
+		final String paddedMonth =  Value.padMonth(month);
 		List<S> monthSamples = samples.stream().filter(
 			value -> {
 				if (value == null || month == null) {
 					return false;
 				}
-				return Value.monthUTC(value.time).equals(paddedMonth);
+				return Value.padMonth(Value.monthUTC(value.time)).equals(paddedMonth);
 			}).collect(Collectors.toList());
 		return monthSamples;
 	}

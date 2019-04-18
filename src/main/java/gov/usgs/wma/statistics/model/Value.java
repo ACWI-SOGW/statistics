@@ -152,7 +152,12 @@ public class Value {
 		}
 		return false;
 	}
+	
 
+	public static String padMonth(String month) {
+		String paddedMonth = month==null ?"" :((month.length()==1) ?"0" :"")+month;
+		return paddedMonth;
+	}
 	public static String monthUTC(String utc) {
 		return utc.substring(5,7);
 	}
