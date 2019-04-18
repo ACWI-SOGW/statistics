@@ -4,10 +4,12 @@ import static gov.usgs.wma.statistics.app.Properties.*;
 import static gov.usgs.wma.statistics.model.JsonDataBuilder.*;
 import static org.apache.commons.lang.StringUtils.*;
 
+import java.io.Reader;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
-import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,6 +25,7 @@ import gov.usgs.wma.statistics.logic.OverallStatistics;
 import gov.usgs.wma.statistics.logic.StatisticsCalculator;
 import gov.usgs.wma.statistics.model.JsonData;
 import gov.usgs.wma.statistics.model.JsonDataBuilder;
+import gov.usgs.wma.statistics.model.Value;
 
 public class WaterLevelStatistics extends StatisticsCalculator<WLSample> {
 	private static final Logger LOGGER = LoggerFactory.getLogger(WaterLevelStatistics.class);
@@ -32,57 +35,16 @@ public class WaterLevelStatistics extends StatisticsCalculator<WLSample> {
 	 */
 	protected static final BigDecimal Days406 = new BigDecimal("406");
 
-		
-	protected static class WLMonthlyStats extends MonthlyStatistics<WLSample> {
-		public WLMonthlyStats(Properties env, JsonDataBuilder builder) {
-			super(env, builder);
-		}
-		@Override
-		public void sortValueByQualifier(List<WLSample> samples) {
-			if (builder.mediation() == MediationType.BelowLand || builder.mediation() == MediationType.DESCENDING) {
-				sortByValueOrderDescending(samples);
-			} else {
-				sortByValueOrderAscending(samples);
-			}
-		}
-		@Override
-		public Function<List<WLSample>, List<WLSample>> sortFunctionByQualifier() {
-			Function<List<WLSample>, List<WLSample>> sortBy = StatisticsCalculator::sortByValueOrderAscending;
-			
-			if (builder.mediation() == MediationType.BelowLand || builder.mediation() == MediationType.DESCENDING) {
-				sortBy = StatisticsCalculator::sortByValueOrderDescending;
-			}
-			return sortBy;
-		}
-		@Override
-		public boolean doesThisMonthQualifyForStats(List<WLSample> monthSamples) {
-			int monthYears = uniqueYears(monthSamples);
-			boolean qualified = super.doesThisMonthQualifyForStats(monthSamples)
-					&& monthYears >= 10;
 
-			if ( ! qualified && monthYears>0 ) {
-				WLSample firstSample = monthSamples.get(0);
-				int missingCount = 10 - monthYears;
-				String plural = missingCount>1 ? "s" :"";
-				String monthName = sampleMonthName(firstSample);
-				String msg = env.getMessage(ENV_MESSAGE_MONTHLY_DETAIL, monthName, missingCount, plural);
-				builder.message(msg);
-			}
-			return qualified;
-		}
-		
-	};
-	
-	
 	// Package level access for unit testing
 	MonthlyStatistics<WLSample> monthlyStats;
-	OverallStatistics<WLSample> overallStatistics; 
+	OverallStatistics<WLSample> overallStatistics;
 	
 	
 	public WaterLevelStatistics(Properties env, JsonDataBuilder builder) {
 		super(env, builder);
 		
-		monthlyStats = new WLMonthlyStats(env, builder);
+		monthlyStats = new WaterLevelMonthlyStats(env, builder);
 		
 		overallStatistics = new OverallStatistics<WLSample>(env, builder) {
 			@Override
@@ -134,15 +96,24 @@ public class WaterLevelStatistics extends StatisticsCalculator<WLSample> {
 	}
 	
 	// TODO business rule for any one value error? continue without value or error entire statistics calculation?
+	@Override
+	public JsonData calculate(Specifier spec, Reader xmlData) throws Exception {
+		List<WLSample> samples = WLSample.extractSamples(xmlData, spec.getAgencyCd(), spec.getSiteNo(), spec.getElevation());
+		return calculate(spec, samples);
+	}
 
 	@Override
 	public JsonData calculate(Specifier spec, List<WLSample> samples) {
 		LOGGER.trace("Executing WaterLevel Stats calculations.");
 		
 		List<WLSample> samplesByDate = conditioning(spec, samples);
+
 		if (builder.hasErrors()) {
 			return builder.build();
 		}
+		MediationType mediation = findMostPrevalentMediation(spec, samplesByDate);
+		builder.mediation(mediation);
+		
 		List<WLSample> sortedByValue  = new ArrayList<>(samplesByDate);
 		monthlyStats.sortValueByQualifier(sortedByValue);
 		
@@ -173,19 +144,67 @@ public class WaterLevelStatistics extends StatisticsCalculator<WLSample> {
 		
 		return builder.build();
 	}
-	
 
-	protected void overallStats(List<WLSample> samples, List<WLSample> sortedByValue) {
-		overallStatistics.overallStats(samples, sortedByValue);
-		if (samples == null || samples.size() == 0) {
+
+	protected void overallLatestPercentile(List<WLSample> samplesByDate) {
+		// get the latest (most recent) sample
+		int last = samplesByDate.size()-1;
+		WLSample latestSample = samplesByDate.get(last);
+		// get the sample for the same month as the latest sample
+		String month = Value.padMonth(Value.monthUTC(latestSample.time));
+		List<WLSample> monthSamples = monthlyStats.filterValuesByGivenMonth(samplesByDate, month);
+		// get the medians for each year-month
+		List<WLSample> normalizeMutlipleYearlyValues = 
+				monthlyStats.medianMonthlyValues(monthSamples,  monthlyStats.sortFunctionByQualifier());
+		// the most recent must now be added into the collection and replace of the year-month it represents
+		replaceLatestSample(normalizeMutlipleYearlyValues, latestSample);
+		// get the percentile of the latest sample
+		BigDecimal latestPercentile = percentileOfValue(normalizeMutlipleYearlyValues, latestSample, Value::valueOf);
+		builder.latestPercentile(latestPercentile.toString());
+	}
+
+	protected void replaceLatestSample(List<WLSample> normalizeMutlipleYearlyValues, WLSample latestSample) {
+		if (normalizeMutlipleYearlyValues.contains(latestSample)) {
+			return; // if it happens to be in there leave it be
+		}
+		// initial conditions and values
+		int        compareToVal  = MediationType.BelowLand.equalSortOrder(builder.mediation()) ?1 :-1;
+		int        elements      = normalizeMutlipleYearlyValues.size();
+		String     latestYrMonth = latestSample.getTime().substring(0, 7);
+		BigDecimal latestValue   = latestSample.getValue();
+		boolean    isInserting   = true;
+		boolean    isRemoving    = true;
+		// search for the removing current month and the inserting location for latest sample
+		for (int s=0; s<elements && (isRemoving || isInserting); s++) {
+			String yearMonth = ((Value)normalizeMutlipleYearlyValues.get(s)).getTime().substring(0, 7);
+			BigDecimal value = ((Value)normalizeMutlipleYearlyValues.get(s)).getValue();
+			// the data is already sorted, if we exceed the value in the comapreTo direction then insert
+			if (isInserting && latestValue.compareTo(value) == compareToVal) {
+				normalizeMutlipleYearlyValues.add(s, latestSample);
+				elements++; s++;
+				isInserting = false;
+			}
+			// if year-month of the latest sample is found then remove it
+			if (yearMonth.equals(latestYrMonth)) {
+				normalizeMutlipleYearlyValues.remove(s);
+				elements--; s--;
+				isRemoving = false;
+			}
+		}
+		if (isInserting) {
+			normalizeMutlipleYearlyValues.add(latestSample);
+		}
+	}	
+	protected void overallStats(List<WLSample> samplesByDate, List<WLSample> sortedByValue) {
+		if (samplesByDate == null || samplesByDate.size() == 0) {
 			builder.recordYears("0");
 			builder.sampleCount(0);
 			builder.collect();
 			return;
 		}
+		overallLatestPercentile(samplesByDate);
+		overallStatistics.overallStats(samplesByDate, sortedByValue);
 		
-		String latestPercentile = monthlyStats.percentileBasedOnMonthlyData(samples.get(samples.size()-1), samples);
-		builder.latestPercentile(latestPercentile);
 	}
 	
 
@@ -248,7 +267,7 @@ public class WaterLevelStatistics extends StatisticsCalculator<WLSample> {
 		if (mediation == MediationType.AboveDatum) {
 			mostPrevalent = new ArrayList<>(samples.size());
 			for (WLSample sample : samples) {
-				mostPrevalent.add(new WLSample(sample.time, sample.valueAboveDatum, sample.units, sample.originalValue, sample.comment, sample.up, sample.pcode, sample.valueAboveDatum));
+				mostPrevalent.add(new WLSample(sample.getTime(), sample.valueAboveDatum, sample.units, sample.originalValue, sample.comment, sample.up, sample.pcode, sample.valueAboveDatum));
 			}
 		}
 		
@@ -257,10 +276,10 @@ public class WaterLevelStatistics extends StatisticsCalculator<WLSample> {
 	
 
 	/**
-	 * This convenience method is suppost to be self documenting by its name. But just to be clear it
+	 * This convenience method is supposed to be self documenting by its name. But just to be clear it
 	 * ensures at least ten years of data are required and the most recent value must be within the past year
 	 * 
-	 * Not that this method could have computed all thes values by a given data set of overall data. However,
+	 * Not that this method could have computed all the values by a given data set of overall data. However,
 	 * it is easier to test the conditions if the values are given. For example, if today was determined inside
 	 * then the test could not use a given date for today.
 	 * 

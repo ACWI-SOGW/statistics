@@ -53,13 +53,13 @@ public class MonthlyStatistics<S extends Value> extends StatisticsCalculator<S> 
 	
 	
 	public List<S> filterValuesByGivenMonth(List<S> samples, final String month) {
+		final String paddedMonth =  Value.padMonth(month);
 		List<S> monthSamples = samples.stream().filter(
 			value -> {
 				if (value == null || month == null) {
 					return false;
 				}
-				String paddedMonth =  ((month.length()==1) ?"0" :"")+month;
-				return Value.monthUTC(value.time).equals(paddedMonth);
+				return Value.padMonth(Value.monthUTC(value.time)).equals(paddedMonth);
 			}).collect(Collectors.toList());
 		return monthSamples;
 	}
@@ -92,7 +92,7 @@ public class MonthlyStatistics<S extends Value> extends StatisticsCalculator<S> 
 				
 				builder.minP50(monthYearlyMedians.get(0).value.toString());
 				builder.maxP50(monthYearlyMedians.get( monthYearlyMedians.size()-1 ).value.toString());
-				builder.sampleCount(monthSamples.size());
+				builder.sampleCount(normalizeMutlipleYearlyValues.size());
 
 				builder.recordYears(""+sortSamplesByYear.keySet().size());
 				builder.collect();

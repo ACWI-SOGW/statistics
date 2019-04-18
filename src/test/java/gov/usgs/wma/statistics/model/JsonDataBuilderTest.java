@@ -111,7 +111,7 @@ public class JsonDataBuilderTest {
 	
 	@Test
 	public void test_mediation() {
-		assertEquals(MediationType.ASCENDING, data.mediation);
+		assertEquals(MediationType.DEFAULT, data.mediation);
 		assertEquals(null, data.values.get(MEDIATION));
 		
 		data.mediation(MediationType.AboveDatum);

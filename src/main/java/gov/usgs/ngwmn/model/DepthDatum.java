@@ -25,9 +25,9 @@ public enum DepthDatum {
 	private final String name;
 	private final String[] alias;
 	private final String description;
-	private final boolean localLandSurface; //True if this is a local reference to land surface, which is non-convertible to anything else
-	private final boolean unrecognized; //If we do not recognize the datum name.  Not the same as null.
-	private final boolean unspecified; //If the name is empty or null.
+	private final boolean localLandSurface; // True if this is a local reference to land surface, which is non-convertible to anything else
+	private final boolean unrecognized;     // If we do not recognize the datum name.  Not the same as null.
+	private final boolean unspecified;      // If the name is empty or null.
 	
 	/**
 	 * This is a constructor for the DepthDatum enumeration.

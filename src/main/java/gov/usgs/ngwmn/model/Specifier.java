@@ -18,6 +18,7 @@ package gov.usgs.ngwmn.model;
 public class Specifier {
 	private final String agencyCd;
 	private final String siteNo;
+	private Elevation elevation;
 
 	public Specifier(String agencyCd) {
 		this.agencyCd = agencyCd;
@@ -50,8 +51,21 @@ public class Specifier {
 		if (siteNo != null) {
 			builder.append("-").append(siteNo);
 		}
+		if (elevation != null) {
+			builder.append("-").append(elevation.toString());
+		}
 		return builder.toString();
 	}
 
+	public Elevation getElevation() {
+		return elevation;
+	}
+	public Specifier setElevation(Elevation elevation) {
+		this.elevation = elevation;
+		return this;
+	}
+	public boolean hasElevation() {
+		return elevation != null && elevation.value != null;
+	}
 }
 

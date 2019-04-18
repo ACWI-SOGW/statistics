@@ -10,9 +10,7 @@ import java.util.List;
 
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -36,8 +34,6 @@ import io.swagger.annotations.ApiParam;
 //@Api("StatisticsService")
 public class StatsService {
 	private static Logger LOGGER = org.slf4j.LoggerFactory.getLogger(StatsService.class);
-
-	private static final ResponseEntity<String> _404_ = new ResponseEntity<String>(HttpStatus.NOT_FOUND);
 
 	private static final String INCLUDE_MEDIANS = "true";
 	
@@ -100,8 +96,8 @@ public class StatsService {
 		try {
 			LOGGER.trace("entered");
 			
-			List<WLSample> samples = validateAndParseCsvData(data, builder);
 			validateParamMediation(mediation, builder);
+			List<WLSample> samples = validateAndParseCsvData(data, builder);
 			validateParamMedians(medians, builder);
 			validateParamPercentiles(percentiles, builder);
 
@@ -160,6 +156,8 @@ public class StatsService {
 	}
 	public List<WLSample> validateAndParseCsvData(String[] data, JsonDataBuilder builder) {
 		
+		boolean mediation = MediationType.AboveDatum.equalSortOrder( builder.mediation() );
+		
 		List<WLSample> samples = new ArrayList<>(data.length);
 		
 		String msg = "";
@@ -187,7 +185,7 @@ public class StatsService {
 				String val  = cols[1].trim();
 				
 				BigDecimal value = new BigDecimal(val);
-				WLSample sample = new WLSample(time, value, "ft", value, "", true, "", value);
+				WLSample sample = new WLSample(time, value, "ft", value, "", mediation, "", value);
 				
 				if (cols.length == 3) {
 					// Trim to remove whitespace and substring to convert full words like Provisional

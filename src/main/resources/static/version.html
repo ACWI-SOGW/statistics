@@ -3,6 +3,11 @@
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
         <title>@project.name@ Version Information</title>
+        <style>
+            div.inline {
+                display:inline;
+            }
+        </style>
 <!-- 
 	String scmUrl = "@project.scm.url@";
 	String scmCommitsUrl = scmUrl.replace("/browse", "/commits");
@@ -11,7 +16,7 @@
     <body>
         <h1>@project.name@ Version Information</h1>
 		<h3>Version: <span id="project.version">@project.version@</span> built @timestamp@</h3>
-<span id="SNAPSHOT">
+<div class="inline" id="SNAPSHOT">
 		<h3>This deployment is a SNAPSHOT version</h3>
 		<p>
 			A SNAPSHOT version is a development version based on the most recent
@@ -26,9 +31,9 @@
 			Note that the snapshot version deployed here is likely to be
 			out of date with the source code and changes listed.
 		</p>
-		<h3><a href="@project.scm.url@">Source code</a> head (the ever-changing latest version of the code is available.</a></h3>
+		<h3><a href="@project.scm.url@">Source code</a> head (the ever-changing latest version of the code is available.</h3>
 		<h3><a href="@project.scm.url@/commits/master">Source Code</a> check-ins and changes are available.</h3>
-</span><span id="RELEASE">
+</div><div class="inline" id="RELEASE">
 		<h3>This deployment is a RELEASED version</h3>
 		<p>
 			A RELEASED version is stable version of the application.
@@ -38,7 +43,7 @@
 		<h3><a href="@project.scm.url@/tags/@project.artifactId@-@project.version@">Source code</a> for this release is available.</h3>
 		<h3><a href="@project.scm.url@/commits/@project.artifactId@-@project.version@">Code check-ins and changes</a> 
 		included in this release (as well as prior changes) are tagged.</h3>
-</span>
+</div>
     </body>
     <script>
       function remove(id) {

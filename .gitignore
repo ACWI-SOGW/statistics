@@ -12,3 +12,7 @@ Untitled*
 *.retry
 *.orig
 app.pid
+Jenkinsfile.java
+localfiles/
+*.pem
+
