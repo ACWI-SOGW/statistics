@@ -16,6 +16,8 @@ import java.util.stream.Stream;
 
 import org.slf4j.Logger;
 
+import com.google.common.collect.ImmutableList;
+
 import gov.usgs.ngwmn.model.MediationType;
 import gov.usgs.wma.statistics.app.Properties;
 
@@ -60,12 +62,13 @@ public class JsonDataBuilder {
 	 */
 	Map<String, String> values = new HashMap<>();
 	
-	MediationType mediation = MediationType.ASCENDING;
+	MediationType mediation = MediationType.DEFAULT;
 
 	StringBuilder intermediateValues = new StringBuilder();
 	boolean includeIntermediateValues = false;
 	
 	JsonData jsonData;
+
 	
 	public JsonDataBuilder(Properties env) {
 		this.env = env;
@@ -89,7 +92,13 @@ public class JsonDataBuilder {
 	}
 	
 	public JsonDataBuilder mediation(MediationType mediation) {
-		this.mediation = mediation;
+		// This logic allows for a setting override of a mediation
+		// since the most prevalent mediation might undesirable.
+		// The statistics will use the default sort if none is given,
+		// usually the default will be ascending for non-well samples.
+		if (MediationType.DEFAULT.equals(this.mediation)) {
+			this.mediation = mediation;
+		}
 		return this;
 	}
 	public MediationType mediation() {
@@ -295,6 +304,7 @@ public class JsonDataBuilder {
 		
 		return this;
 	}
+	
 	
 	public JsonDataBuilder buildIntermediateValues() {
 		jsonData.medians = "";
