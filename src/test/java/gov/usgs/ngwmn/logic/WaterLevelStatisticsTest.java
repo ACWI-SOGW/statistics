@@ -283,7 +283,7 @@ public class WaterLevelStatisticsTest {
 		
 		sortedByDate.add( createSample("2013-06-10T04:15:00-05:00", "10.0") );
 				
-		stats.overallLastestPercentile(sortedByDate);
+		stats.overallLatestPercentile(sortedByDate);
 		String percentile = builder.get(JsonDataBuilder.LATEST_PCTILE);
 		assertEquals("0.750", percentile);
 	}
@@ -338,7 +338,7 @@ public class WaterLevelStatisticsTest {
 		
 		sortedByDate.add( createSample("2013-06-10T04:15:00-05:00", "10.0") );
 				
-		stats.overallLastestPercentile(sortedByDate);
+		stats.overallLatestPercentile(sortedByDate);
 		String percentile = builder.get(JsonDataBuilder.LATEST_PCTILE);
 		assertEquals("0.250", percentile);
 	}

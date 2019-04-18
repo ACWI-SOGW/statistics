@@ -146,7 +146,7 @@ public class WaterLevelStatistics extends StatisticsCalculator<WLSample> {
 	}
 
 
-	protected void overallLastestPercentile(List<WLSample> samplesByDate) {
+	protected void overallLatestPercentile(List<WLSample> samplesByDate) {
 		// get the latest (most recent) sample
 		int last = samplesByDate.size()-1;
 		WLSample latestSample = samplesByDate.get(last);
@@ -202,7 +202,7 @@ public class WaterLevelStatistics extends StatisticsCalculator<WLSample> {
 			builder.collect();
 			return;
 		}
-		overallLastestPercentile(samplesByDate);
+		overallLatestPercentile(samplesByDate);
 		overallStatistics.overallStats(samplesByDate, sortedByValue);
 		
 	}
