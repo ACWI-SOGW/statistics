@@ -18,7 +18,7 @@ public class WaterLevelMonthlyStats extends MonthlyStatistics<WLSample> {
 	}
 	@Override
 	public void sortValueByQualifier(List<WLSample> samples) {
-		if (MediationType.BelowLand .equal(builder.mediation())) {
+		if (MediationType.BelowLand .equalSortOrder(builder.mediation())) {
 			sortByValueOrderDescending(samples);
 		} else {
 			sortByValueOrderAscending(samples);
@@ -28,7 +28,7 @@ public class WaterLevelMonthlyStats extends MonthlyStatistics<WLSample> {
 	public Function<List<WLSample>, List<WLSample>> sortFunctionByQualifier() {
 		Function<List<WLSample>, List<WLSample>> sortBy = StatisticsCalculator::sortByValueOrderAscending;
 		
-		if (MediationType.BelowLand .equal(builder.mediation())) {
+		if (MediationType.BelowLand .equalSortOrder(builder.mediation())) {
 			sortBy = StatisticsCalculator::sortByValueOrderDescending;
 		}
 		return sortBy;

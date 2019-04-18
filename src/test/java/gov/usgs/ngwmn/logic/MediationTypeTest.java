@@ -10,48 +10,48 @@ public class MediationTypeTest {
 
 	@Test
 	public void test_equalNull() {
-		assertFalse(MediationType.DEFAULT.equal(null));
-		assertFalse(MediationType.ASCENDING.equal(null));
-		assertFalse(MediationType.AboveDatum.equal(null));
-		assertFalse(MediationType.DESCENDING.equal(null));
-		assertFalse(MediationType.BelowLand.equal(null));
+		assertFalse(MediationType.DEFAULT.equalSortOrder(null));
+		assertFalse(MediationType.ASCENDING.equalSortOrder(null));
+		assertFalse(MediationType.AboveDatum.equalSortOrder(null));
+		assertFalse(MediationType.DESCENDING.equalSortOrder(null));
+		assertFalse(MediationType.BelowLand.equalSortOrder(null));
 	}
 	@Test
 	public void test_equalOther() {
-		assertFalse(MediationType.DEFAULT.equal(""));
-		assertFalse(MediationType.ASCENDING.equal(""));
-		assertFalse(MediationType.AboveDatum.equal(""));
-		assertFalse(MediationType.DESCENDING.equal(""));
-		assertFalse(MediationType.BelowLand.equal(""));
+		assertFalse(MediationType.DEFAULT.equalSortOrder(""));
+		assertFalse(MediationType.ASCENDING.equalSortOrder(""));
+		assertFalse(MediationType.AboveDatum.equalSortOrder(""));
+		assertFalse(MediationType.DESCENDING.equalSortOrder(""));
+		assertFalse(MediationType.BelowLand.equalSortOrder(""));
 	}
 	@Test
 	public void test_equalAscending() {
-		assertTrue(MediationType.ASCENDING.equal(MediationType.ASCENDING));
-		assertTrue(MediationType.ASCENDING.equal(MediationType.AboveDatum));
-		assertTrue(MediationType.AboveDatum.equal(MediationType.ASCENDING));
-		assertTrue(MediationType.AboveDatum.equal(MediationType.AboveDatum));
+		assertTrue(MediationType.ASCENDING.equalSortOrder(MediationType.ASCENDING));
+		assertTrue(MediationType.ASCENDING.equalSortOrder(MediationType.AboveDatum));
+		assertTrue(MediationType.AboveDatum.equalSortOrder(MediationType.ASCENDING));
+		assertTrue(MediationType.AboveDatum.equalSortOrder(MediationType.AboveDatum));
 		
-		assertFalse(MediationType.ASCENDING.equal(MediationType.DESCENDING));
-		assertFalse(MediationType.AboveDatum.equal(MediationType.BelowLand));
+		assertFalse(MediationType.ASCENDING.equalSortOrder(MediationType.DESCENDING));
+		assertFalse(MediationType.AboveDatum.equalSortOrder(MediationType.BelowLand));
 	}
 	@Test
 	public void test_equalDescending() {
-		assertTrue(MediationType.DESCENDING.equal(MediationType.DESCENDING));
-		assertTrue(MediationType.DESCENDING.equal(MediationType.BelowLand));
-		assertTrue(MediationType.BelowLand.equal(MediationType.DESCENDING));
-		assertTrue(MediationType.BelowLand.equal(MediationType.BelowLand));
+		assertTrue(MediationType.DESCENDING.equalSortOrder(MediationType.DESCENDING));
+		assertTrue(MediationType.DESCENDING.equalSortOrder(MediationType.BelowLand));
+		assertTrue(MediationType.BelowLand.equalSortOrder(MediationType.DESCENDING));
+		assertTrue(MediationType.BelowLand.equalSortOrder(MediationType.BelowLand));
 		
-		assertFalse(MediationType.BelowLand.equal(MediationType.ASCENDING));
-		assertFalse(MediationType.DESCENDING.equal(MediationType.AboveDatum));
+		assertFalse(MediationType.BelowLand.equalSortOrder(MediationType.ASCENDING));
+		assertFalse(MediationType.DESCENDING.equalSortOrder(MediationType.AboveDatum));
 	}
 	@Test
 	public void test_equalDefault() {
 		// ASCENDING seems more natural sort for non-well data and is default for this reason
-		assertFalse(MediationType.BelowLand.equal(MediationType.DEFAULT));
-		assertFalse(MediationType.DESCENDING.equal(MediationType.DEFAULT));
+		assertFalse(MediationType.BelowLand.equalSortOrder(MediationType.DEFAULT));
+		assertFalse(MediationType.DESCENDING.equalSortOrder(MediationType.DEFAULT));
 		
-		assertTrue(MediationType.AboveDatum.equal(MediationType.DEFAULT));
-		assertTrue(MediationType.ASCENDING.equal(MediationType.DEFAULT));
+		assertTrue(MediationType.AboveDatum.equalSortOrder(MediationType.DEFAULT));
+		assertTrue(MediationType.ASCENDING.equalSortOrder(MediationType.DEFAULT));
 	}
 
 }

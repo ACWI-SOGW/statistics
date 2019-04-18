@@ -32,7 +32,7 @@ public enum MediationType {
 	 * @param obj instance to compare
 	 * @return true if equal
 	 */
-	public boolean equal(Object obj) {
+	public boolean equalSortOrder(Object obj) {
 		if (obj == null || !(obj instanceof MediationType)) {
 			return false;
 		}

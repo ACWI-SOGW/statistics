@@ -168,7 +168,7 @@ public class WaterLevelStatistics extends StatisticsCalculator<WLSample> {
 			return; // if it happens to be in there leave it be
 		}
 		// initial conditions and values
-		int        compareToDir  = MediationType.BelowLand.equal(builder.mediation()) ?1 :-1;
+		int        compareToVal  = MediationType.BelowLand.equalSortOrder(builder.mediation()) ?1 :-1;
 		int        elements      = normalizeMutlipleYearlyValues.size();
 		String     latestYrMonth = latestSample.getTime().substring(0, 7);
 		BigDecimal latestValue   = latestSample.getValue();
@@ -179,7 +179,7 @@ public class WaterLevelStatistics extends StatisticsCalculator<WLSample> {
 			String yearMonth = ((Value)normalizeMutlipleYearlyValues.get(s)).getTime().substring(0, 7);
 			BigDecimal value = ((Value)normalizeMutlipleYearlyValues.get(s)).getValue();
 			// the data is already sorted, if we exceed the value in the comapreTo direction then insert
-			if (isInserting && latestValue.compareTo(value) == compareToDir) {
+			if (isInserting && latestValue.compareTo(value) == compareToVal) {
 				normalizeMutlipleYearlyValues.add(s, latestSample);
 				elements++; s++;
 				isInserting = false;
