@@ -156,8 +156,7 @@ public class StatsService {
 	}
 	public List<WLSample> validateAndParseCsvData(String[] data, JsonDataBuilder builder) {
 		
-		boolean mediation = MediationType.AboveDatum.equals( builder.mediation() )
-				|| MediationType.ASCENDING.equals( builder.mediation() );
+		boolean mediation = MediationType.AboveDatum.equal( builder.mediation() );
 		
 		List<WLSample> samples = new ArrayList<>(data.length);
 		
