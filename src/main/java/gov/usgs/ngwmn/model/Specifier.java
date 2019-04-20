@@ -20,6 +20,8 @@ public class Specifier {
 	private final String siteNo;
 	private Elevation elevation;
 
+	private boolean hasAgency = true;
+
 	public Specifier(String agencyCd) {
 		this.agencyCd = agencyCd;
 		this.siteNo = null;
@@ -33,7 +35,8 @@ public class Specifier {
 	 * Use the label the statistics in proxy.
 	 */
 	public Specifier() {
-		this("DataSetID", "" + (Math.random()*1e15));
+		this("DataSetID", "" + (long)(Math.random()*1e15));
+		this.hasAgency = false;
 	}
 	
 	
@@ -42,6 +45,9 @@ public class Specifier {
 	}
 	public String getSiteNo() {
 		return siteNo;
+	}
+	public boolean hasAgency() {
+		return hasAgency;
 	}
 	
 	@Override

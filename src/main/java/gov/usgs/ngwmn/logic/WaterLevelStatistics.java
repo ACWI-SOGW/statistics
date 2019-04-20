@@ -111,9 +111,10 @@ public class WaterLevelStatistics extends StatisticsCalculator<WLSample> {
 		if (builder.hasErrors()) {
 			return builder.build();
 		}
-		MediationType mediation = findMostPrevalentMediation(spec, samplesByDate);
-		builder.mediation(mediation);
-		
+		if (spec.hasAgency()) {
+			MediationType mediation = findMostPrevalentMediation(spec, samplesByDate);
+			builder.mediation(mediation);
+		}
 		List<WLSample> sortedByValue  = new ArrayList<>(samplesByDate);
 		monthlyStats.sortValueByQualifier(sortedByValue);
 		
