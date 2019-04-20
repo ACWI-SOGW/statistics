@@ -256,7 +256,7 @@ public class WaterlevelMediator {
 		unitValidation(measure, siteElevationStr, siteDatumStr);
 		
 		// There is different validation if we are dealing with a measurement that
-		// is from the land surface vs a measurement that is wrt an external datum.
+		// is from the land surface vs a measurement that is based on external datum.
 		BigDecimal directionalValue = negateIfConditionTrue(measure,measure.pcode.isUnspecified() || ! measure.pcode.isUp());
 		
 		if (measure.pcode.isUnspecified()) {
@@ -266,7 +266,7 @@ public class WaterlevelMediator {
 			
 		} else if (measure.pcode.getDatum().isLocalLandSurface()) {
 			
-			// Need to convert from measurement wrt to local land surface to the
+			// Need to convert from measurement to local land surface to the
 			// site datum.  Site datum measurements are assumed to be up from the datum.
 			elevationValidation(measure, siteElevationStr, siteDatumStr);
 			datumUnitValidation(measure);
