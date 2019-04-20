@@ -42,6 +42,9 @@ public class WLSample extends Value {
 	public WLSample(String time, BigDecimal value, String units, BigDecimal originalValue, 
 			String comment, Boolean up, String pcode, BigDecimal valueAboveDatum) {
 		super(time, value);
+		if (this.value == null) {
+			this.value = originalValue;
+		}
 		this.originalValue = originalValue;
 		this.units = units;
 		this.comment = comment;
@@ -107,7 +110,7 @@ public class WLSample extends Value {
 
 		// fetch out the time series list and prepare to parse to ORM POJO
 		NodeList elements    = document.getElementsByTagName("wml2:TimeValuePair");
-			samples              = new ArrayList<>(elements.getLength());
+		samples              = new ArrayList<>(elements.getLength());
 		LOGGER.trace( "xml rows  " + elements.getLength() );
 		
 		// transform each all rows
