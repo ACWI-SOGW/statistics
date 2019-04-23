@@ -17,7 +17,6 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +24,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 //import org.mockito.invocation.InvocationOnMock;
 //import org.mockito.stubbing.Answer;
 import org.springframework.core.env.Environment;
-import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
@@ -40,10 +38,9 @@ import gov.usgs.wma.statistics.model.JsonDataBuilder;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @TestPropertySource(locations = { "/application.properties" })
-//@ContextConfiguration //(locations = { "/applicationContext_mock.xml" })
 public class WaterLevelXmlTest {
 
-	private static final Double ZERO = new Double(0);
+	private static final BigDecimal ZERO = new BigDecimal("0.00");
 	
 	@Autowired
 	Environment spring;
@@ -66,7 +63,7 @@ public class WaterLevelXmlTest {
 	}
 
 	// datum is the code used to identify mediation base, mostly for above datum
-	private void setup(String agencyCd, String siteNo, Double altVal, String datum) {
+	private void setup(String agencyCd, String siteNo, BigDecimal altVal, String datum) {
 		// altVal is the database column name for altitude value.
 		elevation = new Elevation(altVal, datum);
 		spec = new Specifier(agencyCd, siteNo).setElevation(elevation);
@@ -223,14 +220,16 @@ public class WaterLevelXmlTest {
 	
 	@Test
 	public void test_USGS_405010073414901_AboveDatum() throws Exception {
+		// this test ensures that loading a site mediated above a datum evaluates its overall statistics correctly
 		// SETUP
-		setup("USGS","405010073414901", ZERO,"NAD83");
+		setup("USGS","405010073414901", new BigDecimal("13.6"),"NAD83");
 		
 		// EXPECT
 		expected.put("latestValue", "5.48");
-		expected.put("latestPercentile", "0.333");
+		expected.put("latestPercentile", "0.357");
 		expected.put("valueMin", "-16.15");
-		expected.put("valueMax", "19.93");
+		expected.put("valueMax",  "10.09");
+//		expected.put("valueMax",  "19.93");
 		
 		// TEST
 		JsonData json = stats.calculate(spec, xmlReader);
@@ -241,36 +240,51 @@ public class WaterLevelXmlTest {
 	
 	@Test
 	public void test_USGS_405010073414901_AboveDatum_forcedBelowLand() throws Exception {
+		// this is testing that a site mediated above a datum can be re-mediated below land using the elevation
 		// SETUP
 		MathContext precisionRound2 = new MathContext(2, RoundingMode.HALF_UP);
 		MathContext precisionRound3 = new MathContext(3, RoundingMode.HALF_UP);
+		BigDecimal altVal = new BigDecimal("13.6");        // specify the site and its actual elevation
+		setup("USGS","405010073414901", altVal,"NGVD29");
 		
-		BigDecimal altVal = new BigDecimal("13.6");        // specify the site and elevation
-		setup("USGS","405010073414901", altVal.doubleValue(),"NGVD29");
-		// extract the samples from the xml files as the ngwmn-cache project does
+		// extract the samples from the XML files as the ngwmn-cache project does
 		List<WLSample> samples = WLSample.extractSamples(xmlReader, spec.getAgencyCd(), spec.getSiteNo(), spec.getElevation());
 		System.err.println(samples.get(samples.size()-1)); // examine the most recent sample
-		String data = samples.stream()                     // the service receives its data from the web as text
-				.map(sample -> sample.toCSV())
-				.collect(Collectors.joining("\n"));
+
+		samples.stream()
+			.sorted((a,b) -> b.value.compareTo(a.value))
+//			.sorted((a,b) -> a.valueAboveDatum.compareTo(b.valueAboveDatum))
+			.filter(sample -> !sample.originalValue.equals(sample.valueAboveDatum))
+//			.filter(sample -> sample.isProvisional()) // there are no provision values in this data set
+			.map(sample ->  String.format("value:%6s above:%6s below:%6s time:%s", sample.originalValue,sample.valueAboveDatum,sample.value,sample.time) )
+			.forEach(System.err::println);
 		
-		// testing the mediation override of below land and other necessary service parameter
-		String mediation = MediationType.BelowLand.toString();
+		StatsService service  = new StatsService().setProperties(env);
+		String mediation      = MediationType.BelowLand.toString(); // override from AboveDatum 
+		String percentiles    = StatsService_PERCENTILES_DEFAULT;
 		String includeMedians = StatsService_MEDIANS_DEFAULT;
-		String percentiles = StatsService_PERCENTILES_DEFAULT;
-		
-		// TEST service
-		StatsService service = new StatsService().setProperties(env);
+		String data           = samples.stream()           // the service receives its data from the web as text
+								.map(sample -> sample.toCSV())
+								.collect(Collectors.joining("\n"));
+		// TEST
 		JsonData json = service.calculate(builder, data, mediation, includeMedians, percentiles);
 		
 		// EXPECT
 		expected.put("latestPercentile", "0.36");
 		expected.put("latestValue", new BigDecimal("-5.48").add(altVal).round(precisionRound2).toPlainString());
 		expected.put("valueMin",    new BigDecimal("16.15").add(altVal).round(precisionRound3).toPlainString());
-		expected.put("valueMax",    new BigDecimal("-10.1").add(altVal).round(precisionRound2).toPlainString()); // ??????? 19.93
+		expected.put("valueMax",    new BigDecimal("-10.09").add(altVal).round(precisionRound2).toPlainString());
+		// 19.93 is the largest absolute magnitude sample value. However, it is measured BelowLand not AboveDatum
+		// like the majority of samples. Therefore, it must be subtracted from the surface elevation to get the 
+		// water level elevation: 13.6 - 19.93 = -6.33 and this is not the lowest measurement.
+		// 
 		
 		// ASSERT
 		commonAssertions(json);
+		
+		// TODO need to validate the 36%
+		// TODO need to validate 10.09 vs 19.93 as max value
+		// TODO possibly convert overall to be base on all monthly median data
 	}
 
 }
