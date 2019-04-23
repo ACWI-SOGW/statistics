@@ -222,14 +222,14 @@ public class WaterLevelXmlTest {
 	public void test_USGS_405010073414901_AboveDatum() throws Exception {
 		// this test ensures that loading a site mediated above a datum evaluates its overall statistics correctly
 		// SETUP
-		setup("USGS","405010073414901", new BigDecimal("13.6"),"NAD83");
+		setup("USGS","405010073414901", new BigDecimal("13.6"),"NGVD29");
 		
 		// EXPECT
 		expected.put("latestValue", "5.48");
 		expected.put("latestPercentile", "0.357");
 		expected.put("valueMin", "-16.15");
 		expected.put("valueMax",  "10.09");
-//		expected.put("valueMax",  "19.93");
+//		expected.put("valueMax",  "19.93"); // this is a BL measurement with a AD site
 		
 		// TEST
 		JsonData json = stats.calculate(spec, xmlReader);
