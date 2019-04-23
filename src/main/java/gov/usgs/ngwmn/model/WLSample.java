@@ -38,19 +38,18 @@ public class WLSample extends Value {
 	public final String pcode;
 	
 	public final BigDecimal valueAboveDatum;
+	public final BigDecimal valueBelowLand;
 	
 	public WLSample(String time, BigDecimal value, String units, BigDecimal originalValue, 
 			String comment, Boolean up, String pcode, BigDecimal valueAboveDatum) {
 		super(time, value);
-		if (this.value == null) {
-			this.value = originalValue;
-		}
 		this.originalValue = originalValue;
 		this.units = units;
 		this.comment = comment;
 		this.up = up;
 		this.pcode = pcode;
 		this.valueAboveDatum = valueAboveDatum;
+		this.valueBelowLand = value;
 	}
 	public WLSample(WLSample base) {
 		this(base.time, base.value, base.units, base.originalValue,
@@ -89,7 +88,7 @@ public class WLSample extends Value {
 	public static List<WLSample> extractSamples(Reader source, String agencyCd, String siteNo, Elevation elevation) throws IOException, ParserConfigurationException, SAXException {
 		String mySiteId = agencyCd+":"+siteNo;
 		// well surface elevation for mediated elevation
-		String siteElevation = (elevation.value != null)?elevation.value.toString():null;
+		String siteElevation = (elevation.value != null) ?elevation.value.toString() :null;
 		
 		// place holder list
 		List<WLSample> samples = new ArrayList<>();

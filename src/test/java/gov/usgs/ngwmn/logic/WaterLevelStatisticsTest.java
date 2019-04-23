@@ -773,7 +773,7 @@ public class WaterLevelStatisticsTest {
 
 
 	@Test
-	public void test_useMostPrevalentPCodeMediatedValue_RetainOrderAsGivenByDefault_NonUSGS() throws Exception {
+	public void test_convertToMediatedValue_RetainOrderAsGivenByDefault_NonUSGS() throws Exception {
 
 		WLSample a = createSample("2015-05-10T04:15:00-05:00", "95.1772");
 		WLSample b = createSample("2015-05-11T04:15:00-05:00", "95.1567");
@@ -791,13 +791,13 @@ public class WaterLevelStatisticsTest {
 		MediationType mediation = stats.findMostPrevalentMediation(site, samples);
 		assertEquals("non-USGS sites should default to, below land surface type.", MediationType.BelowLand, mediation);
 
-		List<WLSample> actual = stats.useMostPrevalentPCodeMediatedValue(site, samples, mediation);
+		List<WLSample> actual = stats.convertToMediatedValue(site, samples, mediation);
 
 		assertEquals("Original list should be used for non-USGS agencies.",samples,actual);
 	}
 
 	@Test
-	public void test_useMostPrevalentPCodeMediatedValue_RetainOrderAsGivenByDefault_USGS() throws Exception {
+	public void test_convertToMediatedValue_RetainOrderAsGivenByDefault_USGS() throws Exception {
 
 		WLSample a = createSample("2015-05-10T04:15:00-05:00", "95.1772");
 		WLSample b = createSample("2015-05-11T04:15:00-05:00", "95.1567");
@@ -815,13 +815,13 @@ public class WaterLevelStatisticsTest {
 		MediationType mediation = stats.findMostPrevalentMediation(site, samples);
 		assertEquals("USGS sites should default to, below land surface type, with no PCODE.", MediationType.BelowLand, mediation);
 
-		List<WLSample> actual = stats.useMostPrevalentPCodeMediatedValue(site, samples, mediation);
+		List<WLSample> actual = stats.convertToMediatedValue(site, samples, mediation);
 
 		assertEquals("Original list should be used for USGS agencies w/o PCODE.",samples,actual);
 	}
 
 	@Test
-	public void test_useMostPrevalentPCodeMediatedValue_RetainOrderAsGivenByBSL() throws Exception {
+	public void test_convertToMediatedValue_RetainOrderAsGivenByBSL() throws Exception {
 
 		BigDecimal aboveDatum = new BigDecimal("99.9999");
 		WLSample a = createSample("2015-05-10T04:15:00-05:00", "95.1772", PCode.P72019, aboveDatum);
@@ -840,12 +840,12 @@ public class WaterLevelStatisticsTest {
 		MediationType mediation = stats.findMostPrevalentMediation(site, samples);
 		assertEquals("PCODE P72019, below land surface type, is most prevalent.", MediationType.BelowLand, mediation);
 
-		List<WLSample> actual = stats.useMostPrevalentPCodeMediatedValue(site, samples, mediation);
+		List<WLSample> actual = stats.convertToMediatedValue(site, samples, mediation);
 		assertEquals("Original list should be used for USGS BSL PCODES.",samples,actual);
 	}
 
 	@Test
-	public void test_useMostPrevalentPCodeMediatedValue_newOrderAsGivenByAboveDatum() throws Exception {
+	public void test_convertToMediatedValue_newOrderAsGivenByAboveDatum() throws Exception {
 
 		BigDecimal aboveDatum = new BigDecimal("99.9999");
 		WLSample a = createSample("2015-05-10T04:15:00-05:00", "95.1772", PCode.P72019, aboveDatum);
@@ -864,7 +864,7 @@ public class WaterLevelStatisticsTest {
 		MediationType mediation = stats.findMostPrevalentMediation(site, samples);
 		assertEquals("PCODE P62610, above a datum type, is most prevalent.", MediationType.AboveDatum, mediation);
 
-		List<WLSample> actual = stats.useMostPrevalentPCodeMediatedValue(site, samples, mediation);
+		List<WLSample> actual = stats.convertToMediatedValue(site, samples, mediation);
 		assertEquals("Above Datum values should be used in new list", aboveDatum, actual.get(0).value);
 	}
 
