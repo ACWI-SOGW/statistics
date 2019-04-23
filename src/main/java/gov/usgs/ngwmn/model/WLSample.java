@@ -150,13 +150,13 @@ public class WLSample extends Value {
 			}
 
 			// calculate the water levels based on well surface elevation
-			BigDecimal mediatedValue = null;
 			BigDecimal originalValue = null;
+			BigDecimal valueBelowLand = null;
 			BigDecimal valueAboveDatum = null;
 			
 			if ( ! isUnknown(value) ) {
 				try {
-					mediatedValue = WaterlevelMediator
+					valueBelowLand = WaterlevelMediator
 						.mediateToDistanceBelowGroundLevel(value, units, pcode, null, siteElevation, elevation.datum);
 				} catch (ValidationException ve) {
 					// The WLSample only allows BigDecimal for the resulting values,
@@ -172,7 +172,7 @@ public class WLSample extends Value {
 				} catch (ValidationException ve) {
 					// The WLSample only allows BigDecimal for the resulting values,
 					// so our string explanation will need to be moved to the comment.
-					comment+=  ((comment != null) ?": " :"") + ve.getMessage();
+					comment += ((comment != null) ?": " :"") + ve.getMessage();
 				}
 				
 				// Ignore: parsing issues on this will already be logged as a comment b/c
@@ -183,7 +183,7 @@ public class WLSample extends Value {
 			
 			// construct Water Level Sample POJO
 			Boolean isUp = "up".equalsIgnoreCase(direction);
-			WLSample sample = new WLSample(time, mediatedValue, units, originalValue, comment, isUp, pcode, valueAboveDatum);
+			WLSample sample = new WLSample(time, valueBelowLand, units, originalValue, comment, isUp, pcode, valueAboveDatum);
 			
 			sample.setUnknown( isUnknown(value) ); // TODO make final
 			// setting unknown values to provisional avoids statistics calculations since it purges them
