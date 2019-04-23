@@ -251,13 +251,14 @@ public class WaterLevelXmlTest {
 		List<WLSample> samples = WLSample.extractSamples(xmlReader, spec.getAgencyCd(), spec.getSiteNo(), spec.getElevation());
 		System.err.println(samples.get(samples.size()-1)); // examine the most recent sample
 
-		samples.stream()
-			.sorted((a,b) -> b.value.compareTo(a.value))
-//			.sorted((a,b) -> a.valueAboveDatum.compareTo(b.valueAboveDatum))
-			.filter(sample -> !sample.originalValue.equals(sample.valueAboveDatum))
-//			.filter(sample -> sample.isProvisional()) // there are no provision values in this data set
-			.map(sample ->  String.format("value:%6s above:%6s below:%6s time:%s", sample.originalValue,sample.valueAboveDatum,sample.value,sample.time) )
-			.forEach(System.err::println);
+		// this is not really dead code. it shows how to examine data after XML extraction
+//		samples.stream()
+//			.sorted((a,b) -> b.value.compareTo(a.value))
+////			.sorted((a,b) -> a.valueAboveDatum.compareTo(b.valueAboveDatum))
+//			.filter(sample -> !sample.originalValue.equals(sample.valueAboveDatum))
+////			.filter(sample -> sample.isProvisional()) // there are no provision values in this data set
+//			.map(sample ->  String.format("value:%6s above:%6s below:%6s time:%s", sample.originalValue,sample.valueAboveDatum,sample.value,sample.time) )
+//			.forEach(System.err::println);
 		
 		StatsService service  = new StatsService().setProperties(env);
 		String mediation      = MediationType.BelowLand.toString(); // override from AboveDatum 
@@ -282,9 +283,9 @@ public class WaterLevelXmlTest {
 		// ASSERT
 		commonAssertions(json);
 		
-		// TODO need to validate the 36%
-		// TODO need to validate 10.09 vs 19.93 as max value
-		// TODO possibly convert overall to be base on all monthly median data
+		// validate the 36% - yes, both mediation direction now product the "same" percentile
+		// validate 10.09 vs 19.93 as max value - 10.09 is correct because 19.93 is BLS
+		// TODO possibly convert overall to be base on all monthly median data -- this will be a new story
 	}
 
 }
