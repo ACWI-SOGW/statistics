@@ -144,7 +144,7 @@ public class ValdiationErrorsTest {
 
 	@Test
 	public void test_statService_INVALID_ROW_FORMAT() {
-//		ENV_INVALID_ROW_FORMAT will seldom be a case, I cannot thing of a means it invoke
+//		ENV_INVALID_ROW_FORMAT will seldom be a case, I cannot think of a means it invoke
 	}
 
 	@Test

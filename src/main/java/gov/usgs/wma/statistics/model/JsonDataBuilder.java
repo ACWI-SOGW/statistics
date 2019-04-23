@@ -16,8 +16,6 @@ import java.util.stream.Stream;
 
 import org.slf4j.Logger;
 
-import com.google.common.collect.ImmutableList;
-
 import gov.usgs.ngwmn.model.MediationType;
 import gov.usgs.wma.statistics.app.Properties;
 
