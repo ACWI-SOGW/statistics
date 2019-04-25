@@ -38,6 +38,7 @@ public class WLSample extends Value {
 	public final String pcode;
 	
 	public final BigDecimal valueAboveDatum;
+	public final BigDecimal valueBelowLand;
 	
 	public WLSample(String time, BigDecimal value, String units, BigDecimal originalValue, 
 			String comment, Boolean up, String pcode, BigDecimal valueAboveDatum) {
@@ -48,6 +49,7 @@ public class WLSample extends Value {
 		this.up = up;
 		this.pcode = pcode;
 		this.valueAboveDatum = valueAboveDatum;
+		this.valueBelowLand = value;
 	}
 	public WLSample(WLSample base) {
 		this(base.time, base.value, base.units, base.originalValue,
@@ -86,7 +88,7 @@ public class WLSample extends Value {
 	public static List<WLSample> extractSamples(Reader source, String agencyCd, String siteNo, Elevation elevation) throws IOException, ParserConfigurationException, SAXException {
 		String mySiteId = agencyCd+":"+siteNo;
 		// well surface elevation for mediated elevation
-		String siteElevation = (elevation.value != null)?elevation.value.toString():null;
+		String siteElevation = (elevation.value != null) ?elevation.value.toString() :null;
 		
 		// place holder list
 		List<WLSample> samples = new ArrayList<>();
@@ -107,7 +109,7 @@ public class WLSample extends Value {
 
 		// fetch out the time series list and prepare to parse to ORM POJO
 		NodeList elements    = document.getElementsByTagName("wml2:TimeValuePair");
-			samples              = new ArrayList<>(elements.getLength());
+		samples              = new ArrayList<>(elements.getLength());
 		LOGGER.trace( "xml rows  " + elements.getLength() );
 		
 		// transform each all rows
@@ -148,13 +150,13 @@ public class WLSample extends Value {
 			}
 
 			// calculate the water levels based on well surface elevation
-			BigDecimal mediatedValue = null;
 			BigDecimal originalValue = null;
+			BigDecimal valueBelowLand = null;
 			BigDecimal valueAboveDatum = null;
 			
 			if ( ! isUnknown(value) ) {
 				try {
-					mediatedValue = WaterlevelMediator
+					valueBelowLand = WaterlevelMediator
 						.mediateToDistanceBelowGroundLevel(value, units, pcode, null, siteElevation, elevation.datum);
 				} catch (ValidationException ve) {
 					// The WLSample only allows BigDecimal for the resulting values,
@@ -170,7 +172,7 @@ public class WLSample extends Value {
 				} catch (ValidationException ve) {
 					// The WLSample only allows BigDecimal for the resulting values,
 					// so our string explanation will need to be moved to the comment.
-					comment+=  ((comment != null) ?": " :"") + ve.getMessage();
+					comment += ((comment != null) ?": " :"") + ve.getMessage();
 				}
 				
 				// Ignore: parsing issues on this will already be logged as a comment b/c
@@ -181,7 +183,7 @@ public class WLSample extends Value {
 			
 			// construct Water Level Sample POJO
 			Boolean isUp = "up".equalsIgnoreCase(direction);
-			WLSample sample = new WLSample(time, mediatedValue, units, originalValue, comment, isUp, pcode, valueAboveDatum);
+			WLSample sample = new WLSample(time, valueBelowLand, units, originalValue, comment, isUp, pcode, valueAboveDatum);
 			
 			sample.setUnknown( isUnknown(value) ); // TODO make final
 			// setting unknown values to provisional avoids statistics calculations since it purges them

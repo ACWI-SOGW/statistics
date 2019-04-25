@@ -1,16 +1,18 @@
 package gov.usgs.ngwmn.model;
 
+import java.math.BigDecimal;
+
 import org.apache.commons.lang.StringUtils;
 
 public class Elevation {
-	public final Double value;
+	public final BigDecimal value;
 	public final String datum;
 	
 	public Elevation() {
 		this(null,null);
 	}
 	
-	public Elevation(Double value, String datum) {
+	public Elevation(BigDecimal value, String datum) {
 		this.value = value;
 		this.datum = StringUtils.trimToNull(datum);
 	}

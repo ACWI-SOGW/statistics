@@ -8,14 +8,14 @@ import org.springframework.util.StringUtils;
  */
 public enum PCode {
 
-	P72019("72019", DepthDatum.LAND_SURFACE, Unit.FEET, false, false, false, "Depth to water level, feet below land surface"),
-	P72230("72230", DepthDatum.HI_LOCAL, Unit.FEET, true, false, false, "Groundwater level above Local Hawaiian Datum, feet"),
-
 	// Above Datum
 	P62610("62610", DepthDatum.NGVD29, Unit.FEET, true, false, false, "Groundwater level above NGVD 1929, feet"),
 	P62611("62611", DepthDatum.NAVD88, Unit.FEET, true, false, false, "Physical Groundwater level above NAVD 1988, feet"),
 	P62612("62612", DepthDatum.NGVD29, Unit.METERS, true, false, false, "Groundwater level above NGVD 1929, meters"),
 	P62613("62613", DepthDatum.NAVD88, Unit.METERS, true, false, false, "Physical Groundwater level above NAVD 1988, meters"),
+	// note: NGVD29 = NAVD88 –3.6 feet. found here https://pubs.usgs.gov/sir/2010/5040/section.html
+	// note: NGVD29 = 7.0 feet = NAVD88 -0.5 feet. found here https://gisgeography.com/vertical-datum/
+	P72230("72230", DepthDatum.HI_LOCAL, Unit.FEET, true, false, false, "Groundwater level above Local Hawaiian Datum, feet"),
 	// Should we note that this is distance above the datum?
 	P72150("72150", DepthDatum.MSL, Unit.FEET,   true, false, false, "Groundwater level relative to Mean Sea Level (MSL), feet"),
 
@@ -23,6 +23,7 @@ public enum PCode {
 	P30210("30210", DepthDatum.BLS, Unit.METERS,false,false,false,"Physical Depth to water level, below land surface datum (LSD), meters Depth, from ground surface to well water level m"),
 	P61055("61055", DepthDatum.BLS, Unit.FEET,  false,false,false,"Physical Water level, depth below measuring point, feet Water level in well, depth from a reference point ft"),
 	P99019("99019", DepthDatum.BLS, Unit.METERS,false,false,false,"Physical Water level, depth below land surface, meters Depth, from ground surface to well water level m"),
+	P72019("72019", DepthDatum.LAND_SURFACE, Unit.FEET, false, false, false, "Depth to water level, feet below land surface"),
 	
 	UNRECOGNIZED("__UNRECOGNIZED__", null, null, false, true, false, "The PCode string was unrecognized"),
 	UNSPECIFIED("__NULL__", null, null, false, false, true, "The PCode is empty/null/unspecified");

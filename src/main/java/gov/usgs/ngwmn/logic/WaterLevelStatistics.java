@@ -7,9 +7,7 @@ import static org.apache.commons.lang.StringUtils.*;
 import java.io.Reader;
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -111,9 +109,11 @@ public class WaterLevelStatistics extends StatisticsCalculator<WLSample> {
 		if (builder.hasErrors()) {
 			return builder.build();
 		}
-		MediationType mediation = findMostPrevalentMediation(spec, samplesByDate);
-		builder.mediation(mediation);
-		
+		if (spec.hasAgency()) {
+			MediationType mediation = findMostPrevalentMediation(spec, samples);
+			builder.mediation(mediation);
+		}
+		convertToMediatedValue(spec, samples, builder.mediation());
 		List<WLSample> sortedByValue  = new ArrayList<>(samplesByDate);
 		monthlyStats.sortValueByQualifier(sortedByValue);
 		
@@ -253,25 +253,20 @@ public class WaterLevelStatistics extends StatisticsCalculator<WLSample> {
 	 * @param mediation the determined majority PCODE mediation direction.
 	 * @return the original list if below surface mediation and a new sample list if above datum mediation
 	 */
-	protected List<WLSample> useMostPrevalentPCodeMediatedValue(Specifier spec, List<WLSample> samples, MediationType mediation) {
-		// all non-USGS sites have one mediation
-		if (! "USGS".equals(spec.getAgencyCd())) {
-			return samples;
-		}
+	protected List<WLSample> convertToMediatedValue(Specifier spec, List<WLSample> samples, MediationType mediation) {
 		// default value will be depth below land surface as given from WaterLevelDAO.extractSamples()
 		// all samples are pre-mediated in both directions and the value is depth below land surface
 		// the will determine if value should be changed to the height above a datum (like sea floor)
 		// all values will use the same mediation of the most prevalent.
-		List<WLSample> mostPrevalent = samples;
-		
-		if (mediation == MediationType.AboveDatum) {
-			mostPrevalent = new ArrayList<>(samples.size());
-			for (WLSample sample : samples) {
-				mostPrevalent.add(new WLSample(sample.getTime(), sample.valueAboveDatum, sample.units, sample.originalValue, sample.comment, sample.up, sample.pcode, sample.valueAboveDatum));
+		for (WLSample sample : samples) {
+			if (mediation == MediationType.AboveDatum) {
+				sample.value = sample.valueAboveDatum;
+			} else if (mediation == MediationType.BelowLand) {
+				sample.value = sample.valueBelowLand;
 			}
 		}
 		
-		return mostPrevalent;
+		return samples;
 	}
 	
 

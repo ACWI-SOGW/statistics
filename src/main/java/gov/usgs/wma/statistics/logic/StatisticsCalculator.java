@@ -94,6 +94,7 @@ public class StatisticsCalculator<S extends Value> {
 		removeNulls(samples, spec.getAgencyCd()+":"+spec.getSiteNo());
 		removeProvisional(samples, spec.toString());
 		checkAllDates(samples);
+		sortByDateOrder(samples); // ensure date order
 		return samples;
 	}
 	
