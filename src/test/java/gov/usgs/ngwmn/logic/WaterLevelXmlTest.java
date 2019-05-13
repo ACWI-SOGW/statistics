@@ -103,7 +103,7 @@ public class WaterLevelXmlTest {
 		
 		// EXPECT
 		expected.put("latestValue", "200.390000");
-		expected.put("latestPercentile", "0.250000000");
+		expected.put("latestPercentile", "25.0000000");
 		expected.put("valueMin", "209.790000");
 		expected.put("valueMax", "180.620000");
 		
@@ -121,6 +121,7 @@ public class WaterLevelXmlTest {
 		setup("MBMG","73642", ZERO,"BLS");
 		
 		// EXPECT
+		// until MBMG has appropriate sigfigs, this is the precision we expect.
 		expected.put("latestValue", "146.600000");
 		expected.put("latestPercentile", "0");
 		expected.put("valueMin", "150.790000");
@@ -141,7 +142,7 @@ public class WaterLevelXmlTest {
 		
 		// EXPECT
 		expected.put("latestValue", "17.960000");
-		expected.put("latestPercentile", "1");
+		expected.put("latestPercentile", "100");
 		expected.put("valueMin", "19.760000");
 		expected.put("valueMax", "10.380000");
 		
@@ -160,7 +161,7 @@ public class WaterLevelXmlTest {
 		
 		// EXPECT
 		expected.put("latestValue", "98.29");
-		expected.put("latestPercentile", "1");
+		expected.put("latestPercentile", "100");
 		expected.put("valueMin", "115.97");
 		expected.put("valueMax", "98.29");
 		
@@ -177,7 +178,7 @@ public class WaterLevelXmlTest {
 		
 		// EXPECT
 		expected.put("latestValue", "4.99");
-		expected.put("latestPercentile", "0.786");
+		expected.put("latestPercentile", "78.6");
 		expected.put("valueMin", "12.66");
 		expected.put("valueMax", "1.06");
 		
@@ -196,7 +197,7 @@ public class WaterLevelXmlTest {
 		
 		// EXPECT
 		expected.put("latestValue", "49.80");
-		expected.put("latestPercentile", "0.6000");
+		expected.put("latestPercentile", "60.00");
 		expected.put("valueMin", "58.82");
 		expected.put("valueMax", "45.15");
 		
@@ -226,7 +227,7 @@ public class WaterLevelXmlTest {
 		
 		// EXPECT
 		expected.put("latestValue", "5.48");
-		expected.put("latestPercentile", "0.357");
+		expected.put("latestPercentile", "35.7");
 		expected.put("valueMin", "-16.15");
 		expected.put("valueMax",  "10.09");
 //		expected.put("valueMax",  "19.93"); // this is a BL measurement with a AD site
@@ -271,7 +272,7 @@ public class WaterLevelXmlTest {
 		JsonData json = service.calculate(builder, data, mediation, includeMedians, percentiles);
 		
 		// EXPECT
-		expected.put("latestPercentile", "0.36");
+		expected.put("latestPercentile", "36");
 		expected.put("latestValue", new BigDecimal("-5.48").add(altVal).round(precisionRound2).toPlainString());
 		expected.put("valueMin",    new BigDecimal("16.15").add(altVal).round(precisionRound3).toPlainString());
 		expected.put("valueMax",    new BigDecimal("-10.09").add(altVal).round(precisionRound2).toPlainString());

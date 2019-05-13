@@ -285,7 +285,7 @@ public class WaterLevelStatisticsTest {
 				
 		stats.overallLatestPercentile(sortedByDate);
 		String percentile = builder.get(JsonDataBuilder.LATEST_PCTILE);
-		assertEquals("0.750", percentile);
+		assertEquals("75.0", percentile);
 	}
 	@Test
 	public void test_valueOfPercentile_ascending_P75() {
@@ -340,7 +340,7 @@ public class WaterLevelStatisticsTest {
 				
 		stats.overallLatestPercentile(sortedByDate);
 		String percentile = builder.get(JsonDataBuilder.LATEST_PCTILE);
-		assertEquals("0.250", percentile);
+		assertEquals("25.0", percentile);
 	}
 	
 	@Test
@@ -566,7 +566,7 @@ public class WaterLevelStatisticsTest {
 		assertEquals("Expect count to be 7", 7, overall.sampleCount);
 		assertEquals("Expect median to be mid.value", mid.value.toString(), overall.valueMedian);
 		assertEquals( mid1.getValue().toString(), overall.latestValue);
-		assertEquals( "0.38", overall.latestPercentile);
+		assertEquals( "38", overall.latestPercentile);
 	}
 
 
@@ -758,11 +758,11 @@ public class WaterLevelStatisticsTest {
 		assertNotNull("overall should not be null", overall);
 		assertNotNull("monthly should not be null", monthly);
 
-		assertEquals("Expect MIN_VALUE to be ", "100.0",     overall.valueMin);
-		assertEquals("Expect MAX_VALUE to be ",   "1.0",     overall.valueMax);
-		assertEquals("Expect MEDIAN to be ",      "1.0",     overall.valueMedian);
-		assertEquals("Expect LATEST_VALUE to be ", "100.0",  overall.latestValue);
-		assertEquals("Expect LATEST_PCTILE to be ", "0",     overall.latestPercentile);
+		assertEquals("Expect MIN_VALUE to be ",    "100.0", overall.valueMin);
+		assertEquals("Expect MAX_VALUE to be ",      "1.0", overall.valueMax);
+		assertEquals("Expect MEDIAN to be ",         "1.0", overall.valueMedian);
+		assertEquals("Expect LATEST_VALUE to be ", "100.0", overall.latestValue);
+		assertEquals("Expect LATEST_PCTILE to be ",  "0", overall.latestPercentile);
 
 		assertEquals("Expect percentile to be 80.2", "80.2", monthly.get("5").percentiles.get(P10));
 		assertEquals("Expect most percentile to be ", "1.0", monthly.get("5").percentiles.get(P25));
@@ -909,7 +909,7 @@ public class WaterLevelStatisticsTest {
 		assertFalse(valueOrder.contains(provisional));
 
 		assertEquals("7.98",  builder.get(MEDIAN));
-		assertEquals("1", builder.get(LATEST_PCTILE));
+		assertEquals("100", builder.get(LATEST_PCTILE));
 	}
 	@Test
 	public void testMostRecentProvistional_overallStats_BelowLand() {
@@ -949,7 +949,7 @@ public class WaterLevelStatisticsTest {
 		assertTrue(valueOrder.contains(notProvisional));
 
 		assertEquals("7.98", builder.get(MEDIAN));
-		assertEquals("1", builder.get(LATEST_PCTILE));
+		assertEquals("100", builder.get(LATEST_PCTILE));
 	}
 	@Test
 	public void testMostRecentProvistionalNONE_overallStats_BelowLand() {
