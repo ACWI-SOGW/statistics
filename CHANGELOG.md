@@ -23,7 +23,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - created a unit test that shows how mediation changes values while demonstrating forcing BelowLand.
 - ensure given samples are sorted by date rather than assuming now that it is an independent service.
 - converted Elevation value to BigDecimal
-
+- Latest Percentile is now recored at %100 based vs a decimal value between 0 and 1.
 
 ## [0.2.0] - 2018-08-30?
 ### Added
