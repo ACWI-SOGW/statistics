@@ -20,6 +20,7 @@ import gov.usgs.ngwmn.model.WLSample;
 import gov.usgs.wma.statistics.app.Properties;
 import gov.usgs.wma.statistics.logic.MonthlyStatistics;
 import gov.usgs.wma.statistics.logic.OverallStatistics;
+import gov.usgs.wma.statistics.logic.SigFigMathUtil;
 import gov.usgs.wma.statistics.logic.StatisticsCalculator;
 import gov.usgs.wma.statistics.model.JsonData;
 import gov.usgs.wma.statistics.model.JsonDataBuilder;
@@ -33,6 +34,11 @@ public class WaterLevelStatistics extends StatisticsCalculator<WLSample> {
 	 */
 	protected static final BigDecimal Days406 = new BigDecimal("406");
 
+	/**
+	 * The number 100 used to make a decimal percentile into a %100 based value.
+	 * It has many decimal places so that this number preserves the precision of the original value.
+	 */
+	protected static final BigDecimal NUM_100 = new BigDecimal("100.000000");
 
 	// Package level access for unit testing
 	MonthlyStatistics<WLSample> monthlyStats;
@@ -160,7 +166,8 @@ public class WaterLevelStatistics extends StatisticsCalculator<WLSample> {
 		replaceLatestSample(normalizeMutlipleYearlyValues, latestSample);
 		// get the percentile of the latest sample
 		BigDecimal latestPercentile = percentileOfValue(normalizeMutlipleYearlyValues, latestSample, Value::valueOf);
-		builder.latestPercentile(latestPercentile.toString());
+		latestPercentile = SigFigMathUtil.sigFigMultiply(latestPercentile, NUM_100.setScale(latestPercentile.scale()));
+		builder.latestPercentile(latestPercentile.toPlainString());
 	}
 
 	protected void replaceLatestSample(List<WLSample> normalizeMutlipleYearlyValues, WLSample latestSample) {

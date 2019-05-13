@@ -7,7 +7,7 @@ import gov.usgs.ngwmn.model.MediationType;
 /**
  * the JSON will look something like this
  * {
- *	"LATEST_PCTILE": "0.31250"
+ *	"LATEST_PCTILE": "31.250"
  *	"LATEST_VALUE": "11.000",
  *	"MAX_VALUE": "1.000",
  *	"MEDIAN": "1.500",
