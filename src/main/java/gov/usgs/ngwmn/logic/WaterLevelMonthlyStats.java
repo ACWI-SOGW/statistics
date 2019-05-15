@@ -40,7 +40,7 @@ public class WaterLevelMonthlyStats extends MonthlyStatistics<WLSample> {
 				&& monthYears >= 10;
 
 		if ( ! qualified && monthYears>0 ) {
-			WLSample firstSample = monthSamples.get(0);
+			Value firstSample = monthSamples.get(0);
 			int missingCount = 10 - monthYears;
 			String plural = missingCount>1 ? "s" :"";
 			String monthName = sampleMonthName(firstSample);
