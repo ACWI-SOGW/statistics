@@ -306,7 +306,7 @@ public class WaterLevelXmlTest {
 		expected.put("valueMax",  "9.30"); // this is the max BL retained sample
 		expected.put("valueMin",  "19.93"); // this is the min BL retained sample
 		expected.put("latestValue", "11.47"); // this is the latest retained sample
-		expected.put("latestPercentile", "0.5000"); // the latest value is only the middle of three for the month
+		expected.put("latestPercentile", "50.00"); // the latest value is only the middle of three for the month
 		
 		// TEST
 		JsonData json = stats.calculate(spec, xmlReader);

@@ -11,6 +11,7 @@ import gov.usgs.wma.statistics.app.Properties;
 import gov.usgs.wma.statistics.logic.MonthlyStatistics;
 import gov.usgs.wma.statistics.logic.StatisticsCalculator;
 import gov.usgs.wma.statistics.model.JsonDataBuilder;
+import gov.usgs.wma.statistics.model.Value;
 
 public class WaterLevelMonthlyStats extends MonthlyStatistics<WLSample> {
 	public WaterLevelMonthlyStats(Properties env, JsonDataBuilder builder) {
