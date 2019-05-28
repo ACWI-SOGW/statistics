@@ -24,6 +24,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - ensure given samples are sorted by date rather than assuming now that it is an independent service.
 - converted Elevation value to BigDecimal
 - Latest Percentile is now recored at %100 based vs a decimal value between 0 and 1.
+- Overall median is now calculated from monthly medians to avoid giving more weight to months with a higher sampling rate.
 
 ## [0.2.0] - 2018-08-30?
 ### Added
