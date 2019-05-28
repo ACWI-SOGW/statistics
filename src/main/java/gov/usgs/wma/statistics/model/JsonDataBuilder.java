@@ -9,6 +9,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -62,8 +63,20 @@ public class JsonDataBuilder {
 	
 	MediationType mediation = MediationType.DEFAULT;
 
-	StringBuilder intermediateValues = new StringBuilder();
-	boolean includeIntermediateValues = false;
+	/**
+	 * This is a collection of all the normalized values.
+	 * Is used for the overall percentile value.
+	 */
+	List<Value> intermediateValuesList = new LinkedList<>();
+	/*
+	 * The string of all intermediate values to return to the requester.
+	 */
+	StringBuilder intermediateValues    = new StringBuilder();
+	/**
+	 * This indicates weather or not to build and send the intermediate
+	 * values string back to the user.
+	 */
+	boolean includeIntermediateValues   = false;
 	
 	JsonData jsonData;
 
@@ -257,6 +270,17 @@ public class JsonDataBuilder {
 
 		return this;
 	}
+	public JsonDataBuilder newOverallMedian(String newMedian) {
+		JsonOverall jo = jsonData.overall;
+		JsonOverall overall = new JsonOverall(jo.recordYears, jo.sampleCount,
+				jo.latestPercentile, jo.latestValue, jo.valueMax, 
+				newMedian, 
+				jo.valueMin, jo.dateCalc, jo.dateMax, jo.dateMin, 
+				mediation);
+		
+		jsonData.overall = overall;
+		return this;
+	}
 
 	public boolean isOverall() {
 		return ! isMonthly();
@@ -266,6 +290,10 @@ public class JsonDataBuilder {
 		// While it may be ambiguous before the month is set
 		// the month should be set right off
 		return values.containsKey(MONTH);
+	}
+	
+	public List<Value> getIntermediateValuesList() {
+		return intermediateValuesList;
 	}
 	
 	public JsonDataBuilder includeIntermediateValues(Boolean includeIntermediateValues) {
@@ -281,7 +309,7 @@ public class JsonDataBuilder {
 		return intermediateValues.toString();
 	}
 	
-	public JsonDataBuilder intermediateValue(Value sample) {
+	protected JsonDataBuilder intermediateValue(Value sample) {
 		if ( ! isIncludeIntermediateValues()) {
 			return this;
 		}
@@ -292,6 +320,8 @@ public class JsonDataBuilder {
 	}
 	
 	public JsonDataBuilder intermediateValues(List<? extends Value> samples) {
+		this.intermediateValuesList.addAll(samples);
+		
 		if ( ! isIncludeIntermediateValues()) {
 			return this;
 		}
