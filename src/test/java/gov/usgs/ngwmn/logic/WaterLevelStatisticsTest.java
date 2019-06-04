@@ -700,7 +700,8 @@ public class WaterLevelStatisticsTest {
 		WLSample explicitRetained = createSample("2013-05-11T04:15:00-05:00", "1.0", false);
 		WLSample explicitRemoved  = createSample("2014-05-12T04:15:00-05:00", "1.0", true);   // this one does not count because it is provisional
 		WLSample recentProvisional= createSample("2018-05-13T04:15:00-05:00", "100.0", true); // this one only counts for latest value
-
+		// this 100.0 value is added to be highly visible in the data set
+		
 		samples.add( explicitRetained ); // should be retained because not provisional
 		samples.add( explicitRemoved );  // should be REMOVED because provisional
 		samples.add( recentProvisional );// should be retained only for latest value because provisional most recent
@@ -714,9 +715,12 @@ public class WaterLevelStatisticsTest {
 
 		assertEquals("Expect MIN_VALUE to be ", "1.0",      overall.valueMin);
 		assertEquals("Expect MAX_VALUE to be ", "1.0",      overall.valueMax);
-		assertEquals("Expect MEDIAN to be ", "1.0",         overall.valueMedian);
+		assertEquals("Expect MEDIAN to be ",    "1.0",      overall.valueMedian);
+		
+		// the latest value is provisional and only counts for the following two entries, latest value and percentile
 		assertEquals("Expect LATEST_VALUE to be ", "100.0", overall.latestValue);
-//		assertEquals("Expect LATEST_PCTILE to be ", "1",    overall.latestPercentile);
+		assertEquals("Expect LATEST_PCTILE to be 0% now that all are now sorted BelowLand (high values are low percentiles)",
+													"0",    overall.latestPercentile);
 
 		assertEquals("Expect all percentile to be ", "1.0",    monthly.get("5").percentiles.get(P10));
 		assertEquals("Expect all percentile to be ", "1.0",    monthly.get("5").percentiles.get(P25));
@@ -744,6 +748,7 @@ public class WaterLevelStatisticsTest {
 		WLSample explicitRetained = createSample("2013-05-11T04:15:00-05:00", "1.0", false);
 		WLSample explicitRemoved  = createSample("2014-05-12T04:15:00-05:00", "1.0", true);  // this one does not count because it is provisional
 		WLSample recent           = createSample("2018-05-13T04:15:00-05:00", "100.0");
+		// this 100.0 value is added to be highly visible in the data set
 
 		samples.add( explicitRetained ); // should be retained because not provisional
 		samples.add( explicitRemoved );  // should be REMOVED because provisional
@@ -757,6 +762,8 @@ public class WaterLevelStatisticsTest {
 
 		assertNotNull("overall should not be null", overall);
 		assertNotNull("monthly should not be null", monthly);
+
+		// the latest value is NOT provisional and counts for many entries unlike the previous test
 
 		assertEquals("Expect MIN_VALUE to be ",    "100.0", overall.valueMin);
 		assertEquals("Expect MAX_VALUE to be ",      "1.0", overall.valueMax);
@@ -988,6 +995,23 @@ public class WaterLevelStatisticsTest {
 		assertTrue(monthSamples.contains(provisional));
 	}
 
+	@Test
+	public void test_OverallMedianBasedOnMonthlyMedians() {
+		// SETUP create a collection of samples (they will be sorted appropriately)
+		List<WLSample> samples = new LinkedList<>();
+		fillMarchData(samples);
+		String median = stats
+				.calculate(spec, samples)
+				.getOverall()
+				.valueMedian;
+		
+		// the original method gave too much weight to months with more samples
+		// the monthly median method gives every month in every year the same weight
+		// in this particular sample is it is a minor adjustment while in others it could be large.
+		assertEquals("median with all data is 7.98 and should be 8.0 based on monthly medians", 
+				"8.0", median);
+	}
+	
 	protected void fillMarchData(List<WLSample> monthSamples) {
 		monthSamples.add( createSample("2009-03-01","9.44") );
 		monthSamples.add( createSample("2009-03-01","9.42") );

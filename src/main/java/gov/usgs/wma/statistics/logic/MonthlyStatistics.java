@@ -81,6 +81,9 @@ public class MonthlyStatistics<S extends Value> extends StatisticsCalculator<S> 
 			String month = ""+m;
 			List<S> monthSamples = filterValuesByGivenMonth(sortedByValue, month);
 			Map<String, List<S>> sortSamplesByYear = sortSamplesByYear(monthSamples);
+			
+			// this needs to be calculated regardless of the month's qualification for use in other statistics
+			// namely: overall median and latest percentile. (At the moment, the latest percentile recalculates.)
 			List<S> normalizeMutlipleYearlyValues = medianMonthlyValues(monthSamples,  sortFunctionByQualifier());
 			
 			if ( doesThisMonthQualifyForStats(normalizeMutlipleYearlyValues) ) {

@@ -8,6 +8,7 @@ import java.io.Reader;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -131,10 +132,9 @@ public class WaterLevelStatistics extends StatisticsCalculator<WLSample> {
 			String today = today();
 			
 			try {
-				if ( doesThisSiteQualifyForMonthlyStats(years, recent, today) ) {
-					builder.collect();
-					monthlyStats.monthlyStats(sortedByValue);
-				}
+				// removed the overall qualification "optimization" because overall requires the monthly medians
+				builder.collect(); // collect all stats into a monthly obj
+				monthlyStats.monthlyStats(sortedByValue);
 			} catch (Exception e) {
 				// if anything goes wrong here we still want the overall
 				LOGGER.warn("Data for this ID {}:{}, had an unhandled exception. {}", spec.getAgencyCd(), spec.getSiteNo(), e);
@@ -142,6 +142,8 @@ public class WaterLevelStatistics extends StatisticsCalculator<WLSample> {
 		} else {
 			LOGGER.warn("Record Years is null for {}:{}, by passing monthly stats.", spec.getAgencyCd(), spec.getSiteNo());
 		}
+		
+		normalizedOverallMedian();
 		
 		if ( ! builder.hasMonthly() ) {
 			String msg = env.getMessage(ENV_MESSAGE_MONTHLY_RULE, Days406.intValue());
@@ -151,6 +153,19 @@ public class WaterLevelStatistics extends StatisticsCalculator<WLSample> {
 		return builder.build();
 	}
 
+	/**
+	 * This overrides the median of all values with a median of monthly median values
+	 */
+	protected void normalizedOverallMedian() {
+		// get a local list of values that will not destroy the original and be of WLSample instance
+		List<WLSample> normalized = builder.getIntermediateValuesList().stream()
+				.map(value -> new WLSample(value.value))
+				.collect(Collectors.toList());
+		// sort the values by the qualifier order - typically BelowLand, and register the median
+		monthlyStats.sortValueByQualifier(normalized);
+		BigDecimal medianValue = valueOfPercentile(normalized, MEDIAN_PERCENTILE, Value::valueOf);
+		builder.newOverallMedian(medianValue.toPlainString());
+	}
 
 	protected void overallLatestPercentile(List<WLSample> samplesByDate) {
 		// get the latest (most recent) sample
@@ -211,7 +226,10 @@ public class WaterLevelStatistics extends StatisticsCalculator<WLSample> {
 		}
 		overallLatestPercentile(samplesByDate);
 		overallStatistics.overallStats(samplesByDate, sortedByValue);
-		
+		// it might make sense to put the builder.collect() call here, it could;
+		// however, most of the tests were written without it here to inspect the
+		// the result prior to collect. If the tests are rewritten to inspect the
+		// JsonOverall object then collect() could be called here. It is call after this.
 	}
 	
 
