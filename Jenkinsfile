@@ -51,9 +51,12 @@ pipeline {
                     }
                     releaseVersion = pomVersion.replace("-SNAPSHOT","")
                 }
-                // tests are run in prior tests
-                sh "mvn --batch-mode ${dryRun} -Dtag=${pomArtifactId}-${releaseVersion} release:prepare"
-                sh "mvn --batch-mode ${dryRun} release:perform"
+                // this credential name must be defined in jenkins credentials config
+                sshagent(credentials : ['jenkins_git']) {
+                    // tests are run in prior tests
+                    sh "mvn --batch-mode ${dryRun} -Dtag=${pomArtifactId}-${releaseVersion} release:prepare"
+                    sh "mvn --batch-mode ${dryRun} release:perform"
+                }
             }
         }
         stage('Publish') {
