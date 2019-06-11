@@ -39,7 +39,6 @@
         <maven.build.timestamp.format>yyyy-MM-dd HH:mm:ss' 'z</maven.build.timestamp.format>
         <scm.urlBase>https://github.com/ACWI-SOGW/statistics</scm.urlBase>
         <!--  scm.devConnectionBase>git@github.com:ACWI-SOGW/statistics</scm.devConnectionBase -->
-        <scm.devConnectionBase>git@github.com:ACWI-SOGW/statistics.git</scm.devConnectionBase>
         <artifactory.urlBase>https://cida.usgs.gov/artifactory/</artifactory.urlBase>
         <artifactory.snapshots>wma-maven-snapshots</artifactory.snapshots>
         <artifactory.releases>wma-maven-releases</artifactory.releases>
@@ -76,7 +75,7 @@
         <!-- store the artifact under its own artifact ID -->
         <url>${scm.urlBase}</url>
         <!-- lookup the code by the short git repo name -->
-        <developerConnection>scm:git:${scm.devConnectionBase}.git</developerConnection>
+        <developerConnection>scm:git:git@github.com:ACWI-SOGW/statistics.git</developerConnection>
         <tag>statistics-0.1.0</tag>
     </scm>
 
