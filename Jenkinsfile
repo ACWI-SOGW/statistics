@@ -12,6 +12,8 @@ pipeline {
         pomArtifactId = pom.getArtifactId()
         //pomReleases = pom.getProperties().get("artifactory.releases")
         //pomSnapshots = pom.getProperties().get("artifactory.snapshots")
+        
+        repoId='-DrepositoryId=' + "${ (params.RELEASE_BUILD) ? 'releases' : 'snapshots'}"
     }
 
     stages {
@@ -65,12 +67,6 @@ pipeline {
             // only publish when NOT a dry run
             when {
                 expression { params.DRY_RUN == false }
-            }
-            environment {
-                repoId='-DrepositoryId=snapshots'
-                if (params.RELEASE_BUILD) {
-                    repoId='-DrepositoryId=releases'
-                }
             }
             steps {
                 // test complete in test stage
