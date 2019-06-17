@@ -56,13 +56,15 @@ pipeline {
                 // if the default .ssh/conf public key works, then this agent is unnecessary.
                 // this sshagent credential must be defined in jenkins credentials config
                 sshagent(credentials : ['a19251a9-ab43-4dd0-bd76-5b6dba9cd793']) {
-                    // tests are run in prior tests
-                    try {
-                        sh "mvn --batch-mode ${dryRun} -Dtag=${pomArtifactId}-${releaseVersion} release:prepare"
-                    } catch (ex) {
-                        sh "git tag -D ${pomArtifactId}-${releaseVersion}"
+                    script {
+                        // tests are run in prior tests
+                        try {
+                            sh "mvn --batch-mode ${dryRun} -Dtag=${pomArtifactId}-${releaseVersion} release:prepare"
+                        } catch (ex) {
+                            sh "git tag -D ${pomArtifactId}-${releaseVersion}"
+                        }
+                        sh "mvn --batch-mode ${dryRun} release:perform"
                     }
-                    sh "mvn --batch-mode ${dryRun} release:perform"
                 }
             }
         }
