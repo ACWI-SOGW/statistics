@@ -16,7 +16,7 @@ pipeline {
         //pomSnapshots = pom.getProperties().get("artifactory.snapshots")
         
         // incorporate the maven dryRun flag
-        dryRun="${ (params.DRY_RUN) ? '-DdryRun=true' : ''}"
+        dryRun="${ (params.DRY_RUN) ? '-DdryRun=true' : ' '}"
 
         // ensure that release tag is clean
         releaseVersion = pomVersion.replace("-SNAPSHOT","")
