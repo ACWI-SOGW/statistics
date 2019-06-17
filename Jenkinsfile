@@ -51,9 +51,14 @@ pipeline {
                     }
                     releaseVersion = pomVersion.replace("-SNAPSHOT","")
                 }
-                // tests are run in prior tests
-                sh "mvn --batch-mode ${dryRun} -Dtag=${pomArtifactId}-${releaseVersion} release:prepare"
-                sh "mvn --batch-mode ${dryRun} release:perform"
+                // I want to retain this commented credential for documentation of how-to use sshagent in case we need it
+                // this credential name must be defined in jenkins credentials config
+                //sshagent(credentials : ['jenkins_git']) {
+                //sshagent(credentials : ['a19251a9-ab43-4dd0-bd76-5b6dba9cd793']) {
+                    // tests are run in prior tests
+                    sh "mvn --batch-mode ${dryRun} -Dtag=${pomArtifactId}-${releaseVersion} release:prepare"
+                    sh "mvn --batch-mode ${dryRun} release:perform"
+                //}
             }
         }
         stage('Publish') {
@@ -61,9 +66,16 @@ pipeline {
             when {
                 expression { params.DRY_RUN == false }
             }
+            script {
+                if (params.RELEASE_BUILD) {
+                    repoId='-DrepositoryId=releases'
+                } else {
+                    repoId='-DrepositoryId=snapshots'
+                }
+            }
             steps {
                 // test complete in test stage
-                sh 'mvn deploy -Dmaven.test.skip=true'
+                sh 'mvn deploy -Dmaven.test.skip=true ${repoId}'
             }
         }
     }
