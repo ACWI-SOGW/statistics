@@ -59,7 +59,7 @@ pipeline {
                     // tests are run in prior tests
                     try {
                         sh "mvn --batch-mode ${dryRun} -Dtag=${pomArtifactId}-${releaseVersion} release:prepare"
-                    catch (ex) {
+                    } catch (ex) {
                         sh "git tag -D ${pomArtifactId}-${releaseVersion}"
                     }
                     sh "mvn --batch-mode ${dryRun} release:perform"
