@@ -61,7 +61,7 @@ pipeline {
                         try {
                             sh "mvn --batch-mode ${dryRun} -Dtag=${pomArtifactId}-${releaseVersion} release:prepare"
                         } catch (ex) {
-                            sh "git tag -D ${pomArtifactId}-${releaseVersion}"
+                            sh "git tag -d ${pomArtifactId}-${releaseVersion}"
                         }
                         sh "mvn --batch-mode ${dryRun} release:perform"
                     }
