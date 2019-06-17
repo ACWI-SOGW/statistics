@@ -22,10 +22,9 @@ pipeline {
             steps {
                 // remove potentially old release files if exist
                 sh 'rm pom.xml.releaseBackup release.properties 2>/dev/null || true'
-                // rest the git state (again, from failed release state)
-                sh 'git checkout -f master'
+                // rest the git state (again, from failed prior job run)
+                sh "git checkout -f ${scm.branches}"
                 sh 'git reset --hard'
-                sh 'git pull origin master'
             }
         }
         stage('Build Test') {
