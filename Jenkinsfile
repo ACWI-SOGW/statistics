@@ -23,7 +23,7 @@ pipeline {
                 // remove potentially old release files if exist
                 sh 'rm pom.xml.releaseBackup release.properties 2>/dev/null || true'
                 // rest the git state (again, from failed prior job run)
-                sh "git checkout -f ${scm.branches}"
+                sh "git checkout -f ${scm.branches.[0].name}"
                 sh 'git reset --hard'
             }
         }
