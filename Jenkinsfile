@@ -66,13 +66,13 @@ pipeline {
             when {
                 expression { params.DRY_RUN == false }
             }
-            steps {
-                script {
-                    repoId='-DrepositoryId=snapshots'
-                    if (params.RELEASE_BUILD) {
-                        repoId='-DrepositoryId=releases'
-                    }
+            environment {
+                repoId='-DrepositoryId=snapshots'
+                if (params.RELEASE_BUILD) {
+                    repoId='-DrepositoryId=releases'
                 }
+            }
+            steps {
                 // test complete in test stage
                 sh 'mvn deploy -Dmaven.test.skip=true ${repoId}'
             }
