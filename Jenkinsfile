@@ -57,6 +57,7 @@ pipeline {
                 sshagent(credentials : ['a19251a9-ab43-4dd0-bd76-5b6dba9cd793']) {
                     // tests are run in prior tests
                     sh "mvn --batch-mode ${dryRun} -Dtag=${pomArtifactId}-${releaseVersion} release:prepare"
+                    sh "git checkout -f ${pomArtifactId}-${releaseVersion}"
                     sh "mvn --batch-mode ${dryRun} release:perform"
                 }
             }
