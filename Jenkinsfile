@@ -68,10 +68,9 @@ pipeline {
             }
             steps {
                 script {
+                    repoId='-DrepositoryId=snapshots'
                     if (params.RELEASE_BUILD) {
                         repoId='-DrepositoryId=releases'
-                    } else {
-                        repoId='-DrepositoryId=snapshots'
                     }
                 }
                 // test complete in test stage
