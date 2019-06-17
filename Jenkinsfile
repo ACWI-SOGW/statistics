@@ -6,13 +6,22 @@ pipeline {
         jdk 'jdk8'
     }
     environment {
-        // requires the Pipeline Utility Steps plugin
+        // requires the Pipeline Utility Steps plugin to read pom file
         pom = readMavenPom file: 'pom.xml'
         pomVersion = pom.getVersion()
         pomArtifactId = pom.getArtifactId()
+        
+        // this is how to read properties. while no longer needed - retained for documentation
         //pomReleases = pom.getProperties().get("artifactory.releases")
         //pomSnapshots = pom.getProperties().get("artifactory.snapshots")
         
+        // incorporate the maven dryRun flag
+        dryRun="${ (params.DRY_RUN) ? '-DdryRun=true' : ''}"
+
+        // ensure that release tag is clean
+        releaseVersion = pomVersion.replace("-SNAPSHOT","")
+        
+        // use the release flag to specify the deploy repository
         repoId='-DrepositoryId=' + "${ (params.RELEASE_BUILD) ? 'releases' : 'snapshots'}"
     }
 
@@ -43,15 +52,6 @@ pipeline {
                 expression{ params.RELEASE_BUILD }
             }
             steps {
-                // incorporate the maven dryRun flag
-                script {
-                    if (params.DRY_RUN) {
-                        dryRun='-DdryRun=true'
-                    } else {
-                        dryRun=''
-                    }
-                    releaseVersion = pomVersion.replace("-SNAPSHOT","")
-                }
                 // I want to retain this commented credential for documentation of how-to use sshagent in case we need it
                 // this credential name must be defined in jenkins credentials config
                 //sshagent(credentials : ['jenkins_git']) {
