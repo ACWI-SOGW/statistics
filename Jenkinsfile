@@ -34,6 +34,7 @@ pipeline {
                 // rest the git state (again, from failed prior job run)
                 // sh "git checkout -f ${scm.branches.[0].name}"
                 sh 'git reset --hard'
+                sh "git checkout -f master"
             }
         }
         stage('Build Test') {
