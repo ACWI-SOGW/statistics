@@ -76,7 +76,6 @@
         <url>${scm.urlBase}</url>
         <!-- lookup the code by the short git repo name -->
         <developerConnection>scm:git:git@github.com:ACWI-SOGW/statistics.git</developerConnection>
-        <tag>HEAD</tag>
     </scm>
 
     <distributionManagement>
