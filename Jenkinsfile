@@ -54,9 +54,9 @@ pipeline {
             steps {
                 // I want to retain this commented credential for documentation of how-to use sshagent in case we need it
                 // if the default .ssh/conf public key works, then this agent is unnecessary.
-                // this credential name must be defined in jenkins credentials config, either the name or ID work
-                //sshagent(credentials : ['a19251a9-ab43-4dd0-bd76-5b6dba9cd793']) {
-                sshagent(credentials : ['jenkins_git']) {
+                // this credential name must be defined in jenkins credentials config, either the name or ID should work
+                // sshagent(credentials : ['jenkins_git']) { // gah, this worked once before and fails now.
+                sshagent(credentials : ['a19251a9-ab43-4dd0-bd76-5b6dba9cd793']) {
                     // tests are run in prior tests
                     sh "mvn --batch-mode ${dryRun} -Dtag=${pomArtifactId}-${releaseVersion} release:prepare"
                     sh "mvn --batch-mode ${dryRun} release:perform"
