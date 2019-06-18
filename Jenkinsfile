@@ -79,12 +79,12 @@ pipeline {
             }
         }
         stage('Publish') {
-            // only publish when NOT a dry run
-            when {
-                expression { params.DRY_RUN == false }
-            }
+            // only publish a SNAPSHOT when NOT a dry run 
+            when { not { expression {
+                params.DRY_RUN || params.RELEASE_BUILD
+            }    }     }
             steps {
-                // test complete in test stage
+                // tests are run in prior stage
                 sh 'mvn deploy -Dmaven.test.skip=true ${repoId}'
             }
         }
