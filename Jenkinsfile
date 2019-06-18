@@ -57,7 +57,7 @@ pipeline {
                 }
             }
         }
-        stage('Release') {
+        stage('Release Prepare') {
             // only release build when triggered
             when {
                 expression{ params.RELEASE_BUILD }
@@ -68,13 +68,38 @@ pipeline {
                 sshagent(credentials : ['a19251a9-ab43-4dd0-bd76-5b6dba9cd793']) {
                     script {
                         try {
+                            sh "mvn clean release:clean"
                             // tests are run in prior stage and batch-mode skips prompts
-                            sh "mvn --batch-mode ${dryRun} -Dtag=${pomArtifactId}-${releaseVersion} clean release:prepare deploy"
-                            // release perform might deploy artifacts
-                            // only publish a RELEASE when NOT a dry run 
-                            // if ( ! params.DRY_RUN  ) {
-                            //    sh "mvn deploy -Dmaven.test.skip=true ${repoId}"
-                            // }
+                            sh "mvn --batch-mode ${dryRun} -Dtag=${pomArtifactId}-${releaseVersion} release:prepare"
+                        } catch (ex) {
+                            // remove the tag if something went wrong
+                            // sh "git tag -d ${pomArtifactId}-${releaseVersion}"
+                            sh "mvn release:rollback"
+                            throw ex
+                        }
+                    }
+                }
+            }
+        }
+        stage('Publish') {
+            // only publish a SNAPSHOT when NOT a dry run 
+            when { not { expression { params.DRY_RUN } } }
+            steps {
+                // tests are run in prior stage
+                sh 'mvn deploy -Dmaven.test.skip=true ${repoId}'
+            }
+        }
+        stage('Release Perform') {
+            // only release build when triggered
+            when {
+                expression{ params.RELEASE_BUILD }
+            }
+            steps {
+                // if the default .ssh/conf public key works, then this agent is unnecessary.
+                // this sshagent credential must be defined in jenkins credentials config
+                sshagent(credentials : ['a19251a9-ab43-4dd0-bd76-5b6dba9cd793']) {
+                    script {
+                        try {
                             sh "mvn --batch-mode ${dryRun} release:perform"
                         } catch (ex) {
                             // remove the tag if something went wrong
@@ -86,16 +111,6 @@ pipeline {
                         }
                     }
                 }
-            }
-        }
-        stage('Publish') {
-            // only publish a SNAPSHOT when NOT a dry run 
-            when { not { expression {
-                params.DRY_RUN || params.RELEASE_BUILD
-            }    }     }
-            steps {
-                // tests are run in prior stage
-                sh 'mvn deploy -Dmaven.test.skip=true ${repoId}'
             }
         }
     }
