@@ -94,7 +94,7 @@ pipeline {
         }
         stage('Publish') {
             // only publish a SNAPSHOT when NOT a dry run 
-            when { not { expression { params.DRY_RUN || param.RELEASE_BUILD } } }
+            when { not { expression { params.DRY_RUN || params.RELEASE_BUILD } } }
             steps {
                 // tests are run in prior stage
                 sh "mvn deploy -Dmaven.test.skip=true"
