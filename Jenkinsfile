@@ -69,7 +69,7 @@ pipeline {
                     script {
                         try {
                             // tests are run in prior stage and batch-mode skips prompts
-                            sh "mvn --batch-mode ${dryRun} -Dtag=${pomArtifactId}-${releaseVersion} release:prepare"
+                            sh "mvn --batch-mode ${dryRun} -Dtag=${pomArtifactId}-${releaseVersion} clean release:prepare deploy"
                             // release perform might deploy artifacts
                             // only publish a RELEASE when NOT a dry run 
                             // if ( ! params.DRY_RUN  ) {
