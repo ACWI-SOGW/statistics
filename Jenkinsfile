@@ -21,6 +21,9 @@ pipeline {
         // ensure that release tag is clean
         releaseVersion = pomVersion.replace("-SNAPSHOT","")
         
+        version = "${ (params.RELEASE_BUILD) ? releaseVersion : pomVersion }"
+        nameAndTag = "${pomArtifactId}-${version}"
+        
         // use the release flag to specify the deploy repository
         repoId='-DrepositoryId=' + "${ (params.RELEASE_BUILD) ? 'releases' : 'snapshots'}"
     }
@@ -47,15 +50,20 @@ pipeline {
                 sh "git pull origin master"
             }
         }
+        
+        
+        // NOTE: SKIPPING TESTS ONLY WHILE TROUBLE SHOOTING RELEASE DEOPLOY ISSUE (three places)
+        
         stage('Build Test') {
             steps {
-                sh 'mvn clean package test'
+                sh 'mvn clean package -Dmaven.test.skip=true'
             }
-            post {
-                success {
-                    junit 'target/surefire-reports/**/*.xml' 
-                }
-            }
+            // TODO temp comment, uncomment after deploy works
+            //post {
+            //    success {
+            //        junit 'target/surefire-reports/**/*.xml' 
+            //    }
+            //}
         }
         stage('Release Prepare') {
             // only release build when triggered
@@ -70,10 +78,10 @@ pipeline {
                         try {
                             sh "mvn clean release:clean"
                             // tests are run in prior stage and batch-mode skips prompts
-                            sh "mvn --batch-mode ${dryRun} -Dtag=${pomArtifactId}-${releaseVersion} release:prepare"
+                            sh "mvn --batch-mode ${dryRun} -Dtag=${nameAndTag} release:prepare -Dmaven.test.skip=true"
                         } catch (ex) {
                             // remove the tag if something went wrong
-                            // sh "git tag -d ${pomArtifactId}-${releaseVersion}"
+                            // sh "git tag -d ${nameAndTag}"
                             sh "mvn release:rollback"
                             throw ex
                         }
@@ -86,7 +94,7 @@ pipeline {
             when { not { expression { params.DRY_RUN } } }
             steps {
                 // tests are run in prior stage
-                sh 'mvn deploy -Dmaven.test.skip=true ${repoId}'
+                sh "mvn deploy -Dmaven.test.skip=true -Durl=file://./target/${nameAndTag}.war  ${repoId}"
             }
         }
         stage('Release Perform') {
@@ -100,10 +108,9 @@ pipeline {
                 sshagent(credentials : ['a19251a9-ab43-4dd0-bd76-5b6dba9cd793']) {
                     script {
                         try {
-                            sh "mvn --batch-mode ${dryRun} release:perform"
+                            sh "mvn --batch-mode ${dryRun} release:perform -Dmaven.test.skip=true"
                         } catch (ex) {
-                            // remove the tag if something went wrong
-                            // sh "git tag -d ${pomArtifactId}-${releaseVersion}"
+                            // clean up if something when wrong
                             sh "mvn release:rollback"
                             throw ex
                         } finally {
