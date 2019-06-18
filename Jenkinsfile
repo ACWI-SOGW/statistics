@@ -57,14 +57,23 @@ pipeline {
                 // this sshagent credential must be defined in jenkins credentials config
                 sshagent(credentials : ['a19251a9-ab43-4dd0-bd76-5b6dba9cd793']) {
                     script {
-                        // tests are run in prior tests
                         try {
-                            sh "mvn --batch-mode ${dryRun} -DignoreSnapshots=true -Dtag=${pomArtifactId}-${releaseVersion} release:prepare"
+                            // tests are run in prior stage and batch-mode skips prompts
+                            sh "mvn --batch-mode ${dryRun} -Dtag=${pomArtifactId}-${releaseVersion} release:prepare"
+                            // release perform might deploy artifacts
+                            // only publish a RELEASE when NOT a dry run 
+                            // if ( ! params.DRY_RUN  ) {
+                            //    sh "mvn deploy -Dmaven.test.skip=true ${repoId}"
+                            // }
+                            sh "mvn --batch-mode ${dryRun} release:perform"
                         } catch (ex) {
-                            sh "git tag -d ${pomArtifactId}-${releaseVersion}"
+                            // remove the tag if something went wrong
+                            // sh "git tag -d ${pomArtifactId}-${releaseVersion}"
+                            sh "mvn release:rollback"
                             throw ex
+                        } finally {
+                            sh "mvn release:clean"
                         }
-                        sh "mvn --batch-mode ${dryRun} release:perform"
                     }
                 }
             }
