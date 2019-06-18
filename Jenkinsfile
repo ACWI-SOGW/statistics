@@ -32,9 +32,6 @@ pipeline {
         stage('Reset Repo') {
             // it is not clear that the repo is a clean checkout
             steps {
-                // remove potentially old release files if exist
-                sh 'rm pom.xml.releaseBackup release.properties 2>/dev/null || true'
-                
                 // rest the git state (again, from failed prior job run)
                 
                 // remove untracked files
@@ -50,21 +47,25 @@ pipeline {
                 sh "git pull origin master"
             }
         }
-        
-        
-        // NOTE: SKIPPING TESTS ONLY WHILE TROUBLE SHOOTING RELEASE DEOPLOY ISSUE (three places)
-        
-        stage('Build Test') {
+        stage('Snapshot') {
+            // maven release plugin runs tests
+            when { not { expression { params.RELEASE_BUILD } } }
             steps {
-                echo "dryRun is '${dryRun}'"
-                sh 'mvn clean package -Dmaven.test.skip=true'
+                sh 'mvn clean package'
             }
-            // TODO temp comment, uncomment after deploy works
-            //post {
-            //    success {
-            //        junit 'target/surefire-reports/**/*.xml' 
-            //    }
-            //}
+            post {
+                success {
+                    junit 'target/surefire-reports/**/*.xml' 
+                }
+            }
+        }
+        stage('Publish') {
+            // only publish a SNAPSHOT when NOT a dry run 
+            when { not { expression { params.DRY_RUN || params.RELEASE_BUILD } } }
+            steps {
+                // tests are run in prior stage
+                sh "mvn deploy -Dmaven.test.skip=true"
+            }
         }
         stage('Release') {
             // only release build when triggered
@@ -77,9 +78,8 @@ pipeline {
                 sshagent(credentials : ['a19251a9-ab43-4dd0-bd76-5b6dba9cd793']) {
                     script {
                         try {
-                            sh "mvn clean release:clean"
                             // tests are run in prior stage and batch-mode skips prompts
-                            sh "mvn --batch-mode ${dryRun} -Dtag=${nameAndTag} release:prepare release:perform install -Darguments='-Dmaven.deploy.skip=false -Dmaven.test.skip=true' "
+                            sh "mvn --batch-mode ${dryRun} -Dtag=${nameAndTag}  -Darguments='-Dmaven.deploy.skip=false' clean release:clean release:prepare release:perform install"
                         } catch (ex) {
                             // remove the tag if something went wrong
                             // sh "git tag -d ${nameAndTag}"
@@ -90,14 +90,6 @@ pipeline {
                         }
                     }
                 }
-            }
-        }
-        stage('Publish') {
-            // only publish a SNAPSHOT when NOT a dry run 
-            when { not { expression { params.DRY_RUN || params.RELEASE_BUILD } } }
-            steps {
-                // tests are run in prior stage
-                sh "mvn deploy -Dmaven.test.skip=true"
             }
         }
     }
