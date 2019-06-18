@@ -174,9 +174,8 @@
                 <artifactId>maven-release-plugin</artifactId>
                 <version>2.5.3</version>
                 <configuration>
-                    <preparationGoals>clean install</preparationGoals>
+                    <preparationGoals>clean deploy</preparationGoals>
                     <goals>pre-integration-test</goals>
-                    <preparationGoals>package</preparationGoals>
                     <tagNameFormat>${project.artifactId}-${project.version}</tagNameFormat>
                     <remoteTagging>false</remoteTagging>
                     <maven.javadoc.failOnError>false</maven.javadoc.failOnError>
