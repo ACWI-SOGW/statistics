@@ -31,10 +31,20 @@ pipeline {
             steps {
                 // remove potentially old release files if exist
                 sh 'rm pom.xml.releaseBackup release.properties 2>/dev/null || true'
+                
                 // rest the git state (again, from failed prior job run)
-                // sh "git checkout -f ${scm.branches.[0].name}"
-                sh 'git reset --hard'
+                
+                // remove untracked files
+                sh 'git clean -f'
+                // remove local unstaged changes
+                sh 'git checkout .'
+                // remove staged changes
+                sh 'git reset --hard HEAD'
+                // make sure we are on a branch
                 sh "git checkout -f master"
+                // sh "git checkout -f ${scm.branches.[0].name}"
+                // make sure local is up dated
+                sh "git pull origin master"
             }
         }
         stage('Build Test') {
