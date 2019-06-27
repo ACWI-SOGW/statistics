@@ -123,7 +123,7 @@ public class WaterLevelXmlTest {
 		// EXPECT
 		// until MBMG has appropriate sigfigs, this is the precision we expect.
 		expected.put("latestValue", "146.600000");
-		expected.put("latestPercentile", "0");
+		expected.put("latestPercentile", null); // latest values is in month 10 with only 6 other years
 		expected.put("valueMin", "150.790000");
 		expected.put("valueMax", "135.760000");
 		
@@ -252,7 +252,7 @@ public class WaterLevelXmlTest {
 		List<WLSample> samples = WLSample.extractSamples(xmlReader, spec.getAgencyCd(), spec.getSiteNo(), spec.getElevation());
 		System.err.println(samples.get(samples.size()-1)); // examine the most recent sample
 
-		// this is not really dead code. it shows how to examine data after XML extraction
+		// this is really NOT dead code. it shows how to examine data after XML extraction
 //		samples.stream()
 //			.sorted((a,b) -> b.value.compareTo(a.value))
 ////			.sorted((a,b) -> a.valueAboveDatum.compareTo(b.valueAboveDatum))
@@ -306,7 +306,7 @@ public class WaterLevelXmlTest {
 		expected.put("valueMax",  "9.30"); // this is the max BL retained sample
 		expected.put("valueMin",  "19.93"); // this is the min BL retained sample
 		expected.put("latestValue", "11.47"); // this is the latest retained sample
-		expected.put("latestPercentile", "50.00"); // the latest value is only the middle of three for the month
+		expected.put("latestPercentile", null); // the latest value is for month 12 w/ only three other samples
 		
 		// TEST
 		JsonData json = stats.calculate(spec, xmlReader);

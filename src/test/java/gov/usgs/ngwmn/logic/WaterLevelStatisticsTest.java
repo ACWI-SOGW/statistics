@@ -531,8 +531,10 @@ public class WaterLevelStatisticsTest {
 		WLSample min1 = createSample("2017-06-10", "1.0");
 		WLSample min2 = createSample("2018-06-10", "1.2");
 		WLSample mid1 = createSample("2019-06-10", "1.3");
+		WLSample mid0 = createSample("2002-06-10", "1.4");
 		WLSample mid  = createSample("2010-06-10", "1.5");
-		WLSample mid2 = createSample("2001-06-10", "1.7");
+		WLSample mid2 = createSample("2003-06-10", "1.6");
+		WLSample mid3 = createSample("2001-06-10", "1.7");
 		WLSample max1 = createSample("2005-06-10", "1.8");
 		WLSample max2 = createSample("2015-06-10", "1.9");
 		
@@ -542,6 +544,8 @@ public class WaterLevelStatisticsTest {
 		samples.add(mid2);
 		samples.add(max1);
 		samples.add(mid);
+		samples.add(mid0);
+		samples.add(mid3);
 		samples.add(max2);
 		samples.add(min1);
 		samples.add(min2);
@@ -556,17 +560,19 @@ public class WaterLevelStatisticsTest {
 		assertEquals(min1, sorted.get(0));
 		assertEquals(min2, sorted.get(1));
 		assertEquals(mid1, sorted.get(2));
-		assertEquals(mid,  sorted.get(3));
-		assertEquals(mid2, sorted.get(4));
-		assertEquals(max1, sorted.get(5));
-		assertEquals(max2, sorted.get(6));
+		assertEquals(mid0, sorted.get(3));
+		assertEquals(mid,  sorted.get(4));
+		assertEquals(mid2, sorted.get(5));
+		assertEquals(mid3, sorted.get(6));
+		assertEquals(max1, sorted.get(7));
+		assertEquals(max2, sorted.get(8));
 		
 		JsonOverall overall = builder.build().getOverall();
 		
-		assertEquals("Expect count to be 7", 7, overall.sampleCount);
+		assertEquals("Expect count to be 9", 9, overall.sampleCount);
 		assertEquals("Expect median to be mid.value", mid.value.toString(), overall.valueMedian);
 		assertEquals( mid1.getValue().toString(), overall.latestValue);
-		assertEquals( "38", overall.latestPercentile);
+		assertEquals( "30", overall.latestPercentile);
 	}
 
 
