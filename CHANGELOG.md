@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## [Unreleased]
 ### Changed
 - Updated: bypass latest percentile for months with few samples
+- Changed latest percentile to be an empty string when the month has too few values rather than null.
+- Fixed typo in "percentiles" string to "percentiles"
+
+### Notes
+- Releases 1.0.2 through 1.0.6 are all pipeline release build testing
 
 ## [1.0.1]
 ### Changed
