@@ -25,7 +25,7 @@ public class JsonMonthly extends JsonStats {
 	 * the result will likely be 0.10000000000000001 further confusing the accuracy of the 
 	 * measured value.
 	 */
-	@JsonProperty("PERCETILES")
+	@JsonProperty("PERCENTILES")
 	public final Map<String, String> percentiles;
 
 	public JsonMonthly(String recordYears, int sampleCount, Map<String, String> percentiles) {

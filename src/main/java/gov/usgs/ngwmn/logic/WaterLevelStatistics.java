@@ -178,8 +178,8 @@ public class WaterLevelStatistics extends StatisticsCalculator<WLSample> {
 		List<WLSample> normalizeMutlipleYearlyValues = 
 				monthlyStats.medianMonthlyValues(monthSamples,  monthlyStats.sortFunctionByQualifier());
 		if (normalizeMutlipleYearlyValues.size()<9) {
-			// do not calculate latest percentile for months with low data
-			builder.latestPercentile(null);
+			// NGMWN-1896 do not calculate latest percentile for months with low data
+			builder.latestPercentile("");
 			return;
 		}
 		// the most recent must now be added into the collection and replace of the year-month it represents
