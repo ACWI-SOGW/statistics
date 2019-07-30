@@ -22,6 +22,7 @@ import gov.usgs.ngwmn.model.MediationType;
 import gov.usgs.ngwmn.model.Specifier;
 import gov.usgs.ngwmn.model.WLSample;
 import gov.usgs.wma.statistics.app.Properties;
+import gov.usgs.wma.statistics.app.SwaggerConfig;
 import gov.usgs.wma.statistics.model.JsonData;
 import gov.usgs.wma.statistics.model.JsonDataBuilder;
 import gov.usgs.wma.statistics.model.Value;
@@ -61,15 +62,15 @@ public class StatsService {
 			@RequestParam
 			String data,
 			@ApiParam(
-					name="mediation",
+					name=StatsService_MEDIATION_NAME,
 					value=StatsService_CALCULATE_MEDIATION,
 					defaultValue=StatsService_MEDIATION_DEFAULT,
 					allowableValues=StatsService_MEDIATION_VALUES,
 					allowEmptyValue=true
 					)
 			@RequestParam(
-					name="mediation",
-					defaultValue="BelowLand"
+					name=StatsService_MEDIATION_NAME,
+					defaultValue=StatsService_MEDIATION_DEFAULT
 					)
 			String mediation,
 			@ApiParam(
@@ -78,8 +79,16 @@ public class StatsService {
 					allowableValues=BOOLEAN_VALUES,
 					allowEmptyValue=true
 					)
-			@RequestParam(defaultValue="false")
+			@RequestParam(defaultValue=StatsService_MEDIANS_DEFAULT)
 			String medians,
+			@ApiParam(
+					value=StatsService_CALCULATE_ENFORCE_RECENT,
+					defaultValue=StatsService_ENFORCE_RECENT_DEFAULT,
+					allowableValues=BOOLEAN_VALUES,
+					allowEmptyValue=true
+					)
+			@RequestParam(defaultValue=StatsService_ENFORCE_RECENT_DEFAULT)
+			String enforceRecent,
 			@ApiParam(
 					value=StatsService_CALCULATE_PERCENTILES,
 					defaultValue=StatsService_PERCENTILES_DEFAULT,
@@ -88,17 +97,18 @@ public class StatsService {
 			@RequestParam(defaultValue=StatsService_PERCENTILES_DEFAULT)
 			String percentiles) {
 		
-		return calculate(new JsonDataBuilder(env), data, mediation, medians, percentiles);
+		return calculate(new JsonDataBuilder(env), data, mediation, medians, enforceRecent, percentiles);
 	}
 	// helper method for easier testing
 	public JsonData calculate(JsonDataBuilder builder, String data,
-			String mediation, String medians, String percentiles) {
+			String mediation, String medians, String enforceRecent, String percentiles) {
 		try {
 			LOGGER.trace("entered");
 			
 			validateParamMediation(mediation, builder);
 			List<WLSample> samples = validateAndParseCsvData(data, builder);
 			validateParamMedians(medians, builder);
+			boolean isEnforceRecent = validateEnforceRecent(enforceRecent);
 			validateParamPercentiles(percentiles, builder);
 
 			// A random identifier for the service unless we parameterize the date set ID.
@@ -109,7 +119,7 @@ public class StatsService {
 			if ( builder.hasErrors() ) {
 				json = builder.build();
 			} else {
-				json = new WaterLevelStatistics(env, builder).calculate(spec, samples);
+				json = new WaterLevelStatistics(env, builder, isEnforceRecent).calculate(spec, samples);
 			}
 			LOGGER.trace("exited");
 			return json;
@@ -117,6 +127,10 @@ public class StatsService {
 			LOGGER.error("exited: ", e);
 			return null;
 		}
+	}
+	
+	protected boolean validateEnforceRecent(String enforceRecent) {
+		return SwaggerConfig.BOOLEAN_TRUE.equals(enforceRecent);
 	}
 
 	protected void validateParamPercentiles(String percentiles, JsonDataBuilder builder) {

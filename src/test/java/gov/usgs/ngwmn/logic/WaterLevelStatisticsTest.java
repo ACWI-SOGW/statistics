@@ -50,6 +50,7 @@ public class WaterLevelStatisticsTest {
 	WaterLevelStatistics stats = null;
 	Specifier spec = new Specifier();
 	private JsonDataBuilder builder;
+	boolean enforceRecent;
 
 	private WLSample createSample(String time, String value) {
 		BigDecimal val = null;
@@ -108,9 +109,9 @@ public class WaterLevelStatisticsTest {
 	public void setup() {
 		env = new Properties().setEnvironment(spring);
 		builder = new JsonDataBuilder(env);
-		stats = new WaterLevelStatistics(env, builder);
+		enforceRecent = true;
+		stats = new WaterLevelStatistics(env, builder, enforceRecent);
 		spec = new Specifier("USGS", "Testing");
-
 	}
 
 	

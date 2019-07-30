@@ -188,7 +188,7 @@ public class StatsServiceTest {
 	public void test_service_twoFineData() throws Exception {
 		String data = "1999/01/01,1.00\n1999/01/02,2.00";
 		
-		JsonData pojo = stats.calculate(data, MediationType.ASCENDING.toString(), SwaggerConfig.BOOLEAN_FALSE, SwaggerConfig.StatsService_PERCENTILES_DEFAULT);
+		JsonData pojo = stats.calculate(data, MediationType.ASCENDING.toString(), SwaggerConfig.BOOLEAN_FALSE, SwaggerConfig.BOOLEAN_TRUE, SwaggerConfig.StatsService_PERCENTILES_DEFAULT);
 		
 		assertTrue( pojo.isOk() );
 		assertFalse( pojo.hasErrors() );
@@ -218,7 +218,7 @@ public class StatsServiceTest {
 				"2017-06-10T04:15:00-05:00, 1.0\n"+
 				"2018-06-10T04:15:00-05:00, 1.0\n";
 		
-		JsonData pojo = stats.calculate(data, MediationType.ASCENDING.toString(), SwaggerConfig.BOOLEAN_FALSE, SwaggerConfig.StatsService_PERCENTILES_DEFAULT);
+		JsonData pojo = stats.calculate(data, MediationType.ASCENDING.toString(), SwaggerConfig.BOOLEAN_FALSE, SwaggerConfig.BOOLEAN_TRUE, SwaggerConfig.StatsService_PERCENTILES_DEFAULT);
 		assertTrue( pojo.isOk() );
 		assertFalse( pojo.hasErrors() );
 		
@@ -253,7 +253,7 @@ public class StatsServiceTest {
 				"2017-05-10T04:15:00-05:00, 1.0\n"+
 				"2018-05-10T04:15:00-05:00, 1.0\n";
 		
-		JsonData pojo = stats.calculate(data, MediationType.ASCENDING.toString(), SwaggerConfig.BOOLEAN_FALSE, SwaggerConfig.StatsService_PERCENTILES_DEFAULT);
+		JsonData pojo = stats.calculate(data, MediationType.ASCENDING.toString(), SwaggerConfig.BOOLEAN_FALSE, SwaggerConfig.BOOLEAN_TRUE, SwaggerConfig.StatsService_PERCENTILES_DEFAULT);
 		assertTrue( pojo.isOk() );
 		assertFalse( pojo.hasErrors() );
 		

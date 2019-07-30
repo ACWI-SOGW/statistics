@@ -7,6 +7,7 @@ import org.springframework.context.annotation.Configuration;
 import com.fasterxml.classmate.TypeResolver;
 
 import gov.usgs.wma.statistics.model.JsonData;
+import java.math.BigDecimal;
 import springfox.documentation.builders.PathSelectors;
 import springfox.documentation.builders.RequestHandlerSelectors;
 import springfox.documentation.spi.DocumentationType;
@@ -42,6 +43,10 @@ public class SwaggerConfig {
 	public static final String StatsService_MEDIANS_DEFAULT      =BOOLEAN_FALSE;
 	public static final String StatsService_CALCULATE_MEDIANS    ="If true, returns the intermediate values used in the calculations. For monthly percentiles it is required that no month have more weight than any other. When a month has multiple values, the median is used. This feature returns these intermediate values. The defaule is " + StatsService_MEDIANS_DEFAULT;
 	
+	public static final String Days406 = "406";
+	public static final String StatsService_ENFORCE_RECENT_DEFAULT    =BOOLEAN_TRUE;
+	public static final String StatsService_CALCULATE_ENFORCE_RECENT  ="If true, the statistics will be calculated only if the most recent value is less than " + Days406 + " days old. The default value is " + StatsService_ENFORCE_RECENT_DEFAULT;
+
 	public static final String StatsService_PERCENTILES_DEFAULT  ="10,25,50,75,90";
 	public static final String StatsService_CALCULATE_PERCENTILES="A comma delimited list of percentiles like the default " + StatsService_PERCENTILES_DEFAULT;
 	

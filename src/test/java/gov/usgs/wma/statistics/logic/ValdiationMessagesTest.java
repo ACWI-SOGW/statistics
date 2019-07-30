@@ -74,7 +74,7 @@ public class ValdiationMessagesTest {
 	
 	@Test
 	public void test_waterLevelStatistics_MONTHLY_RULE() {
-		WaterLevelStatistics stats = new WaterLevelStatistics(env, builder);
+		WaterLevelStatistics stats = new WaterLevelStatistics(env, builder, true);
 		
 		List<WLSample> samples = new LinkedList<>();
 		samples.add( createSample("2000-01-01", "1.0") );
@@ -88,7 +88,7 @@ public class ValdiationMessagesTest {
 	}
 	@Test
 	public void test_waterLevelStatistics_PROVISIONAL_RULE() {
-		WaterLevelStatistics stats = new WaterLevelStatistics(env, builder);
+		WaterLevelStatistics stats = new WaterLevelStatistics(env, builder, true);
 		
 		List<WLSample> samples = new LinkedList<>();
 		samples.add( createSample("2000-01-01", "1.0") );
@@ -103,7 +103,7 @@ public class ValdiationMessagesTest {
 	}
 	@Test
 	public void test_waterLevelStatistics_MONTLY_DETAIL_1() {
-		MonthlyStatistics<WLSample> stats = new WaterLevelStatistics(env, builder).getMonthlyStats();
+		MonthlyStatistics<WLSample> stats = new WaterLevelStatistics(env, builder, true).getMonthlyStats();
 
 		List<WLSample> samples = new LinkedList<>();
 		samples.add( createSample("2000-01-01", "1.0") );
@@ -117,7 +117,7 @@ public class ValdiationMessagesTest {
 	}
 	@Test
 	public void test_waterLevelStatistics_MONTLY_DETAIL_2() {
-		MonthlyStatistics<WLSample> stats = new WaterLevelStatistics(env, builder).getMonthlyStats();
+		MonthlyStatistics<WLSample> stats = new WaterLevelStatistics(env, builder, true).getMonthlyStats();
 
 		List<WLSample> samples = new LinkedList<>();
 		samples.add( createSample("2000-01-01", "1.0") );

@@ -39,6 +39,7 @@ public class ValdiationErrorsTest {
 	String mediation = "AboveDatum";
 	String medians = "false";
 	String percentiles = "10, 20, 30";
+	String enforceRecent = "true";
 	
 	@Before
 	public void setup() {
@@ -49,6 +50,7 @@ public class ValdiationErrorsTest {
 		mediation = "AboveDatum";
 		medians = "false";
 		percentiles = "10, 20, 30";
+		enforceRecent = "true";
 	}
 	public String getText(String property) {
 		String text = spring.getProperty(property, SPRING_ENV_FAIL);
@@ -69,7 +71,7 @@ public class ValdiationErrorsTest {
 
 	@Test
 	public void test_statService_VALID() {
-		JsonData json = stats.calculate(builder, data, mediation, medians, percentiles);
+		JsonData json = stats.calculate(builder, data, mediation, medians, enforceRecent, percentiles);
 		System.err.println(json.errors);
 		assertFalse(json.hasErrors());
 		assertTrue(json.isOk());
@@ -77,7 +79,7 @@ public class ValdiationErrorsTest {
 	@Test
 	public void test_statService_INVALID_MEDIATION() {
 		mediation = "unknown";
-		JsonData json = stats.calculate(builder, data, mediation, medians, percentiles);
+		JsonData json = stats.calculate(builder, data, mediation, medians, enforceRecent, percentiles);
 		
 		assertTrue(json.hasErrors());
 		assertFalse(json.isOk());
@@ -90,7 +92,7 @@ public class ValdiationErrorsTest {
 	@Test
 	public void test_statService_INVALID_MEDIANS() {
 		medians = "unknown";
-		JsonData json = stats.calculate(builder, data, mediation, medians, percentiles);
+		JsonData json = stats.calculate(builder, data, mediation, medians, enforceRecent, percentiles);
 		
 		assertTrue(json.hasErrors());
 		assertFalse(json.isOk());
@@ -104,7 +106,7 @@ public class ValdiationErrorsTest {
 	public void test_statService_INVALID_ROW_COLS() {
 		String badDate = "2001,01,01";
 		data = badDate + ",1.1,\n2002-02-02,2.2";
-		JsonData json = stats.calculate(builder, data, mediation, medians, percentiles);
+		JsonData json = stats.calculate(builder, data, mediation, medians, enforceRecent, percentiles);
 		
 		assertTrue(json.hasErrors());
 		assertFalse(json.isOk());
@@ -118,7 +120,7 @@ public class ValdiationErrorsTest {
 	public void test_statsService_INVALID_ROW_AGING() {
 		String badAging = "QZ";
 		data = "2001-01-01,1.1,"+badAging+"\n2002-02-02,2.2";
-		JsonData json = stats.calculate(builder, data, mediation, medians, percentiles);
+		JsonData json = stats.calculate(builder, data, mediation, medians, enforceRecent, percentiles);
 		
 		assertTrue(json.hasErrors());
 		assertFalse(json.isOk());
@@ -132,7 +134,7 @@ public class ValdiationErrorsTest {
 	public void test_statsService_INVALID_ROW_VALUE() {
 		String badValue = "QZ";
 		data = "2001-01-01,"+badValue+"\n2002-02-02,2.2";
-		JsonData json = stats.calculate(builder, data, mediation, medians, percentiles);
+		JsonData json = stats.calculate(builder, data, mediation, medians, enforceRecent, percentiles);
 		
 		assertTrue(json.hasErrors());
 		assertFalse(json.isOk());
@@ -151,7 +153,7 @@ public class ValdiationErrorsTest {
 	public void test_statsServcie_INVALID_ROW_DATE_BLANK() {
 		String badDate = "";
 		data = badDate + ",1.1,\n2002-02-02,2.2";
-		JsonData json = stats.calculate(builder, data, mediation, medians, percentiles);
+		JsonData json = stats.calculate(builder, data, mediation, medians, enforceRecent, percentiles);
 		
 		assertTrue(json.hasErrors());
 		assertFalse(json.isOk());
@@ -180,7 +182,7 @@ public class ValdiationErrorsTest {
 	public void test_statsService_INVALID_ROW_DATE_FUTURE() {
 		String badDate = "2107-01-01";
 		data = badDate + ",1.1,\n2002-02-02,2.2";
-		JsonData json = stats.calculate(builder, data, mediation, medians, percentiles);
+		JsonData json = stats.calculate(builder, data, mediation, medians, enforceRecent, percentiles);
 		
 		assertTrue(json.hasErrors());
 		assertFalse(json.isOk());
