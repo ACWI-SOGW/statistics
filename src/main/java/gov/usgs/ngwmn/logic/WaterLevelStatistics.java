@@ -19,6 +19,7 @@ import gov.usgs.ngwmn.model.PCode;
 import gov.usgs.ngwmn.model.Specifier;
 import gov.usgs.ngwmn.model.WLSample;
 import gov.usgs.wma.statistics.app.Properties;
+import gov.usgs.wma.statistics.app.SwaggerConfig;
 import gov.usgs.wma.statistics.logic.MonthlyStatistics;
 import gov.usgs.wma.statistics.logic.OverallStatistics;
 import gov.usgs.wma.statistics.logic.SigFigMathUtil;
@@ -33,7 +34,7 @@ public class WaterLevelStatistics extends StatisticsCalculator<WLSample> {
 	 * This is the agreed upon days window for a recent value. It is computed from
 	 * 1 year + 1 month + 1.5 weeks or 365 + 30 + 7 + 4 because of how samples are taken and eventually entered.
 	 */
-	protected static final BigDecimal Days406 = new BigDecimal("406");
+	protected static final BigDecimal Days406 = new BigDecimal(SwaggerConfig.Days406);
 
 	/**
 	 * The number 100 used to make a decimal percentile into a %100 based value.
@@ -44,10 +45,13 @@ public class WaterLevelStatistics extends StatisticsCalculator<WLSample> {
 	// Package level access for unit testing
 	MonthlyStatistics<WLSample> monthlyStats;
 	OverallStatistics<WLSample> overallStatistics;
+	boolean enforceRecent;
 	
 	
-	public WaterLevelStatistics(Properties env, JsonDataBuilder builder) {
+	public WaterLevelStatistics(Properties env, JsonDataBuilder builder, boolean enforceRecent) {
 		super(env, builder);
+		
+		this.enforceRecent = enforceRecent;
 		
 		monthlyStats = new WaterLevelMonthlyStats(env, builder);
 		
@@ -314,7 +318,7 @@ public class WaterLevelStatistics extends StatisticsCalculator<WLSample> {
 	 * @return
 	 */
 	protected boolean doesThisSiteQualifyForMonthlyStats(BigDecimal years, String recent, String today) {
-		return BigDecimal.TEN.compareTo(years) <= 0 && Days406.compareTo(daysDiff(today, recent)) >= 0;
+		return !enforceRecent || (BigDecimal.TEN.compareTo(years) <= 0 && Days406.compareTo(daysDiff(today, recent)) >= 0);
 	}
 
 	protected WLSample makeMedian(List<WLSample> samples) {

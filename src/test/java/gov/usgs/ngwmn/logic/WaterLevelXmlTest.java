@@ -49,6 +49,7 @@ public class WaterLevelXmlTest {
 	JsonDataBuilder builder;
 	WaterLevelStatistics stats;
 	Elevation elevation;
+	boolean enforceRecent;
 	
 	Reader xmlReader;
 	Map<String,String> expected;
@@ -58,7 +59,8 @@ public class WaterLevelXmlTest {
 		spec     = new Specifier();
 		env      = new Properties().setEnvironment(spring);
 		builder  = new JsonDataBuilder(env);
-		stats    = new WaterLevelStatistics(env, builder);
+		enforceRecent = true;
+		stats    = new WaterLevelStatistics(env, builder, enforceRecent);
 		expected = new HashMap<>();
 	}
 
@@ -263,13 +265,14 @@ public class WaterLevelXmlTest {
 		
 		StatsService service  = new StatsService().setProperties(env);
 		String mediation      = MediationType.BelowLand.toString(); // override from AboveDatum 
+		String enforceRecentTrue = "true";
 		String percentiles    = StatsService_PERCENTILES_DEFAULT;
 		String includeMedians = StatsService_MEDIANS_DEFAULT;
 		String data           = samples.stream()           // the service receives its data from the web as text
 								.map(sample -> sample.toCSV())
 								.collect(Collectors.joining("\n"));
 		// TEST
-		JsonData json = service.calculate(builder, data, mediation, includeMedians, percentiles);
+		JsonData json = service.calculate(builder, data, mediation, includeMedians, enforceRecentTrue, percentiles);
 		
 		// EXPECT
 		expected.put("latestPercentile", "36");
