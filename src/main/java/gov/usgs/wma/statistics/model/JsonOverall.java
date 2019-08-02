@@ -10,7 +10,7 @@ import gov.usgs.ngwmn.model.MediationType;
  *	"LATEST_PCTILE": "31.250"
  *	"LATEST_VALUE": "11.000",
  *	"MAX_VALUE": "1.000",
- *	"MEDIAN": "1.500",
+ *	"MEDIAN_VALUE": "1.500",
  *	"MIN_VALUE": "43.000",
  *	"CALC_DATE": "2018-08-29",
  *	"MAX_DATE": "2018-06-10T04:15:00-05:00",
@@ -30,7 +30,7 @@ public class JsonOverall extends JsonStats {
 	public final String latestValue;
 	@JsonProperty("MAX_VALUE")
 	public final String valueMax;
-	@JsonProperty("MEDIAN")
+	@JsonProperty("MEDIAN_VALUE")
 	public final String valueMedian; // AKA P50
 	@JsonProperty("MIN_VALUE")
 	public final String valueMin;
