@@ -15,4 +15,7 @@ app.pid
 Jenkinsfile.java
 localfiles/
 *.pem
+nb-configuration.xml
+nbactions.xml
+src/main/webapp/
 

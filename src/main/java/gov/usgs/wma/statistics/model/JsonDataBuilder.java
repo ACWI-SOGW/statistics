@@ -33,7 +33,7 @@ public class JsonDataBuilder {
 	public static final String MAX_DATE      = "MAX_DATE";
 	public static final String MIN_VALUE     = "MIN_VALUE";
 	public static final String MAX_VALUE     = "MAX_VALUE";
-	public static final String MEDIAN        = "MEDIAN"; // P50
+	public static final String MEDIAN        = "MEDIAN_VALUE"; // P50
 	public static final String P50_MIN       = "P50_MIN";
 	public static final String P50_MAX       = "P50_MAX";
 	public static final String RECORD_YEARS  = "RECORD_YEARS";
