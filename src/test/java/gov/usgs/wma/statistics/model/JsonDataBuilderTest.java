@@ -375,13 +375,13 @@ public class JsonDataBuilderTest {
 		assertEquals("While ensuring an emptly list to start, the size was not zero",
 				0,data.intermediateValuesList.size());
 		data.intermediateValues(values6a);
-		assertEquals("Upon added a couple new month values, the size should increase",
+		assertEquals("Upon adding a couple new month values, the size should increase",
 				2,data.intermediateValuesList.size());
 		data.intermediateValues(values7);
-		assertEquals("Upon added a couple new month values, the size should increase",
+		assertEquals("Upon adding a couple new month values, the size should increase",
 				4,data.intermediateValuesList.size());
 		data.intermediateValues(values6b);
-		assertEquals("Upon added a couple duplicate month values, the size should remain the same "
+		assertEquals("Upon adding a couple duplicate month values, the size should remain the same "
 				+ "because those values from a duplicated month should not be added multiple times",
 				4,data.intermediateValuesList.size());
 	}
