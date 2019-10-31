@@ -134,7 +134,9 @@ public class MonthlyStatistics<S extends Value> extends StatisticsCalculator<S> 
 					return year.equals( Value.yearUTC(sample.time) );
 				}
 			};
-			List<S> yearSamples = samples.stream().filter(yearly).collect(Collectors.toList());
+			List<S> yearSamples = samples.stream()
+					.filter(yearly)
+					.collect(Collectors.toList());
 			BigDecimal value = valueOfPercentile( yearSamples, MEDIAN_PERCENTILE, S::valueOf);
 			monthYearlyMedians.add( new Value("",value) );
 			// remove the current year
