@@ -3,6 +3,7 @@ package gov.usgs.wma.statistics.model;
 import static gov.usgs.wma.statistics.model.JsonDataBuilder.*;
 import static org.junit.Assert.*;
 
+import java.awt.image.SampleModel;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -20,6 +21,8 @@ public class JsonDataBuilderTest {
 	final String VALUE_2    = "43.21";
 	final String DATE_UTC_1 = "2000-06-10T04:15:00-05:00";
 	final String DATE_UTC_2 = "2005-06-10T04:15:00-05:00";
+	final String DATE_UTC_3 = "2000-07-10T04:15:00-05:00";
+	final String DATE_UTC_4 = "2005-07-10T04:15:00-05:00";
 	final String PERCENT_1  = "24";
 	final String PERCENT_2  = "42";
 	final String MONTH_1    = "01";
@@ -28,6 +31,8 @@ public class JsonDataBuilderTest {
 	final int    COUNT      = 42;
 	final Value  SAMPLE_1   = new Value(DATE_UTC_1, VALUE_1);
 	final Value  SAMPLE_2   = new Value(DATE_UTC_2, VALUE_2);
+	final Value  SAMPLE_3   = new Value(DATE_UTC_3, VALUE_1);
+	final Value  SAMPLE_4   = new Value(DATE_UTC_4, VALUE_2);
 
 	
 	JsonDataBuilder data;
@@ -352,6 +357,33 @@ public class JsonDataBuilderTest {
 		String collection = data.jsonData.medians;
 
 		assertEquals(individuals, collection);
+	}
+	
+	@Test
+	public void test_addingIntermediateValues_uniquely() {
+		// we had a bug where the current month was added twice because of the seemingly required order of operations
+		List<Value> values6a = new ArrayList<>();
+		List<Value> values6b = new ArrayList<>();
+		List<Value> values7  = new ArrayList<>();
+		
+		values6a.add(SAMPLE_1);
+		values6a.add(SAMPLE_2);
+		values6b.addAll(values6a);
+		values7.add(SAMPLE_3);
+		values7.add(SAMPLE_4);
+		
+		assertEquals("While ensuring an emptly list to start, the size was not zero",
+				0,data.intermediateValuesList.size());
+		data.intermediateValues(values6a);
+		assertEquals("Upon adding a couple new month values, the size should increase",
+				2,data.intermediateValuesList.size());
+		data.intermediateValues(values7);
+		assertEquals("Upon adding a couple new month values, the size should increase",
+				4,data.intermediateValuesList.size());
+		data.intermediateValues(values6b);
+		assertEquals("Upon adding a couple duplicate month values, the size should remain the same "
+				+ "because those values from a duplicated month should not be added multiple times",
+				4,data.intermediateValuesList.size());
 	}
 
 	@Test

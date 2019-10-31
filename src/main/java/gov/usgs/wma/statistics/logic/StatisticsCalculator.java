@@ -66,12 +66,12 @@ public class StatisticsCalculator<S extends Value> {
 	/**
 	 * Calculates statistics for a specifier where data must be supplied as an XML string reader.
 	 * 
-	 * This is used in the {@link DatabaseXMLCache} to supply data without requiring a unnecessary
+	 * This is used in the DatabaseXMLCache to supply data without requiring a unnecessary
 	 * read from the database. This optimization saves about 5 sec per site. This may not sound like
 	 * much; however, it only takes 3600 sites to save 5 hours!
 	 * 
 	 * @param spec the specifier only checks the agency and site. It ignores the data type.
-	 * @param reader the {@link Reader} supplying XML data samples.
+	 * @param xmlData the Reader supplying XML data samples.
 	 * @throws Exception Thrown if there is an issue parsing data from the XML reader.
 	 */
 	public JsonData calculate(Specifier spec, Reader xmlData) throws Exception {
