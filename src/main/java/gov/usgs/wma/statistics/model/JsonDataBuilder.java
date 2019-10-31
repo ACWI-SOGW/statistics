@@ -4,6 +4,7 @@ import static gov.usgs.wma.statistics.app.Properties.*;
 import static gov.usgs.wma.statistics.model.Value.*;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
@@ -67,16 +68,21 @@ public class JsonDataBuilder {
 	 * This is a collection of all the normalized values.
 	 * Is used for the overall percentile value.
 	 */
-	List<Value> intermediateValuesList = new LinkedList<>();
+	List<Value> intermediateValuesList   = new LinkedList<>();
+	/**
+	 * Since there are a couple places intermediate values must be calculated,
+	 * This keeps track of months that have been added to avoid duplicates.
+	 */
+	List<String> intermediateMonthsAdded = new ArrayList<String>(12);
 	/*
 	 * The string of all intermediate values to return to the requester.
 	 */
-	StringBuilder intermediateValues    = new StringBuilder();
+	StringBuilder intermediateValues     = new StringBuilder();
 	/**
 	 * This indicates weather or not to build and send the intermediate
 	 * values string back to the user.
 	 */
-	boolean includeIntermediateValues   = false;
+	boolean includeIntermediateValues    = false;
 	
 	JsonData jsonData;
 
@@ -320,6 +326,16 @@ public class JsonDataBuilder {
 	}
 	
 	public JsonDataBuilder intermediateValues(List<? extends Value> samples) {
+		if(samples == null || samples.isEmpty()) {
+			return this;
+		}
+		String month = samples.get(0).getMonth();
+		LOGGER.trace("month add request {} ", month);
+		if (this.intermediateMonthsAdded .contains(month)) {
+			return this;
+		}
+		LOGGER.trace("month add perform {}", month);
+		this.intermediateMonthsAdded.add(month);
 		this.intermediateValuesList.addAll(samples);
 		
 		if ( ! isIncludeIntermediateValues()) {
