@@ -14,4 +14,4 @@ if [[ $1 = "--help" ]]; then
 fi
 
 echo "Killing old service if exists"
-ps -w -w -u `whoami` -o "pid etime ppid args" | grep aq-qualifiers | grep -v grep | cut -c1-5 | xargs kill
+ps -w -w -u `whoami` -o "pid etime ppid args" | grep statistics | grep -v grep | cut -c1-5 | xargs kill

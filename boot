@@ -30,8 +30,12 @@ mkdir -p logs
 echo "Maven Building..."
 mvn package --log-file logs/mvn.log
 
+# if ! exist target/statistics.jar
+#   ln -s target/statistics*.jar target/statistics.jar
+# fi
+
 echo "Starting..."
-java -jar target/statistics-0.2.0.jar --spring.profiles.active=${1:-prod} > logs/statistics.log 2>logs/error.log &
+java -jar target/statistics.jar --spring.profiles.active=${1:-prod} > logs/statistics.log 2>logs/error.log &
 echo $! > app.pid
 
 echo "Service Started."
