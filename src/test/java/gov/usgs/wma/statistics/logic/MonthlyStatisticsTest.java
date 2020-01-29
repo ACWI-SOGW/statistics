@@ -3,9 +3,13 @@ package gov.usgs.wma.statistics.logic;
 import static gov.usgs.wma.statistics.model.JsonDataBuilder.*;
 import static org.junit.Assert.*;
 
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -21,8 +25,13 @@ import org.springframework.core.env.Environment;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import gov.usgs.ngwmn.logic.WaterLevelMonthlyStats;
+import gov.usgs.ngwmn.logic.WaterLevelStatistics;
 import gov.usgs.ngwmn.model.MediationType;
+import gov.usgs.ngwmn.model.Specifier;
+import gov.usgs.ngwmn.model.WLSample;
 import gov.usgs.wma.statistics.app.Properties;
+import gov.usgs.wma.statistics.model.JsonData;
 import gov.usgs.wma.statistics.model.JsonDataBuilder;
 import gov.usgs.wma.statistics.model.JsonMonthly;
 import gov.usgs.wma.statistics.model.Value;
@@ -59,6 +68,14 @@ public class MonthlyStatisticsTest {
 			val = new BigDecimal(value);
 		}
 		return new Value(time, val);
+	}
+	private WLSample createWLSample(String time, String value) {
+		BigDecimal val = null;
+		if (null != value) {
+			val = new BigDecimal(value);
+		}
+		
+		return new WLSample(time, val, "", val, "", false, "", null);
 	}
 
 	@Test
@@ -870,4 +887,112 @@ public class MonthlyStatisticsTest {
 		actual = stats.doesThisMonthQualifyForStats(samples);
 		assertFalse(actual);
 	}
+	
+	@Test
+	public void test_generateMonthYearlyPercentiles_roundingSigFigCheck() {
+		
+		List<Value> values = new LinkedList<>();
+		StatisticsCalculatorTest.loadWithSeptemberData(values);
+		
+		List<Value> percentiles = stats.generateMonthYearlyPercentiles(values);
+		assertEquals(1, percentiles.size());
+		BigDecimal actual = percentiles.get(0).value;
+		BigDecimal expect = new BigDecimal("24"); //24.7
+		assertEquals(expect, actual);
+	}
+	@Test
+	public void test_generateMonthYearlyPercentiles_roundingSigFigCheck2() throws Exception {
+		
+		List<Value> values = new LinkedList<>();
+		loadCsvValues(values, "GW-stats-service-review-original-RWDudley.csv");
+		
+//		for (Iterator<Value> iter = values.iterator(); iter.hasNext();) {
+//			Value value = iter.next();
+//			if (!value.time.contains("-09-")) {
+//				iter.remove();
+//			}
+//		}
+		int count = 0;
+		for (int v=values.size()-1; v>=0; v--) {
+			Value value = values.get(v);
+			if (!value.time.contains("-09-")) {
+				values.remove(value);
+				count++;
+			}
+		}
+		
+		List<Value> medians = stats.medianMonthlyValues(values, (samples)->{
+			return StatisticsCalculator.sortByValueOrderDescending(samples);
+		});
+		
+		List<Value> percentiles = stats.generateMonthYearlyPercentiles(medians);
+		//assertEquals(1, percentiles.size());
+		BigDecimal actual = percentiles.get(0).value;
+		BigDecimal expect = new BigDecimal("24");//24.8
+		assertEquals(expect, actual);
+		
+	}
+	public BufferedReader setupReader(String filename) {
+		filename = "/sample-data/"+filename;
+		InputStream rin = getClass().getResourceAsStream(filename);
+		BufferedReader reader   = new BufferedReader(new InputStreamReader(rin));
+		return reader;
+	}
+	public void loadCsvValues(List<Value> values, String filename) throws Exception {
+		BufferedReader reader = setupReader(filename);
+		String line;
+		while ((line=reader.readLine())!=null) {
+			line = line.replaceAll(" ", "");
+			if (line.length() == 0 || line.startsWith("#")) {
+				continue;
+			}
+			String[] cols = line.split(",");
+			Value value = createSample(cols[0], cols[1]);
+			if (cols.length>2) {
+				value.setProvsional("P".equalsIgnoreCase(cols[2]));
+			}
+			values.add(value);
+		}
+	}
+	public void loadCsvData(List<WLSample> values, String filename) throws Exception {
+		BufferedReader reader = setupReader(filename);
+		String line;
+		while ((line=reader.readLine())!=null) {
+			line = line.replaceAll(" ", "");
+			if (line.length() == 0 || line.startsWith("#")) {
+				continue;
+			}
+			String[] cols = line.split(",");
+			WLSample value = createWLSample(cols[0], cols[1]);
+			if (cols.length>2) {
+				value.setProvsional("P".equalsIgnoreCase(cols[2]));
+			}
+			values.add(value);
+		}
+	}
+	@Test
+	public void test_generateMonthYearlyPercentiles_roundingSigFigCheck_fileLoaded() throws Exception {
+		
+		List<WLSample> values = new LinkedList<>();
+		loadCsvData(values, "GW-stats-service-review-original-RWDudley.csv");
+		
+		Specifier spec = new Specifier("Spec", "Unnecessary");
+		
+		WaterLevelStatistics wlstats = new WaterLevelStatistics(env, builder, true);
+		JsonData response = wlstats.calculate(spec, values);
+		
+		String actual = response.getMonthly().get("9").percentiles.get(P50_MAX);
+		String expect = "24.7";
+		assertEquals(expect, actual);
+		
+//		new StatisticsCalculator<Value>(env).conditioning(spec, values);
+//		sortValueByQualifier(sortedByValue);
+//		
+//		List<Value> percentiles = stats.generateMonthYearlyPercentiles(values);
+//		assertEquals(12, percentiles.size());
+//		BigDecimal actual = percentiles.get(8).value; // 8 is sept in 0 based lists
+//		BigDecimal expect = new BigDecimal("24.74");
+//		assertEquals(expect, actual);
+	}
+	
 }

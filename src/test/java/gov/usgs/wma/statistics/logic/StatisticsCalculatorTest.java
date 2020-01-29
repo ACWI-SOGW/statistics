@@ -52,14 +52,14 @@ public class StatisticsCalculatorTest {
 	MonthlyStatistics<Value> monthlyStats;
 	
 
-	private Value createSample(String time, String value) {
+	private static Value createSample(String time, String value) {
 		BigDecimal val = null;
 		if (null != value) {
 			val = new BigDecimal(value);
 		}
 		return new Value(time, val);
 	}
-	private Value createSample(String time, String value, boolean provisional) {
+	private static Value createSample(String time, String value, boolean provisional) {
 		Value val = createSample(time, value);
 		val.setProvsional(provisional);
 		return val;
@@ -1256,4 +1256,153 @@ public class StatisticsCalculatorTest {
 		actual = stats.uniqueYears(new LinkedList<>());
 		assertEquals(0, actual);
 	}
+	
+	@Test
+	public void test_valueOfPercentile_roundingSigFigCheck_ascendingSort() {
+		
+		List<Value> values = new LinkedList<>();
+		loadWithSeptemberData(values);
+		
+		BigDecimal actual = stats.valueOfPercentile(values, new BigDecimal("0.5"), Value::valueOf);
+		BigDecimal expect = new BigDecimal("24.7");
+		assertEquals(expect, actual);
+	}
+	@Test
+	public void test_valueOfPercentile_roundingSigFigCheck_descendingSort() {
+		
+		List<Value> values = new LinkedList<>();
+		loadWithSeptemberData(values);
+		StatisticsCalculator.sortByValueOrderDescending(values);
+		
+		BigDecimal actual = stats.valueOfPercentile(values, new BigDecimal("0.5"), Value::valueOf);
+		BigDecimal expect = new BigDecimal("24.7");
+		assertEquals(expect, actual);
+	}
+	public static void loadWithSeptemberData(List<Value> values) {
+		values.add( createSample("2009-09-01T00:00:00","24.48") );
+		values.add( createSample("2009-09-03T00:00:00","24.48") );
+		values.add( createSample("2009-09-02T00:00:00","24.49") );
+		values.add( createSample("2009-09-04T00:00:00","24.49") );
+		values.add( createSample("2009-09-05T00:00:00","24.53") );
+		values.add( createSample("2009-09-07T00:00:00","24.56") );
+		values.add( createSample("2009-09-08T00:00:00","24.57") );
+		values.add( createSample("2009-09-06T00:00:00","24.58") );
+		values.add( createSample("2009-09-09T00:00:00","24.62") );
+		values.add( createSample("2009-09-12T00:00:00","24.63") );
+		
+		values.add( createSample("2009-09-13T00:00:00","24.63") );
+		values.add( createSample("2009-09-11T00:00:00","24.65") );
+		values.add( createSample("2009-09-10T00:00:00","24.66") );
+		values.add( createSample("2009-09-14T00:00:00","24.67") );
+		
+		values.add( createSample("2009-09-15T00:00:00","24.7") );
+		values.add( createSample("2009-09-18T00:00:00","24.74") );
+		
+		values.add( createSample("2009-09-17T00:00:00","24.76") );
+		values.add( createSample("2009-09-16T00:00:00","24.77") );
+		values.add( createSample("2009-09-19T00:00:00","24.82") );
+		values.add( createSample("2009-09-20T00:00:00","24.84") );
+		
+		values.add( createSample("2009-09-21T00:00:00","24.87") );
+		values.add( createSample("2009-09-22T00:00:00","24.88") );
+		values.add( createSample("2009-09-23T00:00:00","24.88") );
+		values.add( createSample("2009-09-24T00:00:00","24.91") );
+		values.add( createSample("2009-09-27T00:00:00","24.92") );
+		values.add( createSample("2009-09-28T00:00:00","24.92") );
+		values.add( createSample("2009-09-25T00:00:00","24.96") );
+		values.add( createSample("2009-09-26T00:00:00","24.97") );
+		values.add( createSample("2009-09-29T00:00:00","24.97") );
+		values.add( createSample("2009-09-30T00:00:00","25.02") );
+	}
+//	@Test
+//	public void test_median_valueOfPercentile_roundingSigFigCheck2() {
+//		
+//		List<Value> values = new LinkedList<>();
+//		loadSeptemberData(values);
+////		StatisticsCalculator.sortByValueOrderDescending(values);
+//		MonthlyStatistics<Value> monthlyStatistics = new MonthlyStatistics<>(env, new JsonDataBuilder(env));
+//		List<Value> medians = monthlyStatistics.medianMonthlyValues(values,  (samples)->{
+//			return StatisticsCalculator.sortByValueOrderDescending(samples);
+//		});
+//		
+//		BigDecimal actual = stats.valueOfPercentile(medians, new BigDecimal("0.5"), Value::valueOf);
+//		BigDecimal expect = new BigDecimal("24.74");
+//		assertEquals(expect, actual);
+//	}
+//	public static void loadSeptemberData(List<Value> values) {
+//		values.add( createSample("1966-09-20","36.1"));
+//		values.add( createSample("1965-09-20","35.52"));
+//		values.add( createSample("1959-09-20","34.89"));
+//		values.add( createSample("1968-09-20","34.37"));
+//		values.add( createSample("1962-09-20","33.96"));
+//		values.add( createSample("1958-09-20","33.94"));
+//		values.add( createSample("1967-09-20","33.81"));
+//		values.add( createSample("1964-09-20","33.27"));
+//		values.add( createSample("1969-09-20","33.10"));
+//		values.add( createSample("1961-09-20","33.06"));
+//		values.add( createSample("1981-09-16","32.9"));
+//		values.add( createSample("1960-09-20","32.89"));
+//		values.add( createSample("2003-09-16","32.68"));
+//		values.add( createSample("1987-09-16","32.07"));
+//		values.add( createSample("1972-09-20","31.95"));
+//		values.add( createSample("2004-09-16","31.91"));
+//		values.add( createSample("2002-09-16","31.85"));
+//		values.add( createSample("1986-09-16","31.74"));
+//		values.add( createSample("1970-09-20","31.61"));
+//		values.add( createSample("1980-09-16","31.46"));
+//		values.add( createSample("1988-09-16","31.3"));
+//		values.add( createSample("1971-09-25","31.22"));
+//		values.add( createSample("1985-09-04","31.12"));
+//		values.add( createSample("2001-09-16","31.06"));
+//		values.add( createSample("1982-09-16","30.96"));
+//		values.add( createSample("1989-09-16","30.94"));
+//		values.add( createSample("1990-09-28","30.86"));
+//		values.add( createSample("2018-09-16","30.85"));
+//		values.add( createSample("2000-09-29","30.22"));
+//		values.add( createSample("1979-09-15","30.17"));
+//		values.add( createSample("1983-09-16","30.17"));
+//		values.add( createSample("1998-09-30","30.17"));
+//		values.add( createSample("1997-09-26","30.16"));
+//		values.add( createSample("1999-09-28","30.08"));
+//		values.add( createSample("2005-09-16","29.82"));
+//		values.add( createSample("2017-09-16","29.75"));
+//		values.add( createSample("2016-09-16","29.57"));
+//		values.add( createSample("1977-09-25","29.43"));
+//		values.add( createSample("1995-09-28","29.41"));
+//		values.add( createSample("1993-09-28","29.29"));
+//		values.add( createSample("1975-09-20","29.28"));
+//		values.add( createSample("1973-09-20","29.04"));
+//		values.add( createSample("2015-09-15","29"));
+//		values.add( createSample("1978-09-20","28.85"));
+//		values.add( createSample("1991-09-27","28.83"));
+//		values.add( createSample("2013-09-16","28.71"));
+//		values.add( createSample("1994-09-28","28.22"));
+//		values.add( createSample("2014-09-16","28.15"));
+//		values.add( createSample("1992-09-24","27.66"));
+//		values.add( createSample("1984-09-16","27.61"));
+//		values.add( createSample("1996-09-27","27.21"));
+//		values.add( createSample("2007-09-16","27.0"));
+//		values.add( createSample("2012-09-16","26.84"));
+//		values.add( createSample("2011-09-16","26.50"));
+//		values.add( createSample("2006-09-16","26.28"));
+//		values.add( createSample("2008-09-16","26.07"));
+//		values.add( createSample("2010-09-16","25.83"));
+//		values.add( createSample("2009-09-16","24.74"));
+//	}
+
+	@Test
+	public void testBigDecimal_zeroHasNoPrecision() {
+		BigDecimal zero = new BigDecimal("0.000");
+		BigDecimal three = new BigDecimal("3.000");
+		assertEquals(1, zero.precision());
+		assertEquals(4, three.precision());
+		assertEquals(1, three.subtract(three).precision());		
+
+		BigDecimal zero5 = zero.setScale(5);
+		BigDecimal three5 = three.setScale(5);
+		assertEquals(1, zero5.precision());
+		assertEquals(5, three5.precision());
+	}
+	
+
 }

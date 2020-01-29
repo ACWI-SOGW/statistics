@@ -12,13 +12,13 @@ package gov.usgs.wma.statistics.logic;
  *
  */
 @SuppressWarnings("serial")
-public class SimpleSigFigDecimal extends ScientificDecimal {
+public class UsgsDecimal extends ScientificDecimal {
 	
-	public SimpleSigFigDecimal(String value, int sigfigs) {
+	public UsgsDecimal(String value, int sigfigs) {
 		super(value, sigfigs);
 	}
 
-	public SimpleSigFigDecimal(String value) {
+	public UsgsDecimal(String value) {
 		super(value);
 	}
 	
@@ -27,7 +27,7 @@ public class SimpleSigFigDecimal extends ScientificDecimal {
 		sigfigs = super.precision();
 		
 		String figs = value;
-		figs = figs.replace(".", "");
+		figs = figs.replace(".", ""); // replace is not regex
 		if (doubleValue() != 0.0) {
 			// do not remove zeros for zero itself
 			figs = figs.replaceAll("^0+", "");
