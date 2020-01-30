@@ -586,24 +586,30 @@ public class SigFigMathUtilTest {
 		RoundingMode rmPositive = rule.valueRule(new BigDecimal("1"), 1);
 		assertEquals("Round up to positive infinity for positive numbers.", RoundingMode.HALF_UP, rmPositive);
 
+		// 2020-01-31 back 2017 there was a round rule suggested that negative numbers round towards zero.
+        // This test is legacy from that era. Since 2018-07 we have reverted back to rounding to the larger magnitude.
         RoundingMode rmNegative = rule.valueRule(new BigDecimal("-1"), 1);
         assertEquals("Round down negative infinity for negative numbers.", RoundingMode.HALF_UP, rmNegative);
 
+        // 2020-01-31 now we found a document that suggests USGS rounds perfect point 5 values down
         RoundingMode rmPoint5 = rule.valueRule(new BigDecimal("1.5000"), 2);
         assertEquals("Round down for 1.5 numbers.", RoundingMode.HALF_DOWN, rmPoint5);
 
+        // 2020-01-31 now we found a document that suggests USGS rounds up for past halfway mark
+        RoundingMode rmPoint51 = rule.valueRule(new BigDecimal("1.5001"), 2);
+        assertEquals("Round up for 1.5001 numbers, numbers past halfway.", RoundingMode.HALF_UP, rmPoint51);
 
-    }
-	
-    
-    @Test
-    public void test_BigDecimal_1000() {
-    	BigDecimal thousand = new BigDecimal("1000");
-    	BigDecimal one = new BigDecimal("1.111");
-    	
-    	BigDecimal thousandOne = SigFigMathUtil.sigFigMultiply(thousand, one);
-    	
-    	assertEquals("This is wrong the real value should be 1000", "1111", thousandOne.toPlainString());
+        // 2020-01-31 now we found a document that suggests USGS rounds up for past halfway mark
+        RoundingMode rmPoint5RoundDown = rule.valueRule(new BigDecimal("1.234500"), 5);
+        assertEquals("Round down for 1.xxx5 numbers.", RoundingMode.HALF_DOWN, rmPoint5RoundDown);
+        RoundingMode rmPoint5RoundUp = rule.valueRule(new BigDecimal("1.234500"), 2);
+        assertEquals("the point 5 rule should not effect typical rounding.", RoundingMode.HALF_UP, rmPoint5RoundUp);
+        // Why up? The Java round up rule works as USGS desires for all values but at the halfway mark.
+        // In this example the rounding is to 2 figures and the values to the right of 1.2 are not a point 5 rule.
+        // Since Java will do what we intend here, we can use its round up even though the value will be rounded down.
+        // The point 5 rule is for forcing a rounding down when at the halfway point.
+
+
     }
 
 }

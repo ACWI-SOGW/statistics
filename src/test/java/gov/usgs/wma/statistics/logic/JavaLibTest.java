@@ -9,6 +9,17 @@ import org.junit.Test;
 
 public class JavaLibTest {
 
+
+	@Test
+	public void test_BigDecimal_1000() {
+		BigDecimal thousand = new BigDecimal("1000");
+		BigDecimal one = new BigDecimal("1.111");
+
+		BigDecimal thousandOne = SigFigMathUtil.sigFigMultiply(thousand, one);
+
+		assertEquals("This is wrong the real value should be 1000", "1111", thousandOne.toPlainString());
+	}
+
 	@Test
 	public void testBigDecimalScale() {
 		// testing if understanding of divide and rounding to the expect scale as expected
