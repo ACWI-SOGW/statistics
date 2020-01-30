@@ -29,8 +29,8 @@ public class SigFigMathUtilTest {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SigFigMathUtilTest.class);
     private static final String[] args = {"12.000000", ".1", "0.0", "4.40", "560"}; //total 576.5
-    private static final BigDecimal expResult_default_half_even = new BigDecimal("576");
-    private static final BigDecimal expResult_default = new BigDecimal("577");
+    private static final BigDecimal expect_default_half_down = new BigDecimal("576");
+    private static final BigDecimal expect_default = new BigDecimal("577");
     private static List<BigDecimal> bdList;
     
     private static final CustomRoundingRule RM_UP   = new JavaDefaultRoundingRule(RoundingMode.HALF_UP);
@@ -71,7 +71,7 @@ public class SigFigMathUtilTest {
     @Test
     public void testSigFigAdd_List_RoundingMode() {
         BigDecimal result = SigFigMathUtil.sigFigAdd(bdList, RM_EVEN);
-        assertEquals(expResult_default_half_even.toPlainString(), result.toPlainString());
+        assertEquals(expect_default_half_down.toPlainString(), result.toPlainString());
 
         BigDecimal expResult_down = new BigDecimal("576");
         BigDecimal result_down = SigFigMathUtil.sigFigAdd(bdList, RM_DOWN);
@@ -88,8 +88,9 @@ public class SigFigMathUtilTest {
      */
     @Test
     public void testSigFigAdd_List() {
-        BigDecimal result = SigFigMathUtil.sigFigAdd(bdList);
-        assertEquals(expResult_default.toPlainString(), result.toPlainString());
+        BigDecimal actual = SigFigMathUtil.sigFigAdd(bdList);
+        assertEquals("When the value end in point 5 then round down (if it has further non-zero digits then round up)",
+                expect_default_half_down.toPlainString(), actual.toPlainString());
 
         //null check
         BigDecimal nullResult = SigFigMathUtil.sigFigAdd(null, RM_UP);
@@ -118,15 +119,15 @@ public class SigFigMathUtilTest {
      */
     @Test
     public void testSigFigSub_List() {
-        BigDecimal expResult = new BigDecimal("-553"); // 07-31-2018 for standard Java HALF_UP for negative numbers
-        BigDecimal result = SigFigMathUtil.sigFigSubtract(bdList);
-        assertEquals(expResult.toPlainString(), result.toPlainString());
+        BigDecimal expect = new BigDecimal("-552"); // 01-31-2020 round point 5 down
+        BigDecimal actual = SigFigMathUtil.sigFigSubtract(bdList);
+        assertEquals(expect.toPlainString(), actual.toPlainString());
 
-        expResult = new BigDecimal("-503");
         BigDecimal subANegBD = new BigDecimal("-50");
         bdList.add(subANegBD);
-        result = SigFigMathUtil.sigFigSubtract(bdList);
-        assertEquals(expResult.toPlainString(), result.toPlainString());
+        actual = SigFigMathUtil.sigFigSubtract(bdList);
+        expect = new BigDecimal("-502"); // round 502.5 down to 502
+        assertEquals(expect.toPlainString(), actual.toPlainString());
         bdList.remove(subANegBD);
 
         //null check
@@ -519,11 +520,11 @@ public class SigFigMathUtilTest {
 	
 	@Test
 	public void test_getLeastScale_null() {
-		BigDecimal actual = SigFigMathUtil.getLeastScale(null);
-		assertNull(actual);
+		int actual = SigFigMathUtil.getLeastScale(null);
+		assertEquals(0, actual);
 		
 		actual = SigFigMathUtil.getLeastScale(new LinkedList<>());
-		assertNull(actual);
+		assertEquals(0, actual);
 	}
 	
 	@Test
@@ -579,25 +580,20 @@ public class SigFigMathUtilTest {
 
 	
 	@Test
-	public void test_MathmaticsPositiveInfinityRoundingRule() {
-		SigFigMathUtil.MathmaticsPositiveInfinityRoundingRule rule = new SigFigMathUtil.MathmaticsPositiveInfinityRoundingRule();
+	public void test_UsgsRoundingRule() {
+		SigFigMathUtil.CustomRoundingRule rule = new SigFigMathUtil.UsgsRoundingRule();
 		
-		RoundingMode rmPositive = rule.valueRule(new BigDecimal("1"));
+		RoundingMode rmPositive = rule.valueRule(new BigDecimal("1"), 1);
 		assertEquals("Round up to positive infinity for positive numbers.", RoundingMode.HALF_UP, rmPositive);
-		
-		RoundingMode rmNegative = rule.valueRule(new BigDecimal("-1"));
-		assertEquals("Round down toward zero for negative numbers.", RoundingMode.HALF_DOWN, rmNegative);
-		
-		rmPositive = rule.productRule(new BigDecimal("-1"), new BigDecimal("-1"));
-		assertEquals("Round up to positive infinity for positive numbers.", RoundingMode.HALF_UP, rmPositive);
-		rmPositive = rule.productRule(new BigDecimal("1"), new BigDecimal("1"));
-		assertEquals("Round up to positive infinity for positive numbers.", RoundingMode.HALF_UP, rmPositive);
-		
-		rmNegative = rule.productRule(new BigDecimal("-1"),new BigDecimal("1"));
-		assertEquals("Round down toward zero for negative numbers.", RoundingMode.HALF_DOWN, rmNegative);
-		rmNegative = rule.productRule(new BigDecimal("1"),new BigDecimal("-1"));
-		assertEquals("Round down toward zero for negative numbers.", RoundingMode.HALF_DOWN, rmNegative);
-	}
+
+        RoundingMode rmNegative = rule.valueRule(new BigDecimal("-1"), 1);
+        assertEquals("Round down negative infinity for negative numbers.", RoundingMode.HALF_UP, rmNegative);
+
+        RoundingMode rmPoint5 = rule.valueRule(new BigDecimal("1.5000"), 2);
+        assertEquals("Round down for 1.5 numbers.", RoundingMode.HALF_DOWN, rmPoint5);
+
+
+    }
 	
     
     @Test

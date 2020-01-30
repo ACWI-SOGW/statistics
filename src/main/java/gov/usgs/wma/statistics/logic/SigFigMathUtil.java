@@ -33,16 +33,17 @@ public class SigFigMathUtil {
     // July 19 2016 - changed for GWW /JL. It was HALF_EVEN for all values and must be round half up for all values.
     // July 30 2018 - Change of specification - they want the default Java behavior back.
     // This custom rounding rule class allows for future rounding changes including the former custom rule from 2017.
-    public static CustomRoundingRule DEFAULT_ROUNDING_RULE = new JavaDefaultRoundingRule(RoundingMode.HALF_UP);
+    public static CustomRoundingRule DEFAULT_ROUNDING_RULE = new UsgsRoundingRule();
     
-    public static interface CustomRoundingRule {
-    	RoundingMode valueRule(BigDecimal value);
-    	RoundingMode productRule(BigDecimal a, BigDecimal b);
+    public interface CustomRoundingRule {
+    	RoundingMode valueRule(BigDecimal value, int sigFigs);
+        RoundingMode productRule(BigDecimal a, BigDecimal b, int sigFigs);
+        RoundingMode divisionRule(BigDecimal a, BigDecimal b, int sigFigs);
     }
-    
+
     // March 30 2017 - discovered that Java round negative values away from zero towards positive and negative infinity.
     //     this update will round towards positive infinity always.
-    // March 30 2017 - Java round all values based on the absolute value of the number rather than 
+    // March 30 2017 - Java round all values based on the absolute value of the number rather than
     // relative to infinity. As in, 4.1/2.0 = 2.1 (half up) and -4.1/2.0 = -2.1 (half up away from zero)
     // However, it seems math suggests this should be the case -4.1/2.0 = -2.0 (half up to greater value)
     // Now, when supplying a new rounding mode, the handing of positive must be specified
@@ -53,19 +54,25 @@ public class SigFigMathUtil {
     // July  30 2018 - Change of specification - they want the default Java behavior back.
     //     This is not currently used anywhere but there is a high likelihood that is will
     //     be called back into use by any level of statistics.
-    public static final class MathmaticsPositiveInfinityRoundingRule implements CustomRoundingRule {
-        private static final RoundingMode DEFAULT_ROUNDING_MODE_POSITIVE_VALUE = RoundingMode.HALF_UP; 
-        private static final RoundingMode DEFAULT_ROUNDING_MODE_NEGATIVE_VALUE = RoundingMode.HALF_DOWN;
-        
-        private static final BigDecimal NEGATIVE = new BigDecimal("-1");
-        private static final BigDecimal POSITIVE = BigDecimal.ONE;
-        
-    	@Override
-    	public RoundingMode valueRule(BigDecimal value) {
-    		RoundingMode mode = DEFAULT_ROUNDING_MODE_NEGATIVE_VALUE;
-        	if (value.signum() >= 0) {
-        		mode = DEFAULT_ROUNDING_MODE_POSITIVE_VALUE;
-        	}
+    //
+    // Jan   30 2020 - New revision to rounding. The default rounding rule for Java is nearly correct.
+    //     The rounding rule for fives is to ensure there is a digit other than 0 to the right to round up.
+    //     IE: 1.051 should round to 2.0 while 1.050 should round to 1.0 and 1.05000000001 rounds to 2.0
+    public static final class UsgsRoundingRule implements CustomRoundingRule {
+        private static final RoundingMode ROUNDING_MODE_UP = RoundingMode.HALF_UP;
+        private static final RoundingMode ROUNDING_MODE_DOWN = RoundingMode.HALF_DOWN;
+        private static final BigDecimal TWO = new BigDecimal("2");
+
+        @Override
+    	public RoundingMode valueRule(BigDecimal value, int sigFigs) {
+    		RoundingMode mode = ROUNDING_MODE_UP;
+        	if (value.precision() > sigFigs) {
+                BigDecimal rounded = value.round(new MathContext(sigFigs, ROUNDING_MODE_DOWN));
+                BigDecimal remainder = value.subtract(rounded);
+                if (remainder.compareTo(BigDecimal.ZERO) == 0) {
+                    mode = ROUNDING_MODE_DOWN;
+                }
+            }
         	return mode;
     	}
     	@Override
@@ -73,15 +80,19 @@ public class SigFigMathUtil {
     	// The rounding mode must be provided as the calculation is being performed. This solves the catch 22.
     	// If both signs are the same them the resulting value will be positive and if different then negative.
     	// When the rounding rule, like this one, is product value sign specific this can accommodate it.
-    	public RoundingMode productRule(BigDecimal a, BigDecimal b) {
-        	BigDecimal sign = NEGATIVE;
-        	if (a.signum() == b.signum()) {
-        		sign = POSITIVE;
-        	}
-        	return valueRule(sign);
+    	public RoundingMode productRule(BigDecimal a, BigDecimal b, int sigFigs) {
+        	return valueRule(a.multiply(b), sigFigs);
     	}
+    	@Override
+        public RoundingMode divisionRule(BigDecimal a, BigDecimal b, int sigFigs) {
+            RoundingMode mode = ROUNDING_MODE_UP;
+            if (b.equals(TWO)) {
+                mode = ROUNDING_MODE_DOWN;
+            }
+            return mode;
+        }
     }
-        
+
     // July  30 2018 - Change of specification - they want the default Java behavior back.
     // Simply put, this helper returns the given mode during construction.
     public static final class JavaDefaultRoundingRule implements CustomRoundingRule {
@@ -90,15 +101,19 @@ public class SigFigMathUtil {
     		ROUNDING_MODE = roundingMode;
 		}
     	@Override
-    	public RoundingMode valueRule(BigDecimal value) {
+    	public RoundingMode valueRule(BigDecimal value, int sigFigs) {
     		return ROUNDING_MODE;
     	}
-    	@Override
-    	public RoundingMode productRule(BigDecimal a, BigDecimal b) {
-    		return ROUNDING_MODE;
-    	}
+        @Override
+        public RoundingMode productRule(BigDecimal a, BigDecimal b, int sigFigs) {
+            return ROUNDING_MODE;
+        }
+        @Override
+        public RoundingMode divisionRule(BigDecimal a, BigDecimal b, int sigFigs) {
+            return ROUNDING_MODE;
+        }
     }
-    
+
     /**
      * Note that it is assumed business rule that the input datum has a decimal
      * point placed after the number for all ambiguous cases. Example: 5000 will
@@ -131,9 +146,9 @@ public class SigFigMathUtil {
         }
 
         BigDecimal finalAnswer = null;
-        BigDecimal leastScale = getLeastScale(bdList);
+        int leastScale = getLeastScale(bdList);
 
-        finalAnswer = result.setScale(leastScale.scale(), rm.valueRule(result));
+        finalAnswer = result.setScale(leastScale, rm.valueRule(result, leastScale));
         return finalAnswer;
     }
 
@@ -193,7 +208,7 @@ public class SigFigMathUtil {
             LOGGER.warn("BigDecimal arg was null.");
             return null;
         }
-        
+
         if (rm == null) {
             LOGGER.warn("RoundingMode arg was null. Did you mean to use the 2 arg method that applies the default rounding mode?");
             return null;
@@ -227,7 +242,7 @@ public class SigFigMathUtil {
             LOGGER.warn("RoundingMode not defined. Did you mean to use the 2 arg method which uses the default rounding mode?");
             return null;
         }
-        BigDecimal finalAnswer = null;
+        BigDecimal finalAnswer;
         BigDecimal[] bigDecimalList = bdList.toArray(new BigDecimal[bdList.size()]);
         BigDecimal result = bigDecimalList[0];
 
@@ -241,9 +256,9 @@ public class SigFigMathUtil {
                     return null;
                 }
             }
-            BigDecimal leastScale = getLeastScale(bdList);
+            int leastScale = getLeastScale(bdList);
 
-            finalAnswer = result.setScale(leastScale.scale(), rm.valueRule(result));
+            finalAnswer = result.setScale(leastScale, rm.valueRule(result, leastScale));
         } else {
             LOGGER.warn("The first BigDecimal in the list was found to be null. Returning null.");
             return null;
@@ -326,35 +341,31 @@ public class SigFigMathUtil {
      * smallest scale. Finds the BigD with the fewest digits in the mantissa.
      * This is useful for maintaining the rules of sig figs: addition &
      * subtraction.
-     * @return BigDecimal that is found to have the least amount of digits in
-     * the mantissa. In the event of a tie, it will return the last one in the
-     * list or null if any args passed in are null.
+     * @return int count of the least amount of digits in
+     * the mantissa or 0 if any args passed in are null.
      */
-    protected static BigDecimal getLeastScale(List<BigDecimal> bdList) {
+    protected static int getLeastScale(List<BigDecimal> bdList) {
 
         if (bdList == null || bdList.isEmpty()) {
             LOGGER.warn("Missing BigDecimal list or list was empty. Can not determine scale.");
-            return null;
+            return 0;
         }
-        BigDecimal[] bigDecimalList = bdList.toArray(new BigDecimal[bdList.size()]);
-        int lowestScaleFound = bigDecimalList[0].scale(); // init the value
-        BigDecimal result = bigDecimalList[0];
+        int lowestScaleFound = bdList.get(0).scale();
 
-        for (BigDecimal bd : bigDecimalList) {
-            if (bd.scale() < lowestScaleFound) {
-                lowestScaleFound = bd.scale();
-                result = bd;
+        for (BigDecimal num : bdList) {
+            if (num.scale() < lowestScaleFound) {
+                lowestScaleFound = num.scale();
             }
         }
-        LOGGER.trace("BigDecimal value with smallest scale: {}", result.toPlainString());
-        return result;
+        LOGGER.trace("smallest scale: {}", lowestScaleFound);
+        return lowestScaleFound;
     }
 
     /**
-     *
-     * @param bdList List of BigDecimals that will determine which one has the
-     * lowest precision. This is useful for maintaining the rules of sig figs:
-     * multiplication and division.
+     * This will determine which BigDecimal has the lowest precision. This is useful for
+     * maintaining the rules of sig figs: multiplication and division.
+     * @param bd1 one BigDecimal
+     * @param bd2 another BigDecimal
      * @return BigDecimal that is found to have the least precision or null if
      * any args passed in are null.
      */
@@ -387,10 +398,10 @@ public class SigFigMathUtil {
             return null;
         }
         BigDecimal leastPreciseBD = getLeastPrecise(multiplicand, multiplier);
-        BigDecimal product = null;
+        int sigFigs = leastPreciseBD.precision();
 
-        MathContext mc = new MathContext(leastPreciseBD.precision(), rm.productRule(multiplicand, multiplier));
-        product = multiplicand.multiply(multiplier, mc);
+        MathContext mc = new MathContext(sigFigs, rm.productRule(multiplicand, multiplier, sigFigs));
+        BigDecimal product = multiplicand.multiply(multiplier, mc);
         return product;
     }
     /**
@@ -411,7 +422,8 @@ public class SigFigMathUtil {
             LOGGER.warn("RoundingMode arg was null. Did you mean to use the 2 arg method that applies the default rounding mode?");
             return null;
         }
-        MathContext mc = new MathContext(multiplicand.precision(), rm.productRule(multiplicand, exactMultiplier));
+        int sigFigs = multiplicand.precision();
+        MathContext mc = new MathContext(sigFigs, rm.productRule(multiplicand, exactMultiplier, sigFigs));
         BigDecimal product = multiplicand.multiply(exactMultiplier, mc);
 
         return product;
@@ -470,11 +482,11 @@ public class SigFigMathUtil {
             return null;
         }
 
-        BigDecimal quotient = null;
         BigDecimal leastPreciseBD = getLeastPrecise(numerator, denominator);
+        int sigFigs = leastPreciseBD.precision();
 
-        MathContext mc = new MathContext(leastPreciseBD.precision(), rm.productRule(numerator, denominator));
-        quotient = numerator.divide(denominator, mc);
+        MathContext mc = new MathContext(sigFigs, rm.divisionRule(numerator, denominator, sigFigs));
+        BigDecimal quotient = numerator.divide(denominator, mc);
         return quotient;
     }
 
@@ -513,8 +525,9 @@ public class SigFigMathUtil {
             LOGGER.warn("RoundingMode arg was null. Did you mean to use the 2 arg method that applies the default rounding mode?");
             return null;
         }
+        int sigFigs = numerator.precision();
 
-        MathContext mc = new MathContext(numerator.precision(), rm.productRule(numerator, exactDenominator));
+        MathContext mc = new MathContext(sigFigs, rm.divisionRule(numerator, exactDenominator, sigFigs));
         BigDecimal quotient = numerator.divide(exactDenominator, mc);
 
         return quotient;
