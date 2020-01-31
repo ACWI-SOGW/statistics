@@ -231,7 +231,7 @@ public class JavaLibTest {
 	
 	@Test
 	public void test_BigDecimal_has_more_precision_issues() {
-		//This is incorrect! 1000/100.00 is 10.00 not 1E+1 (or 10)
+		//This is incorrect! 1000./100.00 is 10.00 not 1E+1 (or 10)
 		BigDecimal numerator = new java.math.BigDecimal("1000.");
 		BigDecimal denominator = new java.math.BigDecimal("100.00");
 		BigDecimal result = SigFigMathUtil.sigFigDivide(numerator, denominator);
@@ -276,21 +276,17 @@ public class JavaLibTest {
 		assertEquals("Removed 2 provisional samples", msg);
 	}
 
-	public static void main(String[] args) {
 
-		BigDecimal tenth = new BigDecimal("0.1");
-		System.out.println("BigDecimal tenth " + tenth); // 0.1
-
-		BigDecimal one = BigDecimal.ZERO;
-		for (int i=0; i<10; i++) {
-			one = one.add(tenth);
-		}
-		System.out.println("BigDecimal tenth added 10 times is " +one); // 1.0
-
+	@Test
+	public void test_multiplication() {
 		BigDecimal five = new BigDecimal("50");
+		BigDecimal tenth = new BigDecimal("0.1");
 		five = five.multiply(tenth);
 		System.out.println("BigDecimal tenth x 50 is " + five); // 5.0
+	}
 
+
+	public static void main(String[] args) {
 		float tenthf = 0.1f;
 		float onef = 0;
 		for (int i=0; i<10; i++) {

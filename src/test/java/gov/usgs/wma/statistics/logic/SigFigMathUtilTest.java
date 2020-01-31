@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
+import com.google.common.collect.Lists;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -612,4 +613,27 @@ public class SigFigMathUtilTest {
 
     }
 
+    @Test
+    public void test_addition() {
+        BigDecimal tenth = new BigDecimal("0.1");
+        System.out.println("BigDecimal tenth " + tenth); // 0.1
+
+        List<BigDecimal> thenths = new ArrayList<>(10);
+        BigDecimal one = BigDecimal.ZERO;
+        for (int i=0; i<10; i++) {
+            one = one.add(tenth);
+            thenths.add(tenth);
+        }
+        System.out.println("BigDecimal tenth added 10 times is " + one); // 1.0
+        BigDecimal expect = new BigDecimal("1.0"); // however, it should be 1 TODO asdf (see following lines)
+        // Addition is a two set process. Not only aligns the decimal points,
+        // it is also supposed to round to sigfigs after each addition. (the following assertion can be fixed)
+        assertEquals("This is wrong but the test must pass. adding 0.1 ten times goes from 1 sigfig to 2",
+                expect, one);
+
+        BigDecimal actual = SigFigMathUtil.sigFigAdd(thenths);
+        // supposed to add from most scale to least, rounding after each to the least scale. (scale is mantissa)
+        assertEquals("This is wrong but the test must pass. adding 0.1 ten times goes from 1 sigfig to 2",
+                expect, actual);
+    }
 }
