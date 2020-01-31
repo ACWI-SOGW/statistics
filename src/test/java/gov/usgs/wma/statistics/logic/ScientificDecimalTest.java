@@ -9,7 +9,7 @@ import org.junit.Test;
 public class ScientificDecimalTest {
 
 	@Test
-	public void test_decimal_point_precision() {
+	public void test_fixDecimalPointPrecision() {
 		ScientificDecimal thousand_1 = new ScientificDecimal("1000");
 		assertEquals("Should report 1000 as 1 without decimal point", 1,thousand_1.precision());
 		
@@ -32,7 +32,7 @@ public class ScientificDecimalTest {
 	}
 
 	@Test
-	public void test_zero_precision() {
+	public void test_fixPrecisionOfZero() {
 		ScientificDecimal zero_1 = new ScientificDecimal("0.0");
 		assertEquals("Should report 0.0 as 1 with decimal point", 1,zero_1.precision());
 		
@@ -62,7 +62,7 @@ public class ScientificDecimalTest {
 	}
 	
     @Test
-    public void test_BigDecimal_1000() {
+    public void test_fixMathmaticsScientificPrecisionOfOneFigure() {
     	BigDecimal thousand = new ScientificDecimal("1000");
     	BigDecimal one = new BigDecimal("1.111");
     	
@@ -74,7 +74,7 @@ public class ScientificDecimalTest {
     }
 	
     @Test
-    public void test_BigDecimal_1100() {
+	public void test_fixMathmaticsScientificPrecisionOfTwoFigures() {
     	BigDecimal thousand = new ScientificDecimal("1100");
     	BigDecimal one = new BigDecimal("1.010");
     	
@@ -86,7 +86,7 @@ public class ScientificDecimalTest {
     }
 	
     @Test
-    public void test_BigDecimal_1000_decimal_point() {
+    public void test_fixTrailingDecimalPointPrecision() {
     	BigDecimal thousand = new ScientificDecimal("1000.");
     	BigDecimal one = new BigDecimal("1.111");
     	
@@ -98,7 +98,7 @@ public class ScientificDecimalTest {
     }
     
     @Test
-    public void test_BigDecimal_1000_0() {
+    public void test_handleFractionalZeroPrecision() {
     	BigDecimal thousand_5 = new ScientificDecimal("1000.0");
     	assertEquals(5, thousand_5.precision());
     	

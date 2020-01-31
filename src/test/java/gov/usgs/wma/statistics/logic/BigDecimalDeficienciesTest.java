@@ -3,88 +3,111 @@ package gov.usgs.wma.statistics.logic;
 import org.junit.Test;
 
 import java.math.BigDecimal;
+import java.math.MathContext;
 import java.math.RoundingMode;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 
 public class BigDecimalDeficienciesTest {
 
 
 	@Test
-	public void test_BigDecimal_1000() {
-		BigDecimal thousand = new BigDecimal("1000");
-		BigDecimal one = new BigDecimal("1.111");
+	public void test_BigDecimalPrecisionNotScientific() {
+		// This is incorrect! 1000./100.00 is 10.00 not 1E+1 (or 10)
+		BigDecimal numerator = new BigDecimal("1000.");
+		BigDecimal denominator = new BigDecimal("100.00");
+		BigDecimal result = numerator.divide(denominator, RoundingMode.HALF_UP);
 
-		BigDecimal thousandOne = SigFigMathUtil.sigFigMultiply(thousand, one);
+		assertEquals("Incorrect! 1000./100.00 should be 10.00", "10", result.toPlainString());
+		// it has a percision of 2 because of the rounding mode, see next assertion.
+		assertEquals("Incorrect! 1000./100.00 have 4 precision", 2, result.precision());
 
-		assertEquals("This is wrong the real value should be 1000", "1111", thousandOne.toPlainString());
+		// note that if the rounding mode is omitted then the precision is 1, not 2. see prior assertion.
+		BigDecimal noRoundingMode = numerator.divide(denominator);
+		assertEquals("Incorrect! 1000./100.00 have 4 precision", 1, noRoundingMode.precision());
+
+		// MathContext precision does not always help
+		MathContext mc = new MathContext(4);
+		result = numerator.divide(denominator, mc);
+		assertEquals("Incorrect! 1000./100.00 should be 10.00", "10", result.toPlainString());
+
+		// can overcome the deficiency by setting scale but you must know what scale to set.
+		// also note that BigDecimal instances are immutable and the modification is returned.
+		result = result.setScale(2); // TODO asdf implement this in the SigFigsMathUtil
+		assertEquals("Correct! 1000./100.00 should be 10.00", "10.00", result.toPlainString());
 	}
 
 	@Test
-	public void test_precision_of_zero() {
+	/**
+	 * 	This is wrong in the strictest sense of significant figures management.
+	 * 	1000 has only one significant figure. 1000.0 has 5 significant figures.
+	 * 	For 1000 to have 4 significant figure should be "1000." with a point
+	 * 	after the last zero. For 3 figures then scientific notation is required.
+	 * 	"1.00 x 10^4" or "1.00e4"
+ 	 */
+	public void test_trailingZerosBeforeMissingDecimalPoint() {
+		//This is incorrect! 1000 is really only 1 sig fig
+		//proper 4 sig figs is 1000.
+		BigDecimal thousand = new BigDecimal("1000");
+		assertEquals("1000", thousand.toPlainString());
+		assertEquals("Incorrect Precision, should be 1", 4, thousand.precision());
+
+		BigDecimal onePoint111 = new BigDecimal("1.111");
+		BigDecimal thousandOneOneOne = thousand.multiply(onePoint111);
+
+		// This must set to the wrong expectation to match the incorrect expectation.
+		// However, we know that BigDecimal does not properly implement significant figures rules.
+		// see the SigFigMatUtil class for improved compliance.
+		assertEquals("This is wrong the real value should be 1000", "1111.000", thousandOneOneOne.toPlainString());
+	}
+
+	@Test
+	/**
+	 * There is no means to set the precision on BigDecimal directly.
+	 * Any attempt to set the scale to influence the precision results in a single digit.
+	 * Looking at the SDK src, it appears that any time zero is encountered,
+	 * the precision is hard coded to a single digit.
+	 */
+	public void test_precisionOfZero() {
 		BigDecimal value = new BigDecimal("0.0000");
 
-		assertEquals("actually we want 0.0000 to be 4 but BD it is 1 as of Java 8", 1, value.precision() );
-		assertEquals("0.0000", value.toString());
-		assertEquals("but scale does record the precition of 0.0000 properly", 4, value.scale() );
-		assertEquals("and precision is still 1", 1, value.precision() );
-	}
+		assertEquals("actually we want 0.0000 to be 4 but BD it is 1 as of Java 8 thru 13", 1, value.precision() );
+		assertEquals("Even though it hard codes the precision as 1, it retains the given digits.","0.0000", value.toString());
+		assertEquals("Even the plain string retains the zeros in the digits.","0.0000", value.toPlainString());
+		assertEquals("but scale does record the precision of 0.0000 properly", 4, value.scale() );
 
-	@Test
-	public void test_try_using_add_for_precision_on_zero() {
-		BigDecimal value = new BigDecimal("1.0001");
-
+		// The following tries to use math to cause a zero and test
+		// if it is only the constructor that sets zero with 1 precision.
+		value = new BigDecimal("1.0001");
 		assertEquals(5, value.precision() );
 
 		value = value.add( value.negate() );
+		assertEquals("During math it also is not preserving precision.","0.0000", value.toString());
 
-		assertEquals("0.0000", value.toString());
+		// Nope. Even after arithmetic operations the BigDecimal implementation
+		// sets zero with precision 1. After this, I checked the SDK src.
+		// When zero is encountered the precision is set to 1
 		assertEquals("Gack, cannot use add to for precision on 0.0000", 1, value.precision() );
 	}
 
 	@Test
-	public void test_BigDecimalHasPrecisionIssuesWithDecimalPoint() {
-		//This is incorrect! 1000 is really only 1 sig fig
-		//proper 4 sig figs is 1000.
-		BigDecimal value = new BigDecimal("1000");
-		assertEquals("1000", value.toPlainString());
-		assertEquals("Incorrect Precision, should be 1", 4, value.precision());
-
-		BigDecimal denominator = new BigDecimal("100.001");
-		BigDecimal result = SigFigMathUtil.sigFigDivide(value, denominator);
-		assertEquals("But maybe correct for GWW needs? 1000/100.001 rather than 10", "10.00", result.toString());
-		assertEquals("precision should really be 2", 4, result.precision());
-	}
-
-	@Test
-	public void test_BigDecimalPrecisionNotScientific() {
-		//This is incorrect! 1000./100.00 is 10.00 not 1E+1 (or 10)
-		BigDecimal numerator = new BigDecimal("1000.");
-		BigDecimal denominator = new BigDecimal("100.00");
-		BigDecimal result = SigFigMathUtil.sigFigDivide(numerator, denominator);
-
-		assertEquals("Incorrect! 1000./100.00 should be 10.00", "10", result.toPlainString());
-		assertEquals("Incorrect! 1000./100.00 should be 10.00", "1E+1", result.toString());
-		assertEquals("Incorrect! 1000./100.00 have 4 precision", 1, result.precision());
-	}
-
-	@Test
-	public void test_BigDecimalHasMorePrecision() {
-		//This is incorrect! 1000/100.00 is 10.00 not 1E+1 (or 10)
-		BigDecimal numerator = new BigDecimal("53.1").divide(new BigDecimal("100"));
-		assertEquals("0.531", numerator.toPlainString());
-
-		BigDecimal denominator = new BigDecimal("100.00");
-		BigDecimal result = SigFigMathUtil.sigFigDivide(numerator, denominator);
-		assertEquals("0.00531", result.toPlainString());
-
-		BigDecimal scaled = denominator.setScale(10);
-		assertEquals("100.0000000000", scaled.toPlainString());
-		assertEquals(13, scaled.precision());
-	}
-	
-	@Test
 	public void test_multiplicationPrecisionNotManaged() {
+		// Shows how precision is not properly preserved
+		BigDecimal fiftyThreeOne = new BigDecimal("53.1");
+		BigDecimal oneHundred    = new BigDecimal("100");
+		BigDecimal result = fiftyThreeOne.divide(oneHundred);
+		assertEquals("Incorrect precision 3 divided by a precision 1 should result in precision 1 result",
+				3, result.precision());
+		assertEquals("Incorrect precision 3 result number",
+				"0.531", result.toPlainString());
+
+		BigDecimal denominator = new BigDecimal("100.00");
+		result = result.divide(denominator);
+		assertEquals("Incorrect precision 3 divided by a precision 5 should result in precision 3 result",
+				3, result.precision());
+		assertEquals("Incorrect lesser precision 3","0.00531", result.toPlainString());
+
 		BigDecimal tenth = new BigDecimal("0.1");
 		BigDecimal five = new BigDecimal("50").multiply(tenth);
 		System.out.println("BigDecimal tenth x 50 is " + five); // 5.0
@@ -92,4 +115,5 @@ public class BigDecimalDeficienciesTest {
 		assertNotEquals("50 and 0.1 only have on sigfig and the result should be 5 not 5.0",
 				"5", five.toPlainString());
 	}
+	
 }

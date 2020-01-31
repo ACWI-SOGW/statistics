@@ -3,6 +3,7 @@ package gov.usgs.wma.statistics.logic;
 import static org.junit.Assert.*;
 
 import java.math.BigDecimal;
+import java.math.MathContext;
 import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -635,5 +636,33 @@ public class SigFigMathUtilTest {
         // supposed to add from most scale to least, rounding after each to the least scale. (scale is mantissa)
         assertEquals("This is wrong but the test must pass. adding 0.1 ten times goes from 1 sigfig to 2",
                 expect, actual);
+    }
+    @Test
+    public void test_trailingZerosBeforeMissingDecimalPoint() {
+        BigDecimal thousand = new BigDecimal("1000");
+        BigDecimal onePoint111 = new BigDecimal("1.111");
+
+        BigDecimal thousandOne = SigFigMathUtil.sigFigMultiply(thousand, onePoint111);
+
+        assertEquals("This is wrong the real value should be 1000", "1111", thousandOne.toPlainString());
+    }
+    @Test
+    public void test_BigDecimalHasPrecisionIssuesWithDecimalPoint() {
+        BigDecimal thousand = new BigDecimal("1000");
+        BigDecimal denominator = new BigDecimal("100.001");
+        BigDecimal result = SigFigMathUtil.sigFigDivide(thousand, denominator);
+        assertEquals("But maybe correct for GWW needs? 1000/100.001 rather than 10", "10.00", result.toString());
+        assertEquals("precision should really be 2", 4, result.precision());
+    }
+    @Test
+    public void test_BigDecimalPrecisionNotScientific() { // TODO asdf fix
+        // This is incorrect! 1000./100.00 is 10.00 not 1E+1 (or 10)
+        BigDecimal numerator = new BigDecimal("1000.");
+        BigDecimal denominator = new BigDecimal("100.00");
+        BigDecimal result = SigFigMathUtil.sigFigDivide(numerator, denominator);
+
+        assertEquals("Incorrect! 1000./100.00 should be 10.00", "10", result.toPlainString());
+        assertEquals("Incorrect! 1000./100.00 should be 10.00", "1E+1", result.toString());
+        assertEquals("Incorrect! 1000./100.00 have 4 precision", 1, result.precision());
     }
 }

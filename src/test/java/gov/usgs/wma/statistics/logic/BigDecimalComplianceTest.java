@@ -9,25 +9,115 @@ import static org.junit.Assert.*;
 
 public class BigDecimalComplianceTest {
 
+	/*
+	 * Examples and tests of the inadequacies of Double and Float
+	 */
+
 	@Test
-	public void testBigDecimalScale() {
+	public void test_floatDeficient() {
+		// "demonstrates how base 2 fractional addition is not always accurate
+		float tenthFloat = 0.1f;
+		float oneFloat = 0;
+		for (int i=0; i<10; i++) {
+			oneFloat += tenthFloat;
+		}
+		assertNotEquals("Float tenth added 10 times is not 1.0 ", 1.0f, oneFloat); // 1.0000001
+//		System.out.println(oneFloat); // 1.0000001
+
+		BigDecimal one = BigDecimal.ZERO;
+		BigDecimal tenth = new BigDecimal("0.1"); // requires string
+		for (int i = 0; i < 10; i++) {
+			one = one.add(tenth);
+		}
+		assertEquals("demonstrates how BigDecimal addition is more accurate", "1.0", one.toString());
+//		System.out.println(one); // 1.0
+
+		double fiveFloat = 5f * oneFloat;
+		assertNotEquals("demonstrates binary math is inaccurate ", "5.0", ""+fiveFloat);
+//		System.out.println(fiveFloat); // 5.000000476837158
+	}
+
+	@Test
+	public void test_doubleDeficient() {
+		// represents a site elevation calculation
+		// site: ISWS-P360675   date: 1995-03-01
+		double alt_va = 454.6;
+		double mp_elevation = 456.2;
+		double value  = 13.94;
+		double diff   = value - (mp_elevation - alt_va);
+		assertNotEquals("demonstrates how elevation addition in double does not preserve precision", "12.34", ""+diff);
+//		System.out.println(diff); // 12.340000000000034
+
+		diff   = value - mp_elevation + alt_va;
+		assertNotEquals("demonstrates how elevation addition in double does not preserve precision", "12.34", ""+diff);
+//		System.out.println(diff); // 12.340000000000032
+	}
+
+	@Test
+	public void test_BigDecimalCannotBeConstructedWithDouble() {
+		// demonstrates how 0.1(base 2) is not equal to 0.1(base 10)
+		BigDecimal tenth = new BigDecimal(0.100);
+		assertEquals(55, tenth.precision() );
+		assertEquals("Using Double to construct a BigDecimal introduces the Double error into BigDecimal",
+				"0.1000000000000000055511151231257827021181583404541015625", tenth.toString() );
+//		System.out.println(tenth); // 0.1000000000000000055511151231257827021181583404541015625
+
+		tenth = new BigDecimal("0.1");
+		assertEquals("demonstrates how BigDecimal can precisely represent fractions ", "0.1", "0.1");
+//		System.out.println(tenth); // 0.1
+	}
+
+
+
+	/*
+	 * Testing the BigDecimal API to understand what its capabilities are.
+	 */
+	@Test
+	public void test_scale_vs_precision() {
+		BigDecimal value = new BigDecimal("1.0000");
+
+		assertEquals("Scale if the number of digits for the fraction ", 4, value.scale() );
+
+		assertEquals("Precision is all relevant or significant digits",5, value.precision() );
+		assertEquals("1.0000", value.toString());
+	}
+
+	@Test
+	public void test_setScale() {
+		BigDecimal value = new BigDecimal("42.0");
+		value = value.setScale(3);
+
+		assertEquals("Setting the scale sets the plainString fraction digits",
+				"42.000", value.toPlainString());
+		assertEquals("Setting the scale effects the precision also.",5, value.precision() );
+	}
+
+	@Test
+	public void test_BigDecimalScaleInPractice() {
 		// testing if understanding of divide and rounding to the expect scale as expected
 
 		BigDecimal twelve = new BigDecimal(12);
+		BigDecimal eight  = new BigDecimal(8);
+		BigDecimal six    = new BigDecimal(6);
+		BigDecimal four   = new BigDecimal(4);
 
-		int a = 10;
-
-		int b = 6;
-		String val = new BigDecimal(a).subtract(new BigDecimal(b))
-		.divide(twelve, 1, RoundingMode.HALF_EVEN).toString();
-
-		assertEquals("0.3", val);
-
-		b = 4;
-		val = new BigDecimal(a).subtract(new BigDecimal(b))
-		.divide(twelve, 1, RoundingMode.HALF_EVEN).toString();
-
+		String val = six.divide(twelve, 1, RoundingMode.HALF_UP).toString();
 		assertEquals("0.5", val);
+
+		val = six.divide(twelve, 3, RoundingMode.HALF_UP).toString();
+		assertEquals("0.500", val);
+
+		val = four.divide(twelve, 1, RoundingMode.HALF_UP).toString();
+		assertEquals("","0.3", val);
+
+		val = four.divide(twelve, 10, RoundingMode.HALF_UP).toString();
+		assertEquals("","0.3333333333", val);
+
+		val = eight.divide(six, 1, RoundingMode.HALF_UP).toString();
+		assertEquals("Only one fractional digit calculated","1.3", val);
+
+		val = eight.divide(six, 2, RoundingMode.HALF_UP).toString();
+		assertEquals("scale is not the full precision. it is the figures of the fraction","1.33", val);
 	}
 
 	@Test
@@ -76,129 +166,48 @@ public class BigDecimalComplianceTest {
 	}
 
 	@Test
-	public void test_big_decimal_vs_binary_representation() {
-		BigDecimal tenth = new BigDecimal(0.1);
-		assertNotEquals("demonstrates how 0.1(base 2) is not equal to 0.1(base 10)", "0.1", tenth.toString());
-//		System.out.println(tenth); // 0.1000000000000000055511151231257827021181583404541015625
+	public void test_arithmeticPrecision() {
 
-		tenth = new BigDecimal("0.1");
-		assertEquals("demonstrates how BigDecimal can represent fractions", "0.1", "0.1");
-//		System.out.println(tenth); // 0.1
-	}
+		// This could be in both compliance or deficiency tests.
+		// It demonstrates that figures are preserved but does not
+		// properly manage significant figures
 
-	@Test
-	public void test_BigDecimal_vs_binary_addition() {
-		float tenthf = 0.1f;
-		float onef = 0;
-		for (int i=0; i<10; i++) {
-		  onef += tenthf;
-		}
-		assertNotEquals("demonstrates how base 2 fractional addition is not always accurate", "1.0", ""+onef);
-//		System.out.println(onef); // 1.0000001
-
-		BigDecimal one = BigDecimal.ZERO;
-		BigDecimal tenth = new BigDecimal("0.1"); // requires string
-		for (int i=0; i<10; i++) {
-		  one = one.add(tenth);
-		}
-		assertEquals("demonstrates how BigDecimal addition is more accurate", "1.0", one.toString());
-//		System.out.println(one); // 1.0
-	}
-
-	@Test
-	public void test_BigDecimal_vs_binary_multiplication() {
-		float tenthf = 0.1f;
-		float onef = 0;
-		for (int i=0; i<10; i++) {
-		  onef += tenthf;
-		}
-
-		double fivef = 5f * onef;
-		assertNotEquals("demonstrates how inaccurate math is propogated", "5.0", ""+fivef);
-//		System.out.println(fivef); // 5.000000476837158
-
-		BigDecimal five = new BigDecimal("50");
-		BigDecimal tenth = new BigDecimal("0.1"); // requires string
-		five = five.multiply(tenth);
-		assertEquals("demonstrates how BigDecimal math propogates accuracy", "5.0", five.toString());
-//		System.out.println(five); // 5.0
-	}
-
-	@Test
-	public void test_representation_of_site_elevation_math_concerns() {
-		// site: ISWS-P360675   date: 1995-03-01
-		double alt_va = 454.6;
-		double mp_elevation = 456.2;
-		double value  = 13.94;
-		double diff   = value - (mp_elevation - alt_va);
-		assertNotEquals("demonstrates how elevation addition in double does not preserve precision", "12.34", ""+diff);
-//		System.out.println(diff); // 12.340000000000034
-
-		diff   = value - mp_elevation + alt_va;
-		assertNotEquals("demonstrates how elevation addition in double does not preserve precision", "12.34", ""+diff);
-//		System.out.println(diff); // 12.340000000000032
-	}
-
-	@Test
-	public void test_addition_and_multiplication_precision() {
 		String expect = "1010.00";
 
-		BigDecimal result = new BigDecimal("1000.")
+		BigDecimal actual = new BigDecimal("1000.")
 				.add( new BigDecimal("10.00") );
-		assertEquals(6, result.precision());
+		assertEquals(6, actual.precision());
 
-		String actual = result.toString();
-		assertEquals(expect, actual);
-
-		BigDecimal resu1t = new BigDecimal("1000.")
-				.add( new BigDecimal("10.00") );
-		assertEquals(6, resu1t.precision());
-
-		String actua1 = new BigDecimal("1000.")
-						.add( new BigDecimal("10.00") )
-						.toString();
-		assertEquals(expect, actua1);
+		assertEquals(expect, actual.toString());
 	}
-
 	@Test
-	public void test_scale_vs_precision() {
-		BigDecimal value = new BigDecimal("1.0000");
+	public void test_leadingZerosPrecision() {
+		BigDecimal value = new BigDecimal("0.0001");
+		assertEquals(1, value.precision() );
+		assertEquals(4, value.scale() );
 
-		assertEquals(5, value.precision() );
-		assertEquals("1.0000", value.toString());
+		value = new BigDecimal("000.0001");
+		assertEquals(1, value.precision() );
 		assertEquals(4, value.scale() );
 	}
 
 	@Test
-	public void test_proper_precision_of_leading_zeros() {
-		BigDecimal value = new BigDecimal("0.0001");
+	public void test_trailingFractionZerosPrecision() {
+		BigDecimal value = new BigDecimal("0.00010");
+		assertEquals(2, value.precision() );
+		assertEquals(5, value.scale() );
 
-		assertEquals(1, value.precision() );
+		value = new BigDecimal("000.000100");
+		assertEquals(3, value.precision() );
+		assertEquals(6, value.scale() );
 	}
 
 	@Test
-	public void test_setScale_sets_decimal_places() {
-		BigDecimal value = new BigDecimal("42.0");
-		value = value.setScale(3);
-		assertEquals("42.000", value.toPlainString());
-		assertEquals(5, value.precision() );
-	}
-
-	@Test
-	public void test_BigDecimal_vs_DoubleAndFloat() {
-		BigDecimal value = new BigDecimal(0.100);
-		assertEquals(55, value.precision() );
-		assertEquals("0.1000000000000000055511151231257827021181583404541015625", value.toString() );
-
-		float tenthf = 0.1f;
-		float onef = 0;
-		for (int i=0; i<10; i++) {
-			onef += tenthf;
-		}
-		assertNotEquals("Double tenth added 10 times is not 1.0 it is ", 1.0f, onef); // 1.0000001
-
-		double fivef = 5f * onef;
-		assertNotEquals("Then it propogates the double error to multiplications like 5x it is "
-				,"5", ""+fivef); // 5.000000476837158
+	public void test_BigDecimalScientificPrecision() {
+		// This is correct! 1000./100.0 is 10.00 but you must know to set the proper scale
+		BigDecimal numerator = new BigDecimal("1000.");
+		BigDecimal denominator = new BigDecimal("100.0");
+		BigDecimal result = numerator.divide(denominator, 1, RoundingMode.HALF_UP);
+		assertEquals("Correct! 1000./100.0 should be 10.00", "10.0", result.toPlainString());
 	}
 }
