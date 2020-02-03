@@ -107,13 +107,15 @@ public class SigFigMathUtilTest {
     }
     
     @Test
-    public void testSqigFigAdd_round() {
+    public void testSqigFigAdd_roundPoint5() {
     	// 03-30-2017 need to round up for negative numbers -2.90 rather than the Java default -2.91 
     	// 07-31-2018 need to revert back to Java default rounding. Those who instructed us to round differently were misinformed.
-    	BigDecimal expect = new BigDecimal("-2.91");
+        // 01-31-2020 Round as Java default with the exception of exactly half way between numbers round down.
+    	BigDecimal expect = new BigDecimal("-2.90");
     	BigDecimal sum = SigFigMathUtil.sigFigAdd(new BigDecimal("-2.97"), new BigDecimal("-2.84"));
     	BigDecimal actual = SigFigMathUtil.sigFigDivide(sum, new BigDecimal("2.00"));
-    	assertEquals(expect, actual);
+    	assertEquals("-2.905 should round down to -2.90 rather than up to -2.91 " +
+                "because it is exactly half way between values.", expect, actual);
     }
 
     /**
@@ -664,5 +666,73 @@ public class SigFigMathUtilTest {
         assertEquals("Incorrect! 1000./100.00 should be 10.00", "10", result.toPlainString());
         assertEquals("Incorrect! 1000./100.00 should be 10.00", "1E+1", result.toString());
         assertEquals("Incorrect! 1000./100.00 have 4 precision", 1, result.precision());
+    }
+
+    @Test
+    public void test_oneHalfWithEnoughPrecision() {
+        BigDecimal one = new BigDecimal("1");
+        BigDecimal two = new BigDecimal("2.0");
+
+        BigDecimal actual = SigFigMathUtil.sigFigDivide(one, two);
+        assertEquals("0.5", actual.toPlainString());
+
+        BigDecimal three = new BigDecimal("3.0");
+
+        actual = SigFigMathUtil.sigFigDivide(three, two);
+        assertEquals("1.5", actual.toPlainString());
+    }
+    @Test
+    public void test_roundPoint5Down() {
+        BigDecimal three = new BigDecimal("3");
+        BigDecimal two = new BigDecimal("2.0");
+
+        BigDecimal actual = SigFigMathUtil.sigFigDivide(three, two);
+        assertEquals("Because the USGS rounding rule is to round 0.5 down to 0 when there isn't " +
+                "enough precision, 3/2 is 1 and not 2 much less 1.5 which increase precision.",BigDecimal.ONE, actual);
+    }
+
+    @Test
+    public void test_roundPoint5PlusUp() {
+        BigDecimal oneOne = new BigDecimal("1.1");
+        BigDecimal two = new BigDecimal("2");
+
+        BigDecimal actual = SigFigMathUtil.sigFigDivide(oneOne, two);
+        assertEquals("The standard is to round numbers to the least precision and round up for numbers" +
+                        "greater than half way to the next.","0.5", actual.toPlainString());
+    }
+
+    @Test
+    public void test_USGS_roungingRule_roundUp() {
+        RoundingMode actual = new SigFigMathUtil.UsgsRoundingRule().valueRule(new BigDecimal("1.5"), 2);
+        assertEquals(RoundingMode.HALF_UP, actual);
+
+        actual = new SigFigMathUtil.UsgsRoundingRule().valueRule(new BigDecimal("1.51"), 2);
+        assertEquals(RoundingMode.HALF_UP, actual);
+
+        actual = new SigFigMathUtil.UsgsRoundingRule().valueRule(new BigDecimal("1.51"), 1);
+        assertEquals(RoundingMode.HALF_UP, actual);
+
+        actual = new SigFigMathUtil.UsgsRoundingRule().valueRule(new BigDecimal("1.515"), 1);
+        assertEquals(RoundingMode.HALF_UP, actual);
+
+        /*
+        This might seem odd to return HALF_UP because we do not want the result 2.0
+        when 1.49 is rounded. However, it is just telling Java which rule to use and
+        Java does the proper action with 1.49 using HALF_UP and it is the default rule
+         */
+        actual = new SigFigMathUtil.UsgsRoundingRule().valueRule(new BigDecimal("1.49"), 1);
+        assertEquals("Expected rule is HALF_UP because Java does correctly round 1.49 down",
+                RoundingMode.HALF_UP, actual);
+    }
+
+    @Test
+    public void test_USGS_roungingRule_roundDown() {
+        RoundingMode actual;
+
+        actual = new SigFigMathUtil.UsgsRoundingRule().valueRule(new BigDecimal("1.515"), 3);
+        assertEquals(RoundingMode.HALF_DOWN, actual);
+
+        actual = new SigFigMathUtil.UsgsRoundingRule().valueRule(new BigDecimal("1.5"), 1);
+        assertEquals(RoundingMode.HALF_DOWN, actual);
     }
 }

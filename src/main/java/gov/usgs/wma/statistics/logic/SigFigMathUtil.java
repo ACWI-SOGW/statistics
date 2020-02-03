@@ -34,7 +34,7 @@ public class SigFigMathUtil {
     // July 30 2018 - Change of specification - they want the default Java behavior back.
     // This custom rounding rule class allows for future rounding changes including the former custom rule from 2017.
     public static CustomRoundingRule DEFAULT_ROUNDING_RULE = new UsgsRoundingRule();
-    
+
     public interface CustomRoundingRule {
     	RoundingMode valueRule(BigDecimal value, int sigFigs);
         RoundingMode productRule(BigDecimal a, BigDecimal b, int sigFigs);
@@ -63,12 +63,41 @@ public class SigFigMathUtil {
         private static final RoundingMode ROUNDING_MODE_DOWN = RoundingMode.HALF_DOWN;
         private static final BigDecimal TWO = new BigDecimal("2");
 
+        /**
+         * Creates a number one tenth smaller than the scale provided.
+         * IE if sale is 2 (which means two decimal points) then the number returned would be 0.001
+         * because scale 2 mean some number .xx like 0.08 for example.
+         *
+         * Background:
+         * In a USGS document that explicitly states how to round, it states that exact halves should be rounded down.
+         * For example, 1.0500 should be rounded to 1.0 rather than 1.1
+         *
+         * Use of this function:
+         * This is used in this class to figure out if we have an exact half between for rounding.
+         * Suppose we have two numbers that might need rounding to the nearest tenth: 1.0500 and 1.0501 for example.
+         * Then 1.0501 should be rounded to 1.1 as one would expect; however, 1.0500 should be rounded to 1.0 instead.
+         * The method to detect the half way between two numbers (the 0.0500 in the example above) is accomplished
+         * by if to extract the fraction to be rounded (0.0500 and 0.0501 in the examples) and then subtract the tenth
+         * beyond those values scale. In the example, if 0.00001 is subtracted from both fractions then the results are
+         * 0.0500-0.00001=0.04999 and 1.0501-0.00001=0.05009 respectively. Notice that the half became less than
+         * half way and is less then 0.05 while the other remains greater than 0.05
+         *
+         * This function creates the number 0.00001 for use in detecting the halfway value.
+         *
+         * @param scale the scale of the number you want an epsilon
+         * @return the epsilon number given the scale.
+         */
+        BigDecimal createEpsilon(int scale) {
+            return BigDecimal.ONE; // TODO actually return a fraction
+        }
+
         @Override
     	public RoundingMode valueRule(BigDecimal value, int sigFigs) {
     		RoundingMode mode = ROUNDING_MODE_UP;
         	if (value.precision() > sigFigs) {
                 BigDecimal rounded = value.round(new MathContext(sigFigs, ROUNDING_MODE_DOWN));
                 BigDecimal remainder = value.subtract(rounded);
+                BigDecimal epsilon  = createEpsilon(value.scale());
                 if (remainder.compareTo(BigDecimal.ZERO) == 0) {
                     mode = ROUNDING_MODE_DOWN;
                 }
@@ -86,7 +115,7 @@ public class SigFigMathUtil {
     	@Override
         public RoundingMode divisionRule(BigDecimal a, BigDecimal b, int sigFigs) {
             RoundingMode mode = ROUNDING_MODE_UP;
-            if (b.equals(TWO)) {
+            if (b.equals(TWO.setScale(b.scale()))) {
                 mode = ROUNDING_MODE_DOWN;
             }
             return mode;

@@ -3,6 +3,7 @@ package gov.usgs.wma.statistics.logic;
 import org.junit.Test;
 
 import java.math.BigDecimal;
+import java.math.MathContext;
 import java.math.RoundingMode;
 
 import static org.junit.Assert.*;
@@ -210,4 +211,17 @@ public class BigDecimalComplianceTest {
 		BigDecimal result = numerator.divide(denominator, 1, RoundingMode.HALF_UP);
 		assertEquals("Correct! 1000./100.0 should be 10.00", "10.0", result.toPlainString());
 	}
+
+	@Test
+	public void test_BigDecimalRounding() {
+		BigDecimal roundDown = new BigDecimal("1.0500");
+		BigDecimal roundUpUp = new BigDecimal("1.0501");
+		BigDecimal actualDown = roundDown.round(new MathContext(2, RoundingMode.HALF_DOWN));
+		BigDecimal actualUpUp = roundDown.round(new MathContext(2, RoundingMode.HALF_UP));
+		BigDecimal actualUpDown = roundUpUp.round(new MathContext(2, RoundingMode.HALF_DOWN));
+		assertEquals("", "1.0", actualDown.toPlainString());
+		assertEquals("", "1.1", actualUpUp.toPlainString());
+		assertEquals("", "1.1", actualUpDown.toPlainString());
+	}
+
 }
