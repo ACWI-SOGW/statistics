@@ -358,7 +358,7 @@ public class MonthlyStatisticsTest {
 	}
 	
 	@Test
-	public void testMostRecentProvistional_monthlyStats() {
+	public void testMostRecentProvisional_monthlyStats() {
 		List<Value> valueOrder = new LinkedList<>();
 		Value provisional = createSample("2017-03-01","12.21");
 		provisional.setProvsional(true);
@@ -372,21 +372,25 @@ public class MonthlyStatisticsTest {
 
 		boolean isCalc = stats.monthlyStats(monthSamples);
 		assertTrue(isCalc);
-		
+		// TODO asdf add assertion for these intermediate values. monthly medians
+// 2006 6.4, 2007 6.78, 2008 8.2, 2009 9.37, 2010 4.12, 2011 8.03, 2012 6.91, 2013 9.31, 2014 8.0, 2015 5.6,  2016 9.07,
 		Map<String, String> stat = builder.build().getMonthly().get("3").percentiles; // MediationType.AboveDatum
 
 		assertNotNull(stat);
 		assertEquals("4.12",stat.get(P50_MIN));
 		// if the provision value is not removed P10 will be 4.60
-		assertEquals("4.44",stat.get(P10)); 
+		// if when sigfigs is correct this will change again to 4.4
+		// 2020-02-05 round HALF_DOWN changes this to 4.42 from 4.44 when rounding HALF_UP
+		assertEquals("4.42",stat.get(P10));
 		assertEquals("6.4", stat.get(P25));
 		assertEquals("8.0", stat.get(P50));
-		assertEquals("9.08",stat.get(P75));
+		// 2020-02-05 round HALF_DOWN changes this to 9.07 from 9.08 when rounding HALF_UP
+		assertEquals("9.07",stat.get(P75));
 		assertEquals("9.36",stat.get(P90));
 		assertEquals("9.37",stat.get(P50_MAX));
 	}
 	@Test
-	public void testMostRecentProvistionalNONE_monathlyStats() {
+	public void testMostRecentProvisionalNONE_monthlyStats() {
 		List<Value> valueOrder = new LinkedList<>();
 		Value notProvisional = createSample("2017-03-01","12.21");
 		valueOrder.add( notProvisional );
@@ -401,7 +405,9 @@ public class MonthlyStatisticsTest {
 
 		assertNotNull(stat);
 		assertEquals("4.12", stat.get(P50_MIN));
-		assertEquals("4.60", stat.get(P10));
+		// TODO asdf this is an example of too many sigfigs after math performed this will be 4.6 upon sigfigs fixes
+		// 2020-02-05 round HALF_DOWN changes this to 4.57 from 4.60 when rounding HALF_UP
+		assertEquals("4.57", stat.get(P10));
 		assertEquals("6.5",  stat.get(P25));
 		assertEquals("8.0",  stat.get(P50));
 		assertEquals("9.25", stat.get(P75));
@@ -784,10 +790,14 @@ public class MonthlyStatisticsTest {
 
 		int preCount = monthSamples.size();
 		builder.includeIntermediateValues(true);
-		List<Value> normalizeMutlipleYearlyValues = stats.medianMonthlyValues(monthSamples, stats.sortFunctionByQualifier());
-		assertTrue("medianMonthlyValues should added to intermediateValues.", builder.getIntermediateValues().length() > 0);
 
-		assertEquals("normalize should have removed two values, one from each of two years", preCount-2, normalizeMutlipleYearlyValues.size());
+		// math on 2003 9.7 (was 9.6 for HALF_UP) is because of .45 rounding to .4 and then
+		// because descending is flipped in the base value changes the 0.4 to 0.5 and 9.2+0.5=9.7
+		List<Value> normalizeMultipleYearlyValues = stats.medianMonthlyValues(monthSamples, stats.sortFunctionByQualifier());
+		assertTrue("medianMonthlyValues should added to intermediateValues.",
+				builder.getIntermediateValues().length() > 0);
+		assertEquals("normalize should have removed two values, one from each of two years",
+				preCount-2, normalizeMultipleYearlyValues.size());
 
 		// these should be removed
 		assertFalse("values should have been removed", monthSamples.contains(sample1));
@@ -799,12 +809,13 @@ public class MonthlyStatisticsTest {
 		Value sample1968 = null;
 		Value sample2003 = null;
 
-		for (Value sample : normalizeMutlipleYearlyValues) {
+		// find a couple test samples
+		for (Value sample : normalizeMultipleYearlyValues) {
 			if (Value.yearUTC(sample.time).equals("1968")) {
-				sample1968 = sample;
+				sample1968 = sample; // becomes value:2.7
 			}
 			if (Value.yearUTC(sample.time).equals("2003")) {
-				sample2003 = sample;
+				sample2003 = sample; // becomes value:9.7
 			}
 		}
 
@@ -813,8 +824,9 @@ public class MonthlyStatisticsTest {
 
 		assertEquals(9.67, (9.2+10.13)/2+.005, 0);
 
-		assertEquals("9.6", sample2003.value.toString());
-		assertEquals("2.7"/*0"*/, sample1968.value.toString());
+		assertEquals("2.7"/*0"*/, sample1968.value.toPlainString());
+		// 2020-02-05 the rounding and sort order parity to ascending changes this to 9.7 from 9.6 when rounding HALF_UP
+		assertEquals("9.7", sample2003.value.toPlainString());
 
 		boolean isCalc = stats.monthlyStats(monthSamples);
 		assertTrue(isCalc);
@@ -901,7 +913,7 @@ public class MonthlyStatisticsTest {
 		assertEquals(expect, actual);
 	}
 	@Test
-	public void test_generateMonthYearlyPercentiles_roundingSigFigCheck_decending() throws Exception {
+	public void test_generateMonthYearlyPercentiles_roundingSigFigCheck_descending() throws Exception {
 		
 		List<Value> values = new LinkedList<>();
 		loadCsvValues(values, "GW-stats-service-review-original-RWDudley.csv");
@@ -920,7 +932,7 @@ public class MonthlyStatisticsTest {
 				count++;
 			}
 		}
-		
+		// in 2009 the median is the average of 24.7 and 24.77 which rounds down to 24.7
 		List<Value> medians = stats.medianMonthlyValues(values, (samples)->{
 			return StatisticsCalculator.sortByValueOrderDescending(samples);
 		});
@@ -928,7 +940,9 @@ public class MonthlyStatisticsTest {
 		List<Value> percentiles = stats.generateMonthYearlyPercentiles(medians);
 		//assertEquals(1, percentiles.size());
 		BigDecimal actual = percentiles.get(0).value;
-		BigDecimal expect = new BigDecimal("24.8"); // TODO asdf check that this should be 24 or 25
+		// 2020-02-05 round HALF_DOWN changes this to 24.7 from 24.8 when rounding HALF_UP
+		// 24.77 rounded up is 2.8 but 2.7 would not be rounded at all
+		BigDecimal expect = new BigDecimal("24.7");
 		assertEquals(expect, actual);
 		
 	}

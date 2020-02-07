@@ -499,8 +499,10 @@ public class StatisticsCalculatorTest {
 		StatisticsCalculator.sortByValueOrderAscending(sorted);
 		JsonDataBuilder percentiles = stats.generatePercentiles(sorted, PERCENTILES);
 		// as you might expect the values are low for low percentile and high for high percentile because measured above a datum
-		assertEquals("Expect P10 to be ", "95.0705", percentiles.get(P10));
-		assertEquals("Expect P25 to be ", "95.1098", percentiles.get(P25));
+		// 2020-02-05 round HALF_DOWN changes this to .0004 from .0005 when rounding HALF_UP
+		assertEquals("Expect P10 to be ", "95.0704", percentiles.get(P10));
+		// 2020-02-05 round HALF_DOWN changes this to .0007 from .0008 when rounding HALF_UP
+		assertEquals("Expect P25 to be ", "95.1097", percentiles.get(P25));
 		assertEquals("Expect P50 to be ", "95.1579", percentiles.get(P50));
 		assertEquals("Expect P75 to be ", "95.1896", percentiles.get(P75));
 		assertEquals("Expect P90 to be ", "95.1981", percentiles.get(P90));
@@ -527,9 +529,11 @@ public class StatisticsCalculatorTest {
 		assertEquals("Expect P10 to be ", "95.1981", percentiles.get(P10));
 		assertEquals("Expect P25 to be ", "95.1896", percentiles.get(P25));
 		assertEquals("Expect P50 to be ", "95.1579", percentiles.get(P50));
-		assertEquals("Expect P75 to be ", "95.1098", percentiles.get(P75));
+		// 2020-02-05 round HALF_DOWN changes this to .0007 from .0008 when rounding HALF_UP
+		assertEquals("Expect P75 to be ", "95.1097", percentiles.get(P75));
 		// this one is not exactly the opposite of 10% because of rounding rules and data order - but it is close
-		assertEquals("Expect P90 to be ", "95.0704", percentiles.get(P90));
+		// 2020-02-05 changing the calculation for sort down make this result .0005 from .0004 when making no adjustment
+		assertEquals("Expect P90 to be ", "95.0705", percentiles.get(P90));
 	}
 
 
@@ -653,7 +657,9 @@ public class StatisticsCalculatorTest {
 
 		BigDecimal p25 = stats.valueOfPercentile(samples, PERCENTILES.get(P25), Value::valueOf);
 
-		assertEquals("reverse sort gives this 9.3 with wrong rounding rule", "9.3", p25.toString());
+		// 2020-02-05 changing the calculation for sort down make this result 9.4 from 9.3 when making no adjustment
+		assertEquals("reverse sort gives this 9.3 with wrong rounding rule but now is 9.4",
+				"9.4", p25.toPlainString());
 
 		List<Value> samples1 = new LinkedList<>();
 		samples1.add( createSample("1962-11-10T04:15:00-05:00", "1.7") );
@@ -670,11 +676,12 @@ public class StatisticsCalculatorTest {
 		samples1.add( createSample("2012-11-10T04:15:00-05:00", "11.97") );
 		samples1.add( createSample("2013-11-10T04:15:00-05:00", "12.27") );
 
+		// 2020-02-05 round HALF_DOWN changes this to 9.3 from 9.4 when rounding HALF_UP
 		BigDecimal p75 = stats.valueOfPercentile(samples1, PERCENTILES.get(P75), Value::valueOf);
-
-		assertEquals("standard sort gives this 9.4", "9.4", p75.toString()); // this is what the sigfigs should return
+		assertEquals("standard sort gives this 9.3 with round HALF_DOWN",
+				"9.3", p75.toPlainString()); // this is what the sigfigs should return
 		// never get 9.37 as Excel spreadsheet does
-//		assertEquals("9.37", p75.toString()); // this is the inflated sigfigs value
+//		assertEquals("9.37", p75.toPlainString()); // this is the inflated sigfigs value
 
 		// In the case where it is suppose to be 9.4 as a round of 9.37, we get 9.4 when sorted in
 		// increasing order because we add 7.3+2.1 = 9.4 (no rounding) but when we sort in reverse
@@ -702,9 +709,9 @@ public class StatisticsCalculatorTest {
 		samples2.add( createSample("1964-11-10T04:15:00-05:00", "2.2") );
 		samples2.add( createSample("1962-11-10T04:15:00-05:00", "1.7") );
 
+		// 2020-02-05 changing the calculation for sort down make this result 9.4 from 9.3 when making no adjustment
 		BigDecimal p25b = stats.valueOfPercentile(samples2, PERCENTILES.get(P25), Value::valueOf);
-
-		assertEquals("reverse sort gives this 9.3 with wrong rounding rule", "9.3", p25b.toString());
+		assertEquals("reverse sort gives this 9.3 with wrong rounding rule", "9.4", p25b.toPlainString());
 
 		List<Value> samples3 = new LinkedList<>();
 		samples3.add( createSample("1962-11-10T04:15:00-05:00", "1.7") );
@@ -721,10 +728,11 @@ public class StatisticsCalculatorTest {
 		samples3.add( createSample("2012-11-10T04:15:00-05:00", "11.9") );
 		samples3.add( createSample("2013-11-10T04:15:00-05:00", "12.2") );
 
+		// 2020-02-05 round HALF_DOWN changes this to 9.3 from 9.4 when rounding HALF_UP
 		BigDecimal p75b = stats.valueOfPercentile(samples3, PERCENTILES.get(P75), Value::valueOf);
+		assertEquals("no change with fewer sigfigs", "9.3", p75b.toPlainString()); // this is what the sigfigs should return
 
-		assertEquals("no change with fewer sigfigs", "9.4", p75b.toString()); // this is what the sigfigs should return
-
+		// TODO asdf this ^ assertion and the previous should probably yield the same result.
 
 		List<Value> samples4 = new LinkedList<>();
 		samples4.add( createSample("2013-11-10T04:15:00-05:00", "12.2") );
@@ -778,8 +786,9 @@ public class StatisticsCalculatorTest {
 		monthlyStats.medianMonthlyValues(monthSamples, StatisticsCalculator::sortByValueOrderDescending);
 		assertEquals("normalize should have removed no values", preCount, monthSamples.size());
 
-		BigDecimal p10c = stats.valueOfPercentile(monthSamples, PERCENTILES.get(P25), Value::valueOf);
-		assertEquals("with additional sigfigs, more refined answer equal to p25", "9.02", p10c.toString());
+		// 2020-02-05 changing the calculation for sort down make this result 9.05 from 9.02 when making no adjustment
+		BigDecimal actual = stats.valueOfPercentile(monthSamples, PERCENTILES.get(P25), Value::valueOf);
+		assertEquals("with additional sigfigs, more refined answer equal to p25", "9.05", actual.toPlainString());
 
 		// 24 * %25 = 6 which is index 5 returning the raw value (note that the math is done on 24+1 but still return raw value)
 		// however when reversed
@@ -787,8 +796,12 @@ public class StatisticsCalculatorTest {
 		// 9.0 + 0.1 = 9.1
 
 		Collections.reverse(monthSamples);
+		// 2020-02-05 round HALF_DOWN changes this to 9.0 from 9.1 when rounding HALF_UP
 		BigDecimal p75c = stats.valueOfPercentile(monthSamples, PERCENTILES.get(P75), Value::valueOf);
-		assertEquals("reverse sort should yeild the same answer for p75", "9.1", p75c.toString());
+		assertEquals("reverse sort should yield the same answer for p75", "9.0", p75c.toPlainString());
+
+		// TODO asdf the two tests here should yield the same result. But they do not because of the different figures.
+		// note that it looks like the p25 is returning the exact value of the 5th index and p75 is returning the exact value of
 	}
 
 	@Test
@@ -892,8 +905,10 @@ public class StatisticsCalculatorTest {
 		List<Value> normalizeMutlipleYearlyValues = monthlyStats.medianMonthlyValues(monthSamples, StatisticsCalculator::sortByValueOrderDescending);
 		assertEquals("normalize should have removed values", preCount-1, normalizeMutlipleYearlyValues.size());
 
+		// 2020-02-05 changing the calculation for sort down make this result 9.24 from 9.23 when making no adjustment
+		// TODO asdf when we have parity between sort orders this should become 9.23 again.
 		BigDecimal p10c = stats.valueOfPercentile(normalizeMutlipleYearlyValues, PERCENTILES.get(P10), Value::valueOf);
-		assertEquals("with additional sigfigs, more refined answer equal to P10", "9.23", p10c.toString());
+		assertEquals("with additional sigfigs, more refined answer equal to P10", "9.24", p10c.toPlainString());
 
 		BigDecimal down = SigFigMathUtil.sigFigAdd(new BigDecimal("9.37"), new BigDecimal("-0.10"));
 		assertEquals(new BigDecimal("9.27"), down);
@@ -911,8 +926,10 @@ public class StatisticsCalculatorTest {
 
 		// even reversed it is the same percentile value -- is should be, testing to ensure
 		Collections.reverse(normalizeMutlipleYearlyValues);
+		// 2020-02-05 round HALF_DOWN changes this to 9.23 from 9.24 when rounding HALF_UP
 		BigDecimal p90c = stats.valueOfPercentile(normalizeMutlipleYearlyValues, PERCENTILES.get(P90), Value::valueOf);
-		assertEquals("reverse sort should yeild the same answer for P90", "9.24", p90c.toString());
+		assertEquals("reverse sort should yield the same answer for P90", "9.23", p90c.toPlainString());
+		// TODO asdf when we have parity between sort orders this should match the entry above.
 	}
 
 	protected void fillJulyData(List<Value> monthSamples) {
@@ -970,8 +987,9 @@ public class StatisticsCalculatorTest {
 
 		// reversed test
 		Collections.reverse(normalizeMutlipleYearlyValues);
+		// 2020-02-05 changing the calculation for sort down make this result 9.6 from 9.54 when making no adjustment
 		BigDecimal p75c = stats.valueOfPercentile(normalizeMutlipleYearlyValues, PERCENTILES.get(P75), Value::valueOf);
-		assertEquals("reverse sort should yeild the same answer for p75", "9.54", p75c.toString());
+		assertEquals("reverse sort should yield the same answer for p75", "9.6", p75c.toPlainString());
 
 		// 07-31-2018
 		// 9.5 & 9.8 mean is 9.6  because 9.5-9.8 = -0.3 and mean is -0.15 rounded to -0.2
@@ -1057,8 +1075,9 @@ public class StatisticsCalculatorTest {
 
 		// even reversed it is the same percentile value -- is should be, testing to ensure
 		Collections.reverse(monthSamples);
+		// 2020-02-05 changing the calculation for sort down make this result 10.82 from 10.9 when making no adjustment
 		BigDecimal p75c = stats.valueOfPercentile(monthSamples, PERCENTILES.get(P75), Value::valueOf);
-		assertEquals("reverse sort should yeild the same answer for P75", "10.9", p75c.toString());
+		assertEquals("reverse sort should yield the same answer for P75", "10.82", p75c.toPlainString());
 	}
 	@Test
 	public void test_Dec25Pct_plusOneSigfig() {

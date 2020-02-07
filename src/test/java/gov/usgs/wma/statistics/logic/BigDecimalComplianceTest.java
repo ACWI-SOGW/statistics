@@ -46,11 +46,13 @@ public class BigDecimalComplianceTest {
 		double mp_elevation = 456.2;
 		double value  = 13.94;
 		double diff   = value - (mp_elevation - alt_va);
-		assertNotEquals("demonstrates how elevation addition in double does not preserve precision", "12.34", ""+diff);
+		assertNotEquals("demonstrates how elevation addition in double does not preserve precision",
+				"12.34", ""+diff);
 //		System.out.println(diff); // 12.340000000000034
 
 		diff   = value - mp_elevation + alt_va;
-		assertNotEquals("demonstrates how elevation addition in double does not preserve precision", "12.34", ""+diff);
+		assertNotEquals("demonstrates how elevation addition in double does not preserve precision",
+				"12.34", ""+diff);
 //		System.out.println(diff); // 12.340000000000032
 	}
 
