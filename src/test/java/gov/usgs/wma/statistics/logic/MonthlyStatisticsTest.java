@@ -156,9 +156,9 @@ public class MonthlyStatisticsTest {
 		List<Value> yearly = stats.generateMonthYearlyPercentiles(sorted); // MediationType.AboveDatum
 
 		assertEquals("Expect 3 medians", 3, yearly.size());
-		assertEquals("Expect large median to be",  "95.1579", yearly.get(2).value.toString());
-		assertEquals("Expect middle median to be", "94.1579", yearly.get(1).value.toString());
-		assertEquals("Expect least median to be",  "93.1579", yearly.get(0).value.toString());
+		assertEquals("Expect large median to be",  "95.1579", yearly.get(2).value.toPlainString());
+		assertEquals("Expect middle median to be", "94.1579", yearly.get(1).value.toPlainString());
+		assertEquals("Expect least median to be",  "93.1579", yearly.get(0).value.toPlainString());
 		
 		assertEquals("generateMonthYearlyPercentiles should not added to intermediateValues.", 0, builder.getIntermediateValues().length());
 	}

@@ -14,7 +14,7 @@ public class ValueTest {
 	@Test
 	public void test_construct_strings() {
 		Value value = new Value("time", "1.0");
-		assertEquals("1.0", value.value.toString());
+		assertEquals("1.0", value.value.toPlainString());
 	}
 	@Test(expected=NumberFormatException.class)
 	public void test_construct_non_number() {
@@ -28,7 +28,7 @@ public class ValueTest {
 	@Test
 	public void test_construct_number() {
 		Value value = new Value("time", new BigDecimal("1.1"));
-		assertEquals("1.1", value.value.toString());
+		assertEquals("1.1", value.value.toPlainString());
 	}
 
 	@Test
@@ -76,7 +76,7 @@ public class ValueTest {
 	@Test
 	public void test_getters() {
 		Value value = new Value("1999-09-19", "4.2");
-		assertEquals("4.2", value.getValue().toString());
+		assertEquals("4.2", value.getValue().toPlainString());
 		assertEquals("1999-09-19", value.getTime());
 		assertEquals("1999", value.getYear());
 		assertEquals("09", value.getMonth());
@@ -89,7 +89,7 @@ public class ValueTest {
 	@Test
 	public void test_valueOf() {
 		Value value = new Value("time", "1.6");
-		assertEquals("1.6", Value.valueOf(value).toString());
+		assertEquals("1.6", Value.valueOf(value).toPlainString());
 	}
 	@Test
 	public void test_valueOf_null1() {

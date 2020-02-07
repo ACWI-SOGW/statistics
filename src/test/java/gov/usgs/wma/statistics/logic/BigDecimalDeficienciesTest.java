@@ -73,7 +73,7 @@ public class BigDecimalDeficienciesTest {
 		BigDecimal value = new BigDecimal("0.0000");
 
 		assertEquals("actually we want 0.0000 to be 4 but BD it is 1 as of Java 8 thru 13", 1, value.precision() );
-		assertEquals("Even though it hard codes the precision as 1, it retains the given digits.","0.0000", value.toString());
+		assertEquals("Even though it hard codes the precision as 1, it retains the given digits.","0.0000", value.toPlainString());
 		assertEquals("Even the plain string retains the zeros in the digits.","0.0000", value.toPlainString());
 		assertEquals("but scale does record the precision of 0.0000 properly", 4, value.scale() );
 
@@ -83,7 +83,7 @@ public class BigDecimalDeficienciesTest {
 		assertEquals(5, value.precision() );
 
 		value = value.add( value.negate() );
-		assertEquals("During math it also is not preserving precision.","0.0000", value.toString());
+		assertEquals("During math it also is not preserving precision.","0.0000", value.toPlainString());
 
 		// Nope. Even after arithmetic operations the BigDecimal implementation
 		// sets zero with precision 1. After this, I checked the SDK src.

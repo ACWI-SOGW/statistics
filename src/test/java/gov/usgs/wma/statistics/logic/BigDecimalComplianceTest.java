@@ -30,7 +30,7 @@ public class BigDecimalComplianceTest {
 		for (int i = 0; i < 10; i++) {
 			one = one.add(tenth);
 		}
-		assertEquals("demonstrates how BigDecimal addition is more accurate", "1.0", one.toString());
+		assertEquals("demonstrates how BigDecimal addition is more accurate", "1.0", one.toPlainString());
 //		System.out.println(one); // 1.0
 
 		double fiveFloat = 5f * oneFloat;
@@ -60,7 +60,7 @@ public class BigDecimalComplianceTest {
 		BigDecimal tenth = new BigDecimal(0.100);
 		assertEquals(55, tenth.precision() );
 		assertEquals("Using Double to construct a BigDecimal introduces the Double error into BigDecimal",
-				"0.1000000000000000055511151231257827021181583404541015625", tenth.toString() );
+				"0.1000000000000000055511151231257827021181583404541015625", tenth.toPlainString() );
 //		System.out.println(tenth); // 0.1000000000000000055511151231257827021181583404541015625
 
 		tenth = new BigDecimal("0.1");
@@ -80,7 +80,7 @@ public class BigDecimalComplianceTest {
 		assertEquals("Scale if the number of digits for the fraction ", 4, value.scale() );
 
 		assertEquals("Precision is all relevant or significant digits",5, value.precision() );
-		assertEquals("1.0000", value.toString());
+		assertEquals("1.0000", value.toPlainString());
 	}
 
 	@Test
@@ -102,22 +102,22 @@ public class BigDecimalComplianceTest {
 		BigDecimal six    = new BigDecimal(6);
 		BigDecimal four   = new BigDecimal(4);
 
-		String val = six.divide(twelve, 1, RoundingMode.HALF_UP).toString();
+		String val = six.divide(twelve, 1, RoundingMode.HALF_UP).toPlainString();
 		assertEquals("0.5", val);
 
-		val = six.divide(twelve, 3, RoundingMode.HALF_UP).toString();
+		val = six.divide(twelve, 3, RoundingMode.HALF_UP).toPlainString();
 		assertEquals("0.500", val);
 
-		val = four.divide(twelve, 1, RoundingMode.HALF_UP).toString();
+		val = four.divide(twelve, 1, RoundingMode.HALF_UP).toPlainString();
 		assertEquals("","0.3", val);
 
-		val = four.divide(twelve, 10, RoundingMode.HALF_UP).toString();
+		val = four.divide(twelve, 10, RoundingMode.HALF_UP).toPlainString();
 		assertEquals("","0.3333333333", val);
 
-		val = eight.divide(six, 1, RoundingMode.HALF_UP).toString();
+		val = eight.divide(six, 1, RoundingMode.HALF_UP).toPlainString();
 		assertEquals("Only one fractional digit calculated","1.3", val);
 
-		val = eight.divide(six, 2, RoundingMode.HALF_UP).toString();
+		val = eight.divide(six, 2, RoundingMode.HALF_UP).toPlainString();
 		assertEquals("scale is not the full precision. it is the figures of the fraction","1.33", val);
 	}
 
@@ -133,37 +133,37 @@ public class BigDecimalComplianceTest {
 		value = new BigDecimal("130001.0");
 		actual = value.precision();
 		assertEquals(message+expect, expect, actual);
-		assertEquals(value.toString(), value.toPlainString());
+		assertEquals(value.toPlainString(), value.toPlainString());
 
 		expect = 30;
 		value = new BigDecimal("12345678901234567890.1234567890");
 		actual = value.precision();
 		assertEquals(message+expect, expect, actual);
-		assertEquals(value.toString(), value.toPlainString());
+		assertEquals(value.toPlainString(), value.toPlainString());
 
 		expect = 2;
 		value = new BigDecimal("0.25");
 		actual = value.precision();
 		assertEquals(message+expect, expect, actual);
-		assertEquals(value.toString(), value.toPlainString());
+		assertEquals(value.toPlainString(), value.toPlainString());
 
 		expect = 3;
 		value = new BigDecimal("0.250");
 		actual = value.precision();
 		assertEquals(message+expect, expect, actual);
-		assertEquals(value.toString(), value.toPlainString());
+		assertEquals(value.toPlainString(), value.toPlainString());
 
 		expect = 4;
 		value = new BigDecimal("-0.2502");
 		actual = value.precision();
 		assertEquals(message+expect, expect, actual);
-		assertEquals(value.toString(), value.toPlainString());
+		assertEquals(value.toPlainString(), value.toPlainString());
 
 		expect = 3;
 		value = new BigDecimal("-1.23E-10");
 		actual = value.precision();
 		assertEquals(message+expect, expect, actual);
-		assertNotSame("plain string should present as .000000000123", value.toString(), value.toPlainString());
+		assertNotSame("plain string should present as .000000000123", value.toPlainString(), value.toPlainString());
 	}
 
 	@Test
@@ -179,7 +179,7 @@ public class BigDecimalComplianceTest {
 				.add( new BigDecimal("10.00") );
 		assertEquals(6, actual.precision());
 
-		assertEquals(expect, actual.toString());
+		assertEquals(expect, actual.toPlainString());
 	}
 	@Test
 	public void test_leadingZerosPrecision() {

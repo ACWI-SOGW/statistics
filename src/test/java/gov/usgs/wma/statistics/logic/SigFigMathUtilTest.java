@@ -72,8 +72,8 @@ public class SigFigMathUtilTest {
      */
     @Test
     public void testSigFigAdd_List_RoundingMode() {
-        BigDecimal result = SigFigMathUtil.sigFigAdd(bdList, RM_EVEN);
-        assertEquals(expect_default_half_down.toPlainString(), result.toPlainString());
+        BigDecimal actual = SigFigMathUtil.sigFigAdd(bdList, RM_EVEN);
+        assertEquals(expect_default_half_down.toPlainString(), actual.toPlainString());
 
         BigDecimal expResult_down = new BigDecimal("576");
         BigDecimal result_down = SigFigMathUtil.sigFigAdd(bdList, RM_DOWN);
@@ -226,7 +226,6 @@ public class SigFigMathUtilTest {
         bigList.add(doubleTest);
         bigList.add(doubleTest);
         assertEquals(new BigDecimal(".3").toPlainString(), SigFigMathUtil.sigFigAdd(bigList).toPlainString());
-        
     }
 
     /**
@@ -400,37 +399,37 @@ public class SigFigMathUtilTest {
         BigDecimal bd1 = new BigDecimal("130001.0");
         int precision1 = 7;
         assertEquals(precision1, bd1.precision());
-        assertEquals(bd1.toString(), bd1.toPlainString());
+        assertEquals(bd1.toPlainString(), bd1.toPlainString());
 
         BigDecimal bd2 = new BigDecimal("12345678901234567890.1234567890");
         int precision2 = 30;
         assertEquals(precision2, bd2.precision());
-        assertEquals(bd2.toString(), bd2.toPlainString());
+        assertEquals(bd2.toPlainString(), bd2.toPlainString());
 
         BigDecimal bd3 = new BigDecimal("0.25");
         int precision3 = 2;
         assertEquals(precision3, bd3.precision());
-        assertEquals(bd3.toString(), bd3.toPlainString());
+        assertEquals(bd3.toPlainString(), bd3.toPlainString());
 
         BigDecimal bd4 = new BigDecimal("0.250");
         int precision4 = 3;
         assertEquals(precision4, bd4.precision());
-        assertEquals(bd4.toString(), bd4.toPlainString());
+        assertEquals(bd4.toPlainString(), bd4.toPlainString());
         
         BigDecimal bd5 = new BigDecimal("-0.2502");
         int precision5 = 4;
         assertEquals(precision5, bd5.precision());
-        assertEquals(bd5.toString(), bd5.toPlainString());
+        assertEquals(bd5.toPlainString(), bd5.toPlainString());
 
         BigDecimal bd6 = new BigDecimal("-1.23E-10");
         int precision6 = 3;
         assertEquals(precision6, bd6.precision());
-        assertNotSame(bd6.toString(), bd6.toPlainString());
+        assertNotSame(bd6.toPlainString(), bd6.toPlainString());
 
         BigDecimal bd7 = new BigDecimal("1.23E-10");
         int precision7 = 3;
         assertEquals(precision7, bd7.precision());
-        assertNotSame(bd7.toString(), bd6.toPlainString()); //note that plain string will present as .000000000123
+        assertNotSame(bd7.toPlainString(), bd6.toPlainString()); //note that plain string will present as .000000000123
     }
     
     @Test

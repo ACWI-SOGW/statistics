@@ -312,7 +312,7 @@ public class WaterLevelStatisticsTest {
 		sortedByValue.add( createSample("2012-06-10T04:15:00-05:00", "13.0") );
 		
 		BigDecimal value = stats.valueOfPercentile(sortedByValue, new BigDecimal("0.75"), Value::valueOf);
-		assertEquals("10.0", value.toString());
+		assertEquals("10.0", value.toPlainString());
 	}
 
 	@Test
@@ -431,9 +431,9 @@ public class WaterLevelStatisticsTest {
 		
 		assertEquals("Expect max to be first.time", first.time, overall.dateMax);
 		assertEquals("Expect min to be first.time", first.time, overall.dateMin);
-		assertEquals("Expect max to be first.value", first.value.toString(), overall.valueMax);
-		assertEquals("Expect min to be first.value", first.value.toString(), overall.valueMin);
-		assertEquals("Expect latest to be first.value", first.value.toString(), overall.latestValue);
+		assertEquals("Expect max to be first.value", first.value.toPlainString(), overall.valueMax);
+		assertEquals("Expect min to be first.value", first.value.toPlainString(), overall.valueMin);
+		assertEquals("Expect latest to be first.value", first.value.toPlainString(), overall.latestValue);
 
 		assertEquals("Expect record_years to be zero for one record", "0.0", overall.recordYears);
 	}
@@ -453,8 +453,8 @@ public class WaterLevelStatisticsTest {
 		
 		assertEquals("Expect max to be max.time", max.time, overall.dateMax);
 		assertEquals("Expect min to be min.time", min.time, overall.dateMin);
-		assertEquals("Expect max to be max.value", max.value.toString(), overall.valueMax);
-		assertEquals("Expect min to be min.value", min.value.toString(), overall.valueMin);
+		assertEquals("Expect max to be max.value", max.value.toPlainString(), overall.valueMax);
+		assertEquals("Expect min to be min.value", min.value.toPlainString(), overall.valueMin);
 
 		assertEquals("Expect record_years to be ten years", "10.0", overall.recordYears);
 	}
@@ -474,8 +474,8 @@ public class WaterLevelStatisticsTest {
 		
 		assertEquals("Expect max to be max.time", max.time, overall.dateMax);
 		assertEquals("Expect min to be min.time", min.time, overall.dateMin);
-		assertEquals("Expect max to be max.value", max.value.toString(), overall.valueMax);
-		assertEquals("Expect min to be min.value", min.value.toString(), overall.valueMin);
+		assertEquals("Expect max to be max.value", max.value.toPlainString(), overall.valueMax);
+		assertEquals("Expect min to be min.value", min.value.toPlainString(), overall.valueMin);
 
 		assertEquals("Expect record_years to be ten and 1/2 years", "10.5", overall.recordYears);
 	}
@@ -497,8 +497,8 @@ public class WaterLevelStatisticsTest {
 		
 		assertEquals("Expect max to be max.time", max.time, overall.dateMax);
 		assertEquals("Expect min to be min.time", min.time, overall.dateMin);
-		assertEquals("Expect max to be max.value", max.value.toString(), overall.valueMax);
-		assertEquals("Expect min to be min.value", min.value.toString(), overall.valueMin);
+		assertEquals("Expect max to be max.value", max.value.toPlainString(), overall.valueMax);
+		assertEquals("Expect min to be min.value", min.value.toPlainString(), overall.valueMin);
 
 		assertEquals("Expect record_years to be 9 and 1/2 years", "9.5", overall.recordYears);
 	}
@@ -524,7 +524,7 @@ public class WaterLevelStatisticsTest {
 		JsonOverall overall = builder.build().getOverall();
 		
 		assertEquals("Expect count to be 3", 3, overall.sampleCount);
-		assertEquals("Expect median to be mid.value", mid.value.toString(), overall.valueMedian);
+		assertEquals("Expect median to be mid.value", mid.value.toPlainString(), overall.valueMedian);
 	}
 
 	@Test
@@ -571,8 +571,8 @@ public class WaterLevelStatisticsTest {
 		JsonOverall overall = builder.build().getOverall();
 		
 		assertEquals("Expect count to be 9", 9, overall.sampleCount);
-		assertEquals("Expect median to be mid.value", mid.value.toString(), overall.valueMedian);
-		assertEquals( mid1.getValue().toString(), overall.latestValue);
+		assertEquals("Expect median to be mid.value", mid.value.toPlainString(), overall.valueMedian);
+		assertEquals( mid1.getValue().toPlainString(), overall.latestValue);
 		assertEquals( "30", overall.latestPercentile);
 	}
 
@@ -903,7 +903,7 @@ public class WaterLevelStatisticsTest {
 		assertEquals("should REMOVE most recent provisional value here", expected, actual+1);
 		assertFalse(monthSamples.contains(provisional));
 		assertFalse(valueOrder.contains(provisional));
-		assertEquals("most recent should be the provisional", provisional.value.toString(), builder.get(LATEST_VALUE));
+		assertEquals("most recent should be the provisional", provisional.value.toPlainString(), builder.get(LATEST_VALUE));
 	}
 	@Test
 	public void testMostRecentProvistional_overallStats_AboveDatum() {
@@ -918,7 +918,7 @@ public class WaterLevelStatisticsTest {
 		stats.setMediation(MediationType.AboveDatum);
 		stats.overallStats(monthSamples, valueOrder);
 
-		assertEquals(provisional.value.toString(), builder.get(LATEST_VALUE));
+		assertEquals(provisional.value.toPlainString(), builder.get(LATEST_VALUE));
 		assertFalse(monthSamples.contains(provisional));
 		assertFalse(valueOrder.contains(provisional));
 
@@ -938,7 +938,7 @@ public class WaterLevelStatisticsTest {
 		stats.setMediation(MediationType.BelowLand);
 		stats.overallStats(monthSamples, valueOrder);
 
-		assertEquals(provisional.value.toString(), builder.get(LATEST_VALUE));
+		assertEquals(provisional.value.toPlainString(), builder.get(LATEST_VALUE));
 		assertFalse(monthSamples.contains(provisional));
 		assertFalse(valueOrder.contains(provisional));
 
@@ -958,7 +958,7 @@ public class WaterLevelStatisticsTest {
 		stats.setMediation(MediationType.AboveDatum);
 		stats.overallStats(monthSamples, valueOrder);
 
-		assertEquals(notProvisional.value.toString(), builder.get(LATEST_VALUE));
+		assertEquals(notProvisional.value.toPlainString(), builder.get(LATEST_VALUE));
 		assertTrue(monthSamples.contains(notProvisional));
 		assertTrue(valueOrder.contains(notProvisional));
 
@@ -978,7 +978,7 @@ public class WaterLevelStatisticsTest {
 		stats.setMediation(MediationType.BelowLand);
 		stats.overallStats(monthSamples, valueOrder);
 
-		assertEquals(notProvisional.value.toString(), builder.get(LATEST_VALUE));
+		assertEquals(notProvisional.value.toPlainString(), builder.get(LATEST_VALUE));
 		assertTrue(monthSamples.contains(notProvisional));
 		assertTrue(valueOrder.contains(notProvisional));
 
