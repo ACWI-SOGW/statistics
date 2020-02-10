@@ -523,11 +523,14 @@ public class SigFigMathUtilTest {
 	
 	@Test
 	public void test_getLeastScale_null() {
-		int actual = SigFigMathUtil.getLeastScale(null);
+		int actual = SigFigMathUtil.getLeastScale((List)null);
 		assertEquals(0, actual);
 		
 		actual = SigFigMathUtil.getLeastScale(new LinkedList<>());
 		assertEquals(0, actual);
+
+        actual = SigFigMathUtil.getLeastScale((BigDecimal[]) null);
+        assertEquals(0, actual);
 	}
 	
 	@Test

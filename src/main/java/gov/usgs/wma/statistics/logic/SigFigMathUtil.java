@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.math.MathContext;
 import java.math.RoundingMode;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -57,23 +58,19 @@ public class SigFigMathUtil {
             LOGGER.warn("RoundingMode not defined. Did you mean to use the 2 arg method which uses the default rounding mode?");
             return null;
         }
-        BigDecimal result = BigDecimal.ZERO;
 
         // TODO asdf must sort in decreasing scale
-        for (BigDecimal bd : numbers) {
-            if (bd == null) {
-                LOGGER.warn("A BigDecimal in the list was found to be null. Returning null.");
+
+        Iterator<BigDecimal> addends = numbers.iterator();
+        BigDecimal sum = addends.next();
+        while (addends.hasNext()) {
+            sum = sigFigAdd(sum, addends.next(), roundingRule);
+            if (sum == null) {
                 return null;
             }
-            result = result.add(bd);
-            // TODO asdf scale and sigfigs must be set per action
         }
 
-        BigDecimal finalAnswer = null;
-        int leastScale = getLeastScale(numbers);
-
-        finalAnswer = result.setScale(leastScale, roundingRule);
-        return finalAnswer;
+        return sum;
     }
 
     /**
@@ -104,16 +101,7 @@ public class SigFigMathUtil {
      * any args passed in are null.
      */
     public static BigDecimal sigFigAdd(BigDecimal augend, BigDecimal addend) {
-        if (augend == null || addend == null) {
-            LOGGER.warn("BigDecimal arg was null.");
-            return null;
-        }
-
-        List<BigDecimal> numbers = new ArrayList<>(2);
-        numbers.add(augend);
-        numbers.add(addend);
-
-        return sigFigAdd(numbers);
+        return sigFigAdd(augend, addend, DEFAULT_ROUNDING_RULE);
     }
 
     /**
@@ -123,26 +111,27 @@ public class SigFigMathUtil {
      *
      * @param augend BigDecimal to perform addition with.
      * @param addend BigDecimal to perform addition with.
-     * @param rm RoundingMode to apply as defined in Java math.
+     * @param roundingRule RoundingMode to apply as defined in Java math.
      * @return BigDecimal with the appropriate sig fig rules applied or null if
      * any args passed in are null.
      */
-    public static BigDecimal sigFigAdd(BigDecimal augend, BigDecimal addend, RoundingMode rm) {
+    public static BigDecimal sigFigAdd(BigDecimal augend, BigDecimal addend, RoundingMode roundingRule) {
         if (augend == null || addend == null) {
-            LOGGER.warn("BigDecimal arg was null.");
+            LOGGER.warn("Missing BigDecimal value(s) to add.");
+            return null;
+        }
+        if (roundingRule == null) {
+            LOGGER.warn("RoundingMode not defined. Did you mean to use the 2 arg method which uses the default rounding mode?");
             return null;
         }
 
-        if (rm == null) {
-            LOGGER.warn("RoundingMode arg was null. Did you mean to use the 2 arg method that applies the default rounding mode?");
-            return null;
-        }
-        // TODO either list or array not both
-        List<BigDecimal> numbers = new ArrayList<>(2);
-        numbers.add(augend);
-        numbers.add(addend);
+        BigDecimal result = augend.add(addend);
 
-        return sigFigAdd(numbers, rm);
+        BigDecimal finalAnswer = null;
+        int leastScale = getLeastScale(augend, addend);
+
+        finalAnswer = result.setScale(leastScale, roundingRule);
+        return finalAnswer;
     }
 
     /**
@@ -282,6 +271,22 @@ public class SigFigMathUtil {
             return 0;
         }
         int lowestScaleFound = numbers.get(0).scale();
+
+        for (BigDecimal num : numbers) {
+            if (num.scale() < lowestScaleFound) {
+                lowestScaleFound = num.scale();
+            }
+        }
+        LOGGER.trace("smallest scale: {}", lowestScaleFound);
+        return lowestScaleFound;
+    }
+    protected static int getLeastScale(BigDecimal ... numbers) {
+
+        if (numbers == null || numbers.length == 0) {
+            LOGGER.warn("Missing BigDecimal or was empty. Can not determine scale.");
+            return 0;
+        }
+        int lowestScaleFound = numbers[0].scale();
 
         for (BigDecimal num : numbers) {
             if (num.scale() < lowestScaleFound) {
