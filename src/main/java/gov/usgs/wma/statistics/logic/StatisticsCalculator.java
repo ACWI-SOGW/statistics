@@ -221,22 +221,13 @@ public class StatisticsCalculator<S extends Value> {
 		// Y[k] and Y[k+1] (but java is zero based indexing thus k-1 and k)
 		BigDecimal yk    = valueOf.apply(samples.get(k.intValue()-1));  // first index value
 		BigDecimal yk1   = valueOf.apply(samples.get(k.intValue()));    // second index value
-		
+
 		// percentile calculation Y(p) = Y[k] + d(Y[k+1] - Y[k])
 		BigDecimal diff  = sigFigSubtract(yk1, yk);                     // delta between the two values
-		
+		// TODO asdf might need to call sigfigutil for this action
 		BigDecimal d     = p.subtract(k);                               // the decimal index value (or fraction between two indexes)
 		BigDecimal delta = sigFigMultiply(diff, d);                     // the fraction of the difference of two values k and k+1
-		BigDecimal yy    = yk;
-		// 2020-02-05 if sorted in descending order then perform the final math as if it was sorted ascending.
-		// Why? Because each y value could have different precision and it seems that other services, that this
-		// service are compared, use ascending sort always. A different sort order swaps the yk and yk1;
-		if (delta.signum() < 0) {
-			yy = yk1; // use the second y value if sorted descending
-			delta = sigFigAdd(delta, yk);
-			delta = sigFigSubtract(delta, yk1); // TODO asdf rework this, also round down and flip ends up with round up -- verify?
-		}
-		BigDecimal yp    = sigFigAdd(yy, delta);                        // and finally, the percentile value
+		BigDecimal yp    = sigFigAdd(yk, delta);                        // and finally, the percentile value
 		return yp;
 	}
 	public BigDecimal valueOfPercentile(List<S> samples, BigDecimal percentileAsFraction,

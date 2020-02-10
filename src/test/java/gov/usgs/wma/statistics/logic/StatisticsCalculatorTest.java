@@ -22,6 +22,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.env.Environment;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -33,7 +34,6 @@ import gov.usgs.wma.statistics.model.Value;
 
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration //(locations = { "/applicationContext_mock.xml" })
 public class StatisticsCalculatorTest {
 	private static final Logger LOGGER = LoggerFactory.getLogger(StatisticsCalculatorTest.class);
 	
@@ -1067,7 +1067,7 @@ public class StatisticsCalculatorTest {
 		assertEquals("normalize should have removed NO values", preCount, monthSamples.size());
 
 		BigDecimal p10c = stats.valueOfPercentile(monthSamples, PERCENTILES.get(P25), Value::valueOf);
-		assertEquals("with additional sigfigs, more refined answer equal to P25", "10.8", p10c.toPlainString());
+		assertEquals("with additional sigfigs, more refined answer equal to P25", "10.9", p10c.toPlainString());
 
 		// 10.75-11.1=-0.35 round -0.3
 		// then 0.75 x -0.3 = 0.225  round  -0.2
@@ -1174,36 +1174,34 @@ public class StatisticsCalculatorTest {
 	
 	@Test(expected=IllegalArgumentException.class)
 	public void test_daysDiff_badNumber() {
-		StatisticsCalculator.daysDiff("asdfsdf", "32asa");
+		StatisticsCalculator.daysDiff("adfsdf", "32asa");
 	}
 	
 	@Test
 	public void test_percentileOfValue_nullAndEmptyProtection() {
-		Value value = null;
 		List<Value> values = new LinkedList<>();
 		values.add( createSample("1963-12-02T12:00:00", "1.3") );
-		BigDecimal actual = StatisticsCalculator.percentileOfValue(values, value, Value::valueOf);
+		BigDecimal actual = StatisticsCalculator.percentileOfValue(values, null, Value::valueOf);
 		assertEquals(BigDecimal.ZERO, actual);
 
-		value = null;
 		values = new LinkedList<>();
 		values.add( createSample("1963-12-02T12:00:00", "1.3") );
-		actual = StatisticsCalculator.percentileOfValue(values, value, 10, Value::valueOf);
+		actual = StatisticsCalculator.percentileOfValue(values, null, 10, Value::valueOf);
 		assertEquals(BigDecimal.ZERO, actual);
-		
+
+		Value value;
+
 		value = createSample("1963-12-02T12:00:00", "1.3") ;
 		values = new LinkedList<>();
 		actual = StatisticsCalculator.percentileOfValue(values, value, 10, Value::valueOf);
 		assertEquals(BigDecimal.ZERO, actual);
 		
 		value = createSample("1963-12-02T12:00:00", "1.3") ;
-		values = null;
-		actual = StatisticsCalculator.percentileOfValue(values, value, 10, Value::valueOf);
+		actual = StatisticsCalculator.percentileOfValue(null, value, 10, Value::valueOf);
 		assertEquals(BigDecimal.ZERO, actual);
 		
 		value = createSample("1963-12-02T12:00:00", "1.3") ;
-		values = null;
-		actual = StatisticsCalculator.percentileOfValue(values, value, Value::valueOf);
+		actual = StatisticsCalculator.percentileOfValue(null, value, Value::valueOf);
 		assertEquals(BigDecimal.ZERO, actual);
 		
 		value = createSample("1963-12-02T12:00:00", "1.3") ;
@@ -1224,7 +1222,7 @@ public class StatisticsCalculatorTest {
 		Function<Value, BigDecimal> valueOf = new Function<Value, BigDecimal>() {
 			@Override
 			public BigDecimal apply(Value t) {
-				return null; // TESTING THIS
+				return null; // TESTING THIS NULL CASE
 			}
 		};
 		actual = StatisticsCalculator.percentileOfValue(values, value, 10, valueOf);
