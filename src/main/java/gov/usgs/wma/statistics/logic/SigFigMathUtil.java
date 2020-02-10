@@ -8,10 +8,8 @@ import java.math.MathContext;
 import java.math.RoundingMode;
 import java.util.AbstractList;
 import java.util.Arrays;
-import java.util.Iterator;
 import java.util.List;
 import java.util.function.BinaryOperator;
-import java.util.stream.Stream;
 
 /**
  * The purpose of this class is to provide a simplistic, consistent method to
@@ -181,12 +179,11 @@ public class SigFigMathUtil {
             return logMissingRoundingRule();
         }
 
-        System.out.println(augend.toPlainString() +" + "+ addend.toPlainString());
         BigDecimal sum = augend.add(addend);
 
         // first, addition trims on the least factional sigfigs
         int leastScale = getLeastScale(augend, addend);
-        sum.setScale(leastScale, roundingRule);
+        sum = sum.setScale(leastScale, roundingRule);
 
         // then, addition trims on the least total sigfigs
         // this is accomplished by finding the difference in sigfigs of the
@@ -256,16 +253,17 @@ public class SigFigMathUtil {
      * be noted as 4 significant figures.
      *
      * @param minuend BigDecimal to perform subtraction operation 'from'.
-     * @param subtrahend BigDecimal number to be subtracted.
+     * @param subtractend BigDecimal number to be subtracted.
      * @param roundingRule RoundingMode to apply as defined in Java math.
      * @return BigDecimal with the appropriate sig fig rules applied or null if
      * any args passed in are null.
      */
-    public static BigDecimal sigFigSubtract(BigDecimal minuend, BigDecimal subtrahend, RoundingMode roundingRule) {
-        if (subtrahend == null) {
+    public static BigDecimal sigFigSubtract(BigDecimal minuend, BigDecimal subtractend, RoundingMode roundingRule) {
+        if (subtractend == null) {
             return logMissingValues();
         }
-        return sigFigAdd(minuend, subtrahend.negate(), roundingRule);
+        // we can use the addition methods; adding a negative is subtraction
+        return sigFigAdd(minuend, subtractend.negate(), roundingRule);
     }
 
     /**
@@ -332,7 +330,7 @@ public class SigFigMathUtil {
      * @param multiplicand BigDecimal
      * @param multiplier BigDecimal
      * @param roundingRule RoundingMode
-     * @return
+     * @return product of given values rounded to significant figures of the least given
      */
     public static BigDecimal sigFigMultiply(BigDecimal multiplicand, BigDecimal multiplier, RoundingMode roundingRule) {
         if (multiplicand == null || multiplier == null) {
@@ -345,6 +343,9 @@ public class SigFigMathUtil {
 
         MathContext mc = new MathContext(sigFigs, roundingRule);
         BigDecimal product = multiplicand.multiply(multiplier, mc);
+        if (BigDecimal.ZERO.equals(product)) {
+            product = ZERO;
+        }
         return product;
     }
     /**
@@ -354,20 +355,13 @@ public class SigFigMathUtil {
      * @param multiplicand BigDecimal
      * @param exactMultiplier BigDecimal
      * @param roundingRule RoundingMode
-     * @return
+     * @return product of given values rounded to significant figures of the first value
      */
     public static BigDecimal sigFigMultiplyByExact(BigDecimal multiplicand, BigDecimal exactMultiplier, RoundingMode roundingRule) {
         if (multiplicand == null || exactMultiplier == null) {
             return logMissingValues();
         }
-        if (roundingRule == null) {
-            return logMissingRoundingRule();
-        }
-        int sigFigs = multiplicand.precision();
-        MathContext mc = new MathContext(sigFigs, roundingRule);
-        BigDecimal product = multiplicand.multiply(exactMultiplier, mc);
-
-        return product;
+        return sigFigMultiply(multiplicand, exactMultiplier.setScale(10), roundingRule);
     }
 
     /**
@@ -415,6 +409,9 @@ public class SigFigMathUtil {
 
         MathContext mc = new MathContext(sigFigs, roundingRule);
         BigDecimal quotient = numerator.divide(denominator, mc);
+        if (BigDecimal.ZERO.equals(quotient)) {
+            quotient = ZERO;
+        }
         return quotient;
     }
 
@@ -427,11 +424,7 @@ public class SigFigMathUtil {
      * @return null if any arg passed in is null.
      */
     public static BigDecimal sigFigDivide(BigDecimal numerator, BigDecimal denominator) {
-        if (numerator == null || denominator == null) {
-            return logMissingValues();
-        }
-        BigDecimal quotient = sigFigDivide(numerator, denominator, DEFAULT_ROUNDING_RULE);
-        return quotient;
+        return sigFigDivide(numerator, denominator, DEFAULT_ROUNDING_RULE);
     }
 
     /**
@@ -447,15 +440,7 @@ public class SigFigMathUtil {
         if (numerator == null || exactDenominator == null) {
             return logMissingValues();
         }
-        if (roundingRule == null) {
-            return logMissingRoundingRule();
-        }
-        int sigFigs = numerator.precision();
-
-        MathContext mc = new MathContext(sigFigs, roundingRule);
-        BigDecimal quotient = numerator.divide(exactDenominator, mc);
-
-        return quotient;
+        return sigFigDivide(numerator, exactDenominator.setScale(10), roundingRule);
     }
     
     /**
@@ -467,9 +452,6 @@ public class SigFigMathUtil {
      * @return null if any arg passed in is null.
      */
     public static BigDecimal sigFigDivideByExact(BigDecimal numerator, BigDecimal exactDenominator) {
-        if (numerator == null || exactDenominator == null) {
-            return logMissingValues();
-        }
         BigDecimal quotient = sigFigDivideByExact(numerator, exactDenominator, DEFAULT_ROUNDING_RULE);
 
         return quotient;
