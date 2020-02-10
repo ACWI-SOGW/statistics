@@ -27,7 +27,7 @@ import org.slf4j.LoggerFactory;
 public class SigFigMathUtilTest {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SigFigMathUtilTest.class);
-    private static final String[] args = {"12.000000", ".1", "0.0", "4.40", "560"}; //total 576.5
+    private static final String[] args = {"12.000000", ".200", "-0.100", "4.40", "560"}; //total 576.5
     private static final BigDecimal expect_default_half_down = new BigDecimal("576");
     private static final BigDecimal expect_default = new BigDecimal("577");
     private static List<BigDecimal> bdList;
@@ -35,6 +35,12 @@ public class SigFigMathUtilTest {
     private static final RoundingMode RM_UP   = RoundingMode.HALF_UP;
     private static final RoundingMode RM_DOWN = RoundingMode.HALF_DOWN;
     private static final RoundingMode RM_EVEN = RoundingMode.HALF_EVEN;
+
+
+    final BigDecimal pt250 = new BigDecimal("0.2500000");
+    final BigDecimal pt25 = new BigDecimal("0.25");
+
+
 
     public SigFigMathUtilTest() {
     }
@@ -124,7 +130,7 @@ public class SigFigMathUtilTest {
         BigDecimal actual = SigFigMathUtil.sigFigSubtract(bdList);
         assertEquals(expect.toPlainString(), actual.toPlainString());
 
-        BigDecimal subANegBD = new BigDecimal("-50");
+        BigDecimal subANegBD = new BigDecimal("-50.0");
         bdList.add(subANegBD);
         actual = SigFigMathUtil.sigFigSubtract(bdList);
         expect = new BigDecimal("-502"); // round 502.5 down to 502
@@ -149,18 +155,17 @@ public class SigFigMathUtilTest {
     @Test
     public void testSigFigAdd_BigDecimal_BigDecimal() {
         BigDecimal bd1 = new BigDecimal("130001.0");
-        BigDecimal bd2 = new BigDecimal("0.25");
 
         // 2020-02-05 round HALF_DOWN changes this to .2 from .3 when rounding HALF_UP
         BigDecimal expect = new BigDecimal("130001.2");  // half_down
-        BigDecimal actual = SigFigMathUtil.sigFigAdd(bd1, bd2);
+        BigDecimal actual = SigFigMathUtil.sigFigAdd(bd1, pt250);
         assertEquals(expect.toPlainString(), actual.toPlainString());
 
         //null check
         BigDecimal nullResult = SigFigMathUtil.sigFigAdd(bd1, null);
         assertNull(nullResult);
 
-        BigDecimal nullResult2 = SigFigMathUtil.sigFigAdd(null, bd2);
+        BigDecimal nullResult2 = SigFigMathUtil.sigFigAdd(null, pt250);
         assertNull(nullResult2);
     }
 
@@ -170,18 +175,17 @@ public class SigFigMathUtilTest {
     @Test
     public void testSigFigSub_BigDecimal_BigDecimal() {
         BigDecimal bd1 = new BigDecimal("130001.0");
-        BigDecimal bd2 = new BigDecimal("0.25");
 
         // 2020-02-05 round HALF_DOWN changes this to .7 from .8 when rounding HALF_UP
         BigDecimal expect = new BigDecimal("130000.7");
-        BigDecimal actual = SigFigMathUtil.sigFigSubtract(bd1, bd2);
+        BigDecimal actual = SigFigMathUtil.sigFigSubtract(bd1, pt250);
         assertEquals(expect.toPlainString(), actual.toPlainString());
 
         //null check
         BigDecimal nullResult = SigFigMathUtil.sigFigSubtract(bd1, null);
         assertNull(nullResult);
 
-        BigDecimal nullResult2 = SigFigMathUtil.sigFigSubtract(null, bd2);
+        BigDecimal nullResult2 = SigFigMathUtil.sigFigSubtract(null, pt250);
         assertNull(nullResult2);
     }
 
@@ -191,7 +195,6 @@ public class SigFigMathUtilTest {
     @Test
     public void testSigFigAdd_3args() {
         BigDecimal bd1 = new BigDecimal("130001.0");
-        BigDecimal bd2 = new BigDecimal("0.25");
 
         // check that a negative number rounds correctly
         BigDecimal expResult_up_a = new BigDecimal("-2");
@@ -199,24 +202,24 @@ public class SigFigMathUtilTest {
         assertEquals(expResult_up_a.toPlainString(), result_up_a.toPlainString());
 
         BigDecimal expect = new BigDecimal("130001.2");
-        BigDecimal actual = SigFigMathUtil.sigFigAdd(bd1, bd2, RM_EVEN);
+        BigDecimal actual = SigFigMathUtil.sigFigAdd(bd1, pt250, RM_EVEN);
         assertEquals(expect, actual);
 
         BigDecimal bd1a = new BigDecimal("4057.7");
-        BigDecimal bd2a = new BigDecimal("-27.85");
+        BigDecimal bd2a = new BigDecimal("-27.850");
 
         expect = new BigDecimal("4029.8");
         actual = SigFigMathUtil.sigFigAdd(bd1a, bd2a, RM_EVEN);
         assertEquals(expect, actual);
 
         //null check
-        BigDecimal nullResult = SigFigMathUtil.sigFigAdd(null, bd2, RM_EVEN);
+        BigDecimal nullResult = SigFigMathUtil.sigFigAdd(null, pt250, RM_EVEN);
         assertNull(nullResult);
 
         BigDecimal nullResult2 = SigFigMathUtil.sigFigAdd(bd1, null, RM_EVEN);
         assertNull(nullResult2);
 
-        BigDecimal nullRmResult = SigFigMathUtil.sigFigAdd(bd1, bd2, null);
+        BigDecimal nullRmResult = SigFigMathUtil.sigFigAdd(bd1, pt250, null);
         assertNull(nullRmResult);
         
         BigDecimal doubleTest = new BigDecimal(".1");
@@ -233,25 +236,24 @@ public class SigFigMathUtilTest {
     @Test
     public void testSigFigSub_3args() {
         BigDecimal bd1 = new BigDecimal("510.0");
-        BigDecimal bd2 = new BigDecimal("0.25");
         BigDecimal expect = new BigDecimal("509.8");
 
-        BigDecimal actual = SigFigMathUtil.sigFigSubtract(bd1, bd2, RM_EVEN);
+        BigDecimal actual = SigFigMathUtil.sigFigSubtract(bd1, pt250, RM_EVEN);
         assertEquals(expect, actual);
 
         BigDecimal bd1a = new BigDecimal("130001.0");
         expect = new BigDecimal("130000.8");
-        actual = SigFigMathUtil.sigFigSubtract(bd1a, bd2, RM_EVEN);
+        actual = SigFigMathUtil.sigFigSubtract(bd1a, pt250, RM_EVEN);
         assertEquals(expect, actual);
 
         //null check
-        BigDecimal nullResult = SigFigMathUtil.sigFigSubtract(null, bd2, RM_EVEN);
+        BigDecimal nullResult = SigFigMathUtil.sigFigSubtract(null, pt250, RM_EVEN);
         assertNull(nullResult);
 
         BigDecimal nullResult2 = SigFigMathUtil.sigFigSubtract(bd1, null, RM_EVEN);
         assertNull(nullResult2);
 
-        BigDecimal nullRmResult = SigFigMathUtil.sigFigSubtract(bd1, bd2, null);
+        BigDecimal nullRmResult = SigFigMathUtil.sigFigSubtract(bd1, pt250, null);
         assertNull(nullRmResult);
     }
 
@@ -261,21 +263,20 @@ public class SigFigMathUtilTest {
     @Test
     public void testSigFigSub_2args() {
         BigDecimal bd1 = new BigDecimal("510.0");
-        BigDecimal bd2 = new BigDecimal("0.25");
 
         // 2020-02-05 round HALF_DOWN changes this to .7 from .8 when rounding HALF_UP
         BigDecimal expect = new BigDecimal("509.7");
-        BigDecimal actual = SigFigMathUtil.sigFigSubtract(bd1, bd2);
+        BigDecimal actual = SigFigMathUtil.sigFigSubtract(bd1, pt250);
         assertEquals(expect, actual);
 
         // 2020-02-05 round HALF_DOWN changes this to .7 from .8 when rounding HALF_UP
         BigDecimal bd1a = new BigDecimal("130001.0");
         expect = new BigDecimal("130000.7");
-        actual = SigFigMathUtil.sigFigSubtract(bd1a, bd2);
+        actual = SigFigMathUtil.sigFigSubtract(bd1a, pt250);
         assertEquals(expect, actual);
 
         //null check
-        BigDecimal nullResult = SigFigMathUtil.sigFigSubtract(null, bd2);
+        BigDecimal nullResult = SigFigMathUtil.sigFigSubtract(null, pt250);
         assertNull(nullResult);
 
         BigDecimal nullResult2 = SigFigMathUtil.sigFigSubtract(bd1, null);
@@ -289,21 +290,20 @@ public class SigFigMathUtilTest {
     @Test
     public void testSigFigMultiply_3args() {
         BigDecimal bd1 = new BigDecimal("130001.0");
-        BigDecimal bd2 = new BigDecimal("0.25");
         BigDecimal expect = new BigDecimal("33000");
 
-        BigDecimal actual = SigFigMathUtil.sigFigMultiply(bd1, bd2, RM_EVEN);
+        BigDecimal actual = SigFigMathUtil.sigFigMultiply(bd1, pt25, RM_EVEN);
         LOGGER.info("result is: " + actual.toPlainString());
         assertEquals(expect.toPlainString(), actual.toPlainString());
 
         //null check
-        BigDecimal nullResult = SigFigMathUtil.sigFigMultiply(null, bd2, RM_EVEN);
+        BigDecimal nullResult = SigFigMathUtil.sigFigMultiply(null, pt250, RM_EVEN);
         assertNull(nullResult);
 
         BigDecimal nullResult2 = SigFigMathUtil.sigFigMultiply(bd1, null, RM_EVEN);
         assertNull(nullResult2);
 
-        BigDecimal nullRmResult = SigFigMathUtil.sigFigMultiply(bd1, bd2, null);
+        BigDecimal nullRmResult = SigFigMathUtil.sigFigMultiply(bd1, pt250, null);
         assertNull(nullRmResult);
 
     }
@@ -315,15 +315,14 @@ public class SigFigMathUtilTest {
     @Test
     public void testSigFigMultiply_2args() {
         BigDecimal bd1 = new BigDecimal("130001.0");
-        BigDecimal bd2 = new BigDecimal("0.25");
         BigDecimal expect = new BigDecimal("33000");
 
-        BigDecimal actual = SigFigMathUtil.sigFigMultiply(bd1, bd2);
+        BigDecimal actual = SigFigMathUtil.sigFigMultiply(bd1, pt25);
         LOGGER.info("result is: " + actual.toPlainString());
         assertEquals(expect.toPlainString(), actual.toPlainString());
 
         //null check
-        BigDecimal nullResult = SigFigMathUtil.sigFigMultiply(null, bd2);
+        BigDecimal nullResult = SigFigMathUtil.sigFigMultiply(null, pt250);
         assertNull(nullResult);
 
         BigDecimal nullResult2 = SigFigMathUtil.sigFigMultiply(bd1, null);
@@ -337,21 +336,20 @@ public class SigFigMathUtilTest {
     @Test
     public void testSigFigDivide_3args() {
         BigDecimal bd1 = new BigDecimal("130001.0");
-        BigDecimal bd2 = new BigDecimal("0.25");
         BigDecimal expect = new BigDecimal("520000");
 
-        BigDecimal actual = SigFigMathUtil.sigFigDivide(bd1, bd2, RM_EVEN);
+        BigDecimal actual = SigFigMathUtil.sigFigDivide(bd1, pt25, RM_EVEN);
         LOGGER.info("result is: " + actual.toPlainString());
         assertEquals(expect.toPlainString(), actual.toPlainString());
 
         //null check
-        BigDecimal nullResult = SigFigMathUtil.sigFigDivide(null, bd2, RM_EVEN);
+        BigDecimal nullResult = SigFigMathUtil.sigFigDivide(null, pt250, RM_EVEN);
         assertNull(nullResult);
 
         BigDecimal nullResult2 = SigFigMathUtil.sigFigDivide(bd1, null, RM_EVEN);
         assertNull(nullResult2);
 
-        BigDecimal nullRmResult = SigFigMathUtil.sigFigDivide(bd1, bd2, null);
+        BigDecimal nullRmResult = SigFigMathUtil.sigFigDivide(bd1, pt250, null);
         assertNull(nullRmResult);
     }
 
@@ -535,11 +533,11 @@ public class SigFigMathUtilTest {
 	
 	@Test
 	public void test_getLeastPrecise_null() {
-		BigDecimal actual = SigFigMathUtil.getLeastPrecise(null, BigDecimal.ONE);
-		assertNull(actual);
+		int actual = SigFigMathUtil.getLeastPrecise(null, BigDecimal.ONE);
+		assertEquals(0, actual);
 		
 		actual = SigFigMathUtil.getLeastPrecise(BigDecimal.ONE, null);
-		assertNull(actual);
+		assertEquals(0, actual);
 	}
 	
 	@Test
@@ -604,8 +602,8 @@ public class SigFigMathUtilTest {
 
         BigDecimal actual = SigFigMathUtil.sigFigAdd(thenths);
         // supposed to add from most scale to least, rounding after each to the least scale. (scale is mantissa)
-        assertEquals("This is wrong but the test must pass. adding 0.1 ten times goes from 1 sigfig to 2",
-                expect, actual);
+        assertEquals("Low precision added many times should yield low precision.",
+                "1", actual.toPlainString());
     }
     @Test
     public void test_trailingZerosBeforeMissingDecimalPoint() {
