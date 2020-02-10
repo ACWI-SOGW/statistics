@@ -1,41 +1,28 @@
 package gov.usgs.ngwmn.logic;
 
-import static gov.usgs.wma.statistics.model.JsonDataBuilder.*;
-import static org.junit.Assert.*;
-
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.springframework.core.env.Environment;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
-
 import gov.usgs.ngwmn.model.MediationType;
 import gov.usgs.ngwmn.model.PCode;
 import gov.usgs.ngwmn.model.Specifier;
 import gov.usgs.ngwmn.model.WLSample;
 import gov.usgs.wma.statistics.app.Properties;
 import gov.usgs.wma.statistics.logic.StatisticsCalculator;
-import gov.usgs.wma.statistics.model.JsonData;
-import gov.usgs.wma.statistics.model.JsonDataBuilder;
-import gov.usgs.wma.statistics.model.JsonMonthly;
-import gov.usgs.wma.statistics.model.JsonOverall;
-import gov.usgs.wma.statistics.model.Value;
+import gov.usgs.wma.statistics.model.*;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.springframework.core.env.Environment;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+
+import java.math.BigDecimal;
+import java.util.*;
+
+import static gov.usgs.wma.statistics.model.JsonDataBuilder.*;
+import static org.junit.Assert.*;
 
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration //(locations = { "/applicationContext_mock.xml" })
 public class WaterLevelStatisticsTest {
 
 	public static final String P10 = "P10";

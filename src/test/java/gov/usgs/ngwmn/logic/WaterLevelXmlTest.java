@@ -1,7 +1,19 @@
 package gov.usgs.ngwmn.logic;
 
-import static gov.usgs.wma.statistics.app.SwaggerConfig.*;
-import static org.junit.Assert.*;
+import gov.usgs.ngwmn.model.Elevation;
+import gov.usgs.ngwmn.model.MediationType;
+import gov.usgs.ngwmn.model.Specifier;
+import gov.usgs.ngwmn.model.WLSample;
+import gov.usgs.wma.statistics.app.Properties;
+import gov.usgs.wma.statistics.control.StatsService;
+import gov.usgs.wma.statistics.model.JsonData;
+import gov.usgs.wma.statistics.model.JsonDataBuilder;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.io.BufferedReader;
 import java.io.InputStream;
@@ -16,28 +28,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
+import static gov.usgs.wma.statistics.app.SwaggerConfig.StatsService_MEDIANS_DEFAULT;
+import static gov.usgs.wma.statistics.app.SwaggerConfig.StatsService_PERCENTILES_DEFAULT;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
 //import org.mockito.stubbing.Answer;
 //import org.mockito.invocation.InvocationOnMock;
 //import org.mockito.stubbing.Answer;
-import org.springframework.core.env.Environment;
-import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-
-import gov.usgs.ngwmn.model.Elevation;
-import gov.usgs.ngwmn.model.MediationType;
-import gov.usgs.ngwmn.model.Specifier;
-import gov.usgs.ngwmn.model.WLSample;
-import gov.usgs.wma.statistics.app.Properties;
-import gov.usgs.wma.statistics.control.StatsService;
-import gov.usgs.wma.statistics.model.JsonData;
-import gov.usgs.wma.statistics.model.JsonDataBuilder;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@TestPropertySource(locations = { "/application.properties" })
 public class WaterLevelXmlTest {
 
 	private static final BigDecimal ZERO = new BigDecimal("0.00");

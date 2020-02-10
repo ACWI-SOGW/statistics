@@ -24,7 +24,6 @@ import gov.usgs.wma.statistics.model.JsonDataBuilder;
 import gov.usgs.wma.statistics.model.Value;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration //(locations = { "/applicationContext_mock.xml" })
 public class OverallStatisticsTest {
 	@Mock
 	Environment spring;

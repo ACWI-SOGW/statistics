@@ -1,7 +1,20 @@
 package gov.usgs.ngwmn.logic;
 
-import static org.junit.Assert.*;
+import gov.usgs.ngwmn.model.MediationType;
+import gov.usgs.ngwmn.model.WLSample;
+import gov.usgs.wma.statistics.app.Properties;
+import gov.usgs.wma.statistics.logic.StatisticsCalculator;
+import gov.usgs.wma.statistics.model.JsonDataBuilder;
+import gov.usgs.wma.statistics.model.JsonMonthly;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.springframework.core.env.Environment;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import java.io.InputStream;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -9,35 +22,22 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.springframework.core.env.Environment;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-
-import gov.usgs.ngwmn.model.MediationType;
-import gov.usgs.ngwmn.model.WLSample;
-import gov.usgs.wma.statistics.app.Properties;
-import gov.usgs.wma.statistics.logic.StatisticsCalculator;
-import gov.usgs.wma.statistics.model.JsonDataBuilder;
-import gov.usgs.wma.statistics.model.JsonMonthly;
+import static org.junit.Assert.*;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration //(locations = { "/applicationContext_mock.xml" })
 public class WaterLevelMonthlyStatsTest {
 	public static final String P10 = "P10";
 	public static final String P25 = "P25";
 	public static final String P50 = "P50";
 	public static final String P75 = "P75";
 	public static final String P90 = "P90";
-	
+
 	@Mock
 	Environment spring;
 	Properties env;
 	private JsonDataBuilder builder;
-	
+
+
 	@Before
 	public void setup() {
 		env = new Properties().setEnvironment(spring);

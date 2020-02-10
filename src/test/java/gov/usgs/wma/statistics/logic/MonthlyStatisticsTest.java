@@ -23,6 +23,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.env.Environment;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import gov.usgs.ngwmn.logic.WaterLevelMonthlyStats;
@@ -37,7 +38,6 @@ import gov.usgs.wma.statistics.model.JsonMonthly;
 import gov.usgs.wma.statistics.model.Value;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration //(locations = { "/applicationContext_mock.xml" })
 public class MonthlyStatisticsTest {
 	private static final Logger LOGGER = LoggerFactory.getLogger(MonthlyStatisticsTest.class);
 
