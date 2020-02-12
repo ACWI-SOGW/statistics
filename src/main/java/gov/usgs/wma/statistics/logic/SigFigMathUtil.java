@@ -200,8 +200,10 @@ public class SigFigMathUtil {
         int sumScale = sum.scale();
         int scalePrecision = sumScale + (leastPrecision - sumPrecision);
         // TODO asdf need extensive testing on this because of the potential negative scalePrecision
+        // TODO asdf incorporate into updateSigFigs
         int finalScale = Math.min(leastScale, scalePrecision);
-        return sum.setScale(finalScale, roundingRule);
+        sum = sum.setScale(finalScale, roundingRule);
+        return sum;
     }
 
     /**
@@ -351,6 +353,7 @@ public class SigFigMathUtil {
         if (BigDecimal.ZERO.equals(product)) {
             product = ZERO.setScale(sigFigs);
         }
+        product = updateSigFigs(product, sigFigs);
         return product;
     }
     /**
