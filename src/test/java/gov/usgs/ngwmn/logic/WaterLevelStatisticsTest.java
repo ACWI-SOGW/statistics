@@ -714,7 +714,7 @@ public class WaterLevelStatisticsTest {
 		// the latest value is provisional and only counts for the following two entries, latest value and percentile
 		assertEquals("Expect LATEST_VALUE to be ", "100.0", overall.latestValue);
 		assertEquals("Expect LATEST_PCTILE to be 0% now that all are now sorted BelowLand (high values are low percentiles)",
-													"0",    overall.latestPercentile);
+													"0.0",    overall.latestPercentile);
 
 		assertEquals("Expect all percentile to be ", "1.0",    monthly.get("5").percentiles.get(P10));
 		assertEquals("Expect all percentile to be ", "1.0",    monthly.get("5").percentiles.get(P25));
@@ -763,13 +763,14 @@ public class WaterLevelStatisticsTest {
 		assertEquals("Expect MAX_VALUE to be ",      "1.0", overall.valueMax);
 		assertEquals("Expect MEDIAN to be ",         "1.0", overall.valueMedian);
 		assertEquals("Expect LATEST_VALUE to be ", "100.0", overall.latestValue);
-		assertEquals("Expect LATEST_PCTILE to be ",  "0", overall.latestPercentile);
+		assertEquals("Expect LATEST_PCTILE to be ",  "0.0", overall.latestPercentile);
 
-		assertEquals("Expect percentile to be 80.2", "80.2", monthly.get("5").percentiles.get(P10));
-		assertEquals("Expect most percentile to be ", "1.0", monthly.get("5").percentiles.get(P25));
-		assertEquals("Expect most percentile to be ", "1.0", monthly.get("5").percentiles.get(P50));
-		assertEquals("Expect most percentile to be ", "1.0", monthly.get("5").percentiles.get(P75));
-		assertEquals("Expect most percentile to be ", "1.0", monthly.get("5").percentiles.get(P90));
+		// 2020-02-11 Honoring addition/subtraction precision rounds to 80 with two sigfigs
+		assertEquals("Expect this percentile to be 80", "80", monthly.get("5").percentiles.get(P10));
+		assertEquals("Expect most percentiles to be ", "1.0", monthly.get("5").percentiles.get(P25));
+		assertEquals("Expect most percentiles to be ", "1.0", monthly.get("5").percentiles.get(P50));
+		assertEquals("Expect most percentiles to be ", "1.0", monthly.get("5").percentiles.get(P75));
+		assertEquals("Expect most percentiles to be ", "1.0", monthly.get("5").percentiles.get(P90));
 	}
 
 
@@ -930,7 +931,7 @@ public class WaterLevelStatisticsTest {
 		assertFalse(valueOrder.contains(provisional));
 
 		assertEquals("7.98", builder.get(MEDIAN));
-		assertEquals("0", builder.get(LATEST_PCTILE));
+		assertEquals("0.0", builder.get(LATEST_PCTILE));
 	}
 	@Test
 	public void testMostRecentProvistionalNONE_overallStats_AboveDatum() {
@@ -970,7 +971,7 @@ public class WaterLevelStatisticsTest {
 		assertTrue(valueOrder.contains(notProvisional));
 
 		assertEquals("7.98", builder.get(MEDIAN));
-		assertEquals("0", builder.get(LATEST_PCTILE));
+		assertEquals("0.0", builder.get(LATEST_PCTILE));
 	}
 	@Test
 	public void testMostRecentProvistionalData_notRemoved() {

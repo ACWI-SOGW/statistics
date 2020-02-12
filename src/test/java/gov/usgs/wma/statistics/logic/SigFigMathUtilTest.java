@@ -27,9 +27,9 @@ import org.slf4j.LoggerFactory;
 public class SigFigMathUtilTest {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SigFigMathUtilTest.class);
-    private static final String[] args = {"12.000000", ".200", "-0.100", "4.40", "560"}; //total 576.5
-    private static final BigDecimal expect_default_half_down = new BigDecimal("576");
-    private static final BigDecimal expect_default = new BigDecimal("577");
+    private static final String[] args = {"12.000000", ".200", "-0.100", "560", "4.40"}; //total 576.700 w/o rounding
+    private static final BigDecimal expect_default_half_down = new BigDecimal("576"); // total with rounding down
+    private static final BigDecimal expect_default = new BigDecimal("577"); // total with rounding up
     private static List<BigDecimal> bdList;
     
     private static final RoundingMode RM_UP   = RoundingMode.HALF_UP;
@@ -111,9 +111,9 @@ public class SigFigMathUtilTest {
     
     @Test
     public void testSqigFigAdd_roundPoint5() {
-    	// 03-30-2017 need to round up for negative numbers -2.90 rather than the Java default -2.91 
-    	// 07-31-2018 need to revert back to Java default rounding. Those who instructed us to round differently were misinformed.
-        // 01-31-2020 Round as Java default with the exception of exactly half way between numbers round down.
+    	// 2017-03-30 need to round up for negative numbers -2.90 rather than the Java default -2.91
+    	// 2018-07-31 need to revert back to Java default rounding. Those who instructed us to round differently were misinformed.
+        // 2020-01-31 Round as Java default with the exception of exactly half way between numbers round down.
     	BigDecimal expect = new BigDecimal("-2.90");
     	BigDecimal sum = SigFigMathUtil.sigFigAdd(new BigDecimal("-2.97"), new BigDecimal("-2.84"));
     	BigDecimal actual = SigFigMathUtil.sigFigDivide(sum, new BigDecimal("2.00"));
@@ -125,15 +125,18 @@ public class SigFigMathUtilTest {
      * Test of sigFigAdd method, of class SigFigMathUtil.
      */
     @Test
-    public void testSigFigSub_List() {
-        BigDecimal expect = new BigDecimal("-552"); // 01-31-2020 round point 5 down
+    public void testSigFigSubtractionOfListOfNumbers() {
+        // 2020-01-31 rounding change from HALF_UP to HALF_DOWN chnaged this to -552 from -553
+        // 2020-02-11 new rounding and figures management for addtion/substraction rounds to -550
+        //    This is because during the subtraction at one point the result is 7.5; only two figures
+        BigDecimal expect = new BigDecimal("-550");
         BigDecimal actual = SigFigMathUtil.sigFigSubtract(bdList);
         assertEquals(expect.toPlainString(), actual.toPlainString());
 
         BigDecimal subANegBD = new BigDecimal("-50.0");
         bdList.add(subANegBD);
         actual = SigFigMathUtil.sigFigSubtract(bdList);
-        expect = new BigDecimal("-502"); // round 502.5 down to 502
+        expect = new BigDecimal("-500"); // see previous assert comments
         assertEquals(expect.toPlainString(), actual.toPlainString());
         bdList.remove(subANegBD);
 

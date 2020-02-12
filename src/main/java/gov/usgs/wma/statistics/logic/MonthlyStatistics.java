@@ -84,18 +84,18 @@ public class MonthlyStatistics<S extends Value> extends StatisticsCalculator<S> 
 			
 			// this needs to be calculated regardless of the month's qualification for use in other statistics
 			// namely: overall median and latest percentile. (At the moment, the latest percentile recalculates.)
-			List<S> normalizeMutlipleYearlyValues = medianMonthlyValues(monthSamples,  sortFunctionByQualifier());
+			List<S> monthlyMedians = medianMonthlyValues(monthSamples,  sortFunctionByQualifier());
 			
-			if ( doesThisMonthQualifyForStats(normalizeMutlipleYearlyValues) ) {
+			if ( doesThisMonthQualifyForStats(monthlyMedians) ) {
 				monthlyCalculated = true;
-				generatePercentiles(normalizeMutlipleYearlyValues, builder.buildPercentiles());
+				generatePercentiles(monthlyMedians, builder.buildPercentiles());
 				builder.month(month);
 				
-				List<Value> monthYearlyMedians = generateMonthYearlyPercentiles(normalizeMutlipleYearlyValues);
+				List<Value> monthYearlyMedians = generateMonthYearlyPercentiles(monthlyMedians);
 				
 				builder.minP50(monthYearlyMedians.get(0).value.toString());
 				builder.maxP50(monthYearlyMedians.get( monthYearlyMedians.size()-1 ).value.toString());
-				builder.sampleCount(normalizeMutlipleYearlyValues.size());
+				builder.sampleCount(monthlyMedians.size());
 
 				builder.recordYears(""+sortSamplesByYear.keySet().size());
 				builder.collect();
@@ -149,8 +149,9 @@ public class MonthlyStatistics<S extends Value> extends StatisticsCalculator<S> 
 	
 	public List<S> medianMonthlyValues(List<S> monthSamples, Function<List<S>, List<S>> sortBy) {
 		int sampleCount = monthSamples.size();
-		List<S> normalizedSamples = new LinkedList<>();
+		List<S> monthlyMedians = new LinkedList<>();
 
+		sortValueByQualifier(monthSamples);
 		Map<String, List<S>> yearSamples = sortSamplesByYear(monthSamples);
 		for (String year : yearSamples.keySet()) {
 			List<S> samples = yearSamples.get(year);
@@ -158,22 +159,22 @@ public class MonthlyStatistics<S extends Value> extends StatisticsCalculator<S> 
 				// have to remove the original values from the monthly list
 				monthSamples.removeAll(samples);
 				S medianSample = makeMedian(samples);
-				normalizedSamples.add(medianSample);
+				monthlyMedians.add(medianSample);
 			}
 			else {
-				normalizedSamples.addAll(samples);
+				monthlyMedians.addAll(samples);
 			}
 		}
-		normalizedSamples = sortBy.apply(normalizedSamples);
-		builder.intermediateValues(normalizedSamples);
+		monthlyMedians = sortBy.apply(monthlyMedians);
+		builder.intermediateValues(monthlyMedians);
 		
-		if (sampleCount > normalizedSamples.size()) {
-			S firstSample = normalizedSamples.get(0);
+		if (sampleCount > monthlyMedians.size()) {
+			S firstSample = monthlyMedians.get(0);
 			String monthName = sampleMonthName(firstSample);
 			String msg = env.getMessage(ENV_MESSAGE_MONTHLY_MEDIANS, monthName);
 			builder.message(msg);
 		}
-		return normalizedSamples;
+		return monthlyMedians;
 	}
 	
 }

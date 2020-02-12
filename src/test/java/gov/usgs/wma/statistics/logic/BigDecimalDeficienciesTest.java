@@ -69,7 +69,7 @@ public class BigDecimalDeficienciesTest {
 	 * Looking at the SDK src, it appears that any time zero is encountered,
 	 * the precision is hard coded to a single digit.
 	 */
-	public void test_precisionOfZero() {
+	public void test_precisionOfZeroAlways1() {
 		BigDecimal value = new BigDecimal("0.0000");
 
 		assertEquals("actually we want 0.0000 to be 4 but BD it is 1 as of Java 8 thru 13", 1, value.precision() );
@@ -110,10 +110,28 @@ public class BigDecimalDeficienciesTest {
 
 		BigDecimal tenth = new BigDecimal("0.1");
 		BigDecimal five = new BigDecimal("50").multiply(tenth);
-		System.out.println("BigDecimal tenth x 50 is " + five); // 5.0
 
+		// BigDecimal tenth x 50 is 5.0
 		assertNotEquals("50 and 0.1 only have on sigfig and the result should be 5 not 5.0",
 				"5", five.toPlainString());
+	}
+
+	@Test
+	public void test_scaleAndPrecisionAreNotSignificantFigures() {
+		assertEquals(3, new BigDecimal("1.000").scale());
+		assertEquals(4, new BigDecimal("1.000").precision());
+
+		assertEquals(0, new BigDecimal("1000").scale());
+		assertEquals(4, new BigDecimal("1000").precision());
+
+		assertEquals(0, new BigDecimal("1000.").scale());
+		assertEquals(4, new BigDecimal("1000.").precision());
+
+		assertEquals(4, new BigDecimal("0.0001").scale());
+
+		// TODO asdf I have seen the percentile reported as all digits after the decimal point
+		assertEquals(1, new BigDecimal("0.0001").precision());
+//		assertEquals(4, new BigDecimal("0.0001").precision());
 	}
 	
 }

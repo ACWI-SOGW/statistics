@@ -331,7 +331,7 @@ public class JsonDataBuilder {
 		}
 		String month = samples.get(0).getMonth();
 		LOGGER.trace("month add request {} ", month);
-		if (this.intermediateMonthsAdded .contains(month)) {
+		if (this.intermediateMonthsAdded.contains(month)) {
 			return this;
 		}
 		LOGGER.trace("month add perform {}", month);

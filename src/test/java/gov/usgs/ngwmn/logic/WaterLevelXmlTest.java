@@ -183,7 +183,7 @@ public class WaterLevelXmlTest {
 		// EXPECT
 		Map<String,String> expected = new HashMap<>();
 		expected.put("latestValue", "4.99");
-		expected.put("latestPercentile", "78.6");
+		expected.put("latestPercentile", "85.7"); // 78.6 but there might have been a sort issue
 		expected.put("valueMin", "12.66");
 		expected.put("valueMax", "1.06");
 		
@@ -251,6 +251,7 @@ public class WaterLevelXmlTest {
 		// this is testing that a site mediated above a datum can be re-mediated below land using the elevation
 		// SETUP
 		// 2020-02-05 changed to the new rounding HALF_DOWN
+		MathContext precisionRound1 = new MathContext(1, RoundingMode.HALF_DOWN);
 		MathContext precisionRound2 = new MathContext(2, RoundingMode.HALF_DOWN);
 		MathContext precisionRound3 = new MathContext(3, RoundingMode.HALF_DOWN);
 		BigDecimal altVal = new BigDecimal("13.6");        // specify the site and its actual elevation
@@ -258,7 +259,7 @@ public class WaterLevelXmlTest {
 		
 		// extract the samples from the XML files as the ngwmn-cache project does
 		List<WLSample> samples = WLSample.extractSamples(xmlReader, spec.getAgencyCd(), spec.getSiteNo(), spec.getElevation());
-		System.err.println(samples.get(samples.size()-1)); // examine the most recent sample
+//		System.err.println(samples.get(samples.size()-1)); // examine the most recent sample
 
 		// this is really NOT dead code. it shows how to examine data after XML extraction
 //		samples.stream()

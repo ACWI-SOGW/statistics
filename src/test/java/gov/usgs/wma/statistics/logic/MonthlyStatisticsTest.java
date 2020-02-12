@@ -381,7 +381,8 @@ public class MonthlyStatisticsTest {
 		// if the provision value is not removed P10 will be 4.60
 		// if when sigfigs is correct this will change again to 4.4
 		// 2020-02-05 round HALF_DOWN changes this to 4.42 from 4.44 when rounding HALF_UP
-		assertEquals("4.42",stat.get(P10));
+		// 2020-02-11 honoring addition precision results in 4.4 from 4.42 -- zero padding should change this back
+		assertEquals("4.4",stat.get(P10));
 		assertEquals("6.4", stat.get(P25));
 		assertEquals("8.0", stat.get(P50));
 		// 2020-02-05 round HALF_DOWN changes this to 9.07 from 9.08 when rounding HALF_UP
@@ -407,11 +408,13 @@ public class MonthlyStatisticsTest {
 		assertEquals("4.12", stat.get(P50_MIN));
 		// TODO asdf this is an example of too many sigfigs after math performed this will be 4.6 upon sigfigs fixes
 		// 2020-02-05 round HALF_DOWN changes this to 4.57 from 4.60 when rounding HALF_UP
-		assertEquals("4.57", stat.get(P10));
+		// 2020-02-11 honoring addition precision results in 4.6 from 4.57 -- zero padding should change this back
+		assertEquals("4.6", stat.get(P10));
 		assertEquals("6.5",  stat.get(P25));
 		assertEquals("8.0",  stat.get(P50));
 		assertEquals("9.25", stat.get(P75));
-		assertEquals("11.36",stat.get(P90));
+		// 2020-02-11 honoring addition precision results in 11.4 from 11.36 -- zero padding should change this back
+		assertEquals("11.4",stat.get(P90));
 		assertEquals("12.21",stat.get(P50_MAX));
 	}
 	protected void fillMarchData(List<Value> monthSamples) {
@@ -825,8 +828,7 @@ public class MonthlyStatisticsTest {
 		assertEquals(9.67, (9.2+10.13)/2+.005, 0);
 
 		assertEquals("2.7"/*0"*/, sample1968.value.toPlainString());
-		// 2020-02-05 the rounding and sort order parity to ascending changes this to 9.7 from 9.6 when rounding HALF_UP
-		assertEquals("9.7", sample2003.value.toPlainString());
+		assertEquals("9.6", sample2003.value.toPlainString());
 
 		boolean isCalc = stats.monthlyStats(monthSamples);
 		assertTrue(isCalc);

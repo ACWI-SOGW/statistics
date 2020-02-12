@@ -1,6 +1,7 @@
 package gov.usgs.wma.statistics.logic;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 
 /**
  * A more proper implementation of significant figures.
@@ -28,20 +29,64 @@ public class ScientificDecimal extends BigDecimal {
 	
 	int sigfigs;
 
-	public ScientificDecimal(String value, int sigfigs) {
-		super(value);
-		this.sigfigs = sigfigs;
-	}
-
 	public ScientificDecimal(String value) {
 		super(value);
 		sigfigRules(value);
 	}
-	
-	 // TODO the proper handling of 0.000... will need to be revisited if my "guess" is incorrect.
+	public ScientificDecimal(String value, int specifiedSigfigs) {
+		this(value);
+		setSigfigs(specifiedSigfigs);
+	}
+
+
+	@Override
+	public int precision() {
+		return sigfigs;
+	}
+	public BigDecimal setPrecision(int newPrecision) {
+		updateSigfigsWithNewPrecision(newPrecision);
+		this.setSigfigs(newPrecision);
+		return this;
+	}
+	@Override
+	public BigDecimal setScale(int newScale) {
+		updateSigfigsWithNewScale(newScale);
+		return super.setScale(newScale);
+	}
+	@Override
+	public BigDecimal setScale(int newScale, int roundingMode) {
+		updateSigfigsWithNewScale(newScale);
+		return super.setScale(newScale, roundingMode);
+	}
+	@Override
+	public BigDecimal setScale(int newScale, RoundingMode roundingMode) {
+		updateSigfigsWithNewScale(newScale);
+		return super.setScale(newScale, roundingMode);
+	}
+
+	protected BigDecimal updateSigfigsWithNewScale(int newScale) {
+		if (sigfigs < newScale) {
+			setSigfigs(newScale); // TODO asdf precision and scale testing
+		}
+		return this;
+	}
+
+	protected BigDecimal updateSigfigsWithNewPrecision(int newPrecision) {
+		if (sigfigs < newPrecision) {
+			setSigfigs(newPrecision); // TODO asdf precision and scale testing
+		}
+		return this;
+	}
+
+	public ScientificDecimal setSigfigs(int sigfigs) {
+		this.sigfigs = sigfigs;
+		return this;
+	}
+
+	// TODO the proper handling of 0.000... will need to be revisited if my "guess" is incorrect.
 	protected void sigfigRules(String value) {
 		sigfigs = super.precision();
-		
+
 		// this is for 1000 vs 1000.
 		if ( ! value.contains(".") ) {
 			String figs = value.replaceAll("0+$", "");
@@ -53,17 +98,5 @@ public class ScientificDecimal extends BigDecimal {
 		}
 	}
 
-	@Override
-	public int precision() {
-		return sigfigs;
-	}
-	
-	public ScientificDecimal setSigfigs(int sigfigs) {
-		this.sigfigs = sigfigs;
-		return this;
-	}
-	public void setPrecision(int sigfigs) {
-		this.setSigfigs(sigfigs);
-	}
 
 }

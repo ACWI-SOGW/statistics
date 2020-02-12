@@ -178,18 +178,19 @@ public class WaterLevelStatistics extends StatisticsCalculator<WLSample> {
 		// get the sample for the same month as the latest sample
 		String month = Value.padMonth(Value.monthUTC(latestSample.time));
 		List<WLSample> monthSamples = monthlyStats.filterValuesByGivenMonth(samplesByDate, month);
+
 		// get the medians for each year-month
-		List<WLSample> normalizeMutlipleYearlyValues = 
+		List<WLSample> monthlyMedians =
 				monthlyStats.medianMonthlyValues(monthSamples,  monthlyStats.sortFunctionByQualifier());
-		if (normalizeMutlipleYearlyValues.size()<9) {
+		if (monthlyMedians.size()<9) {
 			// NGMWN-1896 do not calculate latest percentile for months with low data
 			builder.latestPercentile("");
 			return;
 		}
 		// the most recent must now be added into the collection and replace of the year-month it represents
-		replaceLatestSample(normalizeMutlipleYearlyValues, latestSample);
+		replaceLatestSample(monthlyMedians, latestSample);
 		// get the percentile of the latest sample
-		BigDecimal latestPercentile = percentileOfValue(normalizeMutlipleYearlyValues, latestSample, Value::valueOf);
+		BigDecimal latestPercentile = percentileOfValue(monthlyMedians, latestSample, Value::valueOf);
 		latestPercentile = SigFigMathUtil.sigFigMultiply(latestPercentile, NUM_100.setScale(latestPercentile.scale()));
 		builder.latestPercentile(latestPercentile.toPlainString());
 	}

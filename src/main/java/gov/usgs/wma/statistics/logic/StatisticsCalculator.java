@@ -146,7 +146,7 @@ public class StatisticsCalculator<S extends Value> {
 			return BigDecimal.ZERO;
 		}
 		BigDecimal sampleValue = valueOf.apply(sample);
-		
+
 		// add one because of java zero based index vs the one based index of mathematics
 		BigDecimal index = new BigDecimal( samples.indexOf(sample) + 1 );
 		BigDecimal n     = new BigDecimal(samples.size());
@@ -155,7 +155,7 @@ public class StatisticsCalculator<S extends Value> {
 
 		BigDecimal n1invRnd = BigDecimal.ONE.divide(n1, sampleValue.precision(), RoundingMode.HALF_EVEN);
 		// comment this precision
-		BigDecimal pct   = index.divide(n1, sampleValue.precision(), RoundingMode.HALF_EVEN);
+		BigDecimal pct   = index.divide(n1, precision, RoundingMode.HALF_EVEN);
 		
 		// manage near   0 percentile
 		if (pct.compareTo(n1invRnd) <= 0 ) {
@@ -215,7 +215,7 @@ public class StatisticsCalculator<S extends Value> {
 		}
 		
 		// pct float index, p, and its parts. the int index, k, and the decimal fraction, d.
-		BigDecimal p     = percentileAsFraction.multiply(n1);           // raw index to be used with faction
+		BigDecimal p     = percentileAsFraction.setScale(9).multiply(n1);           // raw index to be used with faction
 		BigDecimal k     = new BigDecimal( p.intValue() );              // the integer index value
 		
 		// Y[k] and Y[k+1] (but java is zero based indexing thus k-1 and k)
@@ -223,12 +223,24 @@ public class StatisticsCalculator<S extends Value> {
 		BigDecimal yk1   = valueOf.apply(samples.get(k.intValue()));    // second index value
 
 		// percentile calculation Y(p) = Y[k] + d(Y[k+1] - Y[k])
-		BigDecimal diff  = sigFigSubtract(yk1, yk);                     // delta between the two values
+		BigDecimal diff  = sigFigSubtract(yk1, yk).setScale(9);                     // delta between the two values
 		// TODO asdf might need to call sigfigutil for this action
+		if (BigDecimal.ZERO.compareTo(diff) == 0) {
+			return yk; // TODO asdf also respect sigfigs of yk1
+		}
 		BigDecimal d     = p.subtract(k);                               // the decimal index value (or fraction between two indexes)
+		if (BigDecimal.ZERO.compareTo(d) == 0) {
+			d = ZERO;
+		}
 		BigDecimal delta = sigFigMultiply(diff, d);                     // the fraction of the difference of two values k and k+1
-		BigDecimal yp    = sigFigAdd(yk, delta);                        // and finally, the percentile value
-		return yp;
+		if (BigDecimal.ZERO.compareTo(delta) == 0) {
+			delta = ZERO;
+		}
+		delta = delta;
+		BigDecimal yp    = yk.add(delta);            // and finally, the percentile value
+		int leastPrecision = SigFigMathUtil.getLeastPrecise(yk,yk1);
+		MathContext mc = new MathContext(leastPrecision, DEFAULT_ROUNDING_RULE);
+		return yp.round(mc);
 	}
 	public BigDecimal valueOfPercentile(List<S> samples, BigDecimal percentileAsFraction,
 			Function<S, BigDecimal> valueOf) {

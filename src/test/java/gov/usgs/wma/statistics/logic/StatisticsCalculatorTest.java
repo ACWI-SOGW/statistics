@@ -237,8 +237,16 @@ public class StatisticsCalculatorTest {
 		List<Value> samples = new OrderedSamples();
 		samples.add(min);
 		samples.add(max);
+		// 2020-02-05 Round HALF_DOWN changes this to 1 from 1.5
 		BigDecimal pct50 = stats.valueOfPercentile(samples, new BigDecimal(".5"), Value::valueOf);
-		assertEquals("Expect 50% percetile to be the middle value", "1.5", pct50.toPlainString() );
+		// the percentile figures are not counted because it is considered a precise number
+		assertEquals("Expect 50% percentile to be the middle value", "1.5", pct50.toPlainString() );
+		// 2020-02-05 increased precision in percent increase precision of answer
+		pct50 = stats.valueOfPercentile(samples, new BigDecimal(".50"), Value::valueOf);
+		assertEquals("Expect 50% percentile to be the middle value", "1.5", pct50.toPlainString() );
+		// 2020-02-05 increased precision in percent does not overload data precision
+		pct50 = stats.valueOfPercentile(samples, new BigDecimal(".500"), Value::valueOf);
+		assertEquals("Expect 50% percentile to be the middle value", "1.5", pct50.toPlainString() );
 	}
 
 	// a new arbitrary type that hold a value for statistical evaluation
@@ -263,8 +271,12 @@ public class StatisticsCalculatorTest {
 		samples.add(min);
 		samples.add(max);
 		// the valueOf lambda can be any type of mapping not just a getter
-		BigDecimal pct50 = otherStats.valueOfPercentile(samples, new BigDecimal(".5"), OtherValue::valueOf);
-		assertEquals("Expect 50% percetile to be the middle value", "1.5", pct50.toPlainString() );
+		BigDecimal pct50 = otherStats.valueOfPercentile(samples, new BigDecimal(".50"), OtherValue::valueOf);
+		assertEquals("Expect 50% percentile to be the middle value", "1.5", pct50.toPlainString() );
+
+		pct50 = otherStats.valueOfPercentile(samples, new BigDecimal(".5"), OtherValue::valueOf);
+		// the percentile figures are not counted because it is considered a precise number
+		assertEquals("Expect 50% percentile to be the middle value", "1.5", pct50.toPlainString() );
 	}
 
 	@Test
@@ -277,7 +289,7 @@ public class StatisticsCalculatorTest {
 		samples.add(min);
 		samples.add(max);
 		BigDecimal pct50 = stats.valueOfPercentile(samples, new BigDecimal(".5"), Value::valueOf);
-		assertEquals("Expect 50% percetile to be the middle value", mid.value.toPlainString(), pct50.toPlainString());
+		assertEquals("Expect 50% percentile to be the middle value", mid.value.toPlainString(), pct50.toPlainString());
 	}
 	@Test
 	public void test_percentileValue_3_25pct_0pct() throws Exception {
@@ -289,10 +301,10 @@ public class StatisticsCalculatorTest {
 		samples.add(min);
 		samples.add(max);
 		BigDecimal pct0 = stats.valueOfPercentile(samples, new BigDecimal("0"), Value::valueOf);
-		assertEquals("Expect 100% percetile to be the min value", min.value.toPlainString(), pct0.toPlainString() );
+		assertEquals("Expect 100% percentile to be the min value", min.value.toPlainString(), pct0.toPlainString() );
 		// just like 0%, 25% is 1/(N+1) = 1/(3+1)
 		BigDecimal pct25 = stats.valueOfPercentile(samples, new BigDecimal(".25"), Value::valueOf);
-		assertEquals("Expect 25% percetile to be the min value", min.value.toPlainString(), pct25.toPlainString() );
+		assertEquals("Expect 25% percentile to be the min value", min.value.toPlainString(), pct25.toPlainString() );
 	}
 	@Test
 	public void test_percentileValue_3_100pct_75pct() throws Exception {
@@ -304,10 +316,10 @@ public class StatisticsCalculatorTest {
 		samples.add(min);
 		samples.add(max);
 		BigDecimal pct100 = stats.valueOfPercentile(samples, new BigDecimal("1"), Value::valueOf);
-		assertEquals("Expect 100% percetile to be the max value", max.value.toPlainString(), pct100.toPlainString() );
+		assertEquals("Expect 100% percentile to be the max value", max.value.toPlainString(), pct100.toPlainString() );
 		// just like 100%, 75% is N/(N+1) = 3/(3+1)
 		BigDecimal pct75 = stats.valueOfPercentile(samples, new BigDecimal(".75"), Value::valueOf);
-		assertEquals("Expect 75% percetile to be the max value", max.value.toPlainString(), pct75.toPlainString() );
+		assertEquals("Expect 75% percentile to be the max value", max.value.toPlainString(), pct75.toPlainString() );
 	}
 	@Test
 	public void test_percentileValue_3_74pct_26pct_SigFig() throws Exception {
@@ -318,13 +330,22 @@ public class StatisticsCalculatorTest {
 		samples.add(mid);
 		samples.add(min);
 		samples.add(max);
-		BigDecimal pct26 = stats.valueOfPercentile(samples, new BigDecimal(".26"), Value::valueOf);
+		BigDecimal pct26 = stats.valueOfPercentile(samples, new BigDecimal(".2600"), Value::valueOf);
 		// .26(3+1) = 1.04, index 1-1 is 0 for value 1.0, .04 (1.5-1) = .02, 1+.02 = 1.02
-		assertEquals("Expect 74% percetile to be just less than max", "1.02", pct26.toPlainString() );
+		assertEquals("Expect 74% percentile to be just less than max", "1.02", pct26.toPlainString() );
 
-		BigDecimal pct74 = stats.valueOfPercentile(samples, new BigDecimal(".74"), Value::valueOf);
+		// TODO asdf why does .26 return 1 rather than 1.0
+		pct26 = stats.valueOfPercentile(samples, new BigDecimal(".26"), Value::valueOf);
+		// .26(3+1) = 1.04, index 1-1 is 0 for value 1.0, .04 (1.5-1) = .02, 1+.02 = 1.02 and the percentile is not counted
+		assertEquals("Expect 74% percentile to be just less than max", "1.02", pct26.toPlainString() );
+
+		BigDecimal pct74 = stats.valueOfPercentile(samples, new BigDecimal(".740"), Value::valueOf);
 		// .74(3+1) = 2.96, index 2-1 is 1 for value 1.5, .96 (2-1.5) = .48, 1.5+.48 = 1.98
-		assertEquals("Expect 74% percetile to be just less than max", "1.98", pct74.toPlainString() );
+		assertEquals("Expect 74% percentile to be just less than max", "1.98", pct74.toPlainString() );
+
+		pct74 = stats.valueOfPercentile(samples, new BigDecimal(".74"), Value::valueOf);
+		// .74(3+1) = 2.96, index 2-1 is 1 for value 1.5, .96 (2-1.5) = .48, 1.5+.48 = 1.98 and the percentile is not counted
+		assertEquals("Expect 74% percentile to be just less than max", "1.98", pct74.toPlainString() );
 	}
 
 
@@ -371,13 +392,15 @@ public class StatisticsCalculatorTest {
 		samples.add( createSample("2015-11-10T04:15:00-05:00", "95.1990") );
 		samples.add( createSample("2015-12-10T04:15:00-05:00", "95.1682") );
 
-		// need to include the extra .750 in order to not loose precision on the data - this is an exact percent
-		BigDecimal pct750 = stats.valueOfPercentile(samples, new BigDecimal(".750"), Value::valueOf);
+		// Feb 11 2020 Proper sigfig management during add/subtract requires additional precision
+		// need to include the extra .750000 in order to not loose precision on the data - this is an exact percent
+		BigDecimal pct750 = stats.valueOfPercentile(samples, new BigDecimal(".750000"), Value::valueOf);
 		assertEquals("Expect 75% percetile to be 95.1896", "95.1896", pct750.toPlainString() );
-		BigDecimal pct75 = stats.valueOfPercentile(samples, new BigDecimal(".75"), Value::valueOf);
-		assertEquals("Expect 75% percetile to be 95.189",  "95.189", pct75.toPlainString() );
+		BigDecimal pct75 = stats.valueOfPercentile(samples, new BigDecimal(".750"), Value::valueOf);
+		// the percentile figures are not counted because it is considered a precise number
+		assertEquals("Expect 75% percetile to be 95.189",  "95.1896", pct75.toPlainString() );
 
-		BigDecimal pct90 = stats.valueOfPercentile(samples, new BigDecimal(".90"), Value::valueOf);
+		BigDecimal pct90 = stats.valueOfPercentile(samples, new BigDecimal(".900000"), Value::valueOf);
 		assertEquals("Expect 90% percetile to be 95.1981", "95.1981", pct90.toPlainString() );
 	}
 
@@ -532,8 +555,7 @@ public class StatisticsCalculatorTest {
 		// 2020-02-05 round HALF_DOWN changes this to .0007 from .0008 when rounding HALF_UP
 		assertEquals("Expect P75 to be ", "95.1097", percentiles.get(P75));
 		// this one is not exactly the opposite of 10% because of rounding rules and data order - but it is close
-		// 2020-02-05 changing the calculation for sort down make this result .0005 from .0004 when making no adjustment
-		assertEquals("Expect P90 to be ", "95.0705", percentiles.get(P90));
+		assertEquals("Expect P90 to be ", "95.0704", percentiles.get(P90));
 	}
 
 
@@ -657,9 +679,8 @@ public class StatisticsCalculatorTest {
 
 		BigDecimal p25 = stats.valueOfPercentile(samples, PERCENTILES.get(P25), Value::valueOf);
 
-		// 2020-02-05 changing the calculation for sort down make this result 9.4 from 9.3 when making no adjustment
-		assertEquals("reverse sort gives this 9.3 with wrong rounding rule but now is 9.4",
-				"9.4", p25.toPlainString());
+		assertEquals("reverse sort yields 9.4 and ascending sort results in 9.3 because of half rounding",
+				"9.4", p25.toPlainString()); // see next assert
 
 		List<Value> samples1 = new LinkedList<>();
 		samples1.add( createSample("1962-11-10T04:15:00-05:00", "1.7") );
@@ -678,7 +699,7 @@ public class StatisticsCalculatorTest {
 
 		// 2020-02-05 round HALF_DOWN changes this to 9.3 from 9.4 when rounding HALF_UP
 		BigDecimal p75 = stats.valueOfPercentile(samples1, PERCENTILES.get(P75), Value::valueOf);
-		assertEquals("standard sort gives this 9.3 with round HALF_DOWN",
+		assertEquals("standard sort gives this 9.3 with round HALF_DOWN", // see previous assert
 				"9.3", p75.toPlainString()); // this is what the sigfigs should return
 		// never get 9.37 as Excel spreadsheet does
 //		assertEquals("9.37", p75.toPlainString()); // this is the inflated sigfigs value
@@ -709,9 +730,9 @@ public class StatisticsCalculatorTest {
 		samples2.add( createSample("1964-11-10T04:15:00-05:00", "2.2") );
 		samples2.add( createSample("1962-11-10T04:15:00-05:00", "1.7") );
 
-		// 2020-02-05 changing the calculation for sort down make this result 9.4 from 9.3 when making no adjustment
+		// 2020-02-11 newest refinement HALF_DOWN and precision management -- back to 9.3 from interim 9.4
 		BigDecimal p25b = stats.valueOfPercentile(samples2, PERCENTILES.get(P25), Value::valueOf);
-		assertEquals("reverse sort gives this 9.3 with wrong rounding rule", "9.4", p25b.toPlainString());
+		assertEquals("reverse sort gives this 9.3 with HALF_DOWN rounding rule", "9.3", p25b.toPlainString());
 
 		List<Value> samples3 = new LinkedList<>();
 		samples3.add( createSample("1962-11-10T04:15:00-05:00", "1.7") );
@@ -730,7 +751,7 @@ public class StatisticsCalculatorTest {
 
 		// 2020-02-05 round HALF_DOWN changes this to 9.3 from 9.4 when rounding HALF_UP
 		BigDecimal p75b = stats.valueOfPercentile(samples3, PERCENTILES.get(P75), Value::valueOf);
-		assertEquals("no change with fewer sigfigs", "9.3", p75b.toPlainString()); // this is what the sigfigs should return
+		assertEquals("ascending sort gives this 9.3 with HALF_DOWN rounding rule", "9.3", p75b.toPlainString());
 
 		// TODO asdf this ^ assertion and the previous should probably yield the same result.
 
@@ -784,9 +805,10 @@ public class StatisticsCalculatorTest {
 
 		int preCount = monthSamples.size();
 		monthlyStats.medianMonthlyValues(monthSamples, StatisticsCalculator::sortByValueOrderDescending);
+		StatisticsCalculator.sortByValueOrderDescending(monthSamples);
 		assertEquals("normalize should have removed no values", preCount, monthSamples.size());
 
-		// 2020-02-05 changing the calculation for sort down make this result 9.05 from 9.02 when making no adjustment
+		// 2020-02-11 result changed to 9.05 from 9.02 with new rounding and precision management
 		BigDecimal actual = stats.valueOfPercentile(monthSamples, PERCENTILES.get(P25), Value::valueOf);
 		assertEquals("with additional sigfigs, more refined answer equal to p25", "9.05", actual.toPlainString());
 
@@ -816,6 +838,7 @@ public class StatisticsCalculatorTest {
 
 		int preCount = monthSamples.size();
 		monthlyStats.medianMonthlyValues(monthSamples, StatisticsCalculator::sortByValueOrderDescending);
+		StatisticsCalculator.sortByValueOrderDescending(monthSamples);
 		assertEquals("normalize should have removed no values", preCount, monthSamples.size());
 
 		BigDecimal p10c = stats.valueOfPercentile(monthSamples, PERCENTILES.get(P25), Value::valueOf);
@@ -867,20 +890,22 @@ public class StatisticsCalculatorTest {
 
 		int preCount = monthSamples.size();
 		List<Value> normalizeMutlipleYearlyValues = monthlyStats.medianMonthlyValues(monthSamples, StatisticsCalculator::sortByValueOrderDescending);
+		StatisticsCalculator.sortByValueOrderDescending(monthSamples);
 		assertEquals("normalize should have removed values", preCount-1, normalizeMutlipleYearlyValues.size());
 
 		BigDecimal p10c = stats.valueOfPercentile(monthSamples, PERCENTILES.get(P10), Value::valueOf);
-		assertEquals("with additional sigfigs, more refined answer equal to P10", "9.3", p10c.toPlainString());
+		// 2020-02-05 rounding HALF_DOWN yields 9.2 from 9.3
+		assertEquals("with additional sigfigs, more refined answer equal to P10", "9.2", p10c.toPlainString());
 
-		BigDecimal down = SigFigMathUtil.sigFigAdd(new BigDecimal("9.37"), new BigDecimal("-0.1"));
+		BigDecimal down = SigFigMathUtil.sigFigAdd(new BigDecimal("9.37"), new BigDecimal("-0.10"));
 		assertEquals(new BigDecimal("9.3"), down);
 
-		BigDecimal up = SigFigMathUtil.sigFigAdd(new BigDecimal("9.1"), new BigDecimal("0.1"));
+		BigDecimal up = SigFigMathUtil.sigFigAdd(new BigDecimal("9.1"), new BigDecimal("0.10"));
 		assertEquals(new BigDecimal("9.2"), up);
 
 		BigDecimal dif1 = sigFigSubtract(new BigDecimal("9.1"), new BigDecimal("9.37"));
-		BigDecimal dif2 = sigFigSubtract(new BigDecimal("9.37"), new BigDecimal("9.1"));
-		assertEquals("expect the differences to round to the same magnitude", dif1.abs(), dif2.abs());
+		BigDecimal dif2 = sigFigSubtract(new BigDecimal("9.37"), new BigDecimal("9.1")).negate();
+		assertEquals("expect the differences to round to the same magnitude", dif1, dif2);
 
 		// 9.37-9.1=0.27 round 0.3 and 9.1-9.37=-0.27 round -0.3
 		// then 0.5 x 0.3 = .15 round .2 while 0.5 x -0.3 is -.15 round is -0.1
@@ -905,15 +930,14 @@ public class StatisticsCalculatorTest {
 		List<Value> normalizeMutlipleYearlyValues = monthlyStats.medianMonthlyValues(monthSamples, StatisticsCalculator::sortByValueOrderDescending);
 		assertEquals("normalize should have removed values", preCount-1, normalizeMutlipleYearlyValues.size());
 
-		// 2020-02-05 changing the calculation for sort down make this result 9.24 from 9.23 when making no adjustment
 		// TODO asdf when we have parity between sort orders this should become 9.23 again.
 		BigDecimal p10c = stats.valueOfPercentile(normalizeMutlipleYearlyValues, PERCENTILES.get(P10), Value::valueOf);
-		assertEquals("with additional sigfigs, more refined answer equal to P10", "9.24", p10c.toPlainString());
+		assertEquals("with additional sigfigs, more refined answer equal to P10", "9.23", p10c.toPlainString());
 
-		BigDecimal down = SigFigMathUtil.sigFigAdd(new BigDecimal("9.37"), new BigDecimal("-0.10"));
+		BigDecimal down = SigFigMathUtil.sigFigAdd(new BigDecimal("9.37"), new BigDecimal("-0.100"));
 		assertEquals(new BigDecimal("9.27"), down);
 
-		BigDecimal up = SigFigMathUtil.sigFigAdd(new BigDecimal("9.10"), new BigDecimal("0.10"));
+		BigDecimal up = SigFigMathUtil.sigFigAdd(new BigDecimal("9.10"), new BigDecimal("0.100"));
 		assertEquals(new BigDecimal("9.20"), up);
 
 		BigDecimal dif1 = sigFigSubtract(new BigDecimal("9.10"), new BigDecimal("9.37"));
@@ -971,13 +995,13 @@ public class StatisticsCalculatorTest {
 		BigDecimal p25c = stats.valueOfPercentile(normalizeMutlipleYearlyValues, PERCENTILES.get(P25), Value::valueOf);
 		assertEquals("with additional sigfigs, more refined answer equal to p25", "9.6", p25c.toPlainString());
 
-		// 03-30-2017 (Supplanted by 07-31-2018 rules which is actual a revert to original rounding)
+		// 2017-03-30 (Supplanted by 2018-07-31 rules which is actual a revert to original rounding)
 		// 9.5 & 9.8 mean is 9.7  because 9.8-9.5 = 0.3 and mean is 0.15 rounded to 0.2
 		// 9.7-9.46=0.24 round 0.2 and 9.46-9.7=-0.24 round -0.2
 		// then 0.25 x 0.2 = 0.05 no round  while 0.25 x -0.05  no round
 		// 9.7 -0.05 = 9.65 round 9.7
 
-		// 07-31-2018
+		// 2018-07-31
 		// 9.5 & 9.8 mean is 9.6  because 9.5-9.8 = -0.3 and mean is -0.15 rounded to -0.2
 		// 9.46-9.6=-0.14 round -0.1
 		// then 0.25 x -0.1 = 0.025 round -0.03
@@ -987,11 +1011,11 @@ public class StatisticsCalculatorTest {
 
 		// reversed test
 		Collections.reverse(normalizeMutlipleYearlyValues);
-		// 2020-02-05 changing the calculation for sort down make this result 9.6 from 9.54 when making no adjustment
+		// 2020-02-05 changing rounding to HALF_DOWN makes this result 9.5 from 9.54 when making no adjustment
 		BigDecimal p75c = stats.valueOfPercentile(normalizeMutlipleYearlyValues, PERCENTILES.get(P75), Value::valueOf);
-		assertEquals("reverse sort should yield the same answer for p75", "9.6", p75c.toPlainString());
+		assertEquals("reverse sort should yield the same answer for p75", "9.5", p75c.toPlainString());
 
-		// 07-31-2018
+		// 2018-07-31
 		// 9.5 & 9.8 mean is 9.6  because 9.5-9.8 = -0.3 and mean is -0.15 rounded to -0.2
 		// 9.6-9.46 = 0.14 round 0.1
 		// then 0.75 x 0.1 = 0.075 round 0.08
@@ -1064,6 +1088,7 @@ public class StatisticsCalculatorTest {
 
 		int preCount = monthSamples.size();
 		monthlyStats.medianMonthlyValues(monthSamples, StatisticsCalculator::sortByValueOrderDescending);
+		StatisticsCalculator.sortByValueOrderDescending(monthSamples);
 		assertEquals("normalize should have removed NO values", preCount, monthSamples.size());
 
 		BigDecimal p10c = stats.valueOfPercentile(monthSamples, PERCENTILES.get(P25), Value::valueOf);
@@ -1075,9 +1100,9 @@ public class StatisticsCalculatorTest {
 
 		// even reversed it is the same percentile value -- is should be, testing to ensure
 		Collections.reverse(monthSamples);
-		// 2020-02-05 changing the calculation for sort down make this result 10.82 from 10.9 when making no adjustment
+		// 2020-02-11 after honoring addition/subtraction precision the result is 10.8 from 10.82
 		BigDecimal p75c = stats.valueOfPercentile(monthSamples, PERCENTILES.get(P75), Value::valueOf);
-		assertEquals("reverse sort should yield the same answer for P75", "10.82", p75c.toPlainString());
+		assertEquals("reverse sort should yield the same answer for P75", "10.8", p75c.toPlainString());
 	}
 	@Test
 	public void test_Dec25Pct_plusOneSigfig() {
@@ -1090,6 +1115,7 @@ public class StatisticsCalculatorTest {
 
 		int preCount = monthSamples.size();
 		monthlyStats.medianMonthlyValues(monthSamples, StatisticsCalculator::sortByValueOrderDescending);
+		StatisticsCalculator.sortByValueOrderDescending(monthSamples);
 		assertEquals("normalize should have removed NO values", preCount, monthSamples.size());
 
 		BigDecimal p10c = stats.valueOfPercentile(monthSamples, PERCENTILES.get(P25), Value::valueOf);
@@ -1280,8 +1306,8 @@ public class StatisticsCalculatorTest {
 		
 		List<Value> values = new LinkedList<>();
 		loadWithSeptemberData(values);
-		
-		BigDecimal actual = stats.valueOfPercentile(values, new BigDecimal("0.5"), Value::valueOf);
+		// 2020-02-11 need to increase precision of the percentile input to honor percentile output precision
+		BigDecimal actual = stats.valueOfPercentile(values, new BigDecimal("0.500"), Value::valueOf);
 		BigDecimal expect = new BigDecimal("24.7");
 		assertEquals(expect, actual);
 	}

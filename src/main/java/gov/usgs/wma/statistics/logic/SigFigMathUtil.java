@@ -181,6 +181,11 @@ public class SigFigMathUtil {
 
         BigDecimal sum = augend.add(addend);
 
+        int leastPrecision = getLeastPrecise(augend, addend);
+        if (BigDecimal.ZERO.compareTo(sum) == 0) {
+            return ZERO.setScale(leastPrecision);
+        }
+
         // first, addition trims on the least factional sigfigs
         int leastScale = getLeastScale(augend, addend);
         sum = sum.setScale(leastScale, roundingRule);
@@ -191,12 +196,12 @@ public class SigFigMathUtil {
         // while there are a minimum of two decimal places in the numbers
         // the addend has only 3 significant figures. 10.11+0.025=10.135 rounded 10.1
         // yes, we added something seemingly precise and lost overall precision.
-        int leastPrecision = getLeastPrecise(augend, addend);
         int sumPrecision = sum.precision();
         int sumScale = sum.scale();
-        int scalePrecision = sumScale + (leastPrecision-sumPrecision);
+        int scalePrecision = sumScale + (leastPrecision - sumPrecision);
         // TODO asdf need extensive testing on this because of the potential negative scalePrecision
-        return sum.setScale(scalePrecision, roundingRule);
+        int finalScale = Math.min(leastScale, scalePrecision);
+        return sum.setScale(finalScale, roundingRule);
     }
 
     /**
@@ -283,7 +288,7 @@ public class SigFigMathUtil {
         int lowestScale = numbers.get(0).scale();
 
         for (BigDecimal num : numbers) {
-            lowestScale = Math.min(lowestScale, num.precision());
+            lowestScale = Math.min(lowestScale, num.scale());
         }
         LOGGER.trace("smallest scale: {}", lowestScale);
         return lowestScale;
@@ -344,7 +349,7 @@ public class SigFigMathUtil {
         MathContext mc = new MathContext(sigFigs, roundingRule);
         BigDecimal product = multiplicand.multiply(multiplier, mc);
         if (BigDecimal.ZERO.equals(product)) {
-            product = ZERO;
+            product = ZERO.setScale(sigFigs);
         }
         return product;
     }
