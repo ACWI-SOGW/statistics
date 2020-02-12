@@ -744,6 +744,14 @@ public class SigFigMathUtilTest {
         assertEquals(2, ten.precision());
         updated = SigFigMathUtil.updateSigFigs(ten, 4);
         assertEquals("10.00", updated.toPlainString());
+
+        // show more settings including compatibility with subclass
+        ScientificDecimal hundred = new ScientificDecimal("100");
+        assertEquals(1, hundred.precision());
+        updated = SigFigMathUtil.updateSigFigs(hundred, 4);
+        assertEquals("100.0", updated.toPlainString());
+        updated = SigFigMathUtil.updateSigFigs(hundred, 7);
+        assertEquals("100.0000", updated.toPlainString());
     }
 
 

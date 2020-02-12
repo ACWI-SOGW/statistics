@@ -83,7 +83,7 @@ public class ScientificDecimal extends BigDecimal {
 		return this;
 	}
 
-	// TODO the proper handling of 0.000... will need to be revisited if my "guess" is incorrect.
+	// TODO asdf the proper handling of 0.000... will need to be revisited if my "guess" is incorrect.
 	protected void sigfigRules(String value) {
 		sigfigs = super.precision();
 
