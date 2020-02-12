@@ -88,11 +88,14 @@ public class BigDecimalComplianceTest {
 	@Test
 	public void test_setScale() {
 		BigDecimal value = new BigDecimal("42.0");
-		value = value.setScale(3);
+		BigDecimal scaled = value.setScale(3);
 
 		assertEquals("Setting the scale sets the plainString fraction digits",
-				"42.000", value.toPlainString());
-		assertEquals("Setting the scale effects the precision also.",5, value.precision() );
+				"42.000", scaled.toPlainString());
+		assertEquals("Setting the scale effects the precision also.",5, scaled.precision() );
+
+		assertEquals("Setting the scale - BigDecimal is immutable.",
+				"42.0", value.toPlainString());
 	}
 
 	@Test

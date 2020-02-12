@@ -417,7 +417,19 @@ public class SigFigMathUtil {
         if (BigDecimal.ZERO.equals(quotient)) {
             quotient = ZERO;
         }
+        quotient = updateSigFigs(quotient, sigFigs);
         return quotient;
+    }
+
+    protected static BigDecimal updateSigFigs(BigDecimal number, int sigFigs) {
+        if (number.precision() < sigFigs) {
+            number = number.setScale(number.scale()+1);
+            if (number.precision() < sigFigs) {
+                int newScale = sigFigs - number.precision();
+                number = number.setScale(number.scale()+newScale);
+            }
+        }
+        return number;
     }
 
     /**

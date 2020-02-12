@@ -632,9 +632,9 @@ public class SigFigMathUtilTest {
         BigDecimal denominator = new BigDecimal("100.00");
         BigDecimal actual = SigFigMathUtil.sigFigDivide(numerator, denominator);
 
-        assertEquals("Incorrect! 1000./100.00 should be 10.00", "10", actual.toPlainString());
-        assertEquals("Incorrect! 1000./100.00 should be 10.00", "1E+1", actual.toString());
-        assertEquals("Incorrect! 1000./100.00 have 4 precision", 1, actual.precision());
+        assertEquals("Correct! 1000./100.00 should be 10.00", "10.00", actual.toPlainString());
+        assertNotEquals("Correct! 1000./100.00 should be 10.00", "1E+1", actual.toString());
+        assertEquals("Correct! 1000./100.00 have 4 precision", 4, actual.precision());
     }
 
     @Test
@@ -725,4 +725,18 @@ public class SigFigMathUtilTest {
         actual = new BigDecimal("1.49").round(mc1);
         assertEquals("1", actual.toPlainString());
     }
+
+    @Test
+    public void test_updateSigFigs() {
+        BigDecimal numerator = new BigDecimal("1000.");
+        BigDecimal denominator = new BigDecimal("100.00");
+        BigDecimal actual = numerator.divide(denominator, RoundingMode.HALF_UP);
+
+        assertEquals("Incorrect! 1000./100.00 should be 10.00", "10", actual.toPlainString());
+
+        BigDecimal updated = SigFigMathUtil.updateSigFigs(actual, 4);
+        assertEquals("Correct! 1000./100.00 should be 10.00", "10.00", updated.toPlainString());
+    }
+
+
 }

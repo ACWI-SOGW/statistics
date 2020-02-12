@@ -17,11 +17,11 @@ public class BigDecimalDeficienciesTest {
 		// This is incorrect! 1000./100.00 is 10.00 not 1E+1 (or 10)
 		BigDecimal numerator = new BigDecimal("1000.");
 		BigDecimal denominator = new BigDecimal("100.00");
-		BigDecimal result = numerator.divide(denominator, RoundingMode.HALF_UP);
+		BigDecimal actual = numerator.divide(denominator, RoundingMode.HALF_UP);
 
-		assertEquals("Incorrect! 1000./100.00 should be 10.00", "10", result.toPlainString());
-		// it has a percision of 2 because of the rounding mode, see next assertion.
-		assertEquals("Incorrect! 1000./100.00 have 4 precision", 2, result.precision());
+		assertEquals("Incorrect! 1000./100.00 should be 10.00", "10", actual.toPlainString());
+		// it has a precision of 2 because of the rounding mode, see next assertion.
+		assertEquals("Incorrect! 1000./100.00 have 4 precision", 2, actual.precision());
 
 		// note that if the rounding mode is omitted then the precision is 1, not 2. see prior assertion.
 		BigDecimal noRoundingMode = numerator.divide(denominator);
@@ -29,13 +29,13 @@ public class BigDecimalDeficienciesTest {
 
 		// MathContext precision does not always help
 		MathContext mc = new MathContext(4);
-		result = numerator.divide(denominator, mc);
-		assertEquals("Incorrect! 1000./100.00 should be 10.00", "10", result.toPlainString());
+		actual = numerator.divide(denominator, mc);
+		assertEquals("Incorrect! 1000./100.00 should be 10.00", "10", actual.toPlainString());
 
 		// can overcome the deficiency by setting scale but you must know what scale to set.
 		// also note that BigDecimal instances are immutable and the modification is returned.
-		result = result.setScale(2); // TODO asdf implement this in the SigFigsMathUtil
-		assertEquals("Correct! 1000./100.00 should be 10.00", "10.00", result.toPlainString());
+		actual = actual.setScale(2);
+		assertEquals("Correct! 1000./100.00 should be 10.00", "10.00", actual.toPlainString());
 	}
 
 	@Test
