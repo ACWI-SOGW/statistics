@@ -38,11 +38,6 @@ public class SigFigMathUtil {
     // Jan  31 2020 - the rounding rule from Java, HALF_DOWN, seems to match the rule USGS desires.
     public static RoundingMode DEFAULT_ROUNDING_RULE = RoundingMode.HALF_DOWN;
 
-    // TODO asdf replace the used of BigDecimal ZERO and ONE with these.
-    // Feb  10 2020 - BigDecimal always reports zero as 1 sigfig.
-    public static final BigDecimal ZERO = new ScientificDecimal("0.0000000000");
-    public static final BigDecimal ONE = new BigDecimal("1.0000000000");
-
     public static BigDecimal logMissingValues() {
         LOGGER.warn("Value not provided. Can not determine value.");
         return null;
@@ -73,7 +68,7 @@ public class SigFigMathUtil {
             return numbers.stream()
                     .sorted(SigFigMathUtil::decsendingScale)
                     .sequential()
-                    .reduce(ZERO, math);
+                    .reduce(ScientificDecimal.ZERO, math);
         } catch (NullPointerException npe) {
             return logMissingValues();
         }
@@ -183,7 +178,7 @@ public class SigFigMathUtil {
 
         int leastPrecision = getLeastPrecise(augend, addend);
         if (BigDecimal.ZERO.compareTo(sum) == 0) {
-            return ZERO.setScale(leastPrecision);
+            return ScientificDecimal.ZERO.setScale(leastPrecision); // TODO asdf make ScientificDecimal immutable
         }
 
         // first, addition trims on the least factional sigfigs
@@ -350,8 +345,8 @@ public class SigFigMathUtil {
 
         MathContext mc = new MathContext(sigFigs, roundingRule);
         BigDecimal product = multiplicand.multiply(multiplier, mc);
-        if (BigDecimal.ZERO.equals(product)) {
-            product = ZERO.setScale(sigFigs);
+        if (BigDecimal.ZERO.compareTo(product) == 0) {
+            product = ScientificDecimal.ZERO.setScale(sigFigs);
         }
         product = updateSigFigs(product, sigFigs);
         return product;
@@ -417,8 +412,8 @@ public class SigFigMathUtil {
 
         MathContext mc = new MathContext(sigFigs, roundingRule);
         BigDecimal quotient = numerator.divide(denominator, mc);
-        if (BigDecimal.ZERO.equals(quotient)) {
-            quotient = ZERO;
+        if (BigDecimal.ZERO.compareTo(quotient) == 0) {
+            quotient = ScientificDecimal.ZERO;
         }
         quotient = updateSigFigs(quotient, sigFigs);
         return quotient;
@@ -428,8 +423,9 @@ public class SigFigMathUtil {
         if (number.precision() < sigFigs) {
             number = number.setScale(number.scale()+1);
             if (number.precision() < sigFigs) {
-                int newScale = sigFigs - number.precision();
-                number = number.setScale(number.scale()+newScale);
+                int deltaScale = sigFigs - number.precision();
+                int newScale = deltaScale + number.scale();
+                number = number.setScale(newScale);
             }
         }
         return number;

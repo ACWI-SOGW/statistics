@@ -112,16 +112,16 @@ public class ScientificDecimalTest {
 		ScientificDecimal hundred = new ScientificDecimal("100");
 		// TODO asdf I guess BigDecimal is immutable. This should too?
 
-		hundred.sigfigRules("100");
-		assertEquals(1, hundred.precision());
+		int actual = hundred.sigfigRules("100");
+		assertEquals(1, actual);
 		assertEquals("100", hundred.toPlainString());
 
-		hundred.sigfigRules("100.");
-		assertEquals(3, hundred.precision());
+		actual = hundred.sigfigRules("100.");
+		assertEquals(3, actual);
 		assertEquals("100", hundred.toPlainString());
 
-		hundred.sigfigRules("100.0");
+		actual = hundred.sigfigRules("100.0");
 		// BigDecimal already properly assesses 100.0 precision properly and this method does not act on this.
-		assertEquals("this should not update the precision (see comment)",3, hundred.precision());
+		assertEquals("this should not update the precision (see comment)",3, actual);
 	}
 }

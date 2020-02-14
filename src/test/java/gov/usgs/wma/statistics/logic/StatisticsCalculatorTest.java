@@ -809,8 +809,9 @@ public class StatisticsCalculatorTest {
 		assertEquals("normalize should have removed no values", preCount, monthSamples.size());
 
 		// 2020-02-11 result changed to 9.05 from 9.02 with new rounding and precision management
+		// 2020-02-12 this needs to be changed to 9.0 because the least precision is 9.0, not 9.05
 		BigDecimal actual = stats.valueOfPercentile(monthSamples, PERCENTILES.get(P25), Value::valueOf);
-		assertEquals("with additional sigfigs, more refined answer equal to p25", "9.05", actual.toPlainString());
+		assertEquals("with additional sigfigs, more refined answer equal to p25", "9.0", actual.toPlainString());
 
 		// 24 * %25 = 6 which is index 5 returning the raw value (note that the math is done on 24+1 but still return raw value)
 		// however when reversed
@@ -1208,39 +1209,39 @@ public class StatisticsCalculatorTest {
 		List<Value> values = new LinkedList<>();
 		values.add( createSample("1963-12-02T12:00:00", "1.3") );
 		BigDecimal actual = StatisticsCalculator.percentileOfValue(values, null, Value::valueOf);
-		assertEquals(BigDecimal.ZERO, actual);
+		assertEquals(0, BigDecimal.ZERO.compareTo(actual));
 
 		values = new LinkedList<>();
 		values.add( createSample("1963-12-02T12:00:00", "1.3") );
 		actual = StatisticsCalculator.percentileOfValue(values, null, 10, Value::valueOf);
-		assertEquals(BigDecimal.ZERO, actual);
+		assertEquals(0, BigDecimal.ZERO.compareTo(actual));
 
 		Value value;
 
 		value = createSample("1963-12-02T12:00:00", "1.3") ;
 		values = new LinkedList<>();
 		actual = StatisticsCalculator.percentileOfValue(values, value, 10, Value::valueOf);
-		assertEquals(BigDecimal.ZERO, actual);
+		assertEquals(0, BigDecimal.ZERO.compareTo(actual));
 		
 		value = createSample("1963-12-02T12:00:00", "1.3") ;
 		actual = StatisticsCalculator.percentileOfValue(null, value, 10, Value::valueOf);
-		assertEquals(BigDecimal.ZERO, actual);
+		assertEquals(0, BigDecimal.ZERO.compareTo(actual));
 		
 		value = createSample("1963-12-02T12:00:00", "1.3") ;
 		actual = StatisticsCalculator.percentileOfValue(null, value, Value::valueOf);
-		assertEquals(BigDecimal.ZERO, actual);
+		assertEquals(0, BigDecimal.ZERO.compareTo(actual));
 		
 		value = createSample("1963-12-02T12:00:00", "1.3") ;
 		values = new LinkedList<>();
 		values.add( createSample("1963-12-02T12:00:00", "1.3") );
 		actual = StatisticsCalculator.percentileOfValue(values, value, null);
-		assertEquals(BigDecimal.ZERO, actual);
+		assertEquals(0, BigDecimal.ZERO.compareTo(actual));
 		
 		value = createSample("1963-12-02T12:00:00", "1.3") ;
 		values = new LinkedList<>();
 		values.add( createSample("1963-12-02T12:00:00", "1.3") );
 		actual = StatisticsCalculator.percentileOfValue(values, value, 10, null);
-		assertEquals(BigDecimal.ZERO, actual);
+		assertEquals(0, BigDecimal.ZERO.compareTo(actual));
 		
 		value = createSample("1963-12-02T12:00:00", "1.3") ;
 		values = new LinkedList<>();
@@ -1252,7 +1253,7 @@ public class StatisticsCalculatorTest {
 			}
 		};
 		actual = StatisticsCalculator.percentileOfValue(values, value, 10, valueOf);
-		assertEquals(BigDecimal.ZERO, actual);
+		assertEquals(0, BigDecimal.ZERO.compareTo(actual));
 	}
 
 	@Test
@@ -1267,29 +1268,29 @@ public class StatisticsCalculatorTest {
 		values = new LinkedList<>();
 		values.add( createSample("1963-12-02T12:00:00", "1.3") );
 		actual = stats.valueOfPercentile(values, percentile, 10, Value::valueOf);
-		assertEquals(BigDecimal.ZERO, actual);
+		assertEquals(0, BigDecimal.ZERO.compareTo(actual));
 
 		percentile = BigDecimal.ONE;
 		values = null;
 		actual = stats.valueOfPercentile(values, percentile, 10, Value::valueOf);
-		assertEquals(BigDecimal.ZERO, actual);
+		assertEquals(0, BigDecimal.ZERO.compareTo(actual));
 
 		percentile = BigDecimal.ONE;
 		values = new LinkedList<>();
 		actual = stats.valueOfPercentile(values, percentile, 10, Value::valueOf);
-		assertEquals(BigDecimal.ZERO, actual);
+		assertEquals(0, BigDecimal.ZERO.compareTo(actual));
 
 		percentile = new BigDecimal("-0.1");
 		values = new LinkedList<>();
 		values.add( createSample("1963-12-02T12:00:00", "1.3") );
 		actual = stats.valueOfPercentile(values, percentile, 10, Value::valueOf);
-		assertEquals(BigDecimal.ZERO, actual);
+		assertEquals(0, BigDecimal.ZERO.compareTo(actual));
 
 		percentile = new BigDecimal("1.1");
 		values = new LinkedList<>();
 		values.add( createSample("1963-12-02T12:00:00", "1.3") );
 		actual = stats.valueOfPercentile(values, percentile, 10, Value::valueOf);
-		assertEquals(BigDecimal.ZERO, actual);
+		assertEquals(0, BigDecimal.ZERO.compareTo(actual));
 	}
 	
 	@Test
@@ -1319,7 +1320,8 @@ public class StatisticsCalculatorTest {
 		StatisticsCalculator.sortByValueOrderDescending(values);
 		
 		BigDecimal actual = stats.valueOfPercentile(values, StatisticsCalculator.MEDIAN_PERCENTILE, Value::valueOf);
-		BigDecimal expect = new BigDecimal("24.74"); // TODO asdf this needs to be changed to 24.7
+		// 2020-02-12 this needs to be changed to 24.7 because the least precision is 24.7, not 24.74
+		BigDecimal expect = new BigDecimal("24.7");
 		assertEquals(expect, actual);
 	}
 	public static void loadWithSeptemberData(List<Value> values) {

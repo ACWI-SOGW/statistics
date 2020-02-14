@@ -1,5 +1,7 @@
 package gov.usgs.wma.statistics.logic;
 
+import java.math.BigDecimal;
+
 /**
  * This is an NGWMN model of significant figures that has been simplified.
  * 
@@ -23,15 +25,16 @@ public class UsgsDecimal extends ScientificDecimal {
 	}
 	
 	@Override
-	protected void sigfigRules(String value) {
-		sigfigs = super.precision();
+	protected int sigfigRules(String value) {
+		int sigfigs = precision();
 		
 		String figs = value;
 		figs = figs.replace(".", ""); // replace is not regex
-		if (doubleValue() != 0.0) {
+		if (compareTo(BigDecimal.ZERO) != 0) {
 			// do not remove zeros for zero itself
 			figs = figs.replaceAll("^0+", "");
+			sigfigs = figs.length();
 		}
-		sigfigs = figs.length();
+		return sigfigs;
 	}
 }

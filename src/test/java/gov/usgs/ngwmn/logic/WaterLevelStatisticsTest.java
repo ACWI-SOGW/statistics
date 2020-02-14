@@ -911,7 +911,7 @@ public class WaterLevelStatisticsTest {
 		assertFalse(valueOrder.contains(provisional));
 
 		assertEquals("7.98",  builder.get(MEDIAN));
-		assertEquals("100", builder.get(LATEST_PCTILE));
+		assertEquals("100.0", builder.get(LATEST_PCTILE));
 	}
 	@Test
 	public void testMostRecentProvistional_overallStats_BelowLand() {
@@ -951,7 +951,7 @@ public class WaterLevelStatisticsTest {
 		assertTrue(valueOrder.contains(notProvisional));
 
 		assertEquals("7.98", builder.get(MEDIAN));
-		assertEquals("100", builder.get(LATEST_PCTILE));
+		assertEquals("100.0", builder.get(LATEST_PCTILE));
 	}
 	@Test
 	public void testMostRecentProvistionalNONE_overallStats_BelowLand() {

@@ -1003,7 +1003,8 @@ public class MonthlyStatisticsTest {
 		JsonData response = wlstats.calculate(spec, values);
 
 		/*September*/ String actual = response.getMonthly().get("9").percentiles.get(P50_MAX);
-	 	/* P50_MAX */ String expect = "24.74";  // TODO asdf check that this should be 24 or 25 or 24.7
+		// 2020-02-12 this needs to be changed to 24.7 because the least precision is 24.7, not 24.74
+	 	/* P50_MAX */ String expect = "24.7";
 		assertEquals(expect, actual);
 		
 //		new StatisticsCalculator<Value>(env).conditioning(spec, values);

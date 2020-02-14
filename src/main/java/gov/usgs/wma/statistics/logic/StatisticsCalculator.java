@@ -46,8 +46,8 @@ public class StatisticsCalculator<S extends Value> {
 	public static final BigDecimal MEDIAN_PERCENTILE = new BigDecimal("0.500000000");
 	//protected static final BigDecimal HUNDRED = new BigDecimal("100");
 	protected static final BigDecimal TWELVE  = new BigDecimal("12");
-	// Calendar returns millis for days and after a diff we need the number of days
-	protected static final long MILLISECONDS_PER_DAY = 1000 * 60 * 60 * 24;// ms * sec * min * hr == ms/day
+	// Calendar returns millis for days and after a diff we need the number of days (ms * sec * min * hr == ms/day)
+	protected static final BigDecimal MILLISECONDS_PER_DAY = new BigDecimal(1000 * 60 * 60 * 24);
 
 	private static final String[] MONTH_NAMES = new DateFormatSymbols().getMonths();
 
@@ -143,35 +143,35 @@ public class StatisticsCalculator<S extends Value> {
 			Function<T, BigDecimal> valueOf) {
 		// protection - TODO is this the behavior we want? - returning 0
 		if (sample==null || samples==null || samples.size()==0 || valueOf == null || valueOf.apply(sample)==null ) {
-			return BigDecimal.ZERO;
+			return ScientificDecimal.ZERO;
 		}
 		BigDecimal sampleValue = valueOf.apply(sample);
 
 		// add one because of java zero based index vs the one based index of mathematics
 		BigDecimal index = new BigDecimal( samples.indexOf(sample) + 1 );
 		BigDecimal n     = new BigDecimal(samples.size());
-		BigDecimal n1    = n.add(BigDecimal.ONE);
-		BigDecimal n1inv = BigDecimal.ONE.divide(n1, 10, RoundingMode.HALF_EVEN);
+		BigDecimal n1    = n.add(ScientificDecimal.ONE);
+		BigDecimal n1inv = ScientificDecimal.ONE.divide(n1, 10, DEFAULT_ROUNDING_RULE);
 
-		BigDecimal n1invRnd = BigDecimal.ONE.divide(n1, sampleValue.precision(), RoundingMode.HALF_EVEN);
+		BigDecimal n1invRnd = ScientificDecimal.ONE.divide(n1, sampleValue.precision(), DEFAULT_ROUNDING_RULE);
 		// comment this precision
-		BigDecimal pct   = index.divide(n1, precision, RoundingMode.HALF_EVEN);
+		BigDecimal pct   = index.divide(n1, precision, DEFAULT_ROUNDING_RULE);
 		
 		// manage near   0 percentile
 		if (pct.compareTo(n1invRnd) <= 0 ) {
-			return BigDecimal.ZERO;
+			return ScientificDecimal.ZERO.setScale(1);
 		}
 		// manage near 100 percentile
-		MathContext mc = new MathContext(sampleValue.precision(),RoundingMode.HALF_EVEN);
+		MathContext mc = new MathContext(sampleValue.precision(), DEFAULT_ROUNDING_RULE);
 		if (pct.compareTo(n.multiply(n1inv, mc)) >= 0) {
-			return BigDecimal.ONE;
+			return ScientificDecimal.ONE.setScale(3);
 		}
 		
 		return pct;
 	}
 	public static <T> BigDecimal percentileOfValue(List<T> samples, T sample, Function<T, BigDecimal> valueOf) {
 		if (sample == null || valueOf == null) {
-			return BigDecimal.ZERO;
+			return ScientificDecimal.ZERO;
 		}
 		BigDecimal sampleValue = valueOf.apply(sample);
 		return percentileOfValue(samples, sample, sampleValue.precision(), valueOf);
@@ -191,19 +191,19 @@ public class StatisticsCalculator<S extends Value> {
 			Function<S, BigDecimal> valueOf) {
 		
 		// protection from null and ranges
-		if (   samples == null                                          // samples are required (no null nor zero sample count)
-			|| samples.size()==0                                        // avoid ArrayIndexOutOfBoundsException
+		if (   samples == null                                            // samples are required (no null nor zero sample count)
+			|| samples.size()==0                                          // avoid ArrayIndexOutOfBoundsException
 			// proper fraction range
-			|| percentileAsFraction == null                             // percentile  avoid NullPointerException
-			|| percentileAsFraction.compareTo(BigDecimal.ZERO) < 0      // less than 0% is undefined
-			|| percentileAsFraction.compareTo(BigDecimal.ONE) > 0 ) {   // greater than 100% is just as foolish
-			return BigDecimal.ZERO; //- TODO is this the behavior we want? - returning 0
+			|| percentileAsFraction == null                               // percentile  avoid NullPointerException
+			|| percentileAsFraction.compareTo(BigDecimal.ZERO) < 0        // less than 0% is undefined
+			|| percentileAsFraction.compareTo(BigDecimal.ONE) > 0 ) {     // greater than 100% is just as foolish
+			return BigDecimal.ZERO;                                       // no precision in this response
 		}
-		
+		// TODO asdf some math in here should be raw calls to BigDecimal and some should be sigfigutils calls
 		// total records, n, n+1, and its inverse, 1/(n+1)
-		BigDecimal n     = new BigDecimal(samples.size());              // the number of records
-		BigDecimal n1    = n.add(BigDecimal.ONE);                       // one more than the number of records
-		BigDecimal n1inv = BigDecimal.ONE.divide(n1, 10, RoundingMode.HALF_UP); // 1/(n+1) presume 10 digits
+		BigDecimal n     = new ScientificDecimal(samples.size(),9);// the number of records
+		BigDecimal n1    = n.add(ScientificDecimal.ONE);                  // one more than the number of records
+		BigDecimal n1inv = ScientificDecimal.ONE.divide(n1, 9, DEFAULT_ROUNDING_RULE); // 1/(n+1) presume 10 digits
 
 		// manage boundary condition near   0 percentile
 		if (percentileAsFraction.compareTo(n1inv) <= 0 ) {
@@ -215,30 +215,29 @@ public class StatisticsCalculator<S extends Value> {
 		}
 		
 		// pct float index, p, and its parts. the int index, k, and the decimal fraction, d.
-		BigDecimal p     = percentileAsFraction.setScale(9).multiply(n1);           // raw index to be used with faction
-		BigDecimal k     = new BigDecimal( p.intValue() );              // the integer index value
+		BigDecimal p     = percentileAsFraction.setScale(9).multiply(n1); // raw index to be used with faction
+		int k            = p.intValue();                                  // the integer index value
 		
 		// Y[k] and Y[k+1] (but java is zero based indexing thus k-1 and k)
-		BigDecimal yk    = valueOf.apply(samples.get(k.intValue()-1));  // first index value
-		BigDecimal yk1   = valueOf.apply(samples.get(k.intValue()));    // second index value
+		BigDecimal yk    = valueOf.apply(samples.get(k-1));               // first index value
+		BigDecimal yk1   = valueOf.apply(samples.get(k));                 // second index value
+		int leastPrecision = SigFigMathUtil.getLeastPrecise(yk,yk1);
 
 		// percentile calculation Y(p) = Y[k] + d(Y[k+1] - Y[k])
-		BigDecimal diff  = sigFigSubtract(yk1, yk).setScale(9);                     // delta between the two values
-		// TODO asdf might need to call sigfigutil for this action
+		BigDecimal diff  = sigFigSubtract(yk1, yk).setScale(9);           // delta between the two values
+
 		if (BigDecimal.ZERO.compareTo(diff) == 0) {
-			return yk; // TODO asdf also respect sigfigs of yk1
+			return ScientificDecimal.updateScaleForSigFigs(yk, leastPrecision);
 		}
-		BigDecimal d     = p.subtract(k);                               // the decimal index value (or fraction between two indexes)
+		BigDecimal d     = p.subtract(new BigDecimal(k));                 // the decimal index value (or fraction between two indexes)
 		if (BigDecimal.ZERO.compareTo(d) == 0) {
-			d = ZERO;
+			d = ScientificDecimal.ZERO.setScale(leastPrecision);
 		}
-		BigDecimal delta = sigFigMultiply(diff, d);                     // the fraction of the difference of two values k and k+1
+		BigDecimal delta = diff.multiply(d);                              // the fraction of the difference of two values k and k+1
 		if (BigDecimal.ZERO.compareTo(delta) == 0) {
-			delta = ZERO;
+			delta = ScientificDecimal.ZERO.setScale(leastPrecision-1);
 		}
-		delta = delta;
-		BigDecimal yp    = yk.add(delta);            // and finally, the percentile value
-		int leastPrecision = SigFigMathUtil.getLeastPrecise(yk,yk1);
+		BigDecimal yp  = yk.add(delta);                                   // and finally, the percentile value
 		MathContext mc = new MathContext(leastPrecision, DEFAULT_ROUNDING_RULE);
 		return yp.round(mc);
 	}
@@ -399,7 +398,6 @@ public class StatisticsCalculator<S extends Value> {
 	
 	public static BigDecimal daysDiff(String maxDate, String minDate) {
 		
-		BigDecimal days  = BigDecimal.ZERO;
 		try {
 			Date begin   = DATE_FORMAT_FULL.parse(minDate);
 			Date end     = DATE_FORMAT_FULL.parse(maxDate);
@@ -413,13 +411,11 @@ public class StatisticsCalculator<S extends Value> {
 			long stop    = cal.getTimeInMillis();
 			
 			long diff    = stop - start;
-			days         = new BigDecimal ( diff/MILLISECONDS_PER_DAY ); 
-			
+			BigDecimal days = new BigDecimal(diff).divide(MILLISECONDS_PER_DAY);
+			return days;
 		} catch (ParseException e) {
 			throw new IllegalArgumentException("Bad dates: '" + minDate + "' or '" + maxDate +"'");
 		}
-		
-		return days;
 	}
 	
 	/**

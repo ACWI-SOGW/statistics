@@ -26,66 +26,95 @@ import java.math.RoundingMode;
  */
 @SuppressWarnings("serial")
 public class ScientificDecimal extends BigDecimal {
-	
-	int sigfigs;
+	// Feb  10 2020 - BigDecimal always reports zero as 1 sigfig.
+	// TODO asdf unit test these values
+	public static final BigDecimal ZERO = new ScientificDecimal("0.0000000000");
+	public static final BigDecimal ONE  = new ScientificDecimal("1.0000000000");
 
+	final Integer sigfigs;
+	// need to extend the BigDecimal so that this class IS a BigDecimal
+	// need to keep a local copy because setScale returns a new instance
+	// while this class will also be immutable, during construction we need to set scale.
+	// also, calls to superclass methods where not reliable
+	BigDecimal bigDecimal;
+
+	public ScientificDecimal(String value, int specifiedSigfigs) {
+		super(value);
+		bigDecimal = new BigDecimal(value);
+		sigfigs = specifiedSigfigs;
+
+		int precision = bigDecimal.precision();
+		int missingPrecision = sigfigs - precision;
+		if (missingPrecision > 0) {
+			int scale = bigDecimal.scale();
+			int integerDigits = precision - scale;
+			int scaleShouldBe = sigfigs - integerDigits;
+			bigDecimal = bigDecimal.setScale(scaleShouldBe);
+		}
+	}
 	public ScientificDecimal(String value) {
 		super(value);
-		sigfigRules(value);
+		bigDecimal = new BigDecimal(value);
+		sigfigs = sigfigRules(value);
 	}
-	public ScientificDecimal(String value, int specifiedSigfigs) {
-		this(value);
-		setSigfigs(specifiedSigfigs);
+	public ScientificDecimal(long value) {
+		this(""+value);
+	}
+	public ScientificDecimal(long value, int sigfigs) {
+		this(""+value, sigfigs);
 	}
 
+	@Override
+	public String toPlainString() {
+		return bigDecimal.toPlainString();
+	}
+
+	@Override
+	public String toString() {
+		return bigDecimal.toPlainString();
+	}
 
 	@Override
 	public int precision() {
-		return sigfigs;
+		return sigfigs==null ?bigDecimal.precision() :sigfigs;
 	}
+
 	public BigDecimal setPrecision(int newPrecision) {
-		updateSigfigsWithNewPrecision(newPrecision);
-		this.setSigfigs(newPrecision);
-		return this;
+		return setSigfigs(newPrecision);
 	}
+
+	@Override
+	public int scale() {
+		return bigDecimal.scale();
+	}
+
 	@Override
 	public BigDecimal setScale(int newScale) {
-		updateSigfigsWithNewScale(newScale);
-		return super.setScale(newScale);
+		return setScale(newScale, SigFigMathUtil.DEFAULT_ROUNDING_RULE);
 	}
+
 	@Override
-	public BigDecimal setScale(int newScale, int roundingMode) {
-		updateSigfigsWithNewScale(newScale);
-		return super.setScale(newScale, roundingMode);
+	public BigDecimal setScale(int newScale, int oldMode) {
+		return setScale(newScale, RoundingMode.valueOf(oldMode));
 	}
+
 	@Override
 	public BigDecimal setScale(int newScale, RoundingMode roundingMode) {
-		updateSigfigsWithNewScale(newScale);
-		return super.setScale(newScale, roundingMode);
-	}
-
-	protected BigDecimal updateSigfigsWithNewScale(int newScale) {
-		if (sigfigs < newScale) {
-			setSigfigs(newScale); // TODO asdf precision and scale testing
+		int deltaScale = newScale - scale(); // TODO asdf change to fix a bug but might have been changed to fix a different bug
+		int newPrecision = deltaScale + precision();
+		if (BigDecimal.ZERO.compareTo(this) == 0) {
+			return new ScientificDecimal("0.0", newPrecision);
 		}
-		return this;
-	}
-
-	protected BigDecimal updateSigfigsWithNewPrecision(int newPrecision) {
-		if (sigfigs < newPrecision) {
-			setSigfigs(newPrecision); // TODO asdf precision and scale testing
-		}
-		return this;
+		return setSigfigs(newPrecision);
 	}
 
 	public ScientificDecimal setSigfigs(int sigfigs) {
-		this.sigfigs = sigfigs;
-		return this;
+		return new ScientificDecimal(bigDecimal.toPlainString(), sigfigs);
 	}
 
-	// TODO asdf the proper handling of 0.000... will need to be revisited if my "guess" is incorrect.
-	protected void sigfigRules(String value) {
-		sigfigs = super.precision();
+	// TODO asdf the proper handling of 0.000... ensure test coverage.
+	protected int sigfigRules(String value) {
+		int sigfigs = bigDecimal.precision();
 
 		// this is for 1000 vs 1000.
 		if ( ! value.contains(".") ) {
@@ -93,10 +122,34 @@ public class ScientificDecimal extends BigDecimal {
 			sigfigs = figs.length();
 		}
 		// this is for 0.0000 vs 0
-		if ( equals( BigDecimal.ZERO.setScale(scale()) ) ) {
-			sigfigs = scale();
+		if (compareTo(BigDecimal.ZERO) == 0 ) {
+			sigfigs = bigDecimal.scale();
 		}
+		return sigfigs;
 	}
+//	protected static int sigfigRules(String value) {
+//		return new ScientificDecimal(value).sigfigRules(value);
+//	}
 
+	/**
+	 * Use this helper to set the scale to satisfy the significant figures.
+	 * @param number   the number to set  significant figures
+	 * @param sigfigs  significant figures
+	 * @return
+	 */
+	public static BigDecimal updateScaleForSigFigs(BigDecimal number, int sigfigs) {
+		return updateScaleForSigFigs(number, sigfigs, SigFigMathUtil.DEFAULT_ROUNDING_RULE);
+	}
+	public static BigDecimal updateScaleForSigFigs(BigDecimal number, int sigfigs, RoundingMode roundingRule) {
+		int deltaPrecision = sigfigs - number.precision();
+		int disparity = number.scale() + deltaPrecision;
+		if (disparity == number.scale()) {
+			return number;
+		}
+		if (BigDecimal.ZERO.compareTo(number) == 0) {
+			return new ScientificDecimal("0.0", sigfigs);
+		}
+		return number.setScale(disparity, roundingRule);
+	}
 
 }

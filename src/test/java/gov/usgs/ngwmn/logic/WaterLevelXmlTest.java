@@ -145,7 +145,7 @@ public class WaterLevelXmlTest {
 		// EXPECT
 		Map<String,String> expected = new HashMap<>();
 		expected.put("latestValue", "17.960000");
-		expected.put("latestPercentile", "100");
+		expected.put("latestPercentile", "100.0");
 		expected.put("valueMin", "19.760000");
 		expected.put("valueMax", "10.380000");
 		
@@ -165,7 +165,7 @@ public class WaterLevelXmlTest {
 		// EXPECT
 		Map<String,String> expected = new HashMap<>();
 		expected.put("latestValue", "98.29");
-		expected.put("latestPercentile", "100");
+		expected.put("latestPercentile", "100.0");
 		expected.put("valueMin", "115.97");
 		expected.put("valueMax", "98.29");
 		
