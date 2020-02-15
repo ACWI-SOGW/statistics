@@ -101,7 +101,22 @@ public class WaterLevelStatisticsTest {
 		spec = new Specifier("USGS", "Testing");
 	}
 
-	
+	@Test
+	public void test_makeMedian() throws Exception {
+		PCode pcode = PCode.P62610;
+		WLSample min = createSample("2005-06-10T04:15:00-05:00", "2.0", pcode, new BigDecimal("401"));
+		WLSample mid = createSample("2010-06-10T04:15:00-05:00", "1.5", pcode, new BigDecimal("403"));
+		WLSample max = createSample("2015-06-10T04:15:00-05:00", "1.0", pcode, new BigDecimal("406"));
+		List<WLSample> sortedByValue = new LinkedList<>();
+		sortedByValue.add(min);
+		sortedByValue.add(mid);
+		sortedByValue.add(max);
+		WLSample median = stats.makeMedian(sortedByValue);
+
+		assertEquals(mid.value, median.value);
+		assertEquals(mid.valueAboveDatum, median.valueAboveDatum);
+	}
+
 	@Test
 	public void test_replaceLatestSample_remove_descending_last() {
 		builder.mediation(MediationType.BelowLand);
@@ -874,7 +889,7 @@ public class WaterLevelStatisticsTest {
 
 
 	@Test
-	public void testMostRecentProvistionalData_Removed() {
+	public void testMostRecentProvisionalData_Removed() {
 		List<WLSample> valueOrder = new LinkedList<>();
 		WLSample provisional = createSample("2017-03-01","12.21");
 		provisional.setProvsional(true);
@@ -894,7 +909,7 @@ public class WaterLevelStatisticsTest {
 		assertEquals("most recent should be the provisional", provisional.value.toPlainString(), builder.get(LATEST_VALUE));
 	}
 	@Test
-	public void testMostRecentProvistional_overallStats_AboveDatum() {
+	public void testMostRecentProvisional_overallStats_AboveDatum() {
 		List<WLSample> valueOrder = new LinkedList<>();
 		WLSample provisional = createSample("2017-03-01","12.21", true);
 		valueOrder.add( provisional );
@@ -914,7 +929,7 @@ public class WaterLevelStatisticsTest {
 		assertEquals("100.0", builder.get(LATEST_PCTILE));
 	}
 	@Test
-	public void testMostRecentProvistional_overallStats_BelowLand() {
+	public void testMostRecentProvisional_overallStats_BelowLand() {
 		List<WLSample> valueOrder = new LinkedList<>();
 		WLSample provisional = createSample("2017-03-01","12.21", true);
 		valueOrder.add( provisional );
@@ -934,7 +949,7 @@ public class WaterLevelStatisticsTest {
 		assertEquals("0.0", builder.get(LATEST_PCTILE));
 	}
 	@Test
-	public void testMostRecentProvistionalNONE_overallStats_AboveDatum() {
+	public void testMostRecentProvisionalNONE_overallStats_AboveDatum() {
 		List<WLSample> valueOrder = new LinkedList<>();
 		WLSample notProvisional = createSample("2017-03-01","12.21");
 		valueOrder.add( notProvisional );
@@ -954,7 +969,7 @@ public class WaterLevelStatisticsTest {
 		assertEquals("100.0", builder.get(LATEST_PCTILE));
 	}
 	@Test
-	public void testMostRecentProvistionalNONE_overallStats_BelowLand() {
+	public void testMostRecentProvisionalNONE_overallStats_BelowLand() {
 		List<WLSample> valueOrder = new LinkedList<>();
 		WLSample notProvisional = createSample("2017-03-01","12.21");
 		valueOrder.add( notProvisional );
@@ -974,7 +989,7 @@ public class WaterLevelStatisticsTest {
 		assertEquals("0.0", builder.get(LATEST_PCTILE));
 	}
 	@Test
-	public void testMostRecentProvistionalData_notRemoved() {
+	public void testMostRecentProvisionalData_notRemoved() {
 		List<WLSample> monthSamples = new LinkedList<>();
 		fillMarchData(monthSamples);
 		WLSample provisional = createSample("2017-03-01","12.21");
@@ -1341,6 +1356,29 @@ public class WaterLevelStatisticsTest {
 		monthSamples.add( createSample("2015-03-01","1.78") );
 		monthSamples.add( createSample("2010-03-01","1.39") );
 	}
-	
+
+	@Test
+	public void test_calculate_overallIfMonthlyError() throws Exception {
+		PCode pcode = PCode.P62610;
+		WLSample min = createSample("2005-06-10T04:15:00-05:00", "2.0", pcode, new BigDecimal("401"));
+		WLSample mid = createSample("2010-06-10T04:15:00-05:00", "1.5", pcode, new BigDecimal("403"));
+		WLSample max = createSample("2015-06-10T04:15:00-05:00", "1.0", pcode, new BigDecimal("406"));
+		List<WLSample> sortedByValue = new LinkedList<>();
+		sortedByValue.add(min);
+		sortedByValue.add(mid);
+		sortedByValue.add(max);
+
+		stats.monthlyStats = new WaterLevelMonthlyStats(env, builder) {
+			@Override
+			public boolean monthlyStats(List<WLSample> sortedByValue) {
+				throw new RuntimeException();
+			}
+		};
+
+		JsonData actual = stats.calculate(new Specifier(), sortedByValue);
+
+		assertTrue("Monthly should be empty on error.", actual.getMonthly().isEmpty());
+		assertNotNull( "Overall should not be empty if on monthly error.", actual.getOverall());
+	}
 }
 
