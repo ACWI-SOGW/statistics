@@ -420,11 +420,17 @@ public class SigFigMathUtil {
     }
 
     protected static BigDecimal updateSigFigs(BigDecimal number, int sigFigs) {
-        if (number.precision() < sigFigs) {
-            number = number.setScale(number.scale()+1);
+        if (number.precision() != sigFigs) {
+            if (number.precision() < sigFigs) {
+                number = number.setScale(number.scale() + 1);
+            }
             if (number.precision() < sigFigs) {
                 int deltaScale = sigFigs - number.precision();
                 int newScale = deltaScale + number.scale();
+                number = number.setScale(newScale);
+            } else {
+                int intDigits = number.precision() - number.scale();
+                int newScale = sigFigs - intDigits;
                 number = number.setScale(newScale);
             }
         }

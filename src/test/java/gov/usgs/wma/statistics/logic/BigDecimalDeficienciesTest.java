@@ -133,5 +133,18 @@ public class BigDecimalDeficienciesTest {
 		assertEquals(1, new BigDecimal("0.0001").precision());
 //		assertEquals(4, new BigDecimal("0.0001").precision());
 	}
-	
+
+	@Test
+	public void testBigDecimal_zeroHasNoPrecision() {
+		BigDecimal zero = new BigDecimal("0.000");
+		BigDecimal three = new BigDecimal("3.000");
+		assertEquals(1, zero.precision());
+		assertEquals(4, three.precision());
+		assertEquals(1, three.subtract(three).precision());
+
+		BigDecimal zero5 = zero.setScale(5);
+		BigDecimal three5 = three.setScale(5);
+		assertEquals(1, zero5.precision());
+		assertEquals(6, three5.precision());
+	}
 }

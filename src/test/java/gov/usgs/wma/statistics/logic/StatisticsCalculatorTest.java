@@ -3,6 +3,7 @@ package gov.usgs.wma.statistics.logic;
 import static gov.usgs.wma.statistics.logic.SigFigMathUtil.*;
 import static org.junit.Assert.*;
 
+import java.io.Reader;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -13,6 +14,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 
+import gov.usgs.ngwmn.model.Specifier;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -31,6 +33,7 @@ import gov.usgs.ngwmn.model.MediationType;
 import gov.usgs.wma.statistics.app.Properties;
 import gov.usgs.wma.statistics.model.JsonDataBuilder;
 import gov.usgs.wma.statistics.model.Value;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -1436,19 +1439,13 @@ public class StatisticsCalculatorTest {
 //		values.add( createSample("2009-09-16","24.74"));
 //	}
 
-	@Test
-	public void testBigDecimal_zeroHasNoPrecision() {
-		BigDecimal zero = new BigDecimal("0.000");
-		BigDecimal three = new BigDecimal("3.000");
-		assertEquals(1, zero.precision());
-		assertEquals(4, three.precision());
-		assertEquals(1, three.subtract(three).precision());		
-
-		BigDecimal zero5 = zero.setScale(5);
-		BigDecimal three5 = three.setScale(5);
-		assertEquals(1, zero5.precision());
-		assertEquals(6, three5.precision());
+	@Test(expected = NotImplementedException.class)
+	public void test_calculateUnimplementedReader() throws Exception {
+		stats.calculate((Specifier) null, (Reader) null);
 	}
-	
+	@Test(expected = NotImplementedException.class)
+	public void test_calculateUnimplementedList() throws Exception {
+		stats.calculate((Specifier) null, (List<Value>) null);
+	}
 
 }

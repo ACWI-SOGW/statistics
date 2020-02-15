@@ -124,4 +124,85 @@ public class ScientificDecimalTest {
 		// BigDecimal already properly assesses 100.0 precision properly and this method does not act on this.
 		assertEquals("this should not update the precision (see comment)",3, actual);
 	}
+
+	@Test
+	public void test_constructor_long() {
+		BigDecimal actual = new ScientificDecimal(1L, 2);
+		assertEquals(2, actual.precision());
+		assertEquals(1, actual.scale());
+		assertEquals("1.0", actual.toPlainString());
+	}
+
+	@Test
+	public void test_constructor_string() {
+		BigDecimal actual = new ScientificDecimal("1.0", 2);
+		assertEquals(2, actual.precision());
+		assertEquals("1.0", actual.toPlainString());
+
+		actual = new ScientificDecimal("1.00", 2);
+		assertEquals(2, actual.precision());
+		assertEquals("1.0", actual.toPlainString());
+
+		actual = new ScientificDecimal("1", 2);
+		assertEquals(2, actual.precision());
+		assertEquals("1.0", actual.toPlainString());
+
+		actual = new ScientificDecimal("1.00", 1);
+		assertEquals(1, actual.precision());
+		assertEquals("1", actual.toPlainString());
+
+	}
+	@Test
+	public void test_construct_zero() {
+		BigDecimal actual = new ScientificDecimal("0.0", 1);
+		assertEquals(1, actual.precision());
+		assertEquals("0.0", actual.toPlainString());
+
+		actual = new ScientificDecimal("0.00", 1);
+		assertEquals(1, actual.precision());
+		assertEquals("0.0", actual.toPlainString());
+
+		actual = new ScientificDecimal("0", 1);
+		assertEquals(1, actual.precision());
+		assertEquals("0.0", actual.toPlainString());
+
+
+		actual = new ScientificDecimal("0.0", 3);
+		assertEquals(3, actual.precision());
+		assertEquals("0.000", actual.toPlainString());
+
+		actual = new ScientificDecimal("0.00", 3);
+		assertEquals(3, actual.precision());
+		assertEquals("0.000", actual.toPlainString());
+
+		actual = new ScientificDecimal("0", 3);
+		assertEquals(3, actual.precision());
+		assertEquals("0.000", actual.toPlainString());
+	}
+
+	@Test
+	public void test_updateScaleForSigFigs() {
+		BigDecimal actual = ScientificDecimal.updateScaleForSigFigs(BigDecimal.ZERO, 2);
+		assertEquals(2, actual.precision());
+		assertEquals("0.00", actual.toPlainString());
+	}
+
+	@Test
+	public void test_setPrecision() {
+		ScientificDecimal number = new ScientificDecimal("1.1");
+		assertEquals(2, number.precision());
+
+		BigDecimal actual = number.setPrecision(3);
+		assertEquals("1.10", actual.toPlainString());
+	}
+
+	@Test
+	public void test_setScale_oldModeInt() {
+		ScientificDecimal number = new ScientificDecimal("1.1");
+		assertEquals(1, number.scale());
+
+		BigDecimal actual = number.setScale(2, BigDecimal.ROUND_HALF_DOWN);
+		assertEquals("1.10", actual.toPlainString());
+	}
+
 }

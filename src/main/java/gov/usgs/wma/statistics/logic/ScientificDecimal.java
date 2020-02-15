@@ -40,17 +40,28 @@ public class ScientificDecimal extends BigDecimal {
 
 	public ScientificDecimal(String value, int specifiedSigfigs) {
 		super(value);
-		bigDecimal = new BigDecimal(value);
-		sigfigs = specifiedSigfigs;
 
+        sigfigs = specifiedSigfigs;
+        if (sigfigs < 1) {
+            bigDecimal = new BigDecimal(value);
+            return;
+        }
+
+        bigDecimal = new BigDecimal(value);
+
+        int scale = bigDecimal.scale();
 		int precision = bigDecimal.precision();
+        int integerDigits = precision - scale;
 		int missingPrecision = sigfigs - precision;
-		if (missingPrecision > 0) {
-			int scale = bigDecimal.scale();
-			int integerDigits = precision - scale;
+
+        if (integerDigits < 0 || BigDecimal.ZERO.compareTo(bigDecimal) == 0) {
+            bigDecimal = bigDecimal.setScale(sigfigs);
+        }  else if (missingPrecision != 0) {
 			int scaleShouldBe = sigfigs - integerDigits;
-			bigDecimal = bigDecimal.setScale(scaleShouldBe);
-		}
+			if (scaleShouldBe >= 0) {
+                bigDecimal = bigDecimal.setScale(scaleShouldBe);
+            }
+        }
 	}
 	public ScientificDecimal(String value) {
 		super(value);

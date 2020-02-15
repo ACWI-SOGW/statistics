@@ -755,4 +755,27 @@ public class SigFigMathUtilTest {
     }
 
 
+    @Test
+    public void test_leastPrecision() {
+        BigDecimal numbers[] = null;
+
+        int actual = SigFigMathUtil.getLeastPrecise(numbers);
+        assertEquals("No entries yields zero precision",0 , actual);
+
+        numbers = new BigDecimal[0];
+        actual = SigFigMathUtil.getLeastPrecise(numbers);
+        assertEquals("Null entry yields zero precision",0 , actual);
+
+        actual = SigFigMathUtil.getLeastPrecise(null, new BigDecimal("1.234"));
+        assertEquals("Null entry yields zero precision",0 , actual);
+    }
+
+    @Test
+    public void test_divideZeroResultWithPrecision() {
+        BigDecimal actual = SigFigMathUtil.sigFigDivide(ScientificDecimal.ZERO, new BigDecimal("1.234"));
+        assertEquals("zero divide by anything is zero",0 , BigDecimal.ZERO.compareTo(actual));
+        assertEquals("least precision is 4",4 , actual.precision());
+        assertEquals("zero has scale of 4",4 , actual.scale());
+    }
+
 }

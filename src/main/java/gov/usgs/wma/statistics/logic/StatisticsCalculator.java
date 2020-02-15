@@ -31,6 +31,7 @@ import gov.usgs.wma.statistics.app.Properties;
 import gov.usgs.wma.statistics.model.JsonData;
 import gov.usgs.wma.statistics.model.JsonDataBuilder;
 import gov.usgs.wma.statistics.model.Value;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 /**
  * The base statistics does nothing as place holder instances.
@@ -75,9 +76,10 @@ public class StatisticsCalculator<S extends Value> {
 	 * @throws Exception Thrown if there is an issue parsing data from the XML reader.
 	 */
 	public JsonData calculate(Specifier spec, Reader xmlData) throws Exception {
-		return new JsonData();
+		// TODO asdf I suppose this class should be abstract
+		throw new NotImplementedException();
 	}
-	
+
 	/**
 	 * Calculates statistics for a specifier where data must be supplied as a list of Samples.
 	 * 
@@ -86,7 +88,8 @@ public class StatisticsCalculator<S extends Value> {
 	 * @throws Exception Thrown if there is an issue calculating statisics
 	 */
 	public JsonData calculate(Specifier spec, List<S> samples)  {
-		return new JsonData();
+		// TODO asdf I suppose this class should be abstract
+		throw new NotImplementedException();
 	}
 	
 	
