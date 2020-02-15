@@ -131,6 +131,16 @@ public class ScientificDecimalTest {
 		assertEquals(2, actual.precision());
 		assertEquals(1, actual.scale());
 		assertEquals("1.0", actual.toPlainString());
+
+		actual = new ScientificDecimal(1000);
+		assertEquals(1, actual.precision());
+		assertEquals(0, actual.scale());
+		assertEquals("1000", actual.toPlainString());
+
+		actual = new ScientificDecimal(1001);
+		assertEquals(4, actual.precision());
+		assertEquals(0, actual.scale());
+		assertEquals("1001", actual.toPlainString());
 	}
 
 	@Test
@@ -151,6 +161,17 @@ public class ScientificDecimalTest {
 		assertEquals(1, actual.precision());
 		assertEquals("1", actual.toPlainString());
 
+		actual = new ScientificDecimal("1000", 3);
+		assertEquals("1000", actual.toPlainString());
+		assertEquals(3, actual.precision());
+
+		actual = new ScientificDecimal("1000", 4);
+		assertEquals("1000", actual.toPlainString());
+		assertEquals(4, actual.precision());
+
+		actual = new ScientificDecimal("1000", 5);
+		assertEquals("1000.0", actual.toPlainString());
+		assertEquals(5, actual.precision());
 	}
 	@Test
 	public void test_construct_zero() {

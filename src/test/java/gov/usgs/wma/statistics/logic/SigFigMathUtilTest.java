@@ -6,6 +6,7 @@ import java.math.BigDecimal;
 import java.math.MathContext;
 import java.math.RoundingMode;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -776,6 +777,34 @@ public class SigFigMathUtilTest {
         assertEquals("zero divide by anything is zero",0 , BigDecimal.ZERO.compareTo(actual));
         assertEquals("least precision is 4",4 , actual.precision());
         assertEquals("zero has scale of 4",4 , actual.scale());
+    }
+
+    @Test
+    public void test_SubtractList_size() {
+        SigFigMathUtil.SubtractList list = new SigFigMathUtil.SubtractList(bdList);
+
+        int expect = bdList.size();
+        int size = list.size();
+        assertEquals(expect, size);
+    }
+    @Test
+    public void test_SubtractList_getFirst(){
+        SigFigMathUtil.SubtractList list = new SigFigMathUtil.SubtractList(bdList);
+        assertEquals("-"+bdList.get(0).toPlainString(), list.get(0).toPlainString());
+    }
+    @Test
+    public void test_SubtractList_getOthers(){
+        // SETUP
+        SigFigMathUtil.SubtractList list = new SigFigMathUtil.SubtractList(bdList);
+        Iterator<BigDecimal> expect = bdList.iterator();
+        Iterator<BigDecimal> actual = list.iterator();
+        // skip first
+        expect.next();
+        actual.next();
+
+        while (expect.hasNext()) {
+            assertEquals(expect.next(), actual.next());
+        }
     }
 
 }

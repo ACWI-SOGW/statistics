@@ -9,6 +9,22 @@ import static org.junit.Assert.assertEquals;
 public class UsgsDecimalTest {
 
 	@Test
+	public void test_constructor() {
+		UsgsDecimal thousand_3 = new UsgsDecimal("1000", 3);
+		assertEquals("1000", thousand_3.toPlainString());
+		assertEquals(3, thousand_3.precision());
+
+		UsgsDecimal thousand_4 = new UsgsDecimal("1000", 4);
+		assertEquals("1000", thousand_4.toPlainString());
+		assertEquals(4, thousand_4.precision());
+
+		UsgsDecimal thousand_5 = new UsgsDecimal("1000", 5);
+		assertEquals("1000.0", thousand_5.toPlainString());
+		assertEquals(5, thousand_5.precision());
+	}
+
+
+	@Test
 	public void test_noDecimalPointPrecision() {
 		// with data from
 		UsgsDecimal thousand_4 = new UsgsDecimal("1000");

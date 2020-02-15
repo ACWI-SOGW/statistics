@@ -50,7 +50,11 @@ public class StatisticsCalculator<S extends Value> {
 	// Calendar returns millis for days and after a diff we need the number of days (ms * sec * min * hr == ms/day)
 	protected static final BigDecimal MILLISECONDS_PER_DAY = new BigDecimal(1000 * 60 * 60 * 24);
 
-	private static final String[] MONTH_NAMES = new DateFormatSymbols().getMonths();
+	private static final String[] MONTH_NAMES;
+	static {
+		MONTH_NAMES = new DateFormatSymbols().getMonths();
+		MONTH_NAMES[12] = "unknown";
+	}
 
 	protected final JsonDataBuilder builder;
 	protected final Properties env;
@@ -449,16 +453,13 @@ public class StatisticsCalculator<S extends Value> {
 	
 
 	public String sampleMonthName(Value sample) {
-		String monthName = "none";
-		String monthStr = monthUTC(sample.time);
-
 		try {
+			String monthStr = monthUTC(sample.time);
 			int month = Integer.parseInt(monthStr);
 			return MONTH_NAMES[month-1];
 		} catch (Exception e) {
 			// errors will return "none"
+			return MONTH_NAMES[12];
 		}
-
-		return monthName;
 	}
 }

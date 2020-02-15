@@ -1448,4 +1448,18 @@ public class StatisticsCalculatorTest {
 		stats.calculate((Specifier) null, (List<Value>) null);
 	}
 
+	@Test()
+	public void test_sampleMonthName() throws Exception {
+		String actual = stats.sampleMonthName(new Value("2020-02-15", "1.0"));
+		assertEquals("February", actual);
+
+		actual = stats.sampleMonthName(new Value("2020-13-15", "1.0"));
+		assertEquals("unknown", actual);
+
+		actual = stats.sampleMonthName(new Value("2020--15", "1.0"));
+		assertEquals("unknown", actual);
+
+		actual = stats.sampleMonthName(new Value("bad date format", "1.0"));
+		assertEquals("unknown", actual);
+	}
 }

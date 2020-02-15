@@ -89,9 +89,6 @@ public class SigFigMathUtil {
         }
         @Override
         public BigDecimal get(int index) {
-            if (index >= size()) {
-                return null;
-            }
             if (index == 0) {
                 // negate the first value so that a double negative
                 // (subtract a negative) from zero make it the base number.
