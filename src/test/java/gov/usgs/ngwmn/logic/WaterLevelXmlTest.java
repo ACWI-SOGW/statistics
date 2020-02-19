@@ -1,5 +1,7 @@
 package gov.usgs.ngwmn.logic;
 
+import static gov.usgs.wma.statistics.logic.ScientificDecimal.ZERO;
+
 import gov.usgs.ngwmn.model.Elevation;
 import gov.usgs.ngwmn.model.MediationType;
 import gov.usgs.ngwmn.model.Specifier;
@@ -41,8 +43,6 @@ import static org.junit.Assert.assertNotNull;
 @RunWith(SpringJUnit4ClassRunner.class)
 public class WaterLevelXmlTest {
 
-	private static final BigDecimal ZERO = new BigDecimal("0.00");
-	
 	@Autowired
 	Environment spring;
 	Specifier spec;
