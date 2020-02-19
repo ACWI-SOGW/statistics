@@ -127,8 +127,8 @@ public class SigFigMathUtilTest {
      */
     @Test
     public void testSigFigSubtractionOfListOfNumbers() {
-        // 2020-01-31 rounding change from HALF_UP to HALF_DOWN chnaged this to -552 from -553
-        // 2020-02-11 new rounding and figures management for addtion/substraction rounds to -550
+        // 2020-01-31 rounding change from HALF_UP to HALF_DOWN changed this to -552 from -553
+        // 2020-02-11 new rounding and figures management for addition/subtraction rounds to -550
         //    This is because during the subtraction at one point the result is 7.5; only two figures
         BigDecimal expect = new BigDecimal("-550");
         BigDecimal actual = SigFigMathUtil.sigFigSubtract(bdList);

@@ -193,13 +193,10 @@ public class SigFigMathUtil {
         // while there are a minimum of two decimal places in the numbers
         // the addend has only 3 significant figures. 10.11+0.025=10.135 rounded 10.1
         // yes, we added something seemingly precise and lost overall precision.
-        int sumPrecision = sum.precision();
-        int sumScale = sum.scale();
-        int scalePrecision = sumScale + (leastPrecision - sumPrecision);
-        // TODO asdf need extensive testing on this because of the potential negative scalePrecision
-        // TODO asdf incorporate into updateSigFigs
-        int finalScale = Math.min(leastScale, scalePrecision);
-        sum = sum.setScale(finalScale, roundingRule);
+        int extraPrecision = sum.precision() - leastPrecision;     // check if addition increased precision
+        int scalePrecision = sum.scale() - extraPrecision;         // removed the extra precision from the scale
+        int finalScale     = Math.min(scalePrecision, leastScale); // ensure no increased precision
+        sum = sum.setScale(finalScale, roundingRule);              // BigDecimal only offers setting scale to change precision
         return sum;
     }
 
