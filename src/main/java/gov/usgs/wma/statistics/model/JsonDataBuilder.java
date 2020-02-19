@@ -41,13 +41,18 @@ public class JsonDataBuilder {
 	public static final String RECORD_YEARS  = "RECORD_YEARS";
 	public static final String SAMPLE_COUNT  = "SAMPLE_COUNT";
 
-	// default percentiles
+	// default percentile strings
 	public static final String P10           = "10";
 	public static final String P25           = "25";
 	public static final String P50           = "50";
 	public static final String P75           = "75";
 	public static final String P90           = "90";
-	
+
+	// numerical 100 used to convert percents to factional values like 10% -> 0.10
+	public static final BigDecimal ONE_HUNDRED = new BigDecimal("100");
+	// some call "50%" "P50" or "P_50" and this "regex" will remove them to retain only the digits.
+	public static final String COMMON_PERCENTILE_CHARACTERS = "[Pp_%]"; // update this as more chars are accepted
+
 	public static final String MONTH         = "MONTH";
 	
 	public static final String QUOTE         = "\"";
@@ -200,13 +205,15 @@ public class JsonDataBuilder {
 	public Map<String, BigDecimal>  buildPercentiles() {
 		Map<String, BigDecimal> percentileValues = new HashMap<>();
 		for (String percentile : this.percentiles) {
-			String key = "P" + percentile;
 			// these are "exact" percentiles and should not limit measured precision
 			try {
-				BigDecimal value = 
-						new BigDecimal(percentile.trim())
-						.divide(new BigDecimal("100"))
-						.setScale(10);
+				// remove all decoration like P_95% -> 95
+				percentile = percentile.replaceAll(COMMON_PERCENTILE_CHARACTERS, "");
+				String key = "P" + percentile;
+				BigDecimal value = // convert percent strings to number fractions
+						new BigDecimal(percentile.trim()) // convert percent string to number
+							.divide(ONE_HUNDRED) // no rounding because want all digits.
+							.setScale(EXACT_SCALE); // set huge scale because percent numbers are precise.
 				if (value.doubleValue()<0 || value.doubleValue()>1) {
 					String msg = String.format("Invalid percentile value, %s", percentile);
 					throw new NumberFormatException(msg);
