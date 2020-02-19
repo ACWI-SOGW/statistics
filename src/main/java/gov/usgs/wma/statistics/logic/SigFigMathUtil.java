@@ -1,5 +1,7 @@
 package gov.usgs.wma.statistics.logic;
 
+import static gov.usgs.wma.statistics.logic.ScientificDecimal.EXACT_SCALE;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -361,7 +363,7 @@ public class SigFigMathUtil {
         if (multiplicand == null || exactMultiplier == null) {
             return logMissingValues();
         }
-        return sigFigMultiply(multiplicand, exactMultiplier.setScale(10), roundingRule);
+        return sigFigMultiply(multiplicand, exactMultiplier.setScale(EXACT_SCALE), roundingRule);
     }
 
     /**
@@ -459,7 +461,7 @@ public class SigFigMathUtil {
         if (numerator == null || exactDenominator == null) {
             return logMissingValues();
         }
-        return sigFigDivide(numerator, exactDenominator.setScale(10), roundingRule);
+        return sigFigDivide(numerator, exactDenominator.setScale(EXACT_SCALE), roundingRule);
     }
     
     /**

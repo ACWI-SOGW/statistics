@@ -28,8 +28,12 @@ import java.math.RoundingMode;
 public class ScientificDecimal extends BigDecimal {
 	// Feb  10 2020 - BigDecimal always reports zero as 1 sigfig.
 	// TODO asdf unit test these values
-	public static final BigDecimal ZERO = new ScientificDecimal("0.0000000000");
-	public static final BigDecimal ONE  = new ScientificDecimal("1.0000000000");
+	public static final BigDecimal ZERO = new ScientificDecimal("0.000000000");
+	public static final BigDecimal ONE  = new ScientificDecimal("1.000000000");
+
+	// some numbers are exact, like the count of values in a list.
+	// use this extra large scale to ensure exact numbers do not reduce significant figures
+	public static final int EXACT_SCALE = 9; // scale to use for exact values.
 
 	final Integer sigfigs;
 	// need to extend the BigDecimal so that this class IS a BigDecimal

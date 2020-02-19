@@ -1,6 +1,7 @@
 package gov.usgs.wma.statistics.model;
 
 import static gov.usgs.wma.statistics.app.Properties.*;
+import static gov.usgs.wma.statistics.logic.ScientificDecimal.*;
 import static gov.usgs.wma.statistics.model.Value.*;
 
 import java.math.BigDecimal;

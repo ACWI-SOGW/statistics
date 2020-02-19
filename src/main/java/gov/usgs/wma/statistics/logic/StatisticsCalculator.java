@@ -2,6 +2,7 @@ package gov.usgs.wma.statistics.logic;
 
 import static gov.usgs.wma.statistics.app.Properties.*;
 import static gov.usgs.wma.statistics.logic.SigFigMathUtil.*;
+import static gov.usgs.wma.statistics.logic.ScientificDecimal.*;
 import static gov.usgs.wma.statistics.model.Value.*;
 import static org.apache.commons.lang.StringUtils.*;
 
@@ -208,9 +209,9 @@ public class StatisticsCalculator<S extends Value> {
 		}
 		// TODO asdf some math in here should be raw calls to BigDecimal and some should be sigfigutils calls
 		// total records, n, n+1, and its inverse, 1/(n+1)
-		BigDecimal n     = new ScientificDecimal(samples.size(),9);// the number of records
+		BigDecimal n     = new ScientificDecimal(samples.size(),EXACT_SCALE);// the number of records
 		BigDecimal n1    = n.add(ScientificDecimal.ONE);                  // one more than the number of records
-		BigDecimal n1inv = ScientificDecimal.ONE.divide(n1, 9, DEFAULT_ROUNDING_RULE); // 1/(n+1) presume 10 digits
+		BigDecimal n1inv = ScientificDecimal.ONE.divide(n1, EXACT_SCALE, DEFAULT_ROUNDING_RULE); // 1/(n+1) presume 10 digits
 
 		// manage boundary condition near   0 percentile
 		if (percentileAsFraction.compareTo(n1inv) <= 0 ) {
@@ -222,7 +223,8 @@ public class StatisticsCalculator<S extends Value> {
 		}
 		
 		// pct float index, p, and its parts. the int index, k, and the decimal fraction, d.
-		BigDecimal p     = percentileAsFraction.setScale(9).multiply(n1); // raw index to be used with faction
+		BigDecimal p     = percentileAsFraction.setScale(EXACT_SCALE)
+												.multiply(n1); // raw index to be used with faction
 		int k            = p.intValue();                                  // the integer index value
 		
 		// Y[k] and Y[k+1] (but java is zero based indexing thus k-1 and k)
@@ -231,7 +233,7 @@ public class StatisticsCalculator<S extends Value> {
 		int leastPrecision = SigFigMathUtil.getLeastPrecise(yk,yk1);
 
 		// percentile calculation Y(p) = Y[k] + d(Y[k+1] - Y[k])
-		BigDecimal diff  = sigFigSubtract(yk1, yk).setScale(9);           // delta between the two values
+		BigDecimal diff  = sigFigSubtract(yk1, yk).setScale(EXACT_SCALE);           // delta between the two values
 
 		if (BigDecimal.ZERO.compareTo(diff) == 0) {
 			return ScientificDecimal.updateScaleForSigFigs(yk, leastPrecision);

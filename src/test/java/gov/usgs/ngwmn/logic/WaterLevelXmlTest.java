@@ -6,6 +6,7 @@ import gov.usgs.ngwmn.model.Specifier;
 import gov.usgs.ngwmn.model.WLSample;
 import gov.usgs.wma.statistics.app.Properties;
 import gov.usgs.wma.statistics.control.StatsService;
+import gov.usgs.wma.statistics.logic.ScientificDecimal;
 import gov.usgs.wma.statistics.model.JsonData;
 import gov.usgs.wma.statistics.model.JsonDataBuilder;
 import org.junit.Before;
