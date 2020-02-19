@@ -26,8 +26,7 @@ import java.math.RoundingMode;
  */
 @SuppressWarnings("serial")
 public class ScientificDecimal extends BigDecimal {
-	// Feb  10 2020 - BigDecimal always reports zero as 1 sigfig.
-	// TODO asdf unit test these values
+	// Feb  10 2020 - BigDecimal always reports zero as 1 digit precision.
 	public static final BigDecimal ZERO = new ScientificDecimal("0.000000000");
 	public static final BigDecimal ONE  = new ScientificDecimal("1.000000000");
 
@@ -115,7 +114,7 @@ public class ScientificDecimal extends BigDecimal {
 
 	@Override
 	public BigDecimal setScale(int newScale, RoundingMode roundingMode) {
-		int deltaScale = newScale - scale(); // TODO asdf change to fix a bug but might have been changed to fix a different bug
+		int deltaScale = newScale - scale();
 		int newPrecision = deltaScale + precision();
 		if (BigDecimal.ZERO.compareTo(this) == 0) {
 			return new ScientificDecimal("0.0", newPrecision);
@@ -127,7 +126,8 @@ public class ScientificDecimal extends BigDecimal {
 		return new ScientificDecimal(bigDecimal.toPlainString(), sigfigs);
 	}
 
-	// TODO asdf the proper handling of 0.000... ensure test coverage.
+	// the proper handling of 0.000...
+	// add more rules here if/when discovered.
 	protected int sigfigRules(String value) {
 		int sigfigs = bigDecimal.precision();
 
@@ -142,9 +142,6 @@ public class ScientificDecimal extends BigDecimal {
 		}
 		return sigfigs;
 	}
-//	protected static int sigfigRules(String value) {
-//		return new ScientificDecimal(value).sigfigRules(value);
-//	}
 
 	/**
 	 * Use this helper to set the scale to satisfy the significant figures.

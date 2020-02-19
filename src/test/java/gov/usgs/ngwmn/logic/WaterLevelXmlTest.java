@@ -124,7 +124,7 @@ public class WaterLevelXmlTest {
 		
 		// EXPECT
 		Map<String,String> expected = new HashMap<>();
-		// until MBMG has appropriate sigfigs, this is the precision we expect.
+		// until MBMG has appropriate digits, this is the precision we expect.
 		expected.put("latestValue", "146.600000");
 		expected.put("latestPercentile", ""); // latest values is in month 10 with only 6 other years
 		expected.put("valueMin", "150.790000");

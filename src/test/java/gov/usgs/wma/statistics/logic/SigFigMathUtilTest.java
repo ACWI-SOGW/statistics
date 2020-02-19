@@ -588,6 +588,7 @@ public class SigFigMathUtilTest {
 
     @Test
     public void test_addition() {
+        // TODO asdf move to BigDecimalDeficienciesTest
         BigDecimal tenth = new BigDecimal("0.1");
         System.out.println("BigDecimal tenth " + tenth); // 0.1
 
@@ -597,11 +598,12 @@ public class SigFigMathUtilTest {
             one = one.add(tenth);
             thenths.add(tenth);
         }
-        System.out.println("BigDecimal tenth added 10 times is " + one); // 1.0
-        BigDecimal expect = new BigDecimal("1.0"); // however, it should be 1 TODO asdf (see following lines)
-        // Addition is a two set process. Not only aligns the decimal points,
-        // it is also supposed to round to sigfigs after each addition. (the following assertion can be fixed)
-        assertEquals("This is wrong but the test must pass. adding 0.1 ten times goes from 1 sigfig to 2",
+        // BigDecimal tenth added 10 times is "1.0"; however, it should be "1"
+        BigDecimal expect = new BigDecimal("1.0");
+        // Addition is a two step process. Not only aligning the decimal points, but
+        // it is also supposed to round to minimum precision after each addition.
+        // "This is wrong but the test must pass. adding 0.1 ten times goes from 1 digit to 2"
+        assertEquals("This demonstrates that BigDecimal is insufficient with precision management for addition",
                 expect, one);
 
         BigDecimal actual = SigFigMathUtil.sigFigAdd(thenths);

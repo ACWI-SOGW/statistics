@@ -69,7 +69,7 @@ public class ScientificDecimalTest {
     	BigDecimal thousandOne = SigFigMathUtil.sigFigMultiply(thousand, one);
     	
     	assertEquals("This shows that scientific decimal can work with BigDecimal and SigFigMathUtil",
-    			// notice that the 1000 having only one sigfig is properly handled
+    			// notice that the 1000 having only one digit is properly handled
     			"1000", thousandOne.toPlainString());
     }
 	
@@ -81,7 +81,7 @@ public class ScientificDecimalTest {
     	BigDecimal thousandOne = SigFigMathUtil.sigFigMultiply(thousand, one);
     	
     	assertEquals("This shows that scientific decimal can work with BigDecimal and SigFigMathUtil",
-    			// notice that the 1100 having only two sigfig is properly handled with 1.010 having 4
+    			// notice that the 1100, having only two digits, is properly handled with 1.010 having 4
     			"1100", thousandOne.toPlainString());
     }
 	
@@ -93,7 +93,7 @@ public class ScientificDecimalTest {
     	BigDecimal thousandOne = SigFigMathUtil.sigFigMultiply(thousand, one);
     	
     	assertEquals("This shows that scientific decimal can work with BigDecimal and SigFigMathUtil",
-    			// notice that the 1000. having 4 sigfigs is properly handled
+    			// notice that the "1000." having 4 digit precision is properly handled
     			"1111", thousandOne.toPlainString());
     }
     

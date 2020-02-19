@@ -149,7 +149,7 @@ public class StatisticsCalculator<S extends Value> {
 	 */
 	public static <T> BigDecimal percentileOfValue(List<T> samples, T sample, int precision,
 			Function<T, BigDecimal> valueOf) {
-		// protection - TODO is this the behavior we want? - returning 0
+		// protection - TODO asdf is this the behavior we want? - returning 0
 		if (sample==null || samples==null || samples.size()==0 || valueOf == null || valueOf.apply(sample)==null ) {
 			return ScientificDecimal.ZERO;
 		}
@@ -207,7 +207,7 @@ public class StatisticsCalculator<S extends Value> {
 			|| percentileAsFraction.compareTo(BigDecimal.ONE) > 0 ) {     // greater than 100% is just as foolish
 			return BigDecimal.ZERO;                                       // no precision in this response
 		}
-		// TODO asdf some math in here should be raw calls to BigDecimal and some should be sigfigutils calls
+
 		// total records, n, n+1, and its inverse, 1/(n+1)
 		BigDecimal n     = new ScientificDecimal(samples.size(),EXACT_SCALE);// the number of records
 		BigDecimal n1    = n.add(ScientificDecimal.ONE);                  // one more than the number of records

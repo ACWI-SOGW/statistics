@@ -780,7 +780,7 @@ public class WaterLevelStatisticsTest {
 		assertEquals("Expect LATEST_VALUE to be ", "100.0", overall.latestValue);
 		assertEquals("Expect LATEST_PCTILE to be ",  "0.0", overall.latestPercentile);
 
-		// 2020-02-11 Honoring addition/subtraction precision rounds to 80 with two sigfigs
+		// 2020-02-11 Honoring addition/subtraction precision rounds to 80 with two digits
 		assertEquals("Expect this percentile to be 80", "80", monthly.get("5").percentiles.get(P10));
 		assertEquals("Expect most percentiles to be ", "1.0", monthly.get("5").percentiles.get(P25));
 		assertEquals("Expect most percentiles to be ", "1.0", monthly.get("5").percentiles.get(P50));

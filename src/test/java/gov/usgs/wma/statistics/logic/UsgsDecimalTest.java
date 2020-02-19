@@ -36,7 +36,7 @@ public class UsgsDecimalTest {
     	BigDecimal thousandOne = SigFigMathUtil.sigFigMultiply(thousand, oneIsh);
     	
     	assertEquals("This shows that SimpleSigFigsDecimal can work with BigDecimal and SigFigMathUtil",
-    			// notice that the 1000 having 4 sigfigs in the simple impl
+    			// notice that the 1000 having 4 digit precision in the simple impl
     			"1111", thousandOne.toPlainString());
 
     	BigDecimal thousand_Eleven = new UsgsDecimal("1100");
@@ -45,7 +45,7 @@ public class UsgsDecimalTest {
     	BigDecimal thousandOneOneOne = SigFigMathUtil.sigFigMultiply(thousand_Eleven, one);
     	
     	assertEquals("This shows that scientific decimal can work with BigDecimal and SigFigMathUtil",
-    			// notice that the 1100 has 4 sigfigs under simple sigfigs model 
+    			// notice that the 1100 has 4 digit precision under BigDecimal precision management
     			"1111", thousandOneOneOne.toPlainString());
     }
 	

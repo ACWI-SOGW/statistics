@@ -177,16 +177,19 @@ public class SigFigMathUtil {
 
         int leastPrecision = getLeastPrecise(augend, addend);
         if (BigDecimal.ZERO.compareTo(sum) == 0) {
-            return ScientificDecimal.ZERO.setScale(leastPrecision); // TODO asdf make ScientificDecimal immutable
+            return ScientificDecimal.ZERO.setScale(leastPrecision);
         }
 
-        // first, addition trims on the least factional sigfigs
+        // first, addition trims on the least factional digits
+        // as in these rounded to the least places after the decimal point
+        //  1.01 + 0.011 = 1.021 rounded to 1.02
+        //  1.01 + 0.016 = 1.026 rounded to 1.03
         int leastScale = getLeastScale(augend, addend);
         sum = sum.setScale(leastScale, roundingRule);
 
-        // then, addition trims on the least total sigfigs
-        // this is accomplished by finding the difference in sigfigs of the
-        // sum and least sigfigs. Example 10.11 + 0.025 = 10.1
+        // second, addition trims on the least total digits
+        // this is accomplished by finding the difference in digits of the
+        // sum and least digits. Example 10.11 + 0.025 = 10.1
         // while there are a minimum of two decimal places in the numbers
         // the addend has only 3 significant figures. 10.11+0.025=10.135 rounded 10.1
         // yes, we added something seemingly precise and lost overall precision.

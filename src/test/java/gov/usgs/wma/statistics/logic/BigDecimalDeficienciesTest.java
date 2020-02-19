@@ -112,7 +112,7 @@ public class BigDecimalDeficienciesTest {
 		BigDecimal five = new BigDecimal("50").multiply(tenth);
 
 		// BigDecimal tenth x 50 is 5.0
-		assertNotEquals("50 and 0.1 only have on sigfig and the result should be 5 not 5.0",
+		assertNotEquals("50 and 0.1 only have one digit and the result should be 5 not 5.0",
 				"5", five.toPlainString());
 	}
 
@@ -129,7 +129,8 @@ public class BigDecimalDeficienciesTest {
 
 		assertEquals(4, new BigDecimal("0.0001").scale());
 
-		// TODO asdf I have seen the percentile reported as all digits after the decimal point
+		// I have seen the percentile reported as all digits after the decimal point
+		// this test assures that precision is as this indicates
 		assertEquals(1, new BigDecimal("0.0001").precision());
 //		assertEquals(4, new BigDecimal("0.0001").precision());
 	}

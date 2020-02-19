@@ -379,7 +379,7 @@ public class MonthlyStatisticsTest {
 		assertNotNull(stat);
 		assertEquals("4.12",stat.get(P50_MIN));
 		// if the provision value is not removed P10 will be 4.60
-		// if when sigfigs is correct this will change again to 4.4
+		// if when precision management is correct this will change again to 4.4
 		// 2020-02-05 round HALF_DOWN changes this to 4.42 from 4.44 when rounding HALF_UP
 		// 2020-02-11 honoring addition precision results in 4.4 from 4.42 -- zero padding should change this back
 		assertEquals("4.4",stat.get(P10));
@@ -406,7 +406,7 @@ public class MonthlyStatisticsTest {
 
 		assertNotNull(stat);
 		assertEquals("4.12", stat.get(P50_MIN));
-		// TODO asdf this is an example of too many sigfigs after math performed this will be 4.6 upon sigfigs fixes
+		// this is an example of too much precision when math is performed. this will be 4.6 upon fixes (yep, fixed)
 		// 2020-02-05 round HALF_DOWN changes this to 4.57 from 4.60 when rounding HALF_UP
 		// 2020-02-11 honoring addition precision results in 4.6 from 4.57 -- zero padding should change this back
 		assertEquals("4.6", stat.get(P10));
