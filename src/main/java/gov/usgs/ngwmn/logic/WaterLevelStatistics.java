@@ -191,40 +191,40 @@ public class WaterLevelStatistics extends StatisticsCalculator<WLSample> {
 		replaceLatestSample(monthlyMedians, latestSample);
 		// get the percentile of the latest sample
 		BigDecimal latestPercentile = percentileOfValue(monthlyMedians, latestSample, Value::valueOf);
-		latestPercentile = SigFigMathUtil.sigFigMultiply(latestPercentile, NUM_100.setScale(latestPercentile.scale()));
+		latestPercentile = SigFigMathUtil.multiply(latestPercentile, NUM_100.setScale(latestPercentile.scale()));
 		builder.latestPercentile(latestPercentile.toPlainString());
 	}
 
-	protected void replaceLatestSample(List<WLSample> normalizeMutlipleYearlyValues, WLSample latestSample) {
-		if (normalizeMutlipleYearlyValues.contains(latestSample)) {
+	protected void replaceLatestSample(List<WLSample> normalizeMultipleYearlyValues, WLSample latestSample) {
+		if (normalizeMultipleYearlyValues.contains(latestSample)) {
 			return; // if it happens to be in there leave it be
 		}
 		// initial conditions and values
 		int        compareToVal  = MediationType.BelowLand.equalSortOrder(builder.mediation()) ?1 :-1;
-		int        elements      = normalizeMutlipleYearlyValues.size();
+		int        elements      = normalizeMultipleYearlyValues.size();
 		String     latestYrMonth = latestSample.getTime().substring(0, 7);
 		BigDecimal latestValue   = latestSample.getValue();
 		boolean    isInserting   = true;
 		boolean    isRemoving    = true;
 		// search for the removing current month and the inserting location for latest sample
 		for (int s=0; s<elements && (isRemoving || isInserting); s++) {
-			String yearMonth = ((Value)normalizeMutlipleYearlyValues.get(s)).getTime().substring(0, 7);
-			BigDecimal value = ((Value)normalizeMutlipleYearlyValues.get(s)).getValue();
+			String yearMonth = ((Value)normalizeMultipleYearlyValues.get(s)).getTime().substring(0, 7);
+			BigDecimal value = ((Value)normalizeMultipleYearlyValues.get(s)).getValue();
 			// the data is already sorted, if we exceed the value in the comapreTo direction then insert
 			if (isInserting && latestValue.compareTo(value) == compareToVal) {
-				normalizeMutlipleYearlyValues.add(s, latestSample);
+				normalizeMultipleYearlyValues.add(s, latestSample);
 				elements++; s++;
 				isInserting = false;
 			}
 			// if year-month of the latest sample is found then remove it
 			if (yearMonth.equals(latestYrMonth)) {
-				normalizeMutlipleYearlyValues.remove(s);
+				normalizeMultipleYearlyValues.remove(s);
 				elements--; s--;
 				isRemoving = false;
 			}
 		}
 		if (isInserting) {
-			normalizeMutlipleYearlyValues.add(latestSample);
+			normalizeMultipleYearlyValues.add(latestSample);
 		}
 	}	
 	protected void overallStats(List<WLSample> samplesByDate, List<WLSample> sortedByValue) {

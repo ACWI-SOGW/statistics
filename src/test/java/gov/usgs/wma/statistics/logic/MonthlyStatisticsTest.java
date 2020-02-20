@@ -753,7 +753,7 @@ public class MonthlyStatisticsTest {
 	}
 	
 	@Test
-	public void test_ensureThatMutlipleSamplesInOneYearForGivenMonthAreAveraged_BeforeStatsCalc() {
+	public void test_ensureThatMultipleSamplesInOneYearForGivenMonthAreAveraged_BeforeStatsCalc() {
 		// This is data as it was from the database on 03/25/2017 and in order to preserve a testable
 		// state this recreates that data set for the April data only for USGS:394829074053502
 		List<Value> monthSamples = new LinkedList<>();
@@ -911,7 +911,8 @@ public class MonthlyStatisticsTest {
 		List<Value> percentiles = stats.generateMonthYearlyPercentiles(values);
 		assertEquals(1, percentiles.size());
 		BigDecimal actual = percentiles.get(0).value;
-		BigDecimal expect = new BigDecimal("24.7"); // TODO asdf check that this should be 24 or 25 or 24.74
+		BigDecimal expect = new BigDecimal("24.7");
+		// check that this should be 24 or 25 or 24.74, nope 24.7 is correct
 		assertEquals(expect, actual);
 	}
 	@Test

@@ -108,11 +108,11 @@ public class MonthlyStatistics<S extends Value> extends StatisticsCalculator<S> 
 	
 	/**
 	 * The non-GWW case will be that there must be value while the GWW case will be that there must be ten years.
-	 * @param normalizeMutlipleYearlyValues
+	 * @param normalizeMultipleYearlyValues
 	 * @return
 	 */
-	public boolean doesThisMonthQualifyForStats(List<S> normalizeMutlipleYearlyValues) {
-		return normalizeMutlipleYearlyValues != null && normalizeMutlipleYearlyValues.size()>0;
+	public boolean doesThisMonthQualifyForStats(List<S> normalizeMultipleYearlyValues) {
+		return normalizeMultipleYearlyValues != null && normalizeMultipleYearlyValues.size()>0;
 	}
 
 	/**

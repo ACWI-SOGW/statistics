@@ -97,6 +97,7 @@ public class ScientificDecimal extends BigDecimal {
 		return setSigfigs(newPrecision);
 	}
 
+	// TODO asdf consider new ScientificDecimal rather than BigDecimal
 	@Override
 	public int scale() {
 		return bigDecimal.scale();
@@ -137,7 +138,7 @@ public class ScientificDecimal extends BigDecimal {
 			sigfigs = figs.length();
 		}
 		// this is for 0.0000 vs 0
-		if (compareTo(BigDecimal.ZERO) == 0 ) {
+		if (bigDecimal.compareTo(BigDecimal.ZERO) == 0 ) {
 			sigfigs = bigDecimal.scale();
 		}
 		return sigfigs;
@@ -149,6 +150,7 @@ public class ScientificDecimal extends BigDecimal {
 	 * @param sigfigs  significant figures
 	 * @return
 	 */
+	// TODO asdf constructor?
 	public static BigDecimal updateScaleForSigFigs(BigDecimal number, int sigfigs) {
 		return updateScaleForSigFigs(number, sigfigs, SigFigMathUtil.DEFAULT_ROUNDING_RULE);
 	}

@@ -148,4 +148,5 @@ public class BigDecimalDeficienciesTest {
 		assertEquals(1, zero5.precision());
 		assertEquals(6, three5.precision());
 	}
+
 }

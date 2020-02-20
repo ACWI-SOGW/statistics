@@ -361,7 +361,6 @@ public class ValueTest {
 	
 	@Test
 	public void test_toString() {
-		// TODO asdf check toPlainString
 		Value value = new Value("TheTime","5.0");
 		assertTrue( value.toString().contains("TheTime") );
 		assertTrue( value.toString().contains("5.0") );

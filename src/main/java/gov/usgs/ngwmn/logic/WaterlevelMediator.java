@@ -81,7 +81,7 @@ public class WaterlevelMediator {
 			datumUnitValidation(measure);
 
 			// Everything looks OK - calculate the adjusted valueStr
-            return SigFigMathUtil.sigFigAdd(measure.siteElevation, directionalValue);
+            return SigFigMathUtil.add(measure.siteElevation, directionalValue);
 		}
 	}
 	
@@ -262,7 +262,7 @@ public class WaterlevelMediator {
 		if (measure.pcode.isUnspecified()) {
 			elevationValidation(measure, siteElevationStr, siteDatumStr);
 			// Everything looks OK - calculate the adjusted valueStr
-            return SigFigMathUtil.sigFigAdd(measure.siteElevation, directionalValue);
+            return SigFigMathUtil.add(measure.siteElevation, directionalValue);
 			
 		} else if (measure.pcode.getDatum().isLocalLandSurface()) {
 			
@@ -272,7 +272,7 @@ public class WaterlevelMediator {
 			datumUnitValidation(measure);
 			
 			// Everything looks OK - calculate the adjusted valueStr
-            return SigFigMathUtil.sigFigAdd(measure.siteElevation, directionalValue);
+            return SigFigMathUtil.add(measure.siteElevation, directionalValue);
 		} else {
 			// Convert from a datum based measurement (not from land surface) to
 			// the site datum...  In theory.  In reality, we do not convert b/t

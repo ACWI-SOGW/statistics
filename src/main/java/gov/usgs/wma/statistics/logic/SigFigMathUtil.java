@@ -119,8 +119,8 @@ public class SigFigMathUtil {
      * @return BigDecimal with the appropriate rules of significant figures
      * applied to the result. Return null if the list is null or empty.
      */
-    public static BigDecimal sigFigAdd(List<BigDecimal> numbers, RoundingMode roundingRule) {
-        return scaleStreamMath(numbers, roundingRule, (a, b) -> sigFigAdd(a, b, roundingRule));
+    public static BigDecimal sum(List<BigDecimal> numbers, RoundingMode roundingRule) {
+        return scaleStreamMath(numbers, roundingRule, (a, b) -> add(a, b, roundingRule));
     }
 
     /**
@@ -135,8 +135,8 @@ public class SigFigMathUtil {
      * @return BigDecimal with the rules pertaining to sig fig addition applied
      * post calculation or null if any args passed in are null.
      */
-    public static BigDecimal sigFigAdd(List<BigDecimal> numbers) {
-        return sigFigAdd(numbers, DEFAULT_ROUNDING_RULE);
+    public static BigDecimal sum(List<BigDecimal> numbers) {
+        return sum(numbers, DEFAULT_ROUNDING_RULE);
     }
 
     /**
@@ -150,8 +150,8 @@ public class SigFigMathUtil {
      * @return BigDecimal with the appropriate sig fig rules applied or null if
      * any args passed in are null.
      */
-    public static BigDecimal sigFigAdd(BigDecimal augend, BigDecimal addend) {
-        return sigFigAdd(augend, addend, DEFAULT_ROUNDING_RULE);
+    public static BigDecimal add(BigDecimal augend, BigDecimal addend) {
+        return add(augend, addend, DEFAULT_ROUNDING_RULE);
     }
 
     /**
@@ -165,7 +165,7 @@ public class SigFigMathUtil {
      * @return BigDecimal with the appropriate sig fig rules applied or null if
      * any args passed in are null.
      */
-    public static BigDecimal sigFigAdd(BigDecimal augend, BigDecimal addend, RoundingMode roundingRule) {
+    public static BigDecimal add(BigDecimal augend, BigDecimal addend, RoundingMode roundingRule) {
         if (augend == null || addend == null) {
             return logMissingValues();
         }
@@ -180,7 +180,7 @@ public class SigFigMathUtil {
             return ScientificDecimal.ZERO.setScale(leastPrecision);
         }
 
-        // first, addition trims on the least factional digits
+        // first, addition trims on the least fractional digits
         // as in these rounded to the least places after the decimal point
         //  1.01 + 0.011 = 1.021 rounded to 1.02
         //  1.01 + 0.016 = 1.026 rounded to 1.03
@@ -212,8 +212,8 @@ public class SigFigMathUtil {
      * @return BigDecimal with the appropriate rules of significant figures
      * applied to the result or null if any args passed in are null.
      */
-    public static BigDecimal sigFigSubtract(List<BigDecimal> numbers, RoundingMode roundingRule) {
-        return scaleStreamMath(new SubtractList(numbers), roundingRule, (a, b) -> sigFigSubtract(a, b, roundingRule));
+    public static BigDecimal subtract(List<BigDecimal> numbers, RoundingMode roundingRule) {
+        return scaleStreamMath(new SubtractList(numbers), roundingRule, (a, b) -> subtract(a, b, roundingRule));
     }
 
     /**
@@ -229,8 +229,8 @@ public class SigFigMathUtil {
      * @return BigDecimal with the rules pertaining to sig fig addition applied
      * post calculation or null if any args passed in are null.
      */
-    public static BigDecimal sigFigSubtract(List<BigDecimal> numbers) {
-        return sigFigSubtract(numbers, DEFAULT_ROUNDING_RULE);
+    public static BigDecimal subtract(List<BigDecimal> numbers) {
+        return subtract(numbers, DEFAULT_ROUNDING_RULE);
     }
 
     /**
@@ -244,8 +244,8 @@ public class SigFigMathUtil {
      * @return BigDecimal with the appropriate sig fig rules applied or null if
      * any args passed in are null.
      */
-    public static BigDecimal sigFigSubtract(BigDecimal minuend, BigDecimal subtrahend) {
-        return sigFigSubtract(minuend, subtrahend, DEFAULT_ROUNDING_RULE);
+    public static BigDecimal subtract(BigDecimal minuend, BigDecimal subtrahend) {
+        return subtract(minuend, subtrahend, DEFAULT_ROUNDING_RULE);
     }
 
     /**
@@ -259,12 +259,12 @@ public class SigFigMathUtil {
      * @return BigDecimal with the appropriate sig fig rules applied or null if
      * any args passed in are null.
      */
-    public static BigDecimal sigFigSubtract(BigDecimal minuend, BigDecimal subtractend, RoundingMode roundingRule) {
+    public static BigDecimal subtract(BigDecimal minuend, BigDecimal subtractend, RoundingMode roundingRule) {
         if (subtractend == null) {
             return logMissingValues();
         }
         // we can use the addition methods; adding a negative is subtraction
-        return sigFigAdd(minuend, subtractend.negate(), roundingRule);
+        return add(minuend, subtractend.negate(), roundingRule);
     }
 
     /**
@@ -333,7 +333,7 @@ public class SigFigMathUtil {
      * @param roundingRule RoundingMode
      * @return product of given values rounded to significant figures of the least given
      */
-    public static BigDecimal sigFigMultiply(BigDecimal multiplicand, BigDecimal multiplier, RoundingMode roundingRule) {
+    public static BigDecimal multiply(BigDecimal multiplicand, BigDecimal multiplier, RoundingMode roundingRule) {
         if (multiplicand == null || multiplier == null) {
             return logMissingValues();
         }
@@ -346,8 +346,9 @@ public class SigFigMathUtil {
         BigDecimal product = multiplicand.multiply(multiplier, mc);
         if (BigDecimal.ZERO.compareTo(product) == 0) {
             product = ScientificDecimal.ZERO.setScale(sigFigs);
+        } else {
+            product = updateSigFigs(product, sigFigs);
         }
-        product = updateSigFigs(product, sigFigs);
         return product;
     }
     /**
@@ -359,11 +360,11 @@ public class SigFigMathUtil {
      * @param roundingRule RoundingMode
      * @return product of given values rounded to significant figures of the first value
      */
-    public static BigDecimal sigFigMultiplyByExact(BigDecimal multiplicand, BigDecimal exactMultiplier, RoundingMode roundingRule) {
+    public static BigDecimal multiplyByExact(BigDecimal multiplicand, BigDecimal exactMultiplier, RoundingMode roundingRule) {
         if (multiplicand == null || exactMultiplier == null) {
             return logMissingValues();
         }
-        return sigFigMultiply(multiplicand, exactMultiplier.setScale(EXACT_SCALE), roundingRule);
+        return multiply(multiplicand, exactMultiplier.setScale(EXACT_SCALE), roundingRule);
     }
 
     /**
@@ -374,8 +375,8 @@ public class SigFigMathUtil {
      * @param exactMultiplier BigDecimal
      * @return
      */
-    public static BigDecimal sigFigMultiplyByExact(BigDecimal multiplicand, BigDecimal exactMultiplier) {
-        return sigFigMultiplyByExact(multiplicand, exactMultiplier, DEFAULT_ROUNDING_RULE);
+    public static BigDecimal multiplyByExact(BigDecimal multiplicand, BigDecimal exactMultiplier) {
+        return multiplyByExact(multiplicand, exactMultiplier, DEFAULT_ROUNDING_RULE);
     }
 
     /**
@@ -386,8 +387,8 @@ public class SigFigMathUtil {
      * @param multiplier BigDecimal
      * @return null if any arg passed in is null.
      */
-    public static BigDecimal sigFigMultiply(BigDecimal multiplicand, BigDecimal multiplier) {
-        return sigFigMultiply(multiplicand, multiplier, DEFAULT_ROUNDING_RULE);
+    public static BigDecimal multiply(BigDecimal multiplicand, BigDecimal multiplier) {
+        return multiply(multiplicand, multiplier, DEFAULT_ROUNDING_RULE);
     }
 
     /**
@@ -399,7 +400,7 @@ public class SigFigMathUtil {
      * @param roundingRule RoundingMode
      * @return null if any arg passed in is null.
      */
-    public static BigDecimal sigFigDivide(BigDecimal numerator, BigDecimal denominator, RoundingMode roundingRule) {
+    public static BigDecimal divide(BigDecimal numerator, BigDecimal denominator, RoundingMode roundingRule) {
         if (numerator == null || denominator == null) {
             return logMissingValues();
         }
@@ -412,9 +413,10 @@ public class SigFigMathUtil {
         MathContext mc = new MathContext(sigFigs, roundingRule);
         BigDecimal quotient = numerator.divide(denominator, mc);
         if (BigDecimal.ZERO.compareTo(quotient) == 0) {
-            quotient = ScientificDecimal.ZERO;
+            quotient = ScientificDecimal.ZERO.setScale(sigFigs);
+        } else {
+            quotient = updateSigFigs(quotient, sigFigs);
         }
-        quotient = updateSigFigs(quotient, sigFigs);
         return quotient;
     }
 
@@ -444,8 +446,8 @@ public class SigFigMathUtil {
      * @param denominator BigDecimal aka divisor
      * @return null if any arg passed in is null.
      */
-    public static BigDecimal sigFigDivide(BigDecimal numerator, BigDecimal denominator) {
-        return sigFigDivide(numerator, denominator, DEFAULT_ROUNDING_RULE);
+    public static BigDecimal divide(BigDecimal numerator, BigDecimal denominator) {
+        return divide(numerator, denominator, DEFAULT_ROUNDING_RULE);
     }
 
     /**
@@ -457,11 +459,11 @@ public class SigFigMathUtil {
      * @param roundingRule RoundingMode
      * @return null if any arg passed in is null.
      */
-    public static BigDecimal sigFigDivideByExact(BigDecimal numerator, BigDecimal exactDenominator, RoundingMode roundingRule) {
+    public static BigDecimal divideByExact(BigDecimal numerator, BigDecimal exactDenominator, RoundingMode roundingRule) {
         if (numerator == null || exactDenominator == null) {
             return logMissingValues();
         }
-        return sigFigDivide(numerator, exactDenominator.setScale(EXACT_SCALE), roundingRule);
+        return divide(numerator, exactDenominator.setScale(EXACT_SCALE), roundingRule);
     }
     
     /**
@@ -472,8 +474,8 @@ public class SigFigMathUtil {
      * @param exactDenominator BigDecimal aka divisor, or count if used for averages
      * @return null if any arg passed in is null.
      */
-    public static BigDecimal sigFigDivideByExact(BigDecimal numerator, BigDecimal exactDenominator) {
-        BigDecimal quotient = sigFigDivideByExact(numerator, exactDenominator, DEFAULT_ROUNDING_RULE);
+    public static BigDecimal divideByExact(BigDecimal numerator, BigDecimal exactDenominator) {
+        BigDecimal quotient = divideByExact(numerator, exactDenominator, DEFAULT_ROUNDING_RULE);
 
         return quotient;
     }

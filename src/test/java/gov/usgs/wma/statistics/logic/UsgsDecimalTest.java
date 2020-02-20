@@ -33,7 +33,7 @@ public class UsgsDecimalTest {
     	BigDecimal thousand = new UsgsDecimal("1000");
     	BigDecimal oneIsh = new BigDecimal("1.111");
     	
-    	BigDecimal thousandOne = SigFigMathUtil.sigFigMultiply(thousand, oneIsh);
+    	BigDecimal thousandOne = SigFigMathUtil.multiply(thousand, oneIsh);
     	
     	assertEquals("This shows that SimpleSigFigsDecimal can work with BigDecimal and SigFigMathUtil",
     			// notice that the 1000 having 4 digit precision in the simple impl
@@ -42,7 +42,7 @@ public class UsgsDecimalTest {
     	BigDecimal thousand_Eleven = new UsgsDecimal("1100");
     	BigDecimal one = new BigDecimal("1.010");
     	
-    	BigDecimal thousandOneOneOne = SigFigMathUtil.sigFigMultiply(thousand_Eleven, one);
+    	BigDecimal thousandOneOneOne = SigFigMathUtil.multiply(thousand_Eleven, one);
     	
     	assertEquals("This shows that scientific decimal can work with BigDecimal and SigFigMathUtil",
     			// notice that the 1100 has 4 digit precision under BigDecimal precision management

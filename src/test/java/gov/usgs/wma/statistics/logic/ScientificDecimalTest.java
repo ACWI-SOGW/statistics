@@ -66,7 +66,7 @@ public class ScientificDecimalTest {
     	BigDecimal thousand = new ScientificDecimal("1000");
     	BigDecimal one = new BigDecimal("1.111");
     	
-    	BigDecimal thousandOne = SigFigMathUtil.sigFigMultiply(thousand, one);
+    	BigDecimal thousandOne = SigFigMathUtil.multiply(thousand, one);
     	
     	assertEquals("This shows that scientific decimal can work with BigDecimal and SigFigMathUtil",
     			// notice that the 1000 having only one digit is properly handled
@@ -78,7 +78,7 @@ public class ScientificDecimalTest {
     	BigDecimal thousand = new ScientificDecimal("1100");
     	BigDecimal one = new BigDecimal("1.010");
     	
-    	BigDecimal thousandOne = SigFigMathUtil.sigFigMultiply(thousand, one);
+    	BigDecimal thousandOne = SigFigMathUtil.multiply(thousand, one);
     	
     	assertEquals("This shows that scientific decimal can work with BigDecimal and SigFigMathUtil",
     			// notice that the 1100, having only two digits, is properly handled with 1.010 having 4
@@ -90,7 +90,7 @@ public class ScientificDecimalTest {
     	BigDecimal thousand = new ScientificDecimal("1000.");
     	BigDecimal one = new BigDecimal("1.111");
     	
-    	BigDecimal thousandOne = SigFigMathUtil.sigFigMultiply(thousand, one);
+    	BigDecimal thousandOne = SigFigMathUtil.multiply(thousand, one);
     	
     	assertEquals("This shows that scientific decimal can work with BigDecimal and SigFigMathUtil",
     			// notice that the "1000." having 4 digit precision is properly handled
@@ -110,7 +110,7 @@ public class ScientificDecimalTest {
 	public void test_sigfigRules() {
 		// this is not how to use the method, just a means to test
 		ScientificDecimal hundred = new ScientificDecimal("100");
-		// TODO asdf I guess BigDecimal is immutable. This should too?
+		// BigDecimal is immutable. ScientificDecimal also now immutable
 
 		int actual = hundred.sigfigRules("100");
 		assertEquals(1, actual);

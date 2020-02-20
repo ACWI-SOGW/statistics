@@ -90,7 +90,7 @@ public class StatisticsCalculator<S extends Value> {
 	 * 
 	 * @param spec the specifier only checks the agency and site. It ignores the data type.
 	 * @param samples list of DAO samples. For example, {@link Value} for {@link WaterLevelStatistics}.
-	 * @throws Exception Thrown if there is an issue calculating statisics
+	 * @throws Exception Thrown if there is an issue calculating statistics
 	 */
 	public JsonData calculate(Specifier spec, List<S> samples)  {
 		// TODO asdf I suppose this class should be abstract
@@ -149,7 +149,6 @@ public class StatisticsCalculator<S extends Value> {
 	 */
 	public static <T> BigDecimal percentileOfValue(List<T> samples, T sample, int precision,
 			Function<T, BigDecimal> valueOf) {
-		// protection - TODO asdf is this the behavior we want? - returning 0
 		if (sample==null || samples==null || samples.size()==0 || valueOf == null || valueOf.apply(sample)==null ) {
 			return ScientificDecimal.ZERO;
 		}
@@ -226,14 +225,14 @@ public class StatisticsCalculator<S extends Value> {
 		BigDecimal p     = percentileAsFraction.setScale(EXACT_SCALE)
 												.multiply(n1); // raw index to be used with faction
 		int k            = p.intValue();                                  // the integer index value
-		
+		// TODO use intValue in SD
 		// Y[k] and Y[k+1] (but java is zero based indexing thus k-1 and k)
 		BigDecimal yk    = valueOf.apply(samples.get(k-1));               // first index value
 		BigDecimal yk1   = valueOf.apply(samples.get(k));                 // second index value
 		int leastPrecision = SigFigMathUtil.getLeastPrecise(yk,yk1);
 
 		// percentile calculation Y(p) = Y[k] + d(Y[k+1] - Y[k])
-		BigDecimal diff  = sigFigSubtract(yk1, yk).setScale(EXACT_SCALE);           // delta between the two values
+		BigDecimal diff  = subtract(yk1, yk).setScale(EXACT_SCALE);           // delta between the two values
 
 		if (BigDecimal.ZERO.compareTo(diff) == 0) {
 			return ScientificDecimal.updateScaleForSigFigs(yk, leastPrecision);
@@ -248,6 +247,7 @@ public class StatisticsCalculator<S extends Value> {
 		}
 		BigDecimal yp  = yk.add(delta);                                   // and finally, the percentile value
 		MathContext mc = new MathContext(leastPrecision, DEFAULT_ROUNDING_RULE);
+		// TODO use more SigFigMathUtil
 		return yp.round(mc);
 	}
 	public BigDecimal valueOfPercentile(List<S> samples, BigDecimal percentileAsFraction,
