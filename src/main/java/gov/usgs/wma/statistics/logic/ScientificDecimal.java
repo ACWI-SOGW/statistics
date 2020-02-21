@@ -17,6 +17,10 @@ import java.math.RoundingMode;
  * 
  * Should we discover that this assertion was a singular professor
  * interpretation, we can revisit the rules.
+ *
+ * The BigDecimal compareTo method uses the intCompact directly accessed.
+ * This means that the bigDecimal local value must match the superclass.
+ * To manage this, the factory method is invoked to evaluate.
  * 
  * new ScientificDecimal("1000", 3) will create set 3 figures.
  * new ScientificDecimal("1000").setSigfigs(3) will also work.
@@ -28,7 +32,7 @@ import java.math.RoundingMode;
 public class ScientificDecimal extends BigDecimal {
 	// Feb  10 2020 - BigDecimal always reports zero as 1 digit precision.
 	public static final BigDecimal ZERO = new ScientificDecimal("0.000000000");
-	public static final BigDecimal ONE  = new ScientificDecimal("1.000000000");
+	public static final BigDecimal ONE  = new BigDecimal("1.000000000");
 
 	// some numbers are exact, like the count of values in a list.
 	// use this extra large scale to ensure exact numbers do not reduce significant figures
@@ -41,7 +45,46 @@ public class ScientificDecimal extends BigDecimal {
 	// also, calls to superclass methods where not reliable
 	BigDecimal bigDecimal;
 
+
+	/**
+	 * Constructs a BigDecimal for values that BigDecimal is sufficient
+	 * and ScientificDecimal when necessary. It turns out that BigDecimal.compareTo
+	 * make an internal reference to intCompact that cannot be managed by this class.
+	 * When a number enters the constructor for ScientificDecimal it calls the super
+	 * constructor. That instance will have a different compact nature than the
+	 * locally resolved precision. This factory method returns a BigDecimal when
+	 * ever possible. The only time this class is necessary is when the precision
+	 * cannot match the desired. That usually means ZERO only. It even turns out that
+	 * BigDecimal can have a negative scale to allow precision management for integers
+	 * that is fewer than the digits provided.
+	 *
+	 * @param value
+	 * @param precision
+	 * @return
+	 */
+	public static BigDecimal make(String value, int precision) {
+		BigDecimal number = new BigDecimal(value);
+
+		int deltaPrecision = precision - number.precision();
+		int disparity = number.scale() + deltaPrecision;
+
+		if (number.precision() != precision) {
+			number = number.setScale(disparity, SigFigMathUtil.DEFAULT_ROUNDING_RULE);
+		}
+		if (number.precision() != precision) {
+			number = new ScientificDecimal(value, precision);
+		}
+
+		return number;
+	}
+	public static BigDecimal make(BigDecimal value, int precision) {
+		return make(value.toPlainString(), precision);
+	}
+
 	public ScientificDecimal(String value, int specifiedSigfigs) {
+		this(value, specifiedSigfigs, SigFigMathUtil.DEFAULT_ROUNDING_RULE);
+	}
+	public ScientificDecimal(String value, int specifiedSigfigs, RoundingMode roundingRule) {
 		super(value);
 
         sigfigs = specifiedSigfigs;
@@ -62,7 +105,7 @@ public class ScientificDecimal extends BigDecimal {
         }  else if (missingPrecision != 0) {
 			int scaleShouldBe = sigfigs - integerDigits;
 			if (scaleShouldBe >= 0) {
-                bigDecimal = bigDecimal.setScale(scaleShouldBe);
+                bigDecimal = bigDecimal.setScale(scaleShouldBe, roundingRule);
             }
         }
 	}
@@ -77,6 +120,21 @@ public class ScientificDecimal extends BigDecimal {
 	public ScientificDecimal(long value, int sigfigs) {
 		this(""+value, sigfigs);
 	}
+
+	/**
+	 * Use this helper to set the scale to satisfy the significant figures.
+	 * @param number   the number to set  significant figures
+	 * @param sigfigs  significant figures
+	 * @return
+	 */
+	public ScientificDecimal(BigDecimal number, int sigfigs) {
+		this(number, sigfigs, SigFigMathUtil.DEFAULT_ROUNDING_RULE);
+	}
+	public ScientificDecimal(BigDecimal number, int sigfigs, RoundingMode roundingRule) {
+		this(number.toPlainString(), sigfigs, roundingRule);
+	}
+
+
 
 	@Override
 	public String toPlainString() {
@@ -97,7 +155,6 @@ public class ScientificDecimal extends BigDecimal {
 		return setSigfigs(newPrecision);
 	}
 
-	// TODO asdf consider new ScientificDecimal rather than BigDecimal
 	@Override
 	public int scale() {
 		return bigDecimal.scale();
@@ -143,27 +200,4 @@ public class ScientificDecimal extends BigDecimal {
 		}
 		return sigfigs;
 	}
-
-	/**
-	 * Use this helper to set the scale to satisfy the significant figures.
-	 * @param number   the number to set  significant figures
-	 * @param sigfigs  significant figures
-	 * @return
-	 */
-	// TODO asdf constructor?
-	public static BigDecimal updateScaleForSigFigs(BigDecimal number, int sigfigs) {
-		return updateScaleForSigFigs(number, sigfigs, SigFigMathUtil.DEFAULT_ROUNDING_RULE);
-	}
-	public static BigDecimal updateScaleForSigFigs(BigDecimal number, int sigfigs, RoundingMode roundingRule) {
-		int deltaPrecision = sigfigs - number.precision();
-		int disparity = number.scale() + deltaPrecision;
-		if (disparity == number.scale()) {
-			return number;
-		}
-		if (BigDecimal.ZERO.compareTo(number) == 0) {
-			return new ScientificDecimal("0.0", sigfigs);
-		}
-		return number.setScale(disparity, roundingRule);
-	}
-
 }

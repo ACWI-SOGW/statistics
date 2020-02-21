@@ -7,12 +7,7 @@ import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Function;
 
 import org.junit.Before;
@@ -372,8 +367,33 @@ public class MonthlyStatisticsTest {
 
 		boolean isCalc = stats.monthlyStats(monthSamples);
 		assertTrue(isCalc);
-		// TODO asdf add assertion for these intermediate values. monthly medians
-// 2006 6.4, 2007 6.78, 2008 8.2, 2009 9.37, 2010 4.12, 2011 8.03, 2012 6.91, 2013 9.31, 2014 8.0, 2015 5.6,  2016 9.07,
+
+		// 2006 6.4, 2007 6.78, 2008 8.2, 2009 9.37, 2010 4.12, 2011 8.03, 2012 6.91, 2013 9.31, 2014 8.0, 2015 5.6,  2016 9.07,
+		List<Value> medians = builder.getIntermediateValuesList();
+
+		Optional<Value> actual = medians.stream().filter(median -> median.getTime().contains("2006")).findFirst();
+		assertEquals("6.4", actual.get().getValue().toPlainString());
+		actual = medians.stream().filter(median -> median.getTime().contains("2007")).findFirst();
+		assertEquals("6.78", actual.get().getValue().toPlainString());
+		actual = medians.stream().filter(median -> median.getTime().contains("2008")).findFirst();
+		assertEquals("8.2", actual.get().getValue().toPlainString());
+		actual = medians.stream().filter(median -> median.getTime().contains("2009")).findFirst();
+		assertEquals("9.37", actual.get().getValue().toPlainString());
+		actual = medians.stream().filter(median -> median.getTime().contains("2010")).findFirst();
+		assertEquals("4.12", actual.get().getValue().toPlainString());
+		actual = medians.stream().filter(median -> median.getTime().contains("2011")).findFirst();
+		assertEquals("8.03", actual.get().getValue().toPlainString());
+		actual = medians.stream().filter(median -> median.getTime().contains("2012")).findFirst();
+		assertEquals("6.91", actual.get().getValue().toPlainString());
+		actual = medians.stream().filter(median -> median.getTime().contains("2013")).findFirst();
+		assertEquals("9.31", actual.get().getValue().toPlainString());
+		actual = medians.stream().filter(median -> median.getTime().contains("2014")).findFirst();
+		assertEquals("8.0", actual.get().getValue().toPlainString());
+		actual = medians.stream().filter(median -> median.getTime().contains("2015")).findFirst();
+		assertEquals("5.6", actual.get().getValue().toPlainString());
+		actual = medians.stream().filter(median -> median.getTime().contains("2016")).findFirst();
+		assertEquals("9.07", actual.get().getValue().toPlainString());
+
 		Map<String, String> stat = builder.build().getMonthly().get("3").percentiles; // MediationType.AboveDatum
 
 		assertNotNull(stat);

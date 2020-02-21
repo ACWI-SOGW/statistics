@@ -203,7 +203,7 @@ public class ScientificDecimalTest {
 
 	@Test
 	public void test_updateScaleForSigFigs() {
-		BigDecimal actual = ScientificDecimal.updateScaleForSigFigs(BigDecimal.ZERO, 2);
+		BigDecimal actual = new ScientificDecimal(BigDecimal.ZERO, 2);
 		assertEquals(2, actual.precision());
 		assertEquals("0.00", actual.toPlainString());
 	}
@@ -224,6 +224,80 @@ public class ScientificDecimalTest {
 
 		BigDecimal actual = number.setScale(2, BigDecimal.ROUND_HALF_DOWN);
 		assertEquals("1.10", actual.toPlainString());
+	}
+
+	@Test
+	public void test_constructionReducingPrecision() {
+		ScientificDecimal nine31_2 = new ScientificDecimal("9.31", 2);
+		ScientificDecimal nine31_3 = new ScientificDecimal("9.31", 3);
+		ScientificDecimal zero_2 = new ScientificDecimal("0.00", 2);
+		ScientificDecimal zero_3 = new ScientificDecimal("0.00", 3);
+		BigDecimal nine3bd = new BigDecimal("9.3");
+		BigDecimal nine31bd = new BigDecimal("9.31");
+		BigDecimal five6 = new BigDecimal("5.6");
+
+		// these should be equal and compareTo return zero
+		assertEquals(-1, nine31_2.compareTo(nine3bd));
+		assertEquals(1, nine3bd.compareTo(nine31_2));
+
+		// this should return -l like the following two compare
+		assertEquals(1, five6.compareTo(nine31_2));
+		assertEquals(-1, five6.compareTo(nine31bd));
+		assertEquals(-1, five6.compareTo(nine3bd));
+
+		assertEquals(0, BigDecimal.ZERO.compareTo(zero_2));
+		assertEquals(0, BigDecimal.ZERO.compareTo(zero_3));
+		assertEquals(1, nine3bd.compareTo(zero_2));
+		assertEquals(1, nine31bd.compareTo(zero_3));
+	}
+
+	@Test
+	public void test_make() {
+		BigDecimal actual;
+
+		actual = ScientificDecimal.make("9.31", 3);
+		assertEquals(BigDecimal.class, actual.getClass());
+		assertEquals("9.31", actual.toPlainString());
+		assertEquals(2, actual.scale());
+		assertEquals(3, actual.precision());
+
+		actual = ScientificDecimal.make("9.31", 2);
+		assertEquals(BigDecimal.class, actual.getClass());
+		assertEquals("9.3", actual.toPlainString());
+		assertEquals(1, actual.scale());
+		assertEquals(2, actual.precision());
+
+		actual = ScientificDecimal.make("0.0031", 2);
+		assertEquals(BigDecimal.class, actual.getClass());
+		assertEquals("0.0031", actual.toPlainString());
+		assertEquals(4, actual.scale());
+		assertEquals(2, actual.precision());
+
+		actual = ScientificDecimal.make("900", 3);
+		assertEquals(BigDecimal.class, actual.getClass());
+		assertEquals("900", actual.toPlainString());
+		assertEquals(0, actual.scale());
+		assertEquals(3, actual.precision());
+
+		actual = ScientificDecimal.make("900", 2);
+		assertEquals(BigDecimal.class, actual.getClass());
+		assertEquals("900", actual.toPlainString());
+		assertEquals(-1, actual.scale());
+		assertEquals(2, actual.precision());
+
+		actual = ScientificDecimal.make("900", 1);
+		assertEquals(BigDecimal.class, actual.getClass());
+		assertEquals("900", actual.toPlainString());
+		assertEquals(-2, actual.scale());
+		assertEquals(1, actual.precision());
+
+		actual = ScientificDecimal.make("0.00", 2);
+		assertEquals(ScientificDecimal.class, actual.getClass());
+		assertEquals("0.00", actual.toPlainString());
+		assertEquals(2, actual.scale());
+		assertEquals(2, actual.precision());
+
+
 	}
 
 }

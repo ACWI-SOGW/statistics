@@ -1321,8 +1321,7 @@ public class StatisticsCalculatorTest {
 		
 		BigDecimal actual = stats.valueOfPercentile(values, StatisticsCalculator.MEDIAN_PERCENTILE, Value::valueOf);
 		// 2020-02-12 this needs to be changed to 24.7 because the least precision is 24.7, not 24.74
-		BigDecimal expect = new BigDecimal("24.7");
-		assertEquals(expect, actual);
+		assertEquals("24.7", actual.toPlainString());
 	}
 	public static void loadWithSeptemberData(List<Value> values) {
 		values.add( createSample("2009-09-01T00:00:00","24.48") );

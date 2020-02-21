@@ -1010,16 +1010,13 @@ public class WaterLevelStatisticsTest {
 		// SETUP create a collection of samples (they will be sorted appropriately)
 		List<WLSample> samples = new LinkedList<>();
 		fillMarchData(samples);
-		String median = stats
-				.calculate(spec, samples)
-				.getOverall()
-				.valueMedian;
-		
+		JsonOverall overall = stats.calculate(spec, samples).getOverall();
+		String actual = overall.valueMedian;
 		// the original method gave too much weight to months with more samples
 		// the monthly median method gives every month in every year the same weight
 		// in this particular sample is it is a minor adjustment while in others it could be large.
 		assertEquals("median with all data is 7.98 and should be 8.0 based on monthly medians", 
-				"8.0", median);
+				"8.0", actual);
 	}
 	
 	protected void fillMarchData(List<WLSample> monthSamples) {

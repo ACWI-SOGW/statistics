@@ -234,16 +234,16 @@ public class StatisticsCalculator<S extends Value> {
 		// percentile calculation Y(p) = Y[k] + d(Y[k+1] - Y[k])
 		BigDecimal diff  = subtract(yk1, yk).setScale(EXACT_SCALE);           // delta between the two values
 
-		if (BigDecimal.ZERO.compareTo(diff) == 0) {
-			return ScientificDecimal.updateScaleForSigFigs(yk, leastPrecision);
+		if (BigDecimal.ZERO.compareTo(diff) == 0) { // TODO asdf make a static helper
+			return ScientificDecimal.make(yk, leastPrecision); //.bigDecimal;
 		}
 		BigDecimal d     = p.subtract(new BigDecimal(k));                 // the decimal index value (or fraction between two indexes)
 		if (BigDecimal.ZERO.compareTo(d) == 0) {
-			d = ScientificDecimal.ZERO.setScale(leastPrecision);
+			d = ScientificDecimal.make(ZERO, leastPrecision);
 		}
 		BigDecimal delta = diff.multiply(d);                              // the fraction of the difference of two values k and k+1
 		if (BigDecimal.ZERO.compareTo(delta) == 0) {
-			delta = ScientificDecimal.ZERO.setScale(leastPrecision-1);
+			delta = ScientificDecimal.make(ZERO, leastPrecision);    // TODO asdf -1 ??
 		}
 		BigDecimal yp  = yk.add(delta);                                   // and finally, the percentile value
 		MathContext mc = new MathContext(leastPrecision, DEFAULT_ROUNDING_RULE);

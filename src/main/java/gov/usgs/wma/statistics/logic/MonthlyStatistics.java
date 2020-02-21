@@ -151,7 +151,7 @@ public class MonthlyStatistics<S extends Value> extends StatisticsCalculator<S> 
 		int sampleCount = monthSamples.size();
 		List<S> monthlyMedians = new LinkedList<>();
 
-		sortValueByQualifier(monthSamples);
+		sortValueByQualifier(monthSamples); // TODO asdf sort by value again
 		Map<String, List<S>> yearSamples = sortSamplesByYear(monthSamples);
 		for (String year : yearSamples.keySet()) {
 			List<S> samples = yearSamples.get(year);
@@ -160,8 +160,7 @@ public class MonthlyStatistics<S extends Value> extends StatisticsCalculator<S> 
 				monthSamples.removeAll(samples);
 				S medianSample = makeMedian(samples);
 				monthlyMedians.add(medianSample);
-			}
-			else {
+			} else {
 				monthlyMedians.addAll(samples);
 			}
 		}
