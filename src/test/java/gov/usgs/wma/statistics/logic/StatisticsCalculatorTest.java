@@ -374,7 +374,7 @@ public class StatisticsCalculatorTest {
 		assertEquals("Expect "+samples.get(3).value+" to be ", samples.get(3).value.toPlainString(), val23.toPlainString() );
 
 		BigDecimal pct23 = StatisticsCalculator.percentileOfValue(samples, samples.get(3), Value::valueOf);
-		assertEquals("Expect "+samples.get(3).value+" to be 23% percetile", "0.307692", pct23.toPlainString() );
+		assertEquals("Expect "+samples.get(3).value+" to be ~31% percetile", "0.307692", pct23.toPlainString() );
 	}
 
 
@@ -1216,18 +1216,18 @@ public class StatisticsCalculatorTest {
 
 		values = new LinkedList<>();
 		values.add( createSample("1963-12-02T12:00:00", "1.3") );
-		actual = StatisticsCalculator.percentileOfValue(values, null, 10, Value::valueOf);
+		actual = StatisticsCalculator.percentileOfValue(values, null, Value::valueOf);
 		assertEquals(0, BigDecimal.ZERO.compareTo(actual));
 
 		Value value;
 
 		value = createSample("1963-12-02T12:00:00", "1.3") ;
 		values = new LinkedList<>();
-		actual = StatisticsCalculator.percentileOfValue(values, value, 10, Value::valueOf);
+		actual = StatisticsCalculator.percentileOfValue(values, value, Value::valueOf);
 		assertEquals(0, BigDecimal.ZERO.compareTo(actual));
 		
 		value = createSample("1963-12-02T12:00:00", "1.3") ;
-		actual = StatisticsCalculator.percentileOfValue(null, value, 10, Value::valueOf);
+		actual = StatisticsCalculator.percentileOfValue(null, value, Value::valueOf);
 		assertEquals(0, BigDecimal.ZERO.compareTo(actual));
 		
 		value = createSample("1963-12-02T12:00:00", "1.3") ;
@@ -1243,7 +1243,7 @@ public class StatisticsCalculatorTest {
 		value = createSample("1963-12-02T12:00:00", "1.3") ;
 		values = new LinkedList<>();
 		values.add( createSample("1963-12-02T12:00:00", "1.3") );
-		actual = StatisticsCalculator.percentileOfValue(values, value, 10, null);
+		actual = StatisticsCalculator.percentileOfValue(values, value, null);
 		assertEquals(0, BigDecimal.ZERO.compareTo(actual));
 		
 		value = createSample("1963-12-02T12:00:00", "1.3") ;
@@ -1255,7 +1255,7 @@ public class StatisticsCalculatorTest {
 				return null; // TESTING THIS NULL CASE
 			}
 		};
-		actual = StatisticsCalculator.percentileOfValue(values, value, 10, valueOf);
+		actual = StatisticsCalculator.percentileOfValue(values, value, valueOf);
 		assertEquals(0, BigDecimal.ZERO.compareTo(actual));
 	}
 

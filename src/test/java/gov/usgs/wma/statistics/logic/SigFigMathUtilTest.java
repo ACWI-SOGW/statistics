@@ -476,18 +476,18 @@ public class SigFigMathUtilTest {
         BigDecimal b1 = new BigDecimal("10.1");
         BigDecimal exact = new BigDecimal(".33");        
         
-        BigDecimal quotient = SigFigMathUtil.multiplyByExact(b1, exact, RM_UP);
+        BigDecimal quotient = SigFigMathUtil.multiply(b1, exact, 3, RM_UP);
         assertEquals("3.33", quotient.toPlainString());
     }
     
              
     @Test
-    public void testsigFigMultiplyByExact2arg(){
+    public void testsigFigMultiplyByExact3arg(){
         //if you had to determine an average for example
         BigDecimal b1 = new BigDecimal("10.1");
         BigDecimal exact = new BigDecimal(".33");        
         
-        BigDecimal quotient = SigFigMathUtil.multiplyByExact(b1, exact);
+        BigDecimal quotient = SigFigMathUtil.multiply(b1, exact, 3);
         assertEquals("3.33", quotient.toPlainString());
     }
         
@@ -554,10 +554,10 @@ public class SigFigMathUtilTest {
 	
 	@Test
 	public void test_sigFigMultiplyByExact_null() {
-		BigDecimal actual = SigFigMathUtil.multiplyByExact(null, BigDecimal.ONE);
+		BigDecimal actual = SigFigMathUtil.multiply(null, BigDecimal.ONE);
 		assertNull(actual);
 		
-		actual = SigFigMathUtil.multiplyByExact(BigDecimal.ONE, null);
+		actual = SigFigMathUtil.multiply(BigDecimal.ONE, null);
 		assertNull(actual);
 	}	
     
@@ -575,13 +575,13 @@ public class SigFigMathUtilTest {
 	
 	@Test
 	public void test_sigFigMultiplyByExact_withRoundngRule_null() {
-		BigDecimal actual = SigFigMathUtil.multiplyByExact(null, BigDecimal.ONE, SigFigMathUtil.DEFAULT_ROUNDING_RULE);
+		BigDecimal actual = SigFigMathUtil.multiply(null, BigDecimal.ONE, SigFigMathUtil.DEFAULT_ROUNDING_RULE);
 		assertNull(actual);
 		
-		actual = SigFigMathUtil.multiplyByExact(BigDecimal.ONE, null, SigFigMathUtil.DEFAULT_ROUNDING_RULE);
+		actual = SigFigMathUtil.multiply(BigDecimal.ONE, null, SigFigMathUtil.DEFAULT_ROUNDING_RULE);
 		assertNull(actual);
 		
-		actual = SigFigMathUtil.multiplyByExact(BigDecimal.ONE, BigDecimal.ONE, null);
+		actual = SigFigMathUtil.multiply(BigDecimal.ONE, BigDecimal.ONE, null);
 		assertNull(actual);
 	}
 

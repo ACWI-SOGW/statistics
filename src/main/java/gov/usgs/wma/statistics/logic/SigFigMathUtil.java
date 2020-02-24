@@ -333,21 +333,20 @@ public class SigFigMathUtil {
      * @param roundingRule RoundingMode
      * @return product of given values rounded to significant figures of the least given
      */
-    public static BigDecimal multiply(BigDecimal multiplicand, BigDecimal multiplier, RoundingMode roundingRule) {
+    public static BigDecimal multiply(BigDecimal multiplicand, BigDecimal multiplier, int precision, RoundingMode roundingRule) {
         if (multiplicand == null || multiplier == null) {
             return logMissingValues();
         }
         if (roundingRule == null) {
             return logMissingRoundingRule();
         }
-        int sigFigs = getLeastPrecise(multiplicand, multiplier);
 
-        MathContext mc = new MathContext(sigFigs, roundingRule);
+        MathContext mc = new MathContext(precision, roundingRule);
         BigDecimal product = multiplicand.multiply(multiplier, mc);
         if (BigDecimal.ZERO.compareTo(product) == 0) {
-            product = ScientificDecimal.ZERO.setScale(sigFigs);
+            product = ScientificDecimal.ZERO.setScale(precision);
         } else {
-            product = updateSigFigs(product, sigFigs);
+            product = updateSigFigs(product, precision);
         }
         return product;
     }
@@ -356,15 +355,16 @@ public class SigFigMathUtil {
      * figures in each of the factors matter.
      *
      * @param multiplicand BigDecimal
-     * @param exactMultiplier BigDecimal
+     * @param multiplier BigDecimal
      * @param roundingRule RoundingMode
      * @return product of given values rounded to significant figures of the first value
      */
-    public static BigDecimal multiplyByExact(BigDecimal multiplicand, BigDecimal exactMultiplier, RoundingMode roundingRule) {
-        if (multiplicand == null || exactMultiplier == null) {
+    public static BigDecimal multiply(BigDecimal multiplicand, BigDecimal multiplier, RoundingMode roundingRule) {
+        if (multiplicand == null || multiplier == null) {
             return logMissingValues();
         }
-        return multiply(multiplicand, exactMultiplier.setScale(EXACT_SCALE), roundingRule);
+        int precision = getLeastPrecise(multiplicand, multiplier);
+        return multiply(multiplicand, multiplier, precision, roundingRule);
     }
 
     /**
@@ -375,8 +375,8 @@ public class SigFigMathUtil {
      * @param exactMultiplier BigDecimal
      * @return
      */
-    public static BigDecimal multiplyByExact(BigDecimal multiplicand, BigDecimal exactMultiplier) {
-        return multiplyByExact(multiplicand, exactMultiplier, DEFAULT_ROUNDING_RULE);
+    public static BigDecimal multiply(BigDecimal multiplicand, BigDecimal exactMultiplier, int precision) {
+        return multiply(multiplicand, exactMultiplier, precision, DEFAULT_ROUNDING_RULE);
     }
 
     /**

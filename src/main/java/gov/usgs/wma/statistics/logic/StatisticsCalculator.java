@@ -147,10 +147,9 @@ public class StatisticsCalculator<S extends Value> {
 	 * @param sample the sample to determine percentile
 	 * @return percentile fraction. 50th percentile would  return 0.50
 	 */
-	public static <T> BigDecimal percentileOfValue(List<T> samples, T sample, int precision,
-			Function<T, BigDecimal> valueOf) {
+	public static <T> BigDecimal percentileOfValue(List<T> samples, T sample, Function<T, BigDecimal> valueOf) {
 		if (sample==null || samples==null || samples.size()==0 || valueOf == null || valueOf.apply(sample)==null ) {
-			return ScientificDecimal.ZERO;
+			return BigDecimal.ZERO;
 		}
 		BigDecimal sampleValue = valueOf.apply(sample);
 
@@ -158,32 +157,26 @@ public class StatisticsCalculator<S extends Value> {
 		BigDecimal index = new BigDecimal( samples.indexOf(sample) + 1 );
 		BigDecimal n     = new BigDecimal(samples.size());
 		BigDecimal n1    = n.add(ScientificDecimal.ONE);
-		BigDecimal n1inv = ScientificDecimal.ONE.divide(n1, 10, DEFAULT_ROUNDING_RULE);
+		int precision    = sampleValue.precision();
 
-		BigDecimal n1invRnd = ScientificDecimal.ONE.divide(n1, sampleValue.precision(), DEFAULT_ROUNDING_RULE);
-		// comment this precision
+		// SigFigMathUtil does not provide an action with this precision
+		BigDecimal n1invRnd = ScientificDecimal.ONE.divide(n1, precision, DEFAULT_ROUNDING_RULE);
 		BigDecimal pct   = index.divide(n1, precision, DEFAULT_ROUNDING_RULE);
 		
 		// manage near   0 percentile
 		if (pct.compareTo(n1invRnd) <= 0 ) {
-			return ScientificDecimal.ZERO.setScale(1);
+			return BigDecimal.ZERO.setScale(1);
 		}
-		// manage near 100 percentile
-		MathContext mc = new MathContext(sampleValue.precision(), DEFAULT_ROUNDING_RULE);
+		// manage precision near 100 percentile
+		MathContext mc = new MathContext(precision, DEFAULT_ROUNDING_RULE);
+		BigDecimal n1inv = ScientificDecimal.ONE.divide(n1, EXACT_SCALE, DEFAULT_ROUNDING_RULE);
 		if (pct.compareTo(n.multiply(n1inv, mc)) >= 0) {
 			return ScientificDecimal.ONE.setScale(3);
 		}
 		
 		return pct;
 	}
-	public static <T> BigDecimal percentileOfValue(List<T> samples, T sample, Function<T, BigDecimal> valueOf) {
-		if (sample == null || valueOf == null) {
-			return ScientificDecimal.ZERO;
-		}
-		BigDecimal sampleValue = valueOf.apply(sample);
-		return percentileOfValue(samples, sample, sampleValue.precision(), valueOf);
-	}
-	
+
 	/**
 	 * This returns the interpolated sample value of a given percentile
 	 * http://www.itl.nist.gov/div898/handbook/prc/section2/prc262.htm
@@ -238,7 +231,7 @@ public class StatisticsCalculator<S extends Value> {
 			return ScientificDecimal.make(yk, leastPrecision);
 		}
 		BigDecimal d = SigFigMathUtil.subtract(p, new BigDecimal(k).setScale(EXACT_SCALE)); // the decimal index value (or fraction between two indexes)
-		BigDecimal delta = SigFigMathUtil.multiplyByExact(diff, d);              // the fraction of the difference of two values k and k+1
+		BigDecimal delta = SigFigMathUtil.multiply(diff, d);              // the fraction of the difference of two values k and k+1
 		if (delta.precision() < leastPrecision) {
 			delta = delta.setScale(delta.scale()+(leastPrecision-delta.precision()));
 		}
