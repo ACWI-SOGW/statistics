@@ -400,7 +400,7 @@ public class SigFigMathUtil {
      * @param roundingRule RoundingMode
      * @return null if any arg passed in is null.
      */
-    public static BigDecimal divide(BigDecimal numerator, BigDecimal denominator, RoundingMode roundingRule) {
+    public static BigDecimal divide(BigDecimal numerator, BigDecimal denominator, int precision, RoundingMode roundingRule) {
         if (numerator == null || denominator == null) {
             return logMissingValues();
         }
@@ -408,18 +408,17 @@ public class SigFigMathUtil {
             return logMissingRoundingRule();
         }
 
-        int sigFigs = getLeastPrecise(numerator, denominator);
-
-        MathContext mc = new MathContext(sigFigs, roundingRule);
+        MathContext mc = new MathContext(precision, roundingRule);
         BigDecimal quotient = numerator.divide(denominator, mc);
         if (BigDecimal.ZERO.compareTo(quotient) == 0) {
-            quotient = ScientificDecimal.ZERO.setScale(sigFigs);
+            quotient = ScientificDecimal.ZERO.setScale(precision);
         } else {
-            quotient = updateSigFigs(quotient, sigFigs);
+            quotient = updateSigFigs(quotient, precision);
         }
         return quotient;
     }
 
+    // TODO asdf might be dead code
     protected static BigDecimal updateSigFigs(BigDecimal number, int sigFigs) {
         if (number.precision() != sigFigs) {
             if (number.precision() < sigFigs) {
@@ -446,8 +445,8 @@ public class SigFigMathUtil {
      * @param denominator BigDecimal aka divisor
      * @return null if any arg passed in is null.
      */
-    public static BigDecimal divide(BigDecimal numerator, BigDecimal denominator) {
-        return divide(numerator, denominator, DEFAULT_ROUNDING_RULE);
+    public static BigDecimal divide(BigDecimal numerator, BigDecimal denominator, int precision) {
+        return divide(numerator, denominator, precision, DEFAULT_ROUNDING_RULE);
     }
 
     /**
@@ -455,15 +454,16 @@ public class SigFigMathUtil {
      * figures in each of the factors matter.
      *
      * @param numerator BigDecimal aka dividend
-     * @param exactDenominator BigDecimal aka divisor
+     * @param denominator BigDecimal aka divisor
      * @param roundingRule RoundingMode
      * @return null if any arg passed in is null.
      */
-    public static BigDecimal divideByExact(BigDecimal numerator, BigDecimal exactDenominator, RoundingMode roundingRule) {
-        if (numerator == null || exactDenominator == null) {
+    public static BigDecimal divide(BigDecimal numerator, BigDecimal denominator, RoundingMode roundingRule) {
+        if (numerator == null || denominator == null) {
             return logMissingValues();
         }
-        return divide(numerator, exactDenominator.setScale(EXACT_SCALE), roundingRule);
+        int leastPrecise = getLeastPrecise(numerator, denominator);
+        return divide(numerator, denominator.setScale(EXACT_SCALE), leastPrecise, roundingRule);
     }
     
     /**
@@ -471,11 +471,11 @@ public class SigFigMathUtil {
      * figures in each of the factors matter.
      *
      * @param numerator BigDecimal aka dividend, or total if used for averages
-     * @param exactDenominator BigDecimal aka divisor, or count if used for averages
+     * @param denominator BigDecimal aka divisor, or count if used for averages
      * @return null if any arg passed in is null.
      */
-    public static BigDecimal divideByExact(BigDecimal numerator, BigDecimal exactDenominator) {
-        BigDecimal quotient = divideByExact(numerator, exactDenominator, DEFAULT_ROUNDING_RULE);
+    public static BigDecimal divide(BigDecimal numerator, BigDecimal denominator) {
+        BigDecimal quotient = divide(numerator, denominator, DEFAULT_ROUNDING_RULE);
 
         return quotient;
     }

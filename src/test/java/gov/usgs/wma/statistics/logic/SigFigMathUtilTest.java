@@ -447,13 +447,13 @@ public class SigFigMathUtilTest {
         BigDecimal total = SigFigMathUtil.sum(bigList);
         assertEquals("7.5", total.toPlainString());
         
-        BigDecimal quotient = SigFigMathUtil.divideByExact(total, new BigDecimal(bigList.size()), RM_UP);
+        BigDecimal quotient = SigFigMathUtil.divide(total, new BigDecimal(bigList.size()), 2, RM_UP);
         assertEquals("2.5", quotient.toPlainString());
     }
     
         
     @Test
-    public void testsigFigDivideByExact2arg(){
+    public void testsigFigDivideByExact3arg(){
         //if you had to determine an average for example
         BigDecimal b1 = new BigDecimal("1.1");
         BigDecimal b2 = new BigDecimal("2.020");
@@ -466,7 +466,7 @@ public class SigFigMathUtilTest {
         BigDecimal total = SigFigMathUtil.sum(bigList);
         assertEquals("7.5", total.toPlainString());
         
-        BigDecimal quotient = SigFigMathUtil.divideByExact(total, new BigDecimal(bigList.size()));
+        BigDecimal quotient = SigFigMathUtil.divide(total, new BigDecimal(bigList.size()), 2);
         assertEquals("2.5", quotient.toPlainString());
     }
          
@@ -545,10 +545,10 @@ public class SigFigMathUtilTest {
 	
 	@Test
 	public void test_sigFigDivideByExact_null() {
-		BigDecimal actual = SigFigMathUtil.divideByExact(null, BigDecimal.ONE);
+		BigDecimal actual = SigFigMathUtil.divide(null, BigDecimal.ONE);
 		assertNull(actual);
 		
-		actual = SigFigMathUtil.divideByExact(BigDecimal.ONE, null);
+		actual = SigFigMathUtil.divide(BigDecimal.ONE, null);
 		assertNull(actual);
 	}
 	
@@ -563,13 +563,13 @@ public class SigFigMathUtilTest {
     
 	@Test
 	public void test_sigFigDivideByExact_withRoundngRule_null() {
-		BigDecimal actual = SigFigMathUtil.divideByExact(null, BigDecimal.ONE, SigFigMathUtil.DEFAULT_ROUNDING_RULE);
+		BigDecimal actual = SigFigMathUtil.divide(null, BigDecimal.ONE, SigFigMathUtil.DEFAULT_ROUNDING_RULE);
 		assertNull(actual);
 		
-		actual = SigFigMathUtil.divideByExact(BigDecimal.ONE, null, SigFigMathUtil.DEFAULT_ROUNDING_RULE);
+		actual = SigFigMathUtil.divide(BigDecimal.ONE, null, SigFigMathUtil.DEFAULT_ROUNDING_RULE);
 		assertNull(actual);
 		
-		actual = SigFigMathUtil.divideByExact(BigDecimal.ONE, BigDecimal.ONE, null);
+		actual = SigFigMathUtil.divide(BigDecimal.ONE, BigDecimal.ONE, null);
 		assertNull(actual);
 	}
 	
