@@ -122,7 +122,7 @@ public class ScientificDecimalTest {
 
 		actual = hundred.sigfigRules("100.0");
 		// BigDecimal already properly assesses 100.0 precision properly and this method does not act on this.
-		assertEquals("this should not update the precision (see comment)",3, actual);
+		assertEquals("this should not update the precision (see comment)",4, actual);
 	}
 
 	@Test

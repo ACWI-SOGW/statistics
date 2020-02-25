@@ -102,7 +102,7 @@ public class ScientificDecimal extends BigDecimal {
 		int missingPrecision = sigfigs - precision;
 
         if (integerDigits < 0 || BigDecimal.ZERO.compareTo(bigDecimal) == 0) {
-            bigDecimal = bigDecimal.setScale(sigfigs);
+            bigDecimal = bigDecimal.setScale(sigfigs, SigFigMathUtil.DEFAULT_ROUNDING_RULE);
         }  else if (missingPrecision != 0) {
 			int scaleShouldBe = sigfigs - integerDigits;
 			if (scaleShouldBe >= 0) {
@@ -111,15 +111,13 @@ public class ScientificDecimal extends BigDecimal {
         }
 	}
 	public ScientificDecimal(String value) {
-		super(value);
-		bigDecimal = new BigDecimal(value);
-		sigfigs = sigfigRules(value);
+		this(value, sigfigRules(value));
 	}
 	public ScientificDecimal(long value) {
 		this(""+value);
 	}
-	public ScientificDecimal(long value, int sigfigs) {
-		this(""+value, sigfigs);
+	public ScientificDecimal(long value, int specifiedSigfigs) {
+		this(""+value, specifiedSigfigs);
 	}
 
 	/**
@@ -187,7 +185,8 @@ public class ScientificDecimal extends BigDecimal {
 
 	// the proper handling of 0.000...
 	// add more rules here if/when discovered.
-	protected int sigfigRules(String value) {
+	protected static int sigfigRules(String value) {
+		BigDecimal bigDecimal = new BigDecimal(value);
 		int sigfigs = bigDecimal.precision();
 
 		// this is for 1000 vs 1000.
