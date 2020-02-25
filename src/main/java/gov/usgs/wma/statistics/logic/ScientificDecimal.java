@@ -78,6 +78,9 @@ public class ScientificDecimal extends BigDecimal {
 		return number;
 	}
 	public static BigDecimal make(BigDecimal value, int precision) {
+		if (value.precision() == precision) {
+			return value;
+		}
 		return make(value.toPlainString(), precision);
 	}
 
@@ -87,13 +90,11 @@ public class ScientificDecimal extends BigDecimal {
 	public ScientificDecimal(String value, int specifiedSigfigs, RoundingMode roundingRule) {
 		super(value);
 
+		bigDecimal = new BigDecimal(value);
         sigfigs = specifiedSigfigs;
         if (sigfigs < 1) {
-            bigDecimal = new BigDecimal(value);
             return;
         }
-
-        bigDecimal = new BigDecimal(value);
 
         int scale = bigDecimal.scale();
 		int precision = bigDecimal.precision();

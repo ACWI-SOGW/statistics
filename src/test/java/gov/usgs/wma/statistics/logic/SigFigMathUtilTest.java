@@ -727,34 +727,6 @@ public class SigFigMathUtilTest {
         assertEquals("1", actual.toPlainString());
     }
 
-    @Test
-    public void test_updateSigFigs() {
-        BigDecimal numerator = new BigDecimal("1000.");
-        BigDecimal denominator = new BigDecimal("100.00");
-        BigDecimal actual = numerator.divide(denominator, RoundingMode.HALF_UP); // this is fixed in SigFigMathUtil
-
-        // first show the issues
-        assertEquals("Incorrect! 1000./100.00 should be 10.00", "10", actual.toPlainString());
-
-        // show one solution
-        BigDecimal updated = SigFigMathUtil.updateSigFigs(actual, 4);
-        assertEquals("Correct! 1000./100.00 should be 10.00", "10.00", updated.toPlainString());
-
-        // show another use case
-        BigDecimal ten = new BigDecimal("10");
-        assertEquals(2, ten.precision());
-        updated = SigFigMathUtil.updateSigFigs(ten, 4);
-        assertEquals("10.00", updated.toPlainString());
-
-        // show more settings including compatibility with subclass
-        ScientificDecimal hundred = new ScientificDecimal("100");
-        assertEquals(1, hundred.precision());
-        updated = SigFigMathUtil.updateSigFigs(hundred, 4);
-        assertEquals("100.0", updated.toPlainString());
-        updated = SigFigMathUtil.updateSigFigs(hundred, 7);
-        assertEquals("100.0000", updated.toPlainString());
-    }
-
 
     @Test
     public void test_leastPrecision() {

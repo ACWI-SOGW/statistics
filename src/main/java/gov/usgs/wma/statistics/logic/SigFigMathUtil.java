@@ -365,7 +365,7 @@ public class SigFigMathUtil {
         if (BigDecimal.ZERO.compareTo(product) == 0) {
             product = ScientificDecimal.ZERO.setScale(precision);
         } else {
-            product = updateSigFigs(product, precision);
+            product = ScientificDecimal.make(product, precision);
         }
         return product;
     }
@@ -432,28 +432,9 @@ public class SigFigMathUtil {
         if (BigDecimal.ZERO.compareTo(quotient) == 0) {
             quotient = ScientificDecimal.ZERO.setScale(precision);
         } else {
-            quotient = updateSigFigs(quotient, precision);
+            quotient = ScientificDecimal.make(quotient, precision);
         }
         return quotient;
-    }
-
-    // TODO asdf might be dead code
-    protected static BigDecimal updateSigFigs(BigDecimal number, int sigFigs) {
-        if (number.precision() != sigFigs) {
-            if (number.precision() < sigFigs) {
-                number = number.setScale(number.scale() + 1);
-            }
-            if (number.precision() < sigFigs) {
-                int deltaScale = sigFigs - number.precision();
-                int newScale = deltaScale + number.scale();
-                number = number.setScale(newScale);
-            } else {
-                int intDigits = number.precision() - number.scale();
-                int newScale = sigFigs - intDigits;
-                number = number.setScale(newScale);
-            }
-        }
-        return number;
     }
 
     /**
