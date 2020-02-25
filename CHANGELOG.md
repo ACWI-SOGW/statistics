@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 ### Changed
+- Updated: rounding rule changed to half_down from half_up and custom rule mechanics removed.
+- Added: increased precision management.
+- Added: user precision control for values like counts that are exact values. 
 - Updated: bypass latest percentile for months with few samples
 - Changed latest percentile to be an empty string when the month has too few values rather than null.
 - Fixed typo in "percentiles" string to "percentiles"
