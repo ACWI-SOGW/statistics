@@ -588,7 +588,7 @@ public class SigFigMathUtilTest {
     @Test
     public void test_additionTenth() {
         BigDecimal tenth = new BigDecimal("0.1");
-        System.out.println("BigDecimal tenth " + tenth); // 0.1
+        //  System.out.println("BigDecimal tenth " + tenth); // 0.1
 
         List<BigDecimal> thenths = new ArrayList<>(10);
         BigDecimal one = BigDecimal.ZERO;

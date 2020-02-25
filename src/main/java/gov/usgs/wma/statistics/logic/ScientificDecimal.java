@@ -92,7 +92,7 @@ public class ScientificDecimal extends BigDecimal {
 
 		bigDecimal = new BigDecimal(value);
         sigfigs = specifiedSigfigs;
-        if (sigfigs < 1) {
+        if (sigfigs < 1 || bigDecimal.precision() == sigfigs) {
             return;
         }
 
@@ -171,15 +171,21 @@ public class ScientificDecimal extends BigDecimal {
 
 	@Override
 	public BigDecimal setScale(int newScale, RoundingMode roundingMode) {
+		if (newScale == scale()) {
+			return this;
+		}
+		if (BigDecimal.ZERO.compareTo(this) == 0) {
+			return new ScientificDecimal("0.0", newScale);
+		}
 		int deltaScale = newScale - scale();
 		int newPrecision = deltaScale + precision();
-		if (BigDecimal.ZERO.compareTo(this) == 0) {
-			return new ScientificDecimal("0.0", newPrecision);
-		}
 		return setSigfigs(newPrecision);
 	}
 
 	public ScientificDecimal setSigfigs(int sigfigs) {
+		if (sigfigs == this.sigfigs) {
+			return this;
+		}
 		return new ScientificDecimal(bigDecimal.toPlainString(), sigfigs);
 	}
 

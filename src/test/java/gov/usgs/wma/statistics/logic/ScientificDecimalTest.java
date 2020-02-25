@@ -179,13 +179,14 @@ public class ScientificDecimalTest {
 		assertEquals(1, actual.precision());
 		assertEquals("0.0", actual.toPlainString());
 
+		// for the next two tests, it does not matter what the string is if the precision is correct.
 		actual = new ScientificDecimal("0.00", 1);
 		assertEquals(1, actual.precision());
-		assertEquals("0.0", actual.toPlainString());
+		assertEquals("0.00", actual.toPlainString());
 
 		actual = new ScientificDecimal("0", 1);
 		assertEquals(1, actual.precision());
-		assertEquals("0.0", actual.toPlainString());
+		assertEquals("0", actual.toPlainString());
 
 
 		actual = new ScientificDecimal("0.0", 3);
