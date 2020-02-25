@@ -126,7 +126,7 @@ public class WaterLevelStatistics extends StatisticsCalculator<WLSample> {
 		}
 		convertToMediatedValue(spec, samples, builder.mediation());
 		List<WLSample> sortedByValue  = new ArrayList<>(samplesByDate);
-		monthlyStats.sortValueByQualifier(sortedByValue); // TODO asdf sort by value
+		monthlyStats.sortValueByQualifier(sortedByValue);
 		
 		overallStats(samplesByDate, sortedByValue);
 		

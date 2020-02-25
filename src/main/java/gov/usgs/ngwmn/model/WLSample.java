@@ -116,7 +116,7 @@ public class WLSample extends Value {
 		for (int e=0; e<elements.getLength(); e++) {
 			// FIRST, EXTRACT DATA FROM DOM
 			
-			// TODO I know this is more cumbersome than XPATH. XPATH stopped working
+			// this is more cumbersome than XPATH but XPATH stopped working
 			// get current time series element
 			Element el       = (Element) elements.item(e);
 			// get the sample element for value and units
@@ -185,7 +185,7 @@ public class WLSample extends Value {
 			Boolean isUp = "up".equalsIgnoreCase(direction);
 			WLSample sample = new WLSample(time, valueBelowLand, units, originalValue, comment, isUp, pcode, valueAboveDatum);
 			
-			sample.setUnknown( isUnknown(value) ); // TODO make final
+			sample.setUnknown( isUnknown(value) );
 			// setting unknown values to provisional avoids statistics calculations since it purges them
 			sample.setProvsional(isProvisional || sample.isUnknown() );
 			samples.add(sample);

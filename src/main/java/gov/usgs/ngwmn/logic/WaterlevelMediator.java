@@ -137,7 +137,7 @@ public class WaterlevelMediator {
 		if (measure.siteDatum.isUnspecified() || measure.siteDatum.isUnrecognized()) {
 			throw new ValidationException(NA_NO_SITE_DATUM + " Site datum: " + siteDatumStr + "'");
 		}
-		// TODO why does the new version require a pcode unit null check?
+		// pcode unit cannot be null
 		if (! measure.unit.isUnspecified() && measure.pcode.getUnit() != null && ! measure.pcode.getUnit().equals(measure.unit)) {
 			throw new ValidationException(NA_PCODE_UNIT_DECLAIRED_UNIT_MISMATCH + " pcode unit: '" + measure.pcode.getUnit() + "' measure unit: '" + measure.unit + "'");
 		}
@@ -168,7 +168,6 @@ public class WaterlevelMediator {
 	 * @throws ValidationException when the datum are mismatched
 	 */
 	protected static void datumValidation(Measure measure) throws ValidationException{
-		// TODO this effective condition does not seem to have a unit test
 		if (! measure.pcode.getDatum().equals(measure.effectiveDatum)) {
 			throw new ValidationException(NA_PCODE_MEASURE_DATUM_MISMATCH + " pcode datum: '" + measure.pcode.getDatum() + "' measure datum: '" + measure.effectiveDatum + "'"); 
 		}			

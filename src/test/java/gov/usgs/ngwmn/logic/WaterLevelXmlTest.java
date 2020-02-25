@@ -298,7 +298,7 @@ public class WaterLevelXmlTest {
 		
 		// validate the 36% - yes, both mediation direction now product the "same" percentile
 		// validate 10.09 vs 19.93 as max value - 10.09 is correct because 19.93 is BLS
-		// TODO possibly convert overall to be base on all monthly median data -- this will be a new story
+		// overall was converted to be base on all monthly median data
 	}
 
 	@Test

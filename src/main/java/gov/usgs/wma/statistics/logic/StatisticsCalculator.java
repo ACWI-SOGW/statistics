@@ -299,7 +299,9 @@ public class StatisticsCalculator<S extends Value> {
 			builder.message(msg);
 		}
 	}
-	
+
+	// TODO we need to understand why there are nulls
+	// TODO move to conditioning lib
 	/**
 	 * This removes null value samples from a collection of samples.
 	 * @param samples the samples to examine
@@ -309,8 +311,7 @@ public class StatisticsCalculator<S extends Value> {
 		List<S> nullSamples = new LinkedList<>();
 		
 		for (S sample : samples) {
-			// TODO decide on actual rules and understand why there are nulls
-			// actually, I now think that the DAO filters out nulls 
+			// actually, I now think that the DAO filters out nulls
 			if (sample == null || sample.value==null || sample.time==null) {
 				nullSamples.add(sample);
 			}

@@ -45,7 +45,6 @@ public class MonthlyStatistics<S extends Value> extends StatisticsCalculator<S> 
 	/**
 	 * Override in subclass to implement custom sort by qualifier.
 	 * See WaterLevelStatistics for an example.
-	 * @param monthlySamples
 	 */
 	public Function<List<S>, List<S>> sortFunctionByQualifier() {
 		return StatisticsCalculator::sortByValueOrderAscending;
@@ -151,7 +150,7 @@ public class MonthlyStatistics<S extends Value> extends StatisticsCalculator<S> 
 		int sampleCount = monthSamples.size();
 		List<S> monthlyMedians = new LinkedList<>();
 
-		sortValueByQualifier(monthSamples); // TODO asdf sort by value again
+		sortValueByQualifier(monthSamples); // ensure proper sort.
 		Map<String, List<S>> yearSamples = sortSamplesByYear(monthSamples);
 		for (String year : yearSamples.keySet()) {
 			List<S> samples = yearSamples.get(year);

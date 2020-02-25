@@ -240,7 +240,6 @@ public class JsonDataBuilder {
 		if (jsonData.overall == null) {
 			jsonData.overall = new JsonOverall("", 0, "", "", "", "", "", "", "", "", mediation);
 		}
-		// TODO fill in other nulls ?
 	}
 
 	public JsonDataBuilder collect() {
@@ -404,7 +403,6 @@ public class JsonDataBuilder {
 			return;
 		}
 		// if any errors clear the monthly stats
-		// TODO this is my guess as to what we want
 		jsonData.monthly.clear();
 	}
 }

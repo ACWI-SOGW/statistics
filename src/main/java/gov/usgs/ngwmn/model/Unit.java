@@ -45,28 +45,23 @@ public enum Unit {
 		
 		if (name == null) {
 			return UNSPECIFIED;
-		} else {
-		
-			// This is a temp fix for units that come through like this: "ft  ft"
-			// Since the data is cached, it is not immediately fixable
-			// TODO: Remove this once the source transformation is fixed
-			if (name.indexOf(' ') > 0) {
-				name = name.substring(0, name.indexOf(' '));
+		}
+
+		// This is a temp fix for units that come through like this: "ft  ft"
+		// Since the data is cached, it is not immediately fixable
+		if (name.indexOf(' ') > 0) {
+			name = name.substring(0, name.indexOf(' '));
+		}
+
+		try {
+			return Unit.valueOf(name);
+
+		} catch (Exception e) {
+			for (Unit u : Unit.values()) {
+				if (u.abbr.equalsIgnoreCase(name)) return u;
+				if (u.name.equalsIgnoreCase(name)) return u;
 			}
-
-			try {
-
-				return Unit.valueOf(name);
-
-			} catch (Exception e) {
-
-				for (Unit u : Unit.values()) {
-					if (u.abbr.equalsIgnoreCase(name)) return u;
-					if (u.name.equalsIgnoreCase(name)) return u;
-				}
-
-				return UNRECOGNIZED;
-			}
+			return UNRECOGNIZED;
 		}
 	}
 
