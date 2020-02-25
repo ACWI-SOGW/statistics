@@ -153,6 +153,16 @@ public class SigFigMathUtil {
     public static BigDecimal add(BigDecimal augend, BigDecimal addend) {
         return add(augend, addend, DEFAULT_ROUNDING_RULE);
     }
+    public static BigDecimal add(BigDecimal augend, BigDecimal addend, int precision) {
+        return add(augend, addend, precision, DEFAULT_ROUNDING_RULE);
+    }
+    public static BigDecimal add(BigDecimal augend, BigDecimal addend, RoundingMode roundingRule) {
+        if (augend == null || addend == null) {
+            return logMissingValues();
+        }
+        int leastPrecision = getLeastPrecise(augend, addend);
+        return add(augend, addend, leastPrecision, roundingRule);
+    }
 
     /**
      * Note that it is assumed business rule that the input datum has a decimal
@@ -165,7 +175,7 @@ public class SigFigMathUtil {
      * @return BigDecimal with the appropriate sig fig rules applied or null if
      * any args passed in are null.
      */
-    public static BigDecimal add(BigDecimal augend, BigDecimal addend, RoundingMode roundingRule) {
+    public static BigDecimal add(BigDecimal augend, BigDecimal addend, int precision, RoundingMode roundingRule) {
         if (augend == null || addend == null) {
             return logMissingValues();
         }
@@ -175,9 +185,8 @@ public class SigFigMathUtil {
 
         BigDecimal sum = augend.add(addend);
 
-        int leastPrecision = getLeastPrecise(augend, addend);
         if (BigDecimal.ZERO.compareTo(sum) == 0) {
-            return ScientificDecimal.ZERO.setScale(leastPrecision);
+            return ScientificDecimal.ZERO.setScale(precision);
         }
 
         // first, addition trims on the least fractional digits
@@ -193,7 +202,7 @@ public class SigFigMathUtil {
         // while there are a minimum of two decimal places in the numbers
         // the addend has only 3 significant figures. 10.11+0.025=10.135 rounded 10.1
         // yes, we added something seemingly precise and lost overall precision.
-        int extraPrecision = sum.precision() - leastPrecision;     // check if addition increased precision
+        int extraPrecision = sum.precision() - precision;     // check if addition increased precision
         int scalePrecision = sum.scale() - extraPrecision;         // removed the extra precision from the scale
         int finalScale     = Math.min(scalePrecision, leastScale); // ensure no increased precision
         sum = sum.setScale(finalScale, roundingRule);              // BigDecimal only offers setting scale to change precision
@@ -265,6 +274,16 @@ public class SigFigMathUtil {
         }
         // we can use the addition methods; adding a negative is subtraction
         return add(minuend, subtractend.negate(), roundingRule);
+    }
+    public static BigDecimal subtract(BigDecimal minuend, BigDecimal subtractend, int precision, RoundingMode roundingRule) {
+        if (subtractend == null) {
+            return logMissingValues();
+        }
+        // we can use the addition methods; adding a negative is subtraction
+        return add(minuend, subtractend.negate(), precision, roundingRule);
+    }
+    public static BigDecimal subtract(BigDecimal minuend, BigDecimal subtractend, int precision) {
+        return subtract(minuend, subtractend, precision, DEFAULT_ROUNDING_RULE);
     }
 
     /**

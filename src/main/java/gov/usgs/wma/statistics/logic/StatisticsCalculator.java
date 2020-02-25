@@ -190,20 +190,19 @@ public class StatisticsCalculator<S extends Value> {
 	public BigDecimal valueOfPercentile(List<S> samples, BigDecimal percentileAsFraction, int precision,
 			Function<S, BigDecimal> valueOf) {
 
-		// protection from null and ranges
-		if (samples == null                                            // samples are required (no null nor zero sample count)
-				|| samples.size() == 0                                          // avoid ArrayIndexOutOfBoundsException
-				// proper fraction range
-				|| percentileAsFraction == null                               // percentile  avoid NullPointerException
-				|| percentileAsFraction.compareTo(BigDecimal.ZERO) < 0        // less than 0% is undefined
-				|| percentileAsFraction.compareTo(BigDecimal.ONE) > 0) {     // greater than 100% is just as foolish
-			return BigDecimal.ZERO;                                       // no precision in this response
+		// protection from null and ranges and proper fraction range
+		if (samples == null                                                // samples are required (no null nor zero sample count)
+				|| samples.size() == 0                                     // avoid ArrayIndexOutOfBoundsException
+				|| percentileAsFraction == null                            // percentile  avoid NullPointerException
+				|| percentileAsFraction.compareTo(BigDecimal.ZERO) < 0     // less than 0% is undefined
+				|| percentileAsFraction.compareTo(BigDecimal.ONE) > 0) {   // greater than 100% is just as foolish
+			return BigDecimal.ZERO;                                        // no precision in this response
 		}
 
 		// total records, n, n+1, and its inverse, 1/(n+1)
-		BigDecimal n = new ScientificDecimal(samples.size(), EXACT_SCALE);// the number of records
-		BigDecimal n1 = n.add(ScientificDecimal.ONE);                  // one more than the number of records
-		BigDecimal n1inv = ScientificDecimal.ONE.divide(n1, EXACT_SCALE, DEFAULT_ROUNDING_RULE); // 1/(n+1) presume 10 digits
+		BigDecimal n = new ScientificDecimal(samples.size(), EXACT_SCALE); // the number of records
+		BigDecimal n1 = SigFigMathUtil.add(n, ScientificDecimal.ONE);      // one more than the number of records
+		BigDecimal n1inv = SigFigMathUtil.divide(ONE, n1, EXACT_SCALE);    // 1/(n+1) presume 10 digits
 
 		// manage boundary condition near   0 percentile
 		if (percentileAsFraction.compareTo(n1inv) <= 0) {
@@ -214,28 +213,24 @@ public class StatisticsCalculator<S extends Value> {
 			return valueOf.apply(samples.get(samples.size() - 1));
 		}
 
-		// pct float index, p, and its parts. the int index, k, and the decimal fraction, d.
-		BigDecimal p = percentileAsFraction.setScale(EXACT_SCALE)
-				.multiply(n1); // raw index to be used with faction
-		int k = p.intValue();                                  // the integer index value
+		// pct float index, p, and its parts. the int index, k, and the decimal fraction, d. raw index to be used with faction
+		BigDecimal p = SigFigMathUtil.multiply(percentileAsFraction, n1, EXACT_SCALE);
+		int k = p.intValue();                                              // the integer index value
 		// TODO use intValue in SD
 		// Y[k] and Y[k+1] (but java is zero based indexing thus k-1 and k)
-		BigDecimal yk = valueOf.apply(samples.get(k - 1));               // first index value
-		BigDecimal yk1 = valueOf.apply(samples.get(k));                 // second index value
+		BigDecimal yk = valueOf.apply(samples.get(k - 1));                 // first index value
+		BigDecimal yk1 = valueOf.apply(samples.get(k));                    // second index value
 
 		// percentile calculation Y(p) = Y[k] + d(Y[k+1] - Y[k])
-		BigDecimal diff = SigFigMathUtil.subtract(yk1, yk);              // delta between the two values
+		BigDecimal diff = SigFigMathUtil.subtract(yk1, yk);                // delta between the two values
 
 		int leastPrecision = SigFigMathUtil.getLeastPrecise(yk, yk1);
 		if (BigDecimal.ZERO.compareTo(diff) == 0) {
 			return ScientificDecimal.make(yk, leastPrecision);
 		}
 		BigDecimal d = SigFigMathUtil.subtract(p, new BigDecimal(k).setScale(EXACT_SCALE)); // the decimal index value (or fraction between two indexes)
-		BigDecimal delta = SigFigMathUtil.multiply(diff, d);              // the fraction of the difference of two values k and k+1
-		if (delta.precision() < leastPrecision) {
-			delta = delta.setScale(delta.scale()+(leastPrecision-delta.precision()));
-		}
-		BigDecimal yp    = SigFigMathUtil.add(yk, delta);                 // and finally, the percentile value
+		BigDecimal delta = SigFigMathUtil.multiply(diff, d, leastPrecision);                // the fraction of the difference of two values k and k+1
+		BigDecimal yp    = SigFigMathUtil.add(yk, delta, leastPrecision);                   // and finally, the percentile value
 		return yp;
 	}
 	public BigDecimal valueOfPercentile(List<S> samples, BigDecimal percentileAsFraction,

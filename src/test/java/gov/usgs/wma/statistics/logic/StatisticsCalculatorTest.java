@@ -557,8 +557,7 @@ public class StatisticsCalculatorTest {
 		assertEquals("Expect P50 to be ", "95.1579", percentiles.get(P50));
 		// 2020-02-05 round HALF_DOWN changes this to .0007 from .0008 when rounding HALF_UP
 		assertEquals("Expect P75 to be ", "95.1097", percentiles.get(P75));
-		// 2020-02-24 using SigFigsMathUtil more caused rounding to .0005 rather than .0004
-		assertEquals("Expect P90 to be ", "95.0705", percentiles.get(P90));
+		assertEquals("Expect P90 to be ", "95.0704", percentiles.get(P90));
 	}
 
 
@@ -897,8 +896,7 @@ public class StatisticsCalculatorTest {
 
 		BigDecimal p10c = stats.valueOfPercentile(monthSamples, PERCENTILES.get(P10), Value::valueOf);
 		// 2020-02-05 rounding HALF_DOWN yields 9.2 from 9.3
-		// 2020-02-24 using SigFigsMathUtil bring this back to 9.3
-		assertEquals("with additional precision, more refined answer equal to P10", "9.3", p10c.toPlainString());
+		assertEquals("with additional precision, more refined answer equal to P10", "9.2", p10c.toPlainString());
 
 		BigDecimal down = SigFigMathUtil.add(new BigDecimal("9.37"), new BigDecimal("-0.10"));
 		assertEquals(new BigDecimal("9.3"), down);
@@ -934,9 +932,8 @@ public class StatisticsCalculatorTest {
 		assertEquals("normalize should have removed values", preCount-1, normalizeMultipleYearlyValues.size());
 
 		// we have sig figs correct now because this became 9.23 again.
-		// 2020-02-24 using SigFigsMathUtil bring this back to 9.24
 		BigDecimal p10c = stats.valueOfPercentile(normalizeMultipleYearlyValues, PERCENTILES.get(P10), Value::valueOf);
-		assertEquals("with additional precision, more refined answer equal to P10", "9.24", p10c.toPlainString());
+		assertEquals("with additional precision, more refined answer equal to P10", "9.23", p10c.toPlainString());
 
 		BigDecimal down = SigFigMathUtil.add(new BigDecimal("9.37"), new BigDecimal("-0.100"));
 		assertEquals(new BigDecimal("9.27"), down);
