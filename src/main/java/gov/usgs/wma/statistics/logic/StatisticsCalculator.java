@@ -165,7 +165,7 @@ public class StatisticsCalculator<S extends Value> {
 		
 		// manage near   0 percentile
 		if (pct.compareTo(n1invRnd) <= 0 ) {
-			return BigDecimal.ZERO.setScale(1);
+			return BigDecimal.ZERO;
 		}
 		// manage precision near 100 percentile
 		BigDecimal n1inv =  SigFigMathUtil.divide(ONE, n1, EXACT_SCALE);
