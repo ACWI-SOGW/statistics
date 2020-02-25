@@ -155,23 +155,22 @@ public class StatisticsCalculator<S extends Value> {
 
 		// add one because of java zero based index vs the one based index of mathematics
 		BigDecimal index = new BigDecimal( samples.indexOf(sample) + 1 );
-		BigDecimal n     = new BigDecimal(samples.size());
-		BigDecimal n1    = n.add(ScientificDecimal.ONE);
+		BigDecimal n     = new ScientificDecimal(samples.size(), EXACT_SCALE);
+		BigDecimal n1    = SigFigMathUtil.add(n, ONE);
 		int precision    = sampleValue.precision();
 
 		// SigFigMathUtil does not provide an action with this precision
-		BigDecimal n1invRnd = ScientificDecimal.ONE.divide(n1, precision, DEFAULT_ROUNDING_RULE);
-		BigDecimal pct   = index.divide(n1, precision, DEFAULT_ROUNDING_RULE);
+		BigDecimal n1invRnd = SigFigMathUtil.divide(ONE, n1, precision);
+		BigDecimal pct   = SigFigMathUtil.divide(index, n1, precision);
 		
 		// manage near   0 percentile
 		if (pct.compareTo(n1invRnd) <= 0 ) {
 			return BigDecimal.ZERO.setScale(1);
 		}
 		// manage precision near 100 percentile
-		MathContext mc = new MathContext(precision, DEFAULT_ROUNDING_RULE);
-		BigDecimal n1inv = ScientificDecimal.ONE.divide(n1, EXACT_SCALE, DEFAULT_ROUNDING_RULE);
-		if (pct.compareTo(n.multiply(n1inv, mc)) >= 0) {
-			return ScientificDecimal.ONE.setScale(3);
+		BigDecimal n1inv =  SigFigMathUtil.divide(ONE, n1, EXACT_SCALE);
+		if (pct.compareTo(SigFigMathUtil.multiply(n, n1inv, EXACT_SCALE)) >= 0) {
+			return ONE.setScale(3);
 		}
 		
 		return pct;
@@ -201,7 +200,7 @@ public class StatisticsCalculator<S extends Value> {
 
 		// total records, n, n+1, and its inverse, 1/(n+1)
 		BigDecimal n = new ScientificDecimal(samples.size(), EXACT_SCALE); // the number of records
-		BigDecimal n1 = SigFigMathUtil.add(n, ScientificDecimal.ONE);      // one more than the number of records
+		BigDecimal n1 = SigFigMathUtil.add(n, ONE);                        // one more than the number of records
 		BigDecimal n1inv = SigFigMathUtil.divide(ONE, n1, EXACT_SCALE);    // 1/(n+1) presume 10 digits
 
 		// manage boundary condition near   0 percentile
@@ -216,7 +215,6 @@ public class StatisticsCalculator<S extends Value> {
 		// pct float index, p, and its parts. the int index, k, and the decimal fraction, d. raw index to be used with faction
 		BigDecimal p = SigFigMathUtil.multiply(percentileAsFraction, n1, EXACT_SCALE);
 		int k = p.intValue();                                              // the integer index value
-		// TODO use intValue in SD
 		// Y[k] and Y[k+1] (but java is zero based indexing thus k-1 and k)
 		BigDecimal yk = valueOf.apply(samples.get(k - 1));                 // first index value
 		BigDecimal yk1 = valueOf.apply(samples.get(k));                    // second index value
