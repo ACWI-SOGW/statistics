@@ -11,6 +11,7 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
+import gov.usgs.ngwmn.model.WLSample;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -111,7 +112,22 @@ public class MonthlyStatistics<S extends Value> extends StatisticsCalculator<S> 
 	 * @return
 	 */
 	public boolean doesThisMonthQualifyForStats(List<S> normalizeMultipleYearlyValues) {
-		return normalizeMultipleYearlyValues != null && normalizeMultipleYearlyValues.size()>0;
+		boolean qualified = normalizeMultipleYearlyValues != null && normalizeMultipleYearlyValues.size()>0;
+		if (!qualified) {
+			return qualified;
+		}
+		int monthYears = uniqueYears(normalizeMultipleYearlyValues);
+		qualified &= monthYears >= 10;
+
+		if ( ! qualified && monthYears>0 ) {
+			Value firstSample = normalizeMultipleYearlyValues.get(0);
+			int missingCount = 10 - monthYears;
+			String plural = missingCount>1 ? "s" :"";
+			String monthName = sampleMonthName(firstSample);
+			String msg = env.getMessage(ENV_MESSAGE_MONTHLY_DETAIL, monthName, missingCount, plural);
+			builder.message(msg);
+		}
+		return qualified;
 	}
 
 	/**

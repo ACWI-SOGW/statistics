@@ -206,6 +206,10 @@ public class MonthlyStatisticsTest {
 			public List<Value> medianMonthlyValues(List<Value> monthSamples, Function<List<Value>, List<Value>> sortBy) {
 				return monthSamples;
 			}
+			@Override
+			public boolean doesThisMonthQualifyForStats(List<Value> values) {
+				return ! values.isEmpty();
+			}
 		};
 
 		boolean isCalc = mockstats.monthlyStats(sorted);
@@ -280,6 +284,10 @@ public class MonthlyStatisticsTest {
 			public List<Value> medianMonthlyValues(List<Value> monthSamples, Function<List<Value>, List<Value>> sortBy) {
 				// do not modify, testing the months. This prevents normalization to test aggregations
 				return monthSamples;
+			}
+			@Override
+			public boolean doesThisMonthQualifyForStats(List<Value> values) {
+				return ! values.isEmpty();
 			}
 		};
 

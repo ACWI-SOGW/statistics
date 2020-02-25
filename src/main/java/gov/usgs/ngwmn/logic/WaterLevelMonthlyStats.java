@@ -34,21 +34,5 @@ public class WaterLevelMonthlyStats extends MonthlyStatistics<WLSample> {
 		}
 		return sortBy;
 	}
-	@Override
-	public boolean doesThisMonthQualifyForStats(List<WLSample> monthSamples) {
-		int monthYears = uniqueYears(monthSamples);
-		boolean qualified = super.doesThisMonthQualifyForStats(monthSamples)
-				&& monthYears >= 10;
 
-		if ( ! qualified && monthYears>0 ) {
-			Value firstSample = monthSamples.get(0);
-			int missingCount = 10 - monthYears;
-			String plural = missingCount>1 ? "s" :"";
-			String monthName = sampleMonthName(firstSample);
-			String msg = env.getMessage(ENV_MESSAGE_MONTHLY_DETAIL, monthName, missingCount, plural);
-			builder.message(msg);
-		}
-		return qualified;
-	}
-	
 }
