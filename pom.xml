@@ -175,10 +175,6 @@
                 <version>2.5.3</version>
                 <configuration>
                     <tagNameFormat>${project.artifactId}-${project.version}</tagNameFormat>
-                    <maven.javadoc.failOnError>false</maven.javadoc.failOnError>
-                    <maven.javadoc.skip>true</maven.javadoc.skip>
-                    <arguments>-Dmaven.javadoc.skip=true</arguments>
-                    <additionalparam>-Xdoclint:none  -Ddoclint:none -Dmaven.javadoc.skip=true -Dmaven.javadoc.failOnError=false</additionalparam>
                 </configuration>
                 <dependencies>
                     <dependency>
@@ -197,7 +193,6 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
                 <configuration>
-                    <additionalparam>-Xdoclint:none</additionalparam>
                     <failOnError>false</failOnError>
                     <skip>true</skip>
                 </configuration>
@@ -212,13 +207,7 @@
       </snapshots>
       <id>maven_central</id>
       <name>Central Repository</name>
-      <!-- 
-       https://mvnrepository.com/repos/central
-       https://mvnrepository.com/
-       https://mvnrepository.com/artifacts 
-       https://mvnrepository.com/repos/
-      -->
-      <url>http://central.maven.org/maven2/</url>
+      <url>https://repo1.maven.org/maven2/</url>
     </pluginRepository>
   </pluginRepositories>
     <repositories>

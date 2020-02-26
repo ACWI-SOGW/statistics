@@ -210,7 +210,7 @@ public class JsonDataBuilderTest {
 		Map<String, BigDecimal> pct = data.buildPercentiles();
 		
 		assertEquals(data.percentiles.size(), pct.size());
-		assertEquals("0.1000000000", pct.get("P10").toString());
+		assertEquals("0.100000000", pct.get("P10").toPlainString());
 	}
 	
 	@Test

@@ -178,52 +178,53 @@ public class WaterLevelStatistics extends StatisticsCalculator<WLSample> {
 		// get the sample for the same month as the latest sample
 		String month = Value.padMonth(Value.monthUTC(latestSample.time));
 		List<WLSample> monthSamples = monthlyStats.filterValuesByGivenMonth(samplesByDate, month);
+
 		// get the medians for each year-month
-		List<WLSample> normalizeMutlipleYearlyValues = 
+		List<WLSample> monthlyMedians =
 				monthlyStats.medianMonthlyValues(monthSamples,  monthlyStats.sortFunctionByQualifier());
-		if (normalizeMutlipleYearlyValues.size()<9) {
+		if (monthlyMedians.size()<9) {
 			// NGMWN-1896 do not calculate latest percentile for months with low data
 			builder.latestPercentile("");
 			return;
 		}
 		// the most recent must now be added into the collection and replace of the year-month it represents
-		replaceLatestSample(normalizeMutlipleYearlyValues, latestSample);
+		replaceLatestSample(monthlyMedians, latestSample);
 		// get the percentile of the latest sample
-		BigDecimal latestPercentile = percentileOfValue(normalizeMutlipleYearlyValues, latestSample, Value::valueOf);
-		latestPercentile = SigFigMathUtil.sigFigMultiply(latestPercentile, NUM_100.setScale(latestPercentile.scale()));
+		BigDecimal latestPercentile = percentileOfValue(monthlyMedians, latestSample, Value::valueOf);
+		latestPercentile = SigFigMathUtil.multiply(latestPercentile, NUM_100.setScale(latestPercentile.scale()));
 		builder.latestPercentile(latestPercentile.toPlainString());
 	}
 
-	protected void replaceLatestSample(List<WLSample> normalizeMutlipleYearlyValues, WLSample latestSample) {
-		if (normalizeMutlipleYearlyValues.contains(latestSample)) {
+	protected void replaceLatestSample(List<WLSample> normalizeMultipleYearlyValues, WLSample latestSample) {
+		if (normalizeMultipleYearlyValues.contains(latestSample)) {
 			return; // if it happens to be in there leave it be
 		}
 		// initial conditions and values
 		int        compareToVal  = MediationType.BelowLand.equalSortOrder(builder.mediation()) ?1 :-1;
-		int        elements      = normalizeMutlipleYearlyValues.size();
+		int        elements      = normalizeMultipleYearlyValues.size();
 		String     latestYrMonth = latestSample.getTime().substring(0, 7);
 		BigDecimal latestValue   = latestSample.getValue();
 		boolean    isInserting   = true;
 		boolean    isRemoving    = true;
 		// search for the removing current month and the inserting location for latest sample
 		for (int s=0; s<elements && (isRemoving || isInserting); s++) {
-			String yearMonth = ((Value)normalizeMutlipleYearlyValues.get(s)).getTime().substring(0, 7);
-			BigDecimal value = ((Value)normalizeMutlipleYearlyValues.get(s)).getValue();
+			String yearMonth = ((Value)normalizeMultipleYearlyValues.get(s)).getTime().substring(0, 7);
+			BigDecimal value = ((Value)normalizeMultipleYearlyValues.get(s)).getValue();
 			// the data is already sorted, if we exceed the value in the comapreTo direction then insert
 			if (isInserting && latestValue.compareTo(value) == compareToVal) {
-				normalizeMutlipleYearlyValues.add(s, latestSample);
+				normalizeMultipleYearlyValues.add(s, latestSample);
 				elements++; s++;
 				isInserting = false;
 			}
 			// if year-month of the latest sample is found then remove it
 			if (yearMonth.equals(latestYrMonth)) {
-				normalizeMutlipleYearlyValues.remove(s);
+				normalizeMultipleYearlyValues.remove(s);
 				elements--; s--;
 				isRemoving = false;
 			}
 		}
 		if (isInserting) {
-			normalizeMutlipleYearlyValues.add(latestSample);
+			normalizeMultipleYearlyValues.add(latestSample);
 		}
 	}	
 	protected void overallStats(List<WLSample> samplesByDate, List<WLSample> sortedByValue) {
@@ -321,9 +322,11 @@ public class WaterLevelStatistics extends StatisticsCalculator<WLSample> {
 		return !enforceRecent || (BigDecimal.TEN.compareTo(years) <= 0 && Days406.compareTo(daysDiff(today, recent)) >= 0);
 	}
 
+	// While the superclass calculates median for the primary value,
+	// this also calculates the median of the value above a datum.
 	protected WLSample makeMedian(List<WLSample> samples) {
 		// years median in the this month
-		BigDecimal medianValue = super.makeMedian(samples).value;
+		BigDecimal medianValue = ((Value)super.makeMedian(samples)).value;
 		BigDecimal medianAbove = valueOfPercentile(samples, MEDIAN_PERCENTILE, WLSample::valueOfAboveDatum);
 		WLSample base = samples.get( (int)(samples.size()/2) );
 		WLSample medianSample = new WLSample(medianValue, medianAbove, base);

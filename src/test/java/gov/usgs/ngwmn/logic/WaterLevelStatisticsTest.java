@@ -1,41 +1,28 @@
 package gov.usgs.ngwmn.logic;
 
-import static gov.usgs.wma.statistics.model.JsonDataBuilder.*;
-import static org.junit.Assert.*;
-
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.springframework.core.env.Environment;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
-
 import gov.usgs.ngwmn.model.MediationType;
 import gov.usgs.ngwmn.model.PCode;
 import gov.usgs.ngwmn.model.Specifier;
 import gov.usgs.ngwmn.model.WLSample;
 import gov.usgs.wma.statistics.app.Properties;
 import gov.usgs.wma.statistics.logic.StatisticsCalculator;
-import gov.usgs.wma.statistics.model.JsonData;
-import gov.usgs.wma.statistics.model.JsonDataBuilder;
-import gov.usgs.wma.statistics.model.JsonMonthly;
-import gov.usgs.wma.statistics.model.JsonOverall;
-import gov.usgs.wma.statistics.model.Value;
+import gov.usgs.wma.statistics.model.*;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.springframework.core.env.Environment;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+
+import java.math.BigDecimal;
+import java.util.*;
+
+import static gov.usgs.wma.statistics.model.JsonDataBuilder.*;
+import static org.junit.Assert.*;
 
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration //(locations = { "/applicationContext_mock.xml" })
 public class WaterLevelStatisticsTest {
 
 	public static final String P10 = "P10";
@@ -114,7 +101,22 @@ public class WaterLevelStatisticsTest {
 		spec = new Specifier("USGS", "Testing");
 	}
 
-	
+	@Test
+	public void test_makeMedian() throws Exception {
+		PCode pcode = PCode.P62610;
+		WLSample min = createSample("2005-06-10T04:15:00-05:00", "2.0", pcode, new BigDecimal("401"));
+		WLSample mid = createSample("2010-06-10T04:15:00-05:00", "1.5", pcode, new BigDecimal("403"));
+		WLSample max = createSample("2015-06-10T04:15:00-05:00", "1.0", pcode, new BigDecimal("406"));
+		List<WLSample> sortedByValue = new LinkedList<>();
+		sortedByValue.add(min);
+		sortedByValue.add(mid);
+		sortedByValue.add(max);
+		WLSample median = stats.makeMedian(sortedByValue);
+
+		assertEquals(mid.value, median.value);
+		assertEquals(mid.valueAboveDatum, median.valueAboveDatum);
+	}
+
 	@Test
 	public void test_replaceLatestSample_remove_descending_last() {
 		builder.mediation(MediationType.BelowLand);
@@ -312,7 +314,7 @@ public class WaterLevelStatisticsTest {
 		sortedByValue.add( createSample("2012-06-10T04:15:00-05:00", "13.0") );
 		
 		BigDecimal value = stats.valueOfPercentile(sortedByValue, new BigDecimal("0.75"), Value::valueOf);
-		assertEquals("10.0", value.toString());
+		assertEquals("10.0", value.toPlainString());
 	}
 
 	@Test
@@ -431,9 +433,9 @@ public class WaterLevelStatisticsTest {
 		
 		assertEquals("Expect max to be first.time", first.time, overall.dateMax);
 		assertEquals("Expect min to be first.time", first.time, overall.dateMin);
-		assertEquals("Expect max to be first.value", first.value.toString(), overall.valueMax);
-		assertEquals("Expect min to be first.value", first.value.toString(), overall.valueMin);
-		assertEquals("Expect latest to be first.value", first.value.toString(), overall.latestValue);
+		assertEquals("Expect max to be first.value", first.value.toPlainString(), overall.valueMax);
+		assertEquals("Expect min to be first.value", first.value.toPlainString(), overall.valueMin);
+		assertEquals("Expect latest to be first.value", first.value.toPlainString(), overall.latestValue);
 
 		assertEquals("Expect record_years to be zero for one record", "0.0", overall.recordYears);
 	}
@@ -453,8 +455,8 @@ public class WaterLevelStatisticsTest {
 		
 		assertEquals("Expect max to be max.time", max.time, overall.dateMax);
 		assertEquals("Expect min to be min.time", min.time, overall.dateMin);
-		assertEquals("Expect max to be max.value", max.value.toString(), overall.valueMax);
-		assertEquals("Expect min to be min.value", min.value.toString(), overall.valueMin);
+		assertEquals("Expect max to be max.value", max.value.toPlainString(), overall.valueMax);
+		assertEquals("Expect min to be min.value", min.value.toPlainString(), overall.valueMin);
 
 		assertEquals("Expect record_years to be ten years", "10.0", overall.recordYears);
 	}
@@ -474,8 +476,8 @@ public class WaterLevelStatisticsTest {
 		
 		assertEquals("Expect max to be max.time", max.time, overall.dateMax);
 		assertEquals("Expect min to be min.time", min.time, overall.dateMin);
-		assertEquals("Expect max to be max.value", max.value.toString(), overall.valueMax);
-		assertEquals("Expect min to be min.value", min.value.toString(), overall.valueMin);
+		assertEquals("Expect max to be max.value", max.value.toPlainString(), overall.valueMax);
+		assertEquals("Expect min to be min.value", min.value.toPlainString(), overall.valueMin);
 
 		assertEquals("Expect record_years to be ten and 1/2 years", "10.5", overall.recordYears);
 	}
@@ -497,8 +499,8 @@ public class WaterLevelStatisticsTest {
 		
 		assertEquals("Expect max to be max.time", max.time, overall.dateMax);
 		assertEquals("Expect min to be min.time", min.time, overall.dateMin);
-		assertEquals("Expect max to be max.value", max.value.toString(), overall.valueMax);
-		assertEquals("Expect min to be min.value", min.value.toString(), overall.valueMin);
+		assertEquals("Expect max to be max.value", max.value.toPlainString(), overall.valueMax);
+		assertEquals("Expect min to be min.value", min.value.toPlainString(), overall.valueMin);
 
 		assertEquals("Expect record_years to be 9 and 1/2 years", "9.5", overall.recordYears);
 	}
@@ -524,7 +526,7 @@ public class WaterLevelStatisticsTest {
 		JsonOverall overall = builder.build().getOverall();
 		
 		assertEquals("Expect count to be 3", 3, overall.sampleCount);
-		assertEquals("Expect median to be mid.value", mid.value.toString(), overall.valueMedian);
+		assertEquals("Expect median to be mid.value", mid.value.toPlainString(), overall.valueMedian);
 	}
 
 	@Test
@@ -571,8 +573,8 @@ public class WaterLevelStatisticsTest {
 		JsonOverall overall = builder.build().getOverall();
 		
 		assertEquals("Expect count to be 9", 9, overall.sampleCount);
-		assertEquals("Expect median to be mid.value", mid.value.toString(), overall.valueMedian);
-		assertEquals( mid1.getValue().toString(), overall.latestValue);
+		assertEquals("Expect median to be mid.value", mid.value.toPlainString(), overall.valueMedian);
+		assertEquals( mid1.getValue().toPlainString(), overall.latestValue);
 		assertEquals( "30", overall.latestPercentile);
 	}
 
@@ -727,7 +729,7 @@ public class WaterLevelStatisticsTest {
 		// the latest value is provisional and only counts for the following two entries, latest value and percentile
 		assertEquals("Expect LATEST_VALUE to be ", "100.0", overall.latestValue);
 		assertEquals("Expect LATEST_PCTILE to be 0% now that all are now sorted BelowLand (high values are low percentiles)",
-													"0",    overall.latestPercentile);
+													"0.0",    overall.latestPercentile);
 
 		assertEquals("Expect all percentile to be ", "1.0",    monthly.get("5").percentiles.get(P10));
 		assertEquals("Expect all percentile to be ", "1.0",    monthly.get("5").percentiles.get(P25));
@@ -776,13 +778,14 @@ public class WaterLevelStatisticsTest {
 		assertEquals("Expect MAX_VALUE to be ",      "1.0", overall.valueMax);
 		assertEquals("Expect MEDIAN to be ",         "1.0", overall.valueMedian);
 		assertEquals("Expect LATEST_VALUE to be ", "100.0", overall.latestValue);
-		assertEquals("Expect LATEST_PCTILE to be ",  "0", overall.latestPercentile);
+		assertEquals("Expect LATEST_PCTILE to be ",  "0.0", overall.latestPercentile);
 
-		assertEquals("Expect percentile to be 80.2", "80.2", monthly.get("5").percentiles.get(P10));
-		assertEquals("Expect most percentile to be ", "1.0", monthly.get("5").percentiles.get(P25));
-		assertEquals("Expect most percentile to be ", "1.0", monthly.get("5").percentiles.get(P50));
-		assertEquals("Expect most percentile to be ", "1.0", monthly.get("5").percentiles.get(P75));
-		assertEquals("Expect most percentile to be ", "1.0", monthly.get("5").percentiles.get(P90));
+		// 2020-02-11 Honoring addition/subtraction precision rounds to 80 with two digits
+		assertEquals("Expect this percentile to be 80", "80", monthly.get("5").percentiles.get(P10));
+		assertEquals("Expect most percentiles to be ", "1.0", monthly.get("5").percentiles.get(P25));
+		assertEquals("Expect most percentiles to be ", "1.0", monthly.get("5").percentiles.get(P50));
+		assertEquals("Expect most percentiles to be ", "1.0", monthly.get("5").percentiles.get(P75));
+		assertEquals("Expect most percentiles to be ", "1.0", monthly.get("5").percentiles.get(P90));
 	}
 
 
@@ -886,7 +889,7 @@ public class WaterLevelStatisticsTest {
 
 
 	@Test
-	public void testMostRecentProvistionalData_Removed() {
+	public void testMostRecentProvisionalData_Removed() {
 		List<WLSample> valueOrder = new LinkedList<>();
 		WLSample provisional = createSample("2017-03-01","12.21");
 		provisional.setProvsional(true);
@@ -903,10 +906,10 @@ public class WaterLevelStatisticsTest {
 		assertEquals("should REMOVE most recent provisional value here", expected, actual+1);
 		assertFalse(monthSamples.contains(provisional));
 		assertFalse(valueOrder.contains(provisional));
-		assertEquals("most recent should be the provisional", provisional.value.toString(), builder.get(LATEST_VALUE));
+		assertEquals("most recent should be the provisional", provisional.value.toPlainString(), builder.get(LATEST_VALUE));
 	}
 	@Test
-	public void testMostRecentProvistional_overallStats_AboveDatum() {
+	public void testMostRecentProvisional_overallStats_AboveDatum() {
 		List<WLSample> valueOrder = new LinkedList<>();
 		WLSample provisional = createSample("2017-03-01","12.21", true);
 		valueOrder.add( provisional );
@@ -918,15 +921,15 @@ public class WaterLevelStatisticsTest {
 		stats.setMediation(MediationType.AboveDatum);
 		stats.overallStats(monthSamples, valueOrder);
 
-		assertEquals(provisional.value.toString(), builder.get(LATEST_VALUE));
+		assertEquals(provisional.value.toPlainString(), builder.get(LATEST_VALUE));
 		assertFalse(monthSamples.contains(provisional));
 		assertFalse(valueOrder.contains(provisional));
 
 		assertEquals("7.98",  builder.get(MEDIAN));
-		assertEquals("100", builder.get(LATEST_PCTILE));
+		assertEquals("100.0", builder.get(LATEST_PCTILE));
 	}
 	@Test
-	public void testMostRecentProvistional_overallStats_BelowLand() {
+	public void testMostRecentProvisional_overallStats_BelowLand() {
 		List<WLSample> valueOrder = new LinkedList<>();
 		WLSample provisional = createSample("2017-03-01","12.21", true);
 		valueOrder.add( provisional );
@@ -938,15 +941,15 @@ public class WaterLevelStatisticsTest {
 		stats.setMediation(MediationType.BelowLand);
 		stats.overallStats(monthSamples, valueOrder);
 
-		assertEquals(provisional.value.toString(), builder.get(LATEST_VALUE));
+		assertEquals(provisional.value.toPlainString(), builder.get(LATEST_VALUE));
 		assertFalse(monthSamples.contains(provisional));
 		assertFalse(valueOrder.contains(provisional));
 
 		assertEquals("7.98", builder.get(MEDIAN));
-		assertEquals("0", builder.get(LATEST_PCTILE));
+		assertEquals("0.0", builder.get(LATEST_PCTILE));
 	}
 	@Test
-	public void testMostRecentProvistionalNONE_overallStats_AboveDatum() {
+	public void testMostRecentProvisionalNONE_overallStats_AboveDatum() {
 		List<WLSample> valueOrder = new LinkedList<>();
 		WLSample notProvisional = createSample("2017-03-01","12.21");
 		valueOrder.add( notProvisional );
@@ -958,15 +961,15 @@ public class WaterLevelStatisticsTest {
 		stats.setMediation(MediationType.AboveDatum);
 		stats.overallStats(monthSamples, valueOrder);
 
-		assertEquals(notProvisional.value.toString(), builder.get(LATEST_VALUE));
+		assertEquals(notProvisional.value.toPlainString(), builder.get(LATEST_VALUE));
 		assertTrue(monthSamples.contains(notProvisional));
 		assertTrue(valueOrder.contains(notProvisional));
 
 		assertEquals("7.98", builder.get(MEDIAN));
-		assertEquals("100", builder.get(LATEST_PCTILE));
+		assertEquals("100.0", builder.get(LATEST_PCTILE));
 	}
 	@Test
-	public void testMostRecentProvistionalNONE_overallStats_BelowLand() {
+	public void testMostRecentProvisionalNONE_overallStats_BelowLand() {
 		List<WLSample> valueOrder = new LinkedList<>();
 		WLSample notProvisional = createSample("2017-03-01","12.21");
 		valueOrder.add( notProvisional );
@@ -978,15 +981,15 @@ public class WaterLevelStatisticsTest {
 		stats.setMediation(MediationType.BelowLand);
 		stats.overallStats(monthSamples, valueOrder);
 
-		assertEquals(notProvisional.value.toString(), builder.get(LATEST_VALUE));
+		assertEquals(notProvisional.value.toPlainString(), builder.get(LATEST_VALUE));
 		assertTrue(monthSamples.contains(notProvisional));
 		assertTrue(valueOrder.contains(notProvisional));
 
 		assertEquals("7.98", builder.get(MEDIAN));
-		assertEquals("0", builder.get(LATEST_PCTILE));
+		assertEquals("0.0", builder.get(LATEST_PCTILE));
 	}
 	@Test
-	public void testMostRecentProvistionalData_notRemoved() {
+	public void testMostRecentProvisionalData_notRemoved() {
 		List<WLSample> monthSamples = new LinkedList<>();
 		fillMarchData(monthSamples);
 		WLSample provisional = createSample("2017-03-01","12.21");
@@ -1007,16 +1010,13 @@ public class WaterLevelStatisticsTest {
 		// SETUP create a collection of samples (they will be sorted appropriately)
 		List<WLSample> samples = new LinkedList<>();
 		fillMarchData(samples);
-		String median = stats
-				.calculate(spec, samples)
-				.getOverall()
-				.valueMedian;
-		
+		JsonOverall overall = stats.calculate(spec, samples).getOverall();
+		String actual = overall.valueMedian;
 		// the original method gave too much weight to months with more samples
 		// the monthly median method gives every month in every year the same weight
 		// in this particular sample is it is a minor adjustment while in others it could be large.
 		assertEquals("median with all data is 7.98 and should be 8.0 based on monthly medians", 
-				"8.0", median);
+				"8.0", actual);
 	}
 	
 	protected void fillMarchData(List<WLSample> monthSamples) {
@@ -1353,6 +1353,29 @@ public class WaterLevelStatisticsTest {
 		monthSamples.add( createSample("2015-03-01","1.78") );
 		monthSamples.add( createSample("2010-03-01","1.39") );
 	}
-	
+
+	@Test
+	public void test_calculate_overallIfMonthlyError() throws Exception {
+		PCode pcode = PCode.P62610;
+		WLSample min = createSample("2005-06-10T04:15:00-05:00", "2.0", pcode, new BigDecimal("401"));
+		WLSample mid = createSample("2010-06-10T04:15:00-05:00", "1.5", pcode, new BigDecimal("403"));
+		WLSample max = createSample("2015-06-10T04:15:00-05:00", "1.0", pcode, new BigDecimal("406"));
+		List<WLSample> sortedByValue = new LinkedList<>();
+		sortedByValue.add(min);
+		sortedByValue.add(mid);
+		sortedByValue.add(max);
+
+		stats.monthlyStats = new WaterLevelMonthlyStats(env, builder) {
+			@Override
+			public boolean monthlyStats(List<WLSample> sortedByValue) {
+				throw new RuntimeException();
+			}
+		};
+
+		JsonData actual = stats.calculate(new Specifier(), sortedByValue);
+
+		assertTrue("Monthly should be empty on error.", actual.getMonthly().isEmpty());
+		assertNotNull( "Overall should not be empty if on monthly error.", actual.getOverall());
+	}
 }
 

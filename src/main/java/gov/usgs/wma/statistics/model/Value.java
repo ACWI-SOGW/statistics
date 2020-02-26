@@ -208,7 +208,7 @@ public class Value {
 	public String toString() {
 		StringBuilder toString = new StringBuilder();
 		toString.append("Time:").append(time).append("\n")
-			.append("value:").append(isUnknown() ? UNKNOWN_VALUE : value).append("\n")
+			.append("value:").append(isUnknown() ? UNKNOWN_VALUE : value.toPlainString()).append("\n")
 			.append( (isProvisional() ?"is:"+PROVISIONAL_CODE :"") );
 		return toString.toString();
 	}

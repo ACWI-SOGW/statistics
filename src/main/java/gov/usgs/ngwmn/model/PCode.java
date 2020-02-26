@@ -60,7 +60,7 @@ public enum PCode {
 		
 		name = StringUtils.trimAllWhitespace(name);
 		
-		if (name == null) {
+		if (name == null || name.length()==0) {
 			return UNSPECIFIED;
 		} else {
 			try {

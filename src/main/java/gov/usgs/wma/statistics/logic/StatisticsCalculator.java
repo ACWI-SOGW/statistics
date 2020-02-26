@@ -2,6 +2,7 @@ package gov.usgs.wma.statistics.logic;
 
 import static gov.usgs.wma.statistics.app.Properties.*;
 import static gov.usgs.wma.statistics.logic.SigFigMathUtil.*;
+import static gov.usgs.wma.statistics.logic.ScientificDecimal.*;
 import static gov.usgs.wma.statistics.model.Value.*;
 import static org.apache.commons.lang.StringUtils.*;
 
@@ -31,6 +32,7 @@ import gov.usgs.wma.statistics.app.Properties;
 import gov.usgs.wma.statistics.model.JsonData;
 import gov.usgs.wma.statistics.model.JsonDataBuilder;
 import gov.usgs.wma.statistics.model.Value;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 /**
  * The base statistics does nothing as place holder instances.
@@ -46,10 +48,14 @@ public class StatisticsCalculator<S extends Value> {
 	public static final BigDecimal MEDIAN_PERCENTILE = new BigDecimal("0.500000000");
 	//protected static final BigDecimal HUNDRED = new BigDecimal("100");
 	protected static final BigDecimal TWELVE  = new BigDecimal("12");
-	// Calendar returns millis for days and after a diff we need the number of days
-	protected static final long MILLISECONDS_PER_DAY = 1000 * 60 * 60 * 24;// ms * sec * min * hr == ms/day
+	// Calendar returns millis for days and after a diff we need the number of days (ms * sec * min * hr == ms/day)
+	protected static final BigDecimal MILLISECONDS_PER_DAY = new BigDecimal(1000 * 60 * 60 * 24);
 
-	private static final String[] MONTH_NAMES = new DateFormatSymbols().getMonths();
+	private static final String[] MONTH_NAMES;
+	static {
+		MONTH_NAMES = new DateFormatSymbols().getMonths();
+		MONTH_NAMES[12] = "unknown";
+	}
 
 	protected final JsonDataBuilder builder;
 	protected final Properties env;
@@ -75,18 +81,20 @@ public class StatisticsCalculator<S extends Value> {
 	 * @throws Exception Thrown if there is an issue parsing data from the XML reader.
 	 */
 	public JsonData calculate(Specifier spec, Reader xmlData) throws Exception {
-		return new JsonData();
+		// TODO asdf I suppose this class should be abstract
+		throw new NotImplementedException();
 	}
-	
+
 	/**
 	 * Calculates statistics for a specifier where data must be supplied as a list of Samples.
 	 * 
 	 * @param spec the specifier only checks the agency and site. It ignores the data type.
 	 * @param samples list of DAO samples. For example, {@link Value} for {@link WaterLevelStatistics}.
-	 * @throws Exception Thrown if there is an issue calculating statisics
+	 * @throws Exception Thrown if there is an issue calculating statistics
 	 */
 	public JsonData calculate(Specifier spec, List<S> samples)  {
-		return new JsonData();
+		// TODO asdf I suppose this class should be abstract
+		throw new NotImplementedException();
 	}
 	
 	
@@ -139,44 +147,35 @@ public class StatisticsCalculator<S extends Value> {
 	 * @param sample the sample to determine percentile
 	 * @return percentile fraction. 50th percentile would  return 0.50
 	 */
-	public static <T> BigDecimal percentileOfValue(List<T> samples, T sample, int precision,
-			Function<T, BigDecimal> valueOf) {
-		// protection - TODO is this the behavior we want? - returning 0
+	public static <T> BigDecimal percentileOfValue(List<T> samples, T sample, Function<T, BigDecimal> valueOf) {
 		if (sample==null || samples==null || samples.size()==0 || valueOf == null || valueOf.apply(sample)==null ) {
 			return BigDecimal.ZERO;
 		}
 		BigDecimal sampleValue = valueOf.apply(sample);
-		
+
 		// add one because of java zero based index vs the one based index of mathematics
 		BigDecimal index = new BigDecimal( samples.indexOf(sample) + 1 );
-		BigDecimal n     = new BigDecimal(samples.size());
-		BigDecimal n1    = n.add(BigDecimal.ONE);
-		BigDecimal n1inv = BigDecimal.ONE.divide(n1, 10, RoundingMode.HALF_EVEN);
+		BigDecimal n     = new ScientificDecimal(samples.size(), EXACT_SCALE);
+		BigDecimal n1    = SigFigMathUtil.add(n, ONE);
+		int precision    = sampleValue.precision();
 
-		BigDecimal n1invRnd = BigDecimal.ONE.divide(n1, sampleValue.precision(), RoundingMode.HALF_EVEN);
-		// comment this precision
-		BigDecimal pct   = index.divide(n1, sampleValue.precision(), RoundingMode.HALF_EVEN);
+		// SigFigMathUtil does not provide an action with this precision
+		BigDecimal n1invRnd = SigFigMathUtil.divide(ONE, n1, precision);
+		BigDecimal pct   = SigFigMathUtil.divide(index, n1, precision);
 		
 		// manage near   0 percentile
 		if (pct.compareTo(n1invRnd) <= 0 ) {
 			return BigDecimal.ZERO;
 		}
-		// manage near 100 percentile
-		MathContext mc = new MathContext(sampleValue.precision(),RoundingMode.HALF_EVEN);
-		if (pct.compareTo(n.multiply(n1inv, mc)) >= 0) {
-			return BigDecimal.ONE;
+		// manage precision near 100 percentile
+		BigDecimal n1inv =  SigFigMathUtil.divide(ONE, n1, EXACT_SCALE);
+		if (pct.compareTo(SigFigMathUtil.multiply(n, n1inv, EXACT_SCALE)) >= 0) {
+			return ONE.setScale(3);
 		}
 		
 		return pct;
 	}
-	public static <T> BigDecimal percentileOfValue(List<T> samples, T sample, Function<T, BigDecimal> valueOf) {
-		if (sample == null || valueOf == null) {
-			return BigDecimal.ZERO;
-		}
-		BigDecimal sampleValue = valueOf.apply(sample);
-		return percentileOfValue(samples, sample, sampleValue.precision(), valueOf);
-	}
-	
+
 	/**
 	 * This returns the interpolated sample value of a given percentile
 	 * http://www.itl.nist.gov/div898/handbook/prc/section2/prc262.htm
@@ -189,51 +188,54 @@ public class StatisticsCalculator<S extends Value> {
 	 */
 	public BigDecimal valueOfPercentile(List<S> samples, BigDecimal percentileAsFraction, int precision,
 			Function<S, BigDecimal> valueOf) {
-		
-		// protection from null and ranges
-		if (   samples == null                                          // samples are required (no null nor zero sample count)
-			|| samples.size()==0                                        // avoid ArrayIndexOutOfBoundsException
-			// proper fraction range
-			|| percentileAsFraction == null                             // percentile  avoid NullPointerException
-			|| percentileAsFraction.compareTo(BigDecimal.ZERO) < 0      // less than 0% is undefined
-			|| percentileAsFraction.compareTo(BigDecimal.ONE) > 0 ) {   // greater than 100% is just as foolish
-			return BigDecimal.ZERO; //- TODO is this the behavior we want? - returning 0
+
+		// protection from null and ranges and proper fraction range
+		if (samples == null                                                // samples are required (no null nor zero sample count)
+				|| samples.size() == 0                                     // avoid ArrayIndexOutOfBoundsException
+				|| percentileAsFraction == null                            // percentile  avoid NullPointerException
+				|| percentileAsFraction.compareTo(BigDecimal.ZERO) < 0     // less than 0% is undefined
+				|| percentileAsFraction.compareTo(BigDecimal.ONE) > 0) {   // greater than 100% is just as foolish
+			return BigDecimal.ZERO;                                        // no precision in this response
 		}
-		
+
 		// total records, n, n+1, and its inverse, 1/(n+1)
-		BigDecimal n     = new BigDecimal(samples.size());              // the number of records
-		BigDecimal n1    = n.add(BigDecimal.ONE);                       // one more than the number of records
-		BigDecimal n1inv = BigDecimal.ONE.divide(n1, 10, RoundingMode.HALF_UP); // 1/(n+1) presume 10 digits
+		BigDecimal n = new ScientificDecimal(samples.size(), EXACT_SCALE); // the number of records
+		BigDecimal n1 = SigFigMathUtil.add(n, ONE);                        // one more than the number of records
+		BigDecimal n1inv = SigFigMathUtil.divide(ONE, n1, EXACT_SCALE);    // 1/(n+1) presume 10 digits
 
 		// manage boundary condition near   0 percentile
-		if (percentileAsFraction.compareTo(n1inv) <= 0 ) {
+		if (percentileAsFraction.compareTo(n1inv) <= 0) {
 			return valueOf.apply(samples.get(0));
 		}
 		// manage boundary condition near 100 percentile
 		if (percentileAsFraction.compareTo(n.multiply(n1inv)) >= 0) {
-			return valueOf.apply(samples.get( samples.size()-1 ));
+			return valueOf.apply(samples.get(samples.size() - 1));
 		}
-		
-		// pct float index, p, and its parts. the int index, k, and the decimal fraction, d.
-		BigDecimal p     = percentileAsFraction.multiply(n1);           // raw index to be used with faction
-		BigDecimal k     = new BigDecimal( p.intValue() );              // the integer index value
-		
+
+		// pct float index, p, and its parts. the int index, k, and the decimal fraction, d. raw index to be used with faction
+		BigDecimal p = SigFigMathUtil.multiply(percentileAsFraction, n1, EXACT_SCALE);
+		int k = p.intValue();                                              // the integer index value
 		// Y[k] and Y[k+1] (but java is zero based indexing thus k-1 and k)
-		BigDecimal yk    = valueOf.apply(samples.get(k.intValue()-1));  // first index value
-		BigDecimal yk1   = valueOf.apply(samples.get(k.intValue()));    // second index value
-		
+		BigDecimal yk = valueOf.apply(samples.get(k - 1));                 // first index value
+		BigDecimal yk1 = valueOf.apply(samples.get(k));                    // second index value
+
 		// percentile calculation Y(p) = Y[k] + d(Y[k+1] - Y[k])
-		BigDecimal diff  = sigFigSubtract(yk1, yk);                     // delta between the two values
-		
-		BigDecimal d     = p.subtract(k);                               // the decimal index value (or fraction between two indexes)
-		BigDecimal delta = sigFigMultiply(diff, d);                     // the fraction of the difference of two values k and k+1
-		BigDecimal yp    = sigFigAdd(yk, delta);                        // and finally, the percentile value 
+		BigDecimal diff = SigFigMathUtil.subtract(yk1, yk);                // delta between the two values
+
+		int leastPrecision = SigFigMathUtil.getLeastPrecise(yk, yk1);
+		if (BigDecimal.ZERO.compareTo(diff) == 0) {
+			return ScientificDecimal.make(yk, leastPrecision);
+		}
+		BigDecimal d = SigFigMathUtil.subtract(p, new BigDecimal(k).setScale(EXACT_SCALE)); // the decimal index value (or fraction between two indexes)
+		BigDecimal delta = SigFigMathUtil.multiply(diff, d, leastPrecision);                // the fraction of the difference of two values k and k+1
+		BigDecimal yp    = SigFigMathUtil.add(yk, delta, leastPrecision);                   // and finally, the percentile value
 		return yp;
 	}
 	public BigDecimal valueOfPercentile(List<S> samples, BigDecimal percentileAsFraction,
 			Function<S, BigDecimal> valueOf) {
 		return valueOfPercentile(samples, percentileAsFraction, percentileAsFraction.precision(), valueOf);
 	}
+
 	/**
 	 * @param samples for a given sample set in order 
 	 * @return map of 10th 25th 50th 75th and 90th percentiles for the given list
@@ -297,7 +299,9 @@ public class StatisticsCalculator<S extends Value> {
 			builder.message(msg);
 		}
 	}
-	
+
+	// TODO we need to understand why there are nulls
+	// TODO move to conditioning lib
 	/**
 	 * This removes null value samples from a collection of samples.
 	 * @param samples the samples to examine
@@ -307,8 +311,7 @@ public class StatisticsCalculator<S extends Value> {
 		List<S> nullSamples = new LinkedList<>();
 		
 		for (S sample : samples) {
-			// TODO decide on actual rules and understand why there are nulls
-			// actually, I now think that the DAO filters out nulls 
+			// actually, I now think that the DAO filters out nulls
 			if (sample == null || sample.value==null || sample.time==null) {
 				nullSamples.add(sample);
 			}
@@ -387,7 +390,6 @@ public class StatisticsCalculator<S extends Value> {
 	
 	public static BigDecimal daysDiff(String maxDate, String minDate) {
 		
-		BigDecimal days  = BigDecimal.ZERO;
 		try {
 			Date begin   = DATE_FORMAT_FULL.parse(minDate);
 			Date end     = DATE_FORMAT_FULL.parse(maxDate);
@@ -401,13 +403,11 @@ public class StatisticsCalculator<S extends Value> {
 			long stop    = cal.getTimeInMillis();
 			
 			long diff    = stop - start;
-			days         = new BigDecimal ( diff/MILLISECONDS_PER_DAY ); 
-			
+			BigDecimal days = new BigDecimal(diff).divide(MILLISECONDS_PER_DAY);
+			return days;
 		} catch (ParseException e) {
 			throw new IllegalArgumentException("Bad dates: '" + minDate + "' or '" + maxDate +"'");
 		}
-		
-		return days;
 	}
 	
 	/**
@@ -438,16 +438,13 @@ public class StatisticsCalculator<S extends Value> {
 	
 
 	public String sampleMonthName(Value sample) {
-		String monthName = "none";
-		String monthStr = monthUTC(sample.time);
-
 		try {
+			String monthStr = monthUTC(sample.time);
 			int month = Integer.parseInt(monthStr);
 			return MONTH_NAMES[month-1];
 		} catch (Exception e) {
 			// errors will return "none"
+			return MONTH_NAMES[12];
 		}
-
-		return monthName;
 	}
 }

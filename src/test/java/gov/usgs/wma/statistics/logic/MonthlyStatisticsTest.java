@@ -3,12 +3,11 @@ package gov.usgs.wma.statistics.logic;
 import static gov.usgs.wma.statistics.model.JsonDataBuilder.*;
 import static org.junit.Assert.*;
 
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Function;
 
 import org.junit.Before;
@@ -19,16 +18,21 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.env.Environment;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import gov.usgs.ngwmn.logic.WaterLevelMonthlyStats;
+import gov.usgs.ngwmn.logic.WaterLevelStatistics;
 import gov.usgs.ngwmn.model.MediationType;
+import gov.usgs.ngwmn.model.Specifier;
+import gov.usgs.ngwmn.model.WLSample;
 import gov.usgs.wma.statistics.app.Properties;
+import gov.usgs.wma.statistics.model.JsonData;
 import gov.usgs.wma.statistics.model.JsonDataBuilder;
 import gov.usgs.wma.statistics.model.JsonMonthly;
 import gov.usgs.wma.statistics.model.Value;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration //(locations = { "/applicationContext_mock.xml" })
 public class MonthlyStatisticsTest {
 	private static final Logger LOGGER = LoggerFactory.getLogger(MonthlyStatisticsTest.class);
 
@@ -59,6 +63,14 @@ public class MonthlyStatisticsTest {
 			val = new BigDecimal(value);
 		}
 		return new Value(time, val);
+	}
+	private WLSample createWLSample(String time, String value) {
+		BigDecimal val = null;
+		if (null != value) {
+			val = new BigDecimal(value);
+		}
+		
+		return new WLSample(time, val, "", val, "", false, "", null);
 	}
 
 	@Test
@@ -139,9 +151,9 @@ public class MonthlyStatisticsTest {
 		List<Value> yearly = stats.generateMonthYearlyPercentiles(sorted); // MediationType.AboveDatum
 
 		assertEquals("Expect 3 medians", 3, yearly.size());
-		assertEquals("Expect large median to be",  "95.1579", yearly.get(2).value.toString());
-		assertEquals("Expect middle median to be", "94.1579", yearly.get(1).value.toString());
-		assertEquals("Expect least median to be",  "93.1579", yearly.get(0).value.toString());
+		assertEquals("Expect large median to be",  "95.1579", yearly.get(2).value.toPlainString());
+		assertEquals("Expect middle median to be", "94.1579", yearly.get(1).value.toPlainString());
+		assertEquals("Expect least median to be",  "93.1579", yearly.get(0).value.toPlainString());
 		
 		assertEquals("generateMonthYearlyPercentiles should not added to intermediateValues.", 0, builder.getIntermediateValues().length());
 	}
@@ -193,6 +205,10 @@ public class MonthlyStatisticsTest {
 		MonthlyStatistics<Value> mockstats = new MonthlyStatistics<Value>(env, builder) {
 			public List<Value> medianMonthlyValues(List<Value> monthSamples, Function<List<Value>, List<Value>> sortBy) {
 				return monthSamples;
+			}
+			@Override
+			public boolean doesThisMonthQualifyForStats(List<Value> values) {
+				return ! values.isEmpty();
 			}
 		};
 
@@ -269,6 +285,10 @@ public class MonthlyStatisticsTest {
 				// do not modify, testing the months. This prevents normalization to test aggregations
 				return monthSamples;
 			}
+			@Override
+			public boolean doesThisMonthQualifyForStats(List<Value> values) {
+				return ! values.isEmpty();
+			}
 		};
 
 		StatisticsCalculator.sortByValueOrderAscending(sorted);
@@ -341,7 +361,7 @@ public class MonthlyStatisticsTest {
 	}
 	
 	@Test
-	public void testMostRecentProvistional_monthlyStats() {
+	public void testMostRecentProvisional_monthlyStats() {
 		List<Value> valueOrder = new LinkedList<>();
 		Value provisional = createSample("2017-03-01","12.21");
 		provisional.setProvsional(true);
@@ -355,21 +375,51 @@ public class MonthlyStatisticsTest {
 
 		boolean isCalc = stats.monthlyStats(monthSamples);
 		assertTrue(isCalc);
-		
+
+		// 2006 6.4, 2007 6.78, 2008 8.2, 2009 9.37, 2010 4.12, 2011 8.03, 2012 6.91, 2013 9.31, 2014 8.0, 2015 5.6,  2016 9.07,
+		List<Value> medians = builder.getIntermediateValuesList();
+
+		Optional<Value> actual = medians.stream().filter(median -> median.getTime().contains("2006")).findFirst();
+		assertEquals("6.4", actual.get().getValue().toPlainString());
+		actual = medians.stream().filter(median -> median.getTime().contains("2007")).findFirst();
+		assertEquals("6.78", actual.get().getValue().toPlainString());
+		actual = medians.stream().filter(median -> median.getTime().contains("2008")).findFirst();
+		assertEquals("8.2", actual.get().getValue().toPlainString());
+		actual = medians.stream().filter(median -> median.getTime().contains("2009")).findFirst();
+		assertEquals("9.37", actual.get().getValue().toPlainString());
+		actual = medians.stream().filter(median -> median.getTime().contains("2010")).findFirst();
+		assertEquals("4.12", actual.get().getValue().toPlainString());
+		actual = medians.stream().filter(median -> median.getTime().contains("2011")).findFirst();
+		assertEquals("8.03", actual.get().getValue().toPlainString());
+		actual = medians.stream().filter(median -> median.getTime().contains("2012")).findFirst();
+		assertEquals("6.91", actual.get().getValue().toPlainString());
+		actual = medians.stream().filter(median -> median.getTime().contains("2013")).findFirst();
+		assertEquals("9.31", actual.get().getValue().toPlainString());
+		actual = medians.stream().filter(median -> median.getTime().contains("2014")).findFirst();
+		assertEquals("8.0", actual.get().getValue().toPlainString());
+		actual = medians.stream().filter(median -> median.getTime().contains("2015")).findFirst();
+		assertEquals("5.6", actual.get().getValue().toPlainString());
+		actual = medians.stream().filter(median -> median.getTime().contains("2016")).findFirst();
+		assertEquals("9.07", actual.get().getValue().toPlainString());
+
 		Map<String, String> stat = builder.build().getMonthly().get("3").percentiles; // MediationType.AboveDatum
 
 		assertNotNull(stat);
 		assertEquals("4.12",stat.get(P50_MIN));
 		// if the provision value is not removed P10 will be 4.60
-		assertEquals("4.44",stat.get(P10)); 
+		// if when precision management is correct this will change again to 4.4
+		// 2020-02-05 round HALF_DOWN changes this to 4.42 from 4.44 when rounding HALF_UP
+		// 2020-02-11 honoring addition precision results in 4.4 from 4.42 -- zero padding should change this back
+		assertEquals("4.4",stat.get(P10));
 		assertEquals("6.4", stat.get(P25));
 		assertEquals("8.0", stat.get(P50));
-		assertEquals("9.08",stat.get(P75));
+		// 2020-02-05 round HALF_DOWN changes this to 9.07 from 9.08 when rounding HALF_UP
+		assertEquals("9.07",stat.get(P75));
 		assertEquals("9.36",stat.get(P90));
 		assertEquals("9.37",stat.get(P50_MAX));
 	}
 	@Test
-	public void testMostRecentProvistionalNONE_monathlyStats() {
+	public void testMostRecentProvisionalNONE_monthlyStats() {
 		List<Value> valueOrder = new LinkedList<>();
 		Value notProvisional = createSample("2017-03-01","12.21");
 		valueOrder.add( notProvisional );
@@ -384,11 +434,15 @@ public class MonthlyStatisticsTest {
 
 		assertNotNull(stat);
 		assertEquals("4.12", stat.get(P50_MIN));
-		assertEquals("4.60", stat.get(P10));
+		// this is an example of too much precision when math is performed. this will be 4.6 upon fixes (yep, fixed)
+		// 2020-02-05 round HALF_DOWN changes this to 4.57 from 4.60 when rounding HALF_UP
+		// 2020-02-11 honoring addition precision results in 4.6 from 4.57 -- zero padding should change this back
+		assertEquals("4.6", stat.get(P10));
 		assertEquals("6.5",  stat.get(P25));
 		assertEquals("8.0",  stat.get(P50));
 		assertEquals("9.25", stat.get(P75));
-		assertEquals("11.36",stat.get(P90));
+		// 2020-02-11 honoring addition precision results in 11.4 from 11.36 -- zero padding should change this back
+		assertEquals("11.4",stat.get(P90));
 		assertEquals("12.21",stat.get(P50_MAX));
 	}
 	protected void fillMarchData(List<Value> monthSamples) {
@@ -727,7 +781,7 @@ public class MonthlyStatisticsTest {
 	}
 	
 	@Test
-	public void test_ensureThatMutlipleSamplesInOneYearForGivenMonthAreAveraged_BeforeStatsCalc() {
+	public void test_ensureThatMultipleSamplesInOneYearForGivenMonthAreAveraged_BeforeStatsCalc() {
 		// This is data as it was from the database on 03/25/2017 and in order to preserve a testable
 		// state this recreates that data set for the April data only for USGS:394829074053502
 		List<Value> monthSamples = new LinkedList<>();
@@ -767,10 +821,14 @@ public class MonthlyStatisticsTest {
 
 		int preCount = monthSamples.size();
 		builder.includeIntermediateValues(true);
-		List<Value> normalizeMutlipleYearlyValues = stats.medianMonthlyValues(monthSamples, stats.sortFunctionByQualifier());
-		assertTrue("medianMonthlyValues should added to intermediateValues.", builder.getIntermediateValues().length() > 0);
 
-		assertEquals("normalize should have removed two values, one from each of two years", preCount-2, normalizeMutlipleYearlyValues.size());
+		// math on 2003 9.7 (was 9.6 for HALF_UP) is because of .45 rounding to .4 and then
+		// because descending is flipped in the base value changes the 0.4 to 0.5 and 9.2+0.5=9.7
+		List<Value> normalizeMultipleYearlyValues = stats.medianMonthlyValues(monthSamples, stats.sortFunctionByQualifier());
+		assertTrue("medianMonthlyValues should added to intermediateValues.",
+				builder.getIntermediateValues().length() > 0);
+		assertEquals("normalize should have removed two values, one from each of two years",
+				preCount-2, normalizeMultipleYearlyValues.size());
 
 		// these should be removed
 		assertFalse("values should have been removed", monthSamples.contains(sample1));
@@ -782,12 +840,13 @@ public class MonthlyStatisticsTest {
 		Value sample1968 = null;
 		Value sample2003 = null;
 
-		for (Value sample : normalizeMutlipleYearlyValues) {
+		// find a couple test samples
+		for (Value sample : normalizeMultipleYearlyValues) {
 			if (Value.yearUTC(sample.time).equals("1968")) {
-				sample1968 = sample;
+				sample1968 = sample; // becomes value:2.7
 			}
 			if (Value.yearUTC(sample.time).equals("2003")) {
-				sample2003 = sample;
+				sample2003 = sample; // becomes value:9.7
 			}
 		}
 
@@ -796,8 +855,8 @@ public class MonthlyStatisticsTest {
 
 		assertEquals(9.67, (9.2+10.13)/2+.005, 0);
 
-		assertEquals("9.6", sample2003.value.toString());
-		assertEquals("2.7"/*0"*/, sample1968.value.toString());
+		assertEquals("2.7"/*0"*/, sample1968.value.toPlainString());
+		assertEquals("9.6", sample2003.value.toPlainString());
 
 		boolean isCalc = stats.monthlyStats(monthSamples);
 		assertTrue(isCalc);
@@ -870,4 +929,121 @@ public class MonthlyStatisticsTest {
 		actual = stats.doesThisMonthQualifyForStats(samples);
 		assertFalse(actual);
 	}
+	
+	@Test
+	public void test_generateMonthYearlyPercentiles_roundingSigFigCheck_ascending() {
+		
+		List<Value> values = new LinkedList<>();
+		StatisticsCalculatorTest.loadWithSeptemberData(values);
+		
+		List<Value> percentiles = stats.generateMonthYearlyPercentiles(values);
+		assertEquals(1, percentiles.size());
+		BigDecimal actual = percentiles.get(0).value;
+		BigDecimal expect = new BigDecimal("24.7");
+		// check that this should be 24 or 25 or 24.74, nope 24.7 is correct
+		assertEquals(expect, actual);
+	}
+	@Test
+	public void test_generateMonthYearlyPercentiles_roundingSigFigCheck_descending() throws Exception {
+		
+		List<Value> values = new LinkedList<>();
+		loadCsvValues(values, "GW-stats-service-review-original-RWDudley.csv");
+		
+//		for (Iterator<Value> iter = values.iterator(); iter.hasNext();) {
+//			Value value = iter.next();
+//			if (!value.time.contains("-09-")) {
+//				iter.remove();
+//			}
+//		}
+		int count = 0;
+		for (int v=values.size()-1; v>=0; v--) {
+			Value value = values.get(v);
+			if (!value.time.contains("-09-")) {
+				values.remove(value);
+				count++;
+			}
+		}
+		// in 2009 the median is the average of 24.7 and 24.77 which rounds down to 24.7
+		List<Value> medians = stats.medianMonthlyValues(values, (samples)->{
+			return StatisticsCalculator.sortByValueOrderDescending(samples);
+		});
+		
+		List<Value> percentiles = stats.generateMonthYearlyPercentiles(medians);
+		//assertEquals(1, percentiles.size());
+		BigDecimal actual = percentiles.get(0).value;
+		// 2020-02-05 round HALF_DOWN changes this to 24.7 from 24.8 when rounding HALF_UP
+		// 24.77 rounded up is 2.8 but 2.7 would not be rounded at all
+		BigDecimal expect = new BigDecimal("24.7");
+		assertEquals(expect, actual);
+		
+	}
+	public BufferedReader setupReader(String filename) {
+		filename = "/sample-data/"+filename;
+		InputStream rin = getClass().getResourceAsStream(filename);
+		BufferedReader reader   = new BufferedReader(new InputStreamReader(rin));
+		return reader;
+	}
+	public void loadCsvValues(List<Value> values, String filename) throws Exception {
+		BufferedReader reader = setupReader(filename);
+		String line;
+		while ((line=reader.readLine())!=null) {
+			line = line.replaceAll(" ", "");
+			if (line.length() == 0 || line.startsWith("#")) {
+				continue;
+			}
+			String[] cols = line.split(",");
+			Value value = createSample(cols[0], cols[1]);
+			if (cols.length>2) {
+				value.setProvsional("P".equalsIgnoreCase(cols[2]));
+			}
+			values.add(value);
+		}
+	}
+	public void loadCsvData(List<WLSample> values, String filename) throws Exception {
+		BufferedReader reader = setupReader(filename);
+		String line;
+		while ((line=reader.readLine())!=null) {
+			line = line.replaceAll(" ", "");
+			if (line.length() == 0 || line.startsWith("#")) {
+				continue;
+			}
+			String[] cols = line.split(",");
+			WLSample value = createWLSample(cols[0], cols[1]);
+			if (cols.length>2) {
+				value.setProvsional("P".equalsIgnoreCase(cols[2]));
+			}
+			values.add(value);
+		}
+	}
+	@Test
+	public void test_generateMonthYearlyPercentiles_roundingSigFigCheck_fileLoaded() throws Exception {
+		
+		List<WLSample> values = new LinkedList<>();
+//		values.add( createWLSample("2009-09-15T00:00:00","24.7") );
+//		values.add( createWLSample("2009-09-16T00:00:00","24.77") );
+//		values.add( createWLSample("2009-09-17T00:00:00","24.76") );
+//		values.add( createWLSample("2009-09-18T00:00:00","24.74") );
+
+		loadCsvData(values, "GW-stats-service-review-original-RWDudley.csv");
+		
+		Specifier spec = new Specifier("Spec", "Unnecessary");
+		
+		WaterLevelStatistics wlstats = new WaterLevelStatistics(env, builder, true);
+		JsonData response = wlstats.calculate(spec, values);
+
+		/*September*/ String actual = response.getMonthly().get("9").percentiles.get(P50_MAX);
+		// 2020-02-12 this needs to be changed to 24.7 because the least precision is 24.7, not 24.74
+	 	/* P50_MAX */ String expect = "24.7";
+		assertEquals(expect, actual);
+		
+//		new StatisticsCalculator<Value>(env).conditioning(spec, values);
+//		sortValueByQualifier(sortedByValue);
+//		
+//		List<Value> percentiles = stats.generateMonthYearlyPercentiles(values);
+//		assertEquals(12, percentiles.size());
+//		BigDecimal actual = percentiles.get(8).value; // 8 is sept in 0 based lists
+//		BigDecimal expect = new BigDecimal("24.74");
+//		assertEquals(expect, actual);
+	}
+	
 }

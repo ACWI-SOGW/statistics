@@ -1,7 +1,22 @@
 package gov.usgs.ngwmn.logic;
 
-import static gov.usgs.wma.statistics.app.SwaggerConfig.*;
-import static org.junit.Assert.*;
+import static gov.usgs.wma.statistics.logic.ScientificDecimal.ZERO;
+
+import gov.usgs.ngwmn.model.Elevation;
+import gov.usgs.ngwmn.model.MediationType;
+import gov.usgs.ngwmn.model.Specifier;
+import gov.usgs.ngwmn.model.WLSample;
+import gov.usgs.wma.statistics.app.Properties;
+import gov.usgs.wma.statistics.control.StatsService;
+import gov.usgs.wma.statistics.logic.ScientificDecimal;
+import gov.usgs.wma.statistics.model.JsonData;
+import gov.usgs.wma.statistics.model.JsonDataBuilder;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.io.BufferedReader;
 import java.io.InputStream;
@@ -16,32 +31,18 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
+import static gov.usgs.wma.statistics.app.SwaggerConfig.StatsService_MEDIANS_DEFAULT;
+import static gov.usgs.wma.statistics.app.SwaggerConfig.StatsService_PERCENTILES_DEFAULT;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
 //import org.mockito.stubbing.Answer;
 //import org.mockito.invocation.InvocationOnMock;
 //import org.mockito.stubbing.Answer;
-import org.springframework.core.env.Environment;
-import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-
-import gov.usgs.ngwmn.model.Elevation;
-import gov.usgs.ngwmn.model.MediationType;
-import gov.usgs.ngwmn.model.Specifier;
-import gov.usgs.ngwmn.model.WLSample;
-import gov.usgs.wma.statistics.app.Properties;
-import gov.usgs.wma.statistics.control.StatsService;
-import gov.usgs.wma.statistics.model.JsonData;
-import gov.usgs.wma.statistics.model.JsonDataBuilder;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@TestPropertySource(locations = { "/application.properties" })
 public class WaterLevelXmlTest {
 
-	private static final BigDecimal ZERO = new BigDecimal("0.00");
-	
 	@Autowired
 	Environment spring;
 	Specifier spec;
@@ -52,7 +53,6 @@ public class WaterLevelXmlTest {
 	boolean enforceRecent;
 	
 	Reader xmlReader;
-	Map<String,String> expected;
 
 	@Before
 	public void before() {
@@ -61,7 +61,6 @@ public class WaterLevelXmlTest {
 		builder  = new JsonDataBuilder(env);
 		enforceRecent = true;
 		stats    = new WaterLevelStatistics(env, builder, enforceRecent);
-		expected = new HashMap<>();
 	}
 
 	// datum is the code used to identify mediation base, mostly for above datum
@@ -80,7 +79,7 @@ public class WaterLevelXmlTest {
 		xmlReader   = new BufferedReader(new InputStreamReader(rin));
 	}
 	
-	private void commonAssertions(JsonData json) {
+	private void commonAssertions(Map<String, String> expected, JsonData json) {
 		assertNotNull("JSON data must be returned", json);
 		assertNotNull("expected overall stats in JSON data", json.getOverall());
 		assertNotNull("expected monthly stats in JSON data", json.getMonthly());
@@ -104,6 +103,7 @@ public class WaterLevelXmlTest {
 		setup("MBMG","3002", ZERO,"BLS");
 		
 		// EXPECT
+		Map<String,String> expected = new HashMap<>();
 		expected.put("latestValue", "200.390000");
 		expected.put("latestPercentile", "25.0000000");
 		expected.put("valueMin", "209.790000");
@@ -113,7 +113,7 @@ public class WaterLevelXmlTest {
 		JsonData json = stats.calculate(spec, xmlReader);
 		
 		// ASSERT
-		commonAssertions(json);
+		commonAssertions(expected, json);
 	}
 	@Test
 	public void test_MBMG_73642_BelowLand() throws Exception {
@@ -123,7 +123,8 @@ public class WaterLevelXmlTest {
 		setup("MBMG","73642", ZERO,"BLS");
 		
 		// EXPECT
-		// until MBMG has appropriate sigfigs, this is the precision we expect.
+		Map<String,String> expected = new HashMap<>();
+		// until MBMG has appropriate digits, this is the precision we expect.
 		expected.put("latestValue", "146.600000");
 		expected.put("latestPercentile", ""); // latest values is in month 10 with only 6 other years
 		expected.put("valueMin", "150.790000");
@@ -133,7 +134,7 @@ public class WaterLevelXmlTest {
 		JsonData json = stats.calculate(spec, xmlReader);
 		
 		// ASSERT
-		commonAssertions(json);
+		commonAssertions(expected, json);
 	}
 	@Test
 	public void test_MBMG_122340_BelowLand() throws Exception {
@@ -143,8 +144,9 @@ public class WaterLevelXmlTest {
 		setup("MBMG","122340", ZERO,"BLS");
 		
 		// EXPECT
+		Map<String,String> expected = new HashMap<>();
 		expected.put("latestValue", "17.960000");
-		expected.put("latestPercentile", "100");
+		expected.put("latestPercentile", "100.0");
 		expected.put("valueMin", "19.760000");
 		expected.put("valueMax", "10.380000");
 		
@@ -152,7 +154,7 @@ public class WaterLevelXmlTest {
 		JsonData json = stats.calculate(spec, xmlReader);
 		
 		// ASSERT
-		commonAssertions(json);
+		commonAssertions(expected, json);
 	}
 	@Test
 	public void test_MN_DNR_200105_BelowLand() throws Exception {
@@ -162,8 +164,9 @@ public class WaterLevelXmlTest {
 		setup("MN_DNR","200105", ZERO,"BLS");
 		
 		// EXPECT
+		Map<String,String> expected = new HashMap<>();
 		expected.put("latestValue", "98.29");
-		expected.put("latestPercentile", "100");
+		expected.put("latestPercentile", "100.0");
 		expected.put("valueMin", "115.97");
 		expected.put("valueMax", "98.29");
 		
@@ -171,7 +174,7 @@ public class WaterLevelXmlTest {
 		JsonData json = stats.calculate(spec, xmlReader);
 		
 		// ASSERT
-		commonAssertions(json);
+		commonAssertions(expected, json);
 	}
 	@Test
 	public void test_USGS_401229074290001_BelowLand() throws Exception {
@@ -179,8 +182,9 @@ public class WaterLevelXmlTest {
 		setup("USGS","401229074290001", ZERO,"BLS");
 		
 		// EXPECT
+		Map<String,String> expected = new HashMap<>();
 		expected.put("latestValue", "4.99");
-		expected.put("latestPercentile", "78.6");
+		expected.put("latestPercentile", "85.7"); // 78.6 but there might have been a sort issue
 		expected.put("valueMin", "12.66");
 		expected.put("valueMax", "1.06");
 		
@@ -188,7 +192,7 @@ public class WaterLevelXmlTest {
 		JsonData json = stats.calculate(spec, xmlReader);
 		
 		// ASSERT
-		commonAssertions(json);
+		commonAssertions(expected, json);
 	}
 	@Test
 	public void test_USGS_430427089284901_BelowLand() throws Exception {
@@ -198,6 +202,7 @@ public class WaterLevelXmlTest {
 		setup("USGS","430427089284901", ZERO,"BLS");
 		
 		// EXPECT
+		Map<String,String> expected = new HashMap<>();
 		expected.put("latestValue", "49.80");
 		expected.put("latestPercentile", "60.00");
 		expected.put("valueMin", "58.82");
@@ -207,7 +212,7 @@ public class WaterLevelXmlTest {
 		JsonData json = stats.calculate(spec, xmlReader);
 		
 		// ASSERT
-		commonAssertions(json);
+		commonAssertions(expected, json);
 	}
 
 	@Test
@@ -228,6 +233,7 @@ public class WaterLevelXmlTest {
 		setup("USGS","405010073414901", new BigDecimal("13.6"),"NGVD29");
 		
 		// EXPECT
+		Map<String,String> expected = new HashMap<>();
 		expected.put("latestValue", "5.48");
 		expected.put("latestPercentile", "35.7");
 		expected.put("valueMin", "-16.15");
@@ -238,21 +244,23 @@ public class WaterLevelXmlTest {
 		JsonData json = stats.calculate(spec, xmlReader);
 		
 		// ASSERT
-		commonAssertions(json);
+		commonAssertions(expected, json);
 	}
 	
 	@Test
 	public void test_USGS_405010073414901_AboveDatum_forcedBelowLand() throws Exception {
 		// this is testing that a site mediated above a datum can be re-mediated below land using the elevation
 		// SETUP
-		MathContext precisionRound2 = new MathContext(2, RoundingMode.HALF_UP);
-		MathContext precisionRound3 = new MathContext(3, RoundingMode.HALF_UP);
+		// 2020-02-05 changed to the new rounding HALF_DOWN
+		MathContext precisionRound1 = new MathContext(1, RoundingMode.HALF_DOWN);
+		MathContext precisionRound2 = new MathContext(2, RoundingMode.HALF_DOWN);
+		MathContext precisionRound3 = new MathContext(3, RoundingMode.HALF_DOWN);
 		BigDecimal altVal = new BigDecimal("13.6");        // specify the site and its actual elevation
 		setup("USGS","405010073414901", altVal,"NGVD29");
 		
 		// extract the samples from the XML files as the ngwmn-cache project does
 		List<WLSample> samples = WLSample.extractSamples(xmlReader, spec.getAgencyCd(), spec.getSiteNo(), spec.getElevation());
-		System.err.println(samples.get(samples.size()-1)); // examine the most recent sample
+//		System.err.println(samples.get(samples.size()-1)); // examine the most recent sample
 
 		// this is really NOT dead code. it shows how to examine data after XML extraction
 //		samples.stream()
@@ -264,7 +272,7 @@ public class WaterLevelXmlTest {
 //			.forEach(System.err::println);
 		
 		StatsService service  = new StatsService().setProperties(env);
-		String mediation      = MediationType.BelowLand.toString(); // override from AboveDatum 
+		String mediation      = MediationType.BelowLand.toString(); // override from AboveDatum
 		String enforceRecentTrue = "true";
 		String percentiles    = StatsService_PERCENTILES_DEFAULT;
 		String includeMedians = StatsService_MEDIANS_DEFAULT;
@@ -275,6 +283,7 @@ public class WaterLevelXmlTest {
 		JsonData json = service.calculate(builder, data, mediation, includeMedians, enforceRecentTrue, percentiles);
 		
 		// EXPECT
+		Map<String,String> expected = new HashMap<>();
 		expected.put("latestPercentile", "36");
 		expected.put("latestValue", new BigDecimal("-5.48").add(altVal).round(precisionRound2).toPlainString());
 		expected.put("valueMin",    new BigDecimal("16.15").add(altVal).round(precisionRound3).toPlainString());
@@ -285,11 +294,11 @@ public class WaterLevelXmlTest {
 		// 
 		
 		// ASSERT
-		commonAssertions(json);
+		commonAssertions(expected, json);
 		
 		// validate the 36% - yes, both mediation direction now product the "same" percentile
 		// validate 10.09 vs 19.93 as max value - 10.09 is correct because 19.93 is BLS
-		// TODO possibly convert overall to be base on all monthly median data -- this will be a new story
+		// overall was converted to be base on all monthly median data
 	}
 
 	@Test
@@ -299,6 +308,7 @@ public class WaterLevelXmlTest {
 		setup("USGS","405010073414901", new BigDecimal("13.6"),"BadDatum");
 		
 		// EXPECT
+		Map<String,String> expected = new HashMap<>();
 		expected.put("latestValue", "5.48");
 		expected.put("latestPercentile", "0.357");
 		expected.put("valueMin", "-16.15");
@@ -315,7 +325,7 @@ public class WaterLevelXmlTest {
 		JsonData json = stats.calculate(spec, xmlReader);
 		
 		// ASSERT
-		commonAssertions(json);
+		commonAssertions(expected, json);
 		
 		// EXPLANATION
 		// All the AboveDatum samples are dropped because there is no valid datum for mediation
