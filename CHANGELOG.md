@@ -5,6 +5,13 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+
+
+## [1.0.13]
+### Changed
+- updated to Log4j 2.17.2 (from inherited spring boot 2.10.0)
+
+## [1.0.12]
 ### Changed
 - Updated: rounding rule changed to half_down from half_up and custom rule mechanics removed.
 - Added: increased precision management.
