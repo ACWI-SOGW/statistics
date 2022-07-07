@@ -1435,14 +1435,6 @@ public class StatisticsCalculatorTest {
 //		values.add( createSample("2009-09-16","24.74"));
 //	}
 
-	@Test(expected = NotImplementedException.class)
-	public void test_calculateUnimplementedReader() throws Exception {
-		stats.calculate((Specifier) null, (Reader) null);
-	}
-	@Test(expected = NotImplementedException.class)
-	public void test_calculateUnimplementedList() throws Exception {
-		stats.calculate((Specifier) null, (List<Value>) null);
-	}
 
 	@Test()
 	public void test_sampleMonthName() throws Exception {
