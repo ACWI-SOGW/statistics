@@ -13,25 +13,25 @@
         <maven.version>3.5.4</maven.version>
 
         <!-- these are updated version included in spring-boot parent -->
-        <maven-assembly-plugin.version>3.1.0</maven-assembly-plugin.version>
-        <maven-clean-plugin.version>3.1.0</maven-clean-plugin.version>
-        <maven-compiler-plugin.version>3.8.0</maven-compiler-plugin.version>
-        <maven-dependency-plugin.version>3.1.1</maven-dependency-plugin.version>
+        <maven-assembly-plugin.version>3.4.0</maven-assembly-plugin.version>
+        <maven-clean-plugin.version>3.2.0</maven-clean-plugin.version>
+        <maven-compiler-plugin.version>3.10.1</maven-compiler-plugin.version>
+        <maven-dependency-plugin.version>3.3.0</maven-dependency-plugin.version>
         <maven-deploy-plugin.version>2.8.2</maven-deploy-plugin.version>
         <maven-eclipse-plugin.version>2.10</maven-eclipse-plugin.version>
-        <maven-enforcer-plugin.version>3.0.0-M2</maven-enforcer-plugin.version>
-        <maven-failsafe-plugin.version>2.22.0</maven-failsafe-plugin.version>
-        <maven-help-plugin.version>3.1.0</maven-help-plugin.version>
+        <maven-enforcer-plugin.version>3.1.0</maven-enforcer-plugin.version>
+        <maven-failsafe-plugin.version>2.22.2</maven-failsafe-plugin.version>
+        <maven-help-plugin.version>3.2.0</maven-help-plugin.version>
         <maven-install-plugin.version>2.5.2</maven-install-plugin.version>
-        <maven-invoker-plugin.version>3.1.0</maven-invoker-plugin.version>
-        <maven-jar-plugin.version>3.1.0</maven-jar-plugin.version>
-        <maven-javadoc-plugin.version>3.0.1</maven-javadoc-plugin.version>
-        <maven-resources-plugin.version>3.1.0</maven-resources-plugin.version>
-        <maven-shade-plugin.version>3.1.1</maven-shade-plugin.version>
-        <maven-site-plugin.version>3.7.1</maven-site-plugin.version>
-        <maven-source-plugin.version>3.0.1</maven-source-plugin.version>
-        <maven-surefire-plugin.version>2.22.0</maven-surefire-plugin.version>
-        <maven-war-plugin.version>3.2.2</maven-war-plugin.version>
+        <maven-invoker-plugin.version>3.3.0</maven-invoker-plugin.version>
+        <maven-jar-plugin.version>3.2.2</maven-jar-plugin.version>
+        <maven-javadoc-plugin.version>3.4.0</maven-javadoc-plugin.version>
+        <maven-resources-plugin.version>3.2.0</maven-resources-plugin.version>
+        <maven-shade-plugin.version>3.3.0</maven-shade-plugin.version>
+        <maven-site-plugin.version>3.12.0</maven-site-plugin.version>
+        <maven-source-plugin.version>3.2.1</maven-source-plugin.version>
+        <maven-surefire-plugin.version>2.22.2</maven-surefire-plugin.version>
+        <maven-war-plugin.version>3.3.2</maven-war-plugin.version>
 
         <java.version>1.8</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -81,12 +81,12 @@
         <repository>
             <id>releases</id>
             <name>Releases</name>
-            <url>${wma.maven.url}/wma-maven-releases</url>
+            <url>${WMA_MAVEN_URL}/wma-maven-releases</url>
         </repository>
         <snapshotRepository>
             <id>snapshots</id>
             <name>Snapshots</name>
-            <url>${wma.maven.url}/wma-maven-snapshots</url>
+            <url>${WMA_MAVEN_URL}/wma-maven-snapshots</url>
         </snapshotRepository>
     </distributionManagement>
     <parent>
